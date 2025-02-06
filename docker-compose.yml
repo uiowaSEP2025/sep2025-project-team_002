@@ -6,6 +6,10 @@ services:
     restart: always
     env_file:
       - backend/.env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: transfer_db
     ports:
       - "5432:5432"
     networks:
