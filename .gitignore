@@ -3,5 +3,6 @@ __pycache__/
 .DS_Store
 backend/.venv/
 backend/db.sqlite3
-backend/.env
 .idea
+venv/
+**/.env
