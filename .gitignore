@@ -5,3 +5,4 @@ backend/.venv/
 backend/db.sqlite3
 backend/.env
 .idea
+venv/
