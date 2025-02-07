@@ -1,23 +1,31 @@
 from django.db import models
+from django.utils import timezone
 
 class Schools(models.Model):
   school_name = models.CharField(max_length=255)
   mbb = models.BooleanField(default=False)
   wbb = models.BooleanField(default=False)
   fb = models.BooleanField(default=False)
-  conference = models.CharField(max_length=255)
+  conference = models.CharField(max_length=100)
   location = models.CharField(max_length=255)
-  created_at = models.DateTimeField(auto_now_add=True)
-  updated_at = models.DateTimeField(auto_now=True)
+  created_at = models.DateTimeField(default=timezone.now)
+  updated_at = models.DateTimeField(default=timezone.now)
+
+  def save(self, *args, **kwargs):
+    if not self.created_at:
+      self.created_at = timezone.now()
+    self.updated_at = timezone.now()
+    super().save(*args, **kwargs)
 
   def __str__(self):
-    return self.name
+    return self.school_name
   
 class Users(models.Model):
   first_name = models.CharField(max_length=255)
   last_name = models.CharField(max_length=255)
   email = models.CharField(max_length=255)
   password = models.CharField(max_length=255)
+  role = models.CharField(max_length=255, default='user')
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
   transfer_out_school = models.ForeignKey(
