@@ -21,8 +21,20 @@ class Users(models.Model):
   password = models.CharField(max_length=255)
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
-  transfer_out_school = models.ForeignKey(Schools, on_delete=models.CASCADE,null=True, blank=True)
-  transfer_in_school = models.ForeignKey(Schools, on_delete=models.CASCADE,null=True, blank=True)
+  transfer_out_school = models.ForeignKey(
+    Schools, 
+    on_delete=models.CASCADE, 
+    null=True, 
+    blank=True,
+    related_name='transfer_out_school'
+  )
+  transfer_in_school = models.ForeignKey(
+    Schools, 
+    on_delete=models.CASCADE, 
+    null=True, 
+    blank=True,
+    related_name='transfer_in_school'
+  )
 
   def __str__(self):
     return self.first_name
