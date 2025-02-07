@@ -1,7 +1,6 @@
 from django.db import models
 
 class Schools(models.Model):
-  school_id = models.CharField(max_length=255)
   school_name = models.CharField(max_length=255)
   mbb = models.BooleanField(default=False)
   wbb = models.BooleanField(default=False)
