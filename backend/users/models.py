@@ -35,6 +35,7 @@ class Users(models.Model):
     blank=True,
     related_name='transfer_in_school'
   )
+  session_token = models.CharField(max_length=255, null=True, blank=True)
 
   def __str__(self):
     return self.first_name
