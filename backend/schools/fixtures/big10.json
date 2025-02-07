@@ -1,6 +1,6 @@
 [
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 1,
       "fields": {
         "school_name": "University of Illinois at Urbana–Champaign",
@@ -12,7 +12,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 2,
       "fields": {
         "school_name": "Indiana University Bloomington",
@@ -24,7 +24,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 3,
       "fields": {
         "school_name": "University of Iowa",
@@ -36,7 +36,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 4,
       "fields": {
         "school_name": "University of Maryland, College Park",
@@ -48,7 +48,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 5,
       "fields": {
         "school_name": "University of Michigan",
@@ -60,7 +60,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 6,
       "fields": {
         "school_name": "Michigan State University",
@@ -72,7 +72,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 7,
       "fields": {
         "school_name": "University of Minnesota",
@@ -84,7 +84,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 8,
       "fields": {
         "school_name": "University of Nebraska–Lincoln",
@@ -96,7 +96,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 9,
       "fields": {
         "school_name": "Northwestern University",
@@ -108,7 +108,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 10,
       "fields": {
         "school_name": "Ohio State University",
@@ -120,7 +120,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 11,
       "fields": {
         "school_name": "Pennsylvania State University",
@@ -132,7 +132,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 12,
       "fields": {
         "school_name": "Purdue University",
@@ -144,7 +144,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 13,
       "fields": {
         "school_name": "Rutgers University–New Brunswick",
@@ -156,7 +156,7 @@
       }
     },
     {
-      "model": "users.Schools",
+      "model": "schools.Schools",
       "pk": 14,
       "fields": {
         "school_name": "University of Wisconsin–Madison",
