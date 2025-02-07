@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: transfer_portal_db
+    restart: always
+    env_file:
+      - backend/.env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    networks:
+      - transfer_network
+
+  backend:
+    build: ./backend
+    container_name: transfer_portal_backend
+    restart: always
+    depends_on:
+      - db
+    env_file:
+      - backend/.env
+    volumes:
+      - ./backend:/app
+    ports:
+      - "8000:8000"
+    networks:
+      - transfer_network
+
+  frontend:
+    build: ./frontend
+    container_name: transfer_portal_frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - transfer_network
+
+networks:
+  transfer_network:
+    name: transfer_network
+    driver: bridge
+
+volumes:
+  postgres_data:
