@@ -1,6 +1,7 @@
 django
 djangorestframework
 django-cors-headers
+djangorestframework-simplejwt
 psycopg2-binary
 gunicorn
 python-dotenv
