@@ -33,10 +33,10 @@ function App() {
     <div className="App">
       <header className="App-header">
 
-//           <ThemeProvider theme={theme}>
-//             <CssBaseline />
-                <Signup />
-//           </ThemeProvider>
+{/* //           <ThemeProvider theme={theme}>
+//             <CssBaseline /> */}
+                {/* <Signup /> */}
+{/* //           </ThemeProvider> */}
 
         <h1>Backend Response:</h1>
         <p>{message}</p>
