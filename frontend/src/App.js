@@ -3,13 +3,15 @@ import React from 'react';
 import Signup from './Signup';
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import CssBaseline from '@mui/material/CssBaseline';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Login from './Login'; // Import the Login component
 
-const theme = createTheme({
-  palette: {
-    primary: { main: '#1976d2' },   // blue tone
-    secondary: { main: '#dc004e' }, // pink/red tone
-  },
-});
+// const theme = createTheme({
+//   palette: {
+//     primary: { main: '#1976d2' },   // blue tone
+//     secondary: { main: '#dc004e' }, // pink/red tone
+//   },
+// });
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -30,10 +32,24 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
+
+//           <ThemeProvider theme={theme}>
+//             <CssBaseline />
                 <Signup />
-          </ThemeProvider>
+//           </ThemeProvider>
+
+        <h1>Backend Response:</h1>
+        <p>{message}</p>
+
+        <Router>
+          <Routes>
+            {/* Define route for login */}
+            <Route path="/login" element={<Login />} />
+            {/* Define route for signup */}
+            {/* Example route for Home page */}
+          </Routes>
+        </Router>
+
       </header>
     </div>
   );
