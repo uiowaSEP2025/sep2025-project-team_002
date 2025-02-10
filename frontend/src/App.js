@@ -4,7 +4,9 @@ import Signup from './Signup';
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './Login'; // Import the Login component
+import Login from './Login';
+import SecureHome from "./SecureHome";
+import RequireAuth from "./RequireAuth";
 
 // const theme = createTheme({
 //   palette: {
@@ -37,9 +39,9 @@ function App() {
 //             <CssBaseline /> */}
                 {/* <Signup /> */}
 {/* //           </ThemeProvider> */}
-
+{/* 
         <h1>Backend Response:</h1>
-        <p>{message}</p>
+        <p>{message}</p> */}
 
         <Router>
           <Routes>
@@ -47,6 +49,19 @@ function App() {
             <Route path="/login" element={<Login />} />
             {/* Define route for signup */}
             {/* Example route for Home page */}
+
+            {/* Public Home Page */}
+        <Route path="/" element={<h1>Public Home Page</h1>} />
+
+            {/* Secure Home Page (Only Accessible When Logged In) */}
+            <Route
+              path="/secure-home"
+              element={
+                <RequireAuth>
+                  <SecureHome />
+                </RequireAuth>
+              }
+            />
           </Routes>
         </Router>
 
