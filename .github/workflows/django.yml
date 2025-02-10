@@ -21,27 +21,32 @@ jobs:
           - 5432:5432
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Create .env file
-      run: |
-        echo "DB_USER=${{ secrets.DB_USER }}" >> backend/.env
-        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend/.env
-        echo "DB_NAME=${{ secrets.DB_NAME }}" >> backend/.env
+      - name: Create .env file
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}" >> backend/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> backend/.env
 
-    - name: Build and start Docker containers
-      run: |
-        docker-compose up -d
+      - name: Build and start Docker containers
+        run: |
+          docker-compose up -d
 
-    - name: Run migrations
-      run: |
-        docker-compose exec -T backend python manage.py migrate
+      - name: Run code linting
+        run: |
+          docker-compose exec -T backend black --check . || echo "Black formatting issues detected"
+          docker-compose exec -T backend flake8 . || echo "Flake8 issues detected"
 
-    - name: Run tests
-      run: |
-        docker-compose exec -T backend python manage.py test
+      - name: Run migrations
+        run: |
+          docker-compose exec -T backend python manage.py migrate
 
-    - name: Stop Docker containers
-      run: |
-        docker-compose down
+      - name: Run tests
+        run: |
+          docker-compose exec -T backend pytest --cov=. --cov-report=term-missing
+
+      - name: Stop Docker containers
+        run: |
+          docker-compose down
