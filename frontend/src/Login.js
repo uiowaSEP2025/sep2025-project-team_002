@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  Typography,
   Grid,
+  Typography,
   Box,
   TextField,
   Button
@@ -10,8 +10,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ArrowRightIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate for redirection
 
 function Login() {
+  const navigate = useNavigate(); // Get navigation function
+
   // State for the login form
   const [formData, setFormData] = React.useState({
     email: '',
@@ -58,12 +61,11 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        setMessage("Login successful! Welcome back.");
-        // ADD REDIRECT TO HOME PAGE HERE
+        localStorage.setItem("token", data.token); // Store auth token
+        navigate("/secure-home"); // Redirect to secure home page
       } else {
         const errorData = await response.json();
-        setMessage("Login failed: " + (errorData.error || "Unknown error")); 
-        // change error message 
+        setMessage("Login failed: " + (errorData.error || "Not a user"));
       }
     } catch (error) {
       setMessage("Network error: " + error.message);
