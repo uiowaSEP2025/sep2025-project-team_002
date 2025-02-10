@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import React from 'react';
 import Signup from './Signup';
+import Home from './Home';
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -45,14 +46,11 @@ function App() {
 
         <Router>
           <Routes>
-            {/* Define route for login */}
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            {/* Define route for signup */}
-            {/* Example route for Home page */}
 
             {/* Public Home Page */}
-        <Route path="/" element={<h1>Public Home Page</h1>} />
+            <Route path="/" element={<Home />} />
 
             {/* Secure Home Page (Only Accessible When Logged In) */}
             <Route
