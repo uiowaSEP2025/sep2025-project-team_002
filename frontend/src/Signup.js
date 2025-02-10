@@ -4,19 +4,29 @@ import {
   Typography,
   Box,
   TextField,
-  Button
+  Button,
+  FormControl,
+  RadioGroup,
+  FormControlLabel,
+  Radio
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import ArrowRightIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useNavigate } from 'react-router-dom';
 
 function Signup() {
-  // State for the signup form
+  const navigate = useNavigate();
+
+  // State for the signup form (matching your models)
   const [formData, setFormData] = React.useState({
+    first_name: '',
+    last_name: '',
     email: '',
     password: '',
-    verifyPassword: ''
+    verifyPassword: '',
+    transferType: '' // Expected values: "transfer_in" or "transfer_out"
   });
 
   // State for feedback messages (error/success)
@@ -25,7 +35,7 @@ function Signup() {
   // State for toggling the features list on the left side
   const [showFeatures, setShowFeatures] = React.useState(false);
 
-  // Toggle the display of feature list
+  // Toggle the display of the feature list
   const handleToggleFeatures = () => {
     setShowFeatures(prev => !prev);
   };
@@ -48,19 +58,24 @@ function Signup() {
     try {
       const response = await fetch("http://localhost:8000/users/signup/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
+        // Send first_name, last_name, email, password and transfer_type
         body: JSON.stringify({
+          first_name: formData.first_name,
+          last_name: formData.last_name,
           email: formData.email,
-          password: formData.password
+          password: formData.password,
+          transfer_type: formData.transferType
         })
       });
 
       if (response.ok) {
         const data = await response.json();
-        setMessage("Signup successful! Please check your email or login.");
-        // Optionally, redirect the user here.
+        setMessage("Signup successful! Redirecting to login...");
+        // Redirect to login page after a short delay
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       } else {
         const errorData = await response.json();
         setMessage("Signup failed: " + (errorData.error || "Unknown error"));
@@ -72,7 +87,7 @@ function Signup() {
 
   return (
     <Grid container sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
-      {/* Left Side: App Description and Feature Toggle */}
+      {/* Left Side: Modern App Description & Feature Dropdown */}
       <Grid
         item
         xs={12}
@@ -170,6 +185,26 @@ function Signup() {
             <TextField
               fullWidth
               margin="normal"
+              label="First Name"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleChange}
+              required
+              InputProps={{ sx: { borderRadius: '40px' } }}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Last Name"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleChange}
+              required
+              InputProps={{ sx: { borderRadius: '40px' } }}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
               label="Email"
               name="email"
               type="email"
@@ -200,6 +235,20 @@ function Signup() {
               required
               InputProps={{ sx: { borderRadius: '40px' } }}
             />
+            <FormControl component="fieldset" margin="normal">
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                Are you a transfer athlete?
+              </Typography>
+              <RadioGroup
+                row
+                name="transferType"
+                value={formData.transferType}
+                onChange={handleChange}
+              >
+                <FormControlLabel value="transfer_in" control={<Radio />} label="Transfer In" />
+                <FormControlLabel value="transfer_out" control={<Radio />} label="Transfer Out" />
+              </RadioGroup>
+            </FormControl>
             <Button
               type="submit"
               variant="contained"

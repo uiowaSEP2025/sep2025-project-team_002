@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'reviews'
 ]
 
+AUTH_USER_MODEL = "users.Users"
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
