@@ -47,6 +47,7 @@ function App() {
           <Routes>
             {/* Define route for login */}
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             {/* Define route for signup */}
             {/* Example route for Home page */}
 
