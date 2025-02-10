@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Typography,
+  Grid,
   Box,
   TextField,
   Button
@@ -61,7 +62,8 @@ function Login() {
         // ADD REDIRECT TO HOME PAGE HERE
       } else {
         const errorData = await response.json();
-        setMessage("Login failed: " + (errorData.error || "Unknown error"));
+        setMessage("Login failed: " + (errorData.error || "Unknown error")); 
+        // change error message 
       }
     } catch (error) {
       setMessage("Network error: " + error.message);
