@@ -6,87 +6,138 @@ import {
   TextField,
   Button
 } from '@mui/material';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ArrowRightIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 function Signup() {
-  // Form state example
+  // State for the signup form
   const [formData, setFormData] = React.useState({
     email: '',
     password: '',
     verifyPassword: ''
   });
-  
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    // Here will be my backend form validation
-    console.log('Form submitted:', formData);
-  };
 
+  // State for feedback messages (error/success)
+  const [message, setMessage] = React.useState('');
+
+  // State for toggling the features list on the left side
   const [showFeatures, setShowFeatures] = React.useState(false);
 
+  // Toggle the display of feature list
   const handleToggleFeatures = () => {
     setShowFeatures(prev => !prev);
   };
 
+  // Update formData state as inputs change
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Handle form submission and send data to backend
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Basic validation: check if passwords match
+    if (formData.password !== formData.verifyPassword) {
+      setMessage("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:8000/users/signup/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessage("Signup successful! Please check your email or login.");
+        // Optionally, redirect the user here.
+      } else {
+        const errorData = await response.json();
+        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
+      }
+    } catch (error) {
+      setMessage("Network error: " + error.message);
+    }
+  };
+
   return (
-    <Grid container sx={{ minHeight: '100vh' }}>
-      {/* Left Side: App Description */}
+    <Grid container sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
+      {/* Left Side: App Description and Feature Toggle */}
       <Grid
         item
         xs={12}
         md={6}
         sx={{
-          backgroundColor: 'black',
+          backgroundColor: '#1a1a1a',
           color: 'white',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          p: 4
+          alignItems: 'center',
+          pt: 10,
+          px: 4,
+          textAlign: 'center',
+          position: 'relative'
         }}
       >
-        <Typography variant="h3" gutterBottom>
-          Athletic Insider:
+        <Typography variant="h3" gutterBottom sx={{ fontWeight: 700 }}>
+          Athletic Insider
         </Typography>
-        <Typography variant="h6" gutterBottom>
-          Sign up to explore future school!
+        <Typography variant="h6" gutterBottom sx={{ fontWeight: 400 }}>
+          Sign up to explore your future school!
         </Typography>
         <Typography
-        variant="subtitle1"
-        gutterBottom
-        onClick={handleToggleFeatures}
-        sx={{
+          variant="subtitle1"
+          onClick={handleToggleFeatures}
+          sx={{
             cursor: 'pointer',
             display: 'flex',
-            alignItems: 'center'
+            alignItems: 'center',
+            justifyContent: 'center',
+            mt: 4,
+            fontWeight: 500
           }}
         >
-          Take a peak of our top features
-            {showFeatures ? (
-            <ArrowRightIcon sx={{ mr: 0 }} />
+          Take a peek at our top features
+          {showFeatures ? (
+            <ArrowRightIcon sx={{ ml: 1 }} />
           ) : (
-            <ArrowDropDownIcon sx={{ mr: 0 }} />
+            <ArrowDropDownIcon sx={{ ml: 1 }} />
           )}
         </Typography>
-        {showFeatures && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Box component="ul" sx={{ pl: 2 }}>
-            <li>Share your collegiate athletic experiences anonymously.</li>
-            <li>Help transfer athletes find schools that match their desires.</li>
-            <li>Rate facilities, team culture, coaching, dining, travel, and more.</li>
-            <li>Gain insights into athletic department culture and additional resources.</li>
-          </Box>
-        </motion.div>
-      )}
+        <AnimatePresence>
+          {showFeatures && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.4 }}
+              style={{ textAlign: 'left' }}
+            >
+              <Box sx={{ p: 2 }}>
+                {[
+                  "Share your collegiate athletic experiences anonymously.",
+                  "Help transfer athletes find schools that match their desires.",
+                  "Rate facilities, team culture, coaching, dining, travel, and more.",
+                  "Gain insights into athletic department culture and additional resources."
+                ].map((feature, index) => (
+                  <Typography key={index} variant="body1" sx={{ display: 'flex', alignItems: 'center', color: '#ccc', mt: 1 }}>
+                    <CheckCircleIcon sx={{ color: 'lightgreen', mr: 1 }} /> {feature}
+                  </Typography>
+                ))}
+              </Box>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </Grid>
 
       {/* Right Side: Signup Form */}
@@ -101,16 +152,20 @@ function Signup() {
           p: 4
         }}
       >
-        {/* some animation */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
           style={{ width: '100%', maxWidth: 400 }}
         >
-          <Typography variant="h4" align="center" gutterBottom>
+          <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 600 }}>
             Sign Up
           </Typography>
+          {message && (
+            <Typography variant="body1" color="error" align="center" sx={{ mb: 2 }}>
+              {message}
+            </Typography>
+          )}
           <form onSubmit={handleSubmit}>
             <TextField
               fullWidth
@@ -121,6 +176,7 @@ function Signup() {
               value={formData.email}
               onChange={handleChange}
               required
+              InputProps={{ sx: { borderRadius: '40px' } }}
             />
             <TextField
               fullWidth
@@ -131,25 +187,24 @@ function Signup() {
               value={formData.password}
               onChange={handleChange}
               required
+              InputProps={{ sx: { borderRadius: '40px' } }}
             />
-
             <TextField
               fullWidth
               margin="normal"
               label="Confirm Password"
-              name="Confirm Password"
+              name="verifyPassword"
               type="password"
-              value={formData.password}
+              value={formData.verifyPassword}
               onChange={handleChange}
               required
+              InputProps={{ sx: { borderRadius: '40px' } }}
             />
-
             <Button
               type="submit"
               variant="contained"
               fullWidth
-              sx={{ mt: 2 }}
-              // Add a small hover animation:
+              sx={{ mt: 2, borderRadius: '40px' }}
               component={motion.button}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
