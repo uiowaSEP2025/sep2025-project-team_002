@@ -10,7 +10,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import ArrowRightIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate for redirection
+import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";  // Import useNavigate for redirection
 
 function Login() {
   const navigate = useNavigate(); // Get navigation function
@@ -73,6 +74,24 @@ function Login() {
   };
 
   return (
+      <Box sx={{ position: 'relative' }}>
+      {/* Backward Arrow Button at Top Left */}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 16,
+          left: 16,
+          zIndex: 1000
+        }}
+      >
+        <Button
+          variant="text"
+          onClick={() => navigate("/")}
+          startIcon={<ArrowBackIcon />}
+          sx={{ color: 'black' }}
+        >
+        </Button>
+      </Box>
     <Grid container sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
       {/* Left Side: App Description and Feature Toggle */}
       <Grid
@@ -203,9 +222,19 @@ function Login() {
               Login
             </Button>
           </form>
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography
+                variant="body2"
+                sx={{ cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => navigate("/signup")}
+              >
+                Don't have an account? Sign up here
+              </Typography>
+            </Box>
         </motion.div>
       </Grid>
     </Grid>
+      </Box>
   );
 }
 
