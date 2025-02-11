@@ -2,6 +2,7 @@ from django.db import models
 from schools.models import Schools
 from users.models import Users
 
+
 class Reviews(models.Model):
     review_id = models.CharField(max_length=255)
     school = models.ForeignKey(Schools, on_delete=models.CASCADE)
@@ -19,7 +20,6 @@ class Reviews(models.Model):
     date_of_review = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
 
     def __str__(self):
         return self.review
