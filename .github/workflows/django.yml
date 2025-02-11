@@ -27,6 +27,12 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> backend/.env
           echo "DB_HOST=db" >> backend/.env
 
+      - name: Check .env file contents
+        run: |
+          echo "Checking .env content:"
+          cat backend/.env | sed 's/./& /g'
+
+
       - name: Build and start Docker containers
         run: |
           docker compose up -d
