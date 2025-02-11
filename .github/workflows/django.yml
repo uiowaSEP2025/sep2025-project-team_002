@@ -27,8 +27,15 @@ jobs:
       - name: Wait for database to be ready
         run: |
           echo "Waiting for PostgreSQL to be ready..."
-          until docker compose exec -T db pg_isready -h db -p 5432 -U $DB_USER -d $DB_NAME;; do
-            echo "PostgreSQL is unavailable - sleeping"
+          RETRIES=10
+          COUNT=0
+          until docker compose exec -T db pg_isready -h db -p 5432 -U $DB_USER -d $DB_NAME; do
+            echo "PostgreSQL is unavailable - retrying ($COUNT/$RETRIES)"
+            COUNT=$((COUNT+1))
+            if [ "$COUNT" -ge "$RETRIES" ]; then
+              echo "PostgreSQL did not become ready in time. Exiting..."
+              exit 1
+            fi
             sleep 2
           done
           echo "PostgreSQL is ready!"
