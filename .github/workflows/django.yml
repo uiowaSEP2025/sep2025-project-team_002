@@ -10,17 +10,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      POSTGRES_USER: ${{ secrets.DB_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.DB_NAME }}
+
     services:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_USER: ${{ secrets.DB_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.DB_NAME }}
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }}"
+          --health-cmd "pg_isready -U postgres -d test_db"
           --health-interval 5s
           --health-timeout 3s
           --health-retries 10
@@ -50,8 +55,8 @@ jobs:
 
       - name: Run code linting
         run: |
-          docker-compose exec -T backend black --check . || echo "Black formatting issues detected"
-          docker-compose exec -T backend flake8 . || echo "Flake8 issues detected"
+          docker-compose exec -T backend black --check .
+          docker-compose exec -T backend flake8 . || echo "Flake8 warnings detected, but not failing CI/CD."
 
       - name: Run migrations
         run: |
