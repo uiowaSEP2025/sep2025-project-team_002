@@ -8,25 +8,32 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Schools',
+            name="Schools",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('school_name', models.CharField(max_length=255)),
-                ('mbb', models.BooleanField()),
-                ('wbb', models.BooleanField()),
-                ('fb', models.BooleanField()),
-                ('conference', models.CharField(max_length=255)),
-                ('location', models.CharField(max_length=255)),
-                ('created_at', models.DateTimeField(default=django.utils.timezone.now)),
-                ('updated_at', models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("school_name", models.CharField(max_length=255)),
+                ("mbb", models.BooleanField()),
+                ("wbb", models.BooleanField()),
+                ("fb", models.BooleanField()),
+                ("conference", models.CharField(max_length=255)),
+                ("location", models.CharField(max_length=255)),
+                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                ("updated_at", models.DateTimeField(default=django.utils.timezone.now)),
             ],
             options={
-                'verbose_name_plural': 'Schools',
+                "verbose_name_plural": "Schools",
             },
         ),
     ]
