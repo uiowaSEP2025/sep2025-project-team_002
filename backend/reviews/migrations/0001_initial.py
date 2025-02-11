@@ -10,31 +10,51 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('schools', '0001_initial'),
+        ("schools", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Reviews',
+            name="Reviews",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('review_id', models.CharField(max_length=255)),
-                ('sport', models.CharField(max_length=255)),
-                ('review_message', models.TextField()),
-                ('head_coach', models.IntegerField()),
-                ('assistant_coaches', models.IntegerField()),
-                ('team_culture', models.IntegerField()),
-                ('campus_life', models.IntegerField()),
-                ('athletic_facilities', models.IntegerField()),
-                ('athletic_department', models.IntegerField()),
-                ('player_development', models.IntegerField()),
-                ('nil_opportunity', models.IntegerField()),
-                ('date_of_review', models.DateField()),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('school', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='schools.schools')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("review_id", models.CharField(max_length=255)),
+                ("sport", models.CharField(max_length=255)),
+                ("review_message", models.TextField()),
+                ("head_coach", models.IntegerField()),
+                ("assistant_coaches", models.IntegerField()),
+                ("team_culture", models.IntegerField()),
+                ("campus_life", models.IntegerField()),
+                ("athletic_facilities", models.IntegerField()),
+                ("athletic_department", models.IntegerField()),
+                ("player_development", models.IntegerField()),
+                ("nil_opportunity", models.IntegerField()),
+                ("date_of_review", models.DateField()),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "school",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="schools.schools",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]
