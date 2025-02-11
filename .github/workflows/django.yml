@@ -1,0 +1,66 @@
+name: Django CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }}"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}" >> backend/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> backend/.env
+
+      - name: Build and start Docker containers
+        run: |
+          docker-compose up -d
+
+      - name: Wait for database to be ready
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          until docker-compose exec -T backend pg_isready -h postgres -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }}; do
+            echo "PostgreSQL is unavailable - sleeping"
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Run code linting
+        run: |
+          docker-compose exec -T backend black --check . || echo "Black formatting issues detected"
+          docker-compose exec -T backend flake8 . || echo "Flake8 issues detected"
+
+      - name: Run migrations
+        run: |
+          docker-compose exec -T backend python manage.py migrate
+
+      - name: Run tests
+        run: |
+          docker-compose exec -T backend pytest --cov=. --cov-report=term-missing
+
+      - name: Stop Docker containers
+        run: |
+          docker-compose down
