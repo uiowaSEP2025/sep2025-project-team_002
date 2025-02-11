@@ -156,13 +156,7 @@ function Signup() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.4 }}
-                style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: 0,
-                  right: 0,
-                  padding: '0 20px'
-                }}
+                style={{ textAlign: 'left' }}
               >
                 <Box sx={{ p: 2 }}>
                   {[
