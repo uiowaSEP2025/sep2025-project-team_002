@@ -1,6 +1,11 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 from schools.models import Schools
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, first_name, last_name, password=None):
@@ -18,6 +23,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class Users(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -27,10 +33,18 @@ class Users(AbstractBaseUser, PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     transfer_out_school = models.ForeignKey(
-        Schools, on_delete=models.CASCADE, null=True, blank=True, related_name="transfer_out_school"
+        Schools,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="transfer_out_school",
     )
     transfer_in_school = models.ForeignKey(
-        Schools, on_delete=models.CASCADE, null=True, blank=True, related_name="transfer_in_school"
+        Schools,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="transfer_in_school",
     )
 
     objects = CustomUserManager()

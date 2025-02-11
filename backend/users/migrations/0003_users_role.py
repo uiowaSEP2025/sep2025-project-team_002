@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_remove_schools_school_id_users_session_token_and_more'),
+        ("users", "0002_remove_schools_school_id_users_session_token_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='users',
-            name='role',
-            field=models.CharField(default='user', max_length=255),
+            model_name="users",
+            name="role",
+            field=models.CharField(default="user", max_length=255),
         ),
     ]
