@@ -19,6 +19,11 @@ jobs:
           POSTGRES_DB: ${{ secrets.DB_NAME }}
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }}"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
 
     steps:
       - name: Checkout repository
@@ -33,6 +38,15 @@ jobs:
       - name: Build and start Docker containers
         run: |
           docker-compose up -d
+
+      - name: Wait for database to be ready
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          until docker-compose exec -T backend pg_isready -h postgres -U ${{ secrets.DB_USER }} -d ${{ secrets.DB_NAME }}; do
+            echo "PostgreSQL is unavailable - sleeping"
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
 
       - name: Run code linting
         run: |
