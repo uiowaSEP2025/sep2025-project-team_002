@@ -14,11 +14,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Debug GitHub Secrets
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}"
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+          echo "DB_NAME=${{ secrets.DB_NAME }}"
+
       - name: Create .env file
         run: |
           echo "DB_USER=${{ secrets.DB_USER }}" >> backend/.env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend/.env
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> backend/.env
+          echo "DB_HOST=db" >> backend/.env
+
+      - name: Check .env file contents
+        run: |
+          echo "Checking .env content:"
+          cat backend/.env | sed 's/./& /g'
+
 
       - name: Build and start Docker containers
         run: |
