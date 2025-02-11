@@ -7,25 +7,37 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('schools', '0001_initial'),
-        ('users', '0004_alter_schools_created_at_alter_schools_updated_at'),
+        ("schools", "0001_initial"),
+        ("users", "0004_alter_schools_created_at_alter_schools_updated_at"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='users',
-            name='transfer_out_school',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='transfer_out_school', to='schools.schools'),
+            model_name="users",
+            name="transfer_out_school",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="transfer_out_school",
+                to="schools.schools",
+            ),
         ),
         migrations.AlterField(
-            model_name='users',
-            name='transfer_in_school',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='transfer_in_school', to='schools.schools'),
+            model_name="users",
+            name="transfer_in_school",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="transfer_in_school",
+                to="schools.schools",
+            ),
         ),
         migrations.DeleteModel(
-            name='Reviews',
+            name="Reviews",
         ),
         migrations.DeleteModel(
-            name='Schools',
+            name="Schools",
         ),
     ]

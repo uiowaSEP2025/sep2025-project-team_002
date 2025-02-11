@@ -1,6 +1,23 @@
+# Web framework and API tools
 django
 djangorestframework
 django-cors-headers
+djangorestframework-simplejwt
+
+# Database
 psycopg2-binary
+
+# Application server
 gunicorn
+
+# Environment management
 python-dotenv
+
+# Testing
+pytest
+pytest-django
+pytest-cov
+
+# Code quality and formatting
+flake8
+black
