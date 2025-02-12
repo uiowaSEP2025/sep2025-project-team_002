@@ -51,43 +51,39 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Basic validation: check if passwords match
     if (formData.password !== formData.verifyPassword) {
       setMessage("Passwords do not match!");
       return;
     }
 
-    // Log the data being sent
-    const requestData = {
-      first_name: formData.first_name,
-      last_name: formData.last_name,
-      email: formData.email,
-      password: formData.password,
-      transfer_type: formData.transferType
-    };
-    console.log('Sending signup data:', requestData);
-
     try {
       const response = await fetch(`${API_BASE_URL}/users/signup/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestData)
+        // Send first_name, last_name, email, password and transfer_type
+        body: JSON.stringify({
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          email: formData.email,
+          password: formData.password,
+          transfer_type: formData.transferType
+        })
       });
 
-      // Log the full response
-      const responseData = await response.json();
-      console.log('Response status:', response.status);
-      console.log('Response data:', responseData);
-
       if (response.ok) {
+        const data = await response.json();
         setMessage("Signup successful! Redirecting to login...");
+        // Redirect to the login page after a short delay
         setTimeout(() => {
           navigate("/login");
         }, 1500);
       } else {
-        setMessage("Signup failed: " + (responseData.error || "Please try again."));
+        const errorData = await response.json();
+        setMessage("Signup failed: " + "Please try again.");
+        // (errorData.error || "Please try again.") Use if need to see error for debugging
       }
     } catch (error) {
-      console.error("Network error:", error);
       setMessage("Network error: " + error.message);
     }
   };
