@@ -8,6 +8,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './Login';
 import SecureHome from "./SecureHome";
 import RequireAuth from "./RequireAuth";
+import API_BASE_URL from "./utils/config";
 
 // const theme = createTheme({
 //   palette: {
@@ -20,7 +21,7 @@ function App() {
   const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    fetch("http://52.15.224.36:8000//users/test/")
+    fetch(`${API_BASE_URL}/users/test/`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Backend Response:", data);
