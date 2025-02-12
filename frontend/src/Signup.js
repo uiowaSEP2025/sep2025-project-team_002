@@ -57,15 +57,10 @@ function Signup() {
     }
 
     try {
-      console.log("Form data before request:", formData);
-
-      const response = await fetch("https://3.23.251.210:8000/users/signup/", {
+      const response = await fetch("http://3.23.251.210:8000/users/signup/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        credentials: 'include',  // Add this for cookies if needed
+        headers: { "Content-Type": "application/json" },
+        // Send first_name, last_name, email, password and transfer_type
         body: JSON.stringify({
           first_name: formData.first_name,
           last_name: formData.last_name,
@@ -75,26 +70,19 @@ function Signup() {
         })
       });
 
-      console.log("Response status:", response.status); // Debug log
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log("Error response:", errorText); // Debug log
-        throw new Error(errorText);
-      }
-
-      const data = await response.json();
-      console.log("Success response:", data); // Debug log
-
       if (response.ok) {
-        setMessage("Signup successful!");
+        const data = await response.json();
+        setMessage("Signup successful! Redirecting to login...");
+        // Redirect to the login page after a short delay
         setTimeout(() => {
           navigate("/login");
         }, 1500);
+      } else {
+        const errorData = await response.json();
+        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
       }
     } catch (error) {
-      console.error("Signup error:", error);
-      setMessage(error.message || "Network error occurred");
+      setMessage("Network error: " + error.message);
     }
   };
 
