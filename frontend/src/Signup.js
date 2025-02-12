@@ -59,10 +59,14 @@ function Signup() {
     try {
       console.log("Form data before request:", formData); // Debug log
 
-      const response = await fetch("http://3.23.251.210:8000/api/signup/", {  // Updated URL
+      const response = await fetch("http://3.23.251.210:8000/api/signup/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Send first_name, last_name, email, password and transfer_type
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*"  // Add CORS header
+        },
+        credentials: 'include',  // Include credentials if you're using sessions
         body: JSON.stringify({
           first_name: formData.first_name,
           last_name: formData.last_name,
@@ -84,7 +88,8 @@ function Signup() {
         setMessage("Signup failed: " + (errorData.error || "Unknown error"));
       }
     } catch (error) {
-      setMessage("Network error: " + error.message);
+      console.error("Signup error:", error);
+      setMessage(error.message || "Network error occurred");
     }
   };
 
