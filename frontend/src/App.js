@@ -6,13 +6,14 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './Login';
 import SecureHome from "./SecureHome";
 import RequireAuth from "./RequireAuth";
+import API_BASE_URL from "./utils/config";
 
 
 function App() {
   const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    fetch("http://localhost:8000//users/test/")
+    fetch(`${API_BASE_URL}/users/test/`)
       .then((response) => response.json())
       .then((data) => {
         console.log("Backend Response:", data);
