@@ -57,7 +57,9 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("http://http://3.23.251.210:8000/api/users/signup/", {
+      console.log("Form data before request:", formData); // Debug log
+
+      const response = await fetch("http://3.23.251.210:8000/api/signup/", {  // Updated URL
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Send first_name, last_name, email, password and transfer_type
