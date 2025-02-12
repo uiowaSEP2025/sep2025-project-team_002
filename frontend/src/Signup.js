@@ -59,12 +59,11 @@ function Signup() {
     try {
       console.log("Form data before request:", formData); // Debug log
 
-      const response = await fetch("http://3.23.251.210:8000/api/signup/", {
+      const response = await fetch("/api/signup/", {  // Remove the full URL, use relative path
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "Access-Control-Allow-Origin": "*"  // Add CORS header
         },
         credentials: 'include',  // Include credentials if you're using sessions
         body: JSON.stringify({
@@ -76,16 +75,22 @@ function Signup() {
         })
       });
 
+      console.log("Response status:", response.status); // Debug log
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Error response:", errorText); // Debug log
+        throw new Error(errorText);
+      }
+
+      const data = await response.json();
+      console.log("Success response:", data); // Debug log
+
       if (response.ok) {
-        const data = await response.json();
-        setMessage("Signup successful! Redirecting to login...");
-        // Redirect to the login page after a short delay
+        setMessage("Signup successful!");
         setTimeout(() => {
           navigate("/login");
         }, 1500);
-      } else {
-        const errorData = await response.json();
-        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
       }
     } catch (error) {
       console.error("Signup error:", error);
