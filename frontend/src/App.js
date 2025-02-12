@@ -20,7 +20,7 @@ function App() {
   const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    fetch("https://theathleticinsider.com/users/test/")
+    fetch("http://theathleticinsider.com/users/test/")
       .then((response) => response.json())
       .then((data) => {
         console.log("Backend Response:", data);
