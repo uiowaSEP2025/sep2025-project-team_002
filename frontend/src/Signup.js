@@ -57,7 +57,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("http://52.15.224.36:8000/users/signup/", {
+      const response = await fetch("http://localhost:8000/users/signup/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Send first_name, last_name, email, password and transfer_type
@@ -79,7 +79,8 @@ function Signup() {
         }, 1500);
       } else {
         const errorData = await response.json();
-        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
+        setMessage("Signup failed: " + "Please try again.");
+        // (errorData.error || "Please try again.") Use if need to see error for debugging
       }
     } catch (error) {
       setMessage("Network error: " + error.message);
