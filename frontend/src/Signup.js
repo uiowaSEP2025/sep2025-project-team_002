@@ -59,7 +59,7 @@ function Signup() {
     try {
       console.log("Form data before request:", formData); // Debug log
 
-      const response = await fetch("/api/signup/", {  // Remove the full URL, use relative path
+      const response = await fetch("https://3.23.251.210:8000/users/signup/", {  // Changed to HTTPS and correct path
         method: "POST",
         headers: {
           "Content-Type": "application/json",
