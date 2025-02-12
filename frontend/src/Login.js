@@ -41,7 +41,6 @@ function Login() {
   // Handle form submission and send data to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login attempt with:", formData); // Debug log
 
     // Basic validation: check if email and password are entered
     if (!formData.email || !formData.password) {
@@ -50,7 +49,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("https://theathleticinsider.com:8000/users/login/", {
+      const response = await fetch("http://3.23.251.210:8000/users/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -61,18 +60,16 @@ function Login() {
         })
       });
 
-      console.log("Response status:", response.status); // Debug log
-      const data = await response.json();
-      console.log("Response data:", data); // Debug log
-
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/secure-home");
+        const data = await response.json();
+        localStorage.setItem("token", data.token); // Store auth token
+        navigate("/secure-home"); // Redirect to secure home page
       } else {
-        setMessage("Login failed: " + (data.error || "Unknown error"));
+        const errorData = await response.json();
+        setMessage("Login failed: " + (errorData.error || "Not a user"));
       }
     } catch (error) {
-      console.error("Login error:", error); // Debug log
+      console.error("Login error:", error);
       setMessage("Network error: " + error.message);
     }
   };

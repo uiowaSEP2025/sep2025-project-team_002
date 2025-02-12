@@ -49,7 +49,6 @@ function Signup() {
   // Handle form submission and send data to the backend
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Signup attempt with:", formData); // Debug log
 
     // Basic validation: check if passwords match
     if (formData.password !== formData.verifyPassword) {
@@ -58,7 +57,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("http://theathleticinsider.com:8000/users/signup/", {
+      const response = await fetch("http://3.23.251.210/users/signup/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Send first_name, last_name, email, password and transfer_type
@@ -71,21 +70,18 @@ function Signup() {
         })
       });
 
-      console.log("Response status:", response.status); // Debug log
-      const data = await response.json();
-      console.log("Response data:", data); // Debug log
-
       if (response.ok) {
+        const data = await response.json();
         setMessage("Signup successful! Redirecting to login...");
         // Redirect to the login page after a short delay
         setTimeout(() => {
           navigate("/login");
         }, 1500);
       } else {
-        setMessage("Signup failed: " + (data.error || "Unknown error"));
+        const errorData = await response.json();
+        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
       }
     } catch (error) {
-      console.error("Signup error:", error); // Debug log
       setMessage("Network error: " + error.message);
     }
   };
