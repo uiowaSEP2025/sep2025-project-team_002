@@ -67,7 +67,8 @@ function Login() {
         navigate("/secure-home"); // Redirect to secure home page
       } else {
         const errorData = await response.json();
-        setMessage("Login failed: " + (errorData.error || "Not a user"));
+        setMessage("Login failed: " + "Username or password is incorrect"); 
+        //(errorData.error || "Username or password is incorrect") use if trying to debug
       }
     } catch (error) {
       console.error("Login error:", error);

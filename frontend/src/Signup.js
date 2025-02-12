@@ -80,7 +80,8 @@ function Signup() {
         }, 1500);
       } else {
         const errorData = await response.json();
-        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
+        setMessage("Signup failed: " + "Please try again.");
+        // (errorData.error || "Please try again.") Use if need to see error for debugging
       }
     } catch (error) {
       setMessage("Network error: " + error.message);
