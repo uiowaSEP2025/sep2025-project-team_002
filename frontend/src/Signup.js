@@ -57,41 +57,31 @@ function Signup() {
     }
 
     try {
-      // Make sure transferType is properly set before the request
-      console.log("Form data before request:", formData); // Debug log
-
-      const response = await fetch("http://theathleticinsider.com:8000/api/users/signup/", {
+      const response = await fetch("http://52.15.224.36:8000/api/users/signup/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
+        // Send first_name, last_name, email, password and transfer_type
         body: JSON.stringify({
           first_name: formData.first_name,
           last_name: formData.last_name,
           email: formData.email,
           password: formData.password,
-          transfer_type: formData.transferType || 'Transfer In' // Provide default value
+          transfer_type: formData.transferType
         })
       });
 
-      console.log("Response status:", response.status); // Debug log
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log("Error response:", errorText); // Debug log
-        throw new Error(errorText);
-      }
-
-      const data = await response.json();
-      console.log("Success response:", data); // Debug log
-
       if (response.ok) {
-        setMessage("Signup successful!");
-        navigate("/login");
+        const data = await response.json();
+        setMessage("Signup successful! Redirecting to login...");
+        // Redirect to the login page after a short delay
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      } else {
+        const errorData = await response.json();
+        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
       }
     } catch (error) {
-      console.error("Signup error:", error);
       setMessage("Network error: " + error.message);
     }
   };
