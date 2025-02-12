@@ -57,7 +57,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("http://transfer_portal_backend:8000/users/signup/", {
+      const response = await fetch("http://52.15.224.36:8000//users/signup/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Send first_name, last_name, email, password and transfer_type
