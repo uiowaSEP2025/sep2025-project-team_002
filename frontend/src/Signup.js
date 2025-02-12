@@ -57,7 +57,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("http://theathleticinsider.com/users/signup/", {
+      const response = await fetch("https://theathleticinsider.com:8000/users/signup/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Send first_name, last_name, email, password and transfer_type

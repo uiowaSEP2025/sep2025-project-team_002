@@ -49,7 +49,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("http://theathleticinsider.com/users/login/", {
+      const response = await fetch("https://theathleticinsider.com:8000/users/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
