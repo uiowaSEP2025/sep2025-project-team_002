@@ -20,7 +20,7 @@ function App() {
   const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    fetch("http://52.15.224.36:8000//users/test/")
+    fetch("http://52.15.224.36:8000/users/test/")
       .then((response) => response.json())
       .then((data) => {
         console.log("Backend Response:", data);
