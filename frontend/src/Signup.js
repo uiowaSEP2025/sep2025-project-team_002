@@ -57,16 +57,20 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("https://theathleticinsider.com:8000/users/signup/", {
+      console.log("Form data before request:", formData);
+
+      const response = await fetch("https://theathleticinsider.com/users/signup/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Send first_name, last_name, email, password and transfer_type
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
         body: JSON.stringify({
           first_name: formData.first_name,
           last_name: formData.last_name,
           email: formData.email,
           password: formData.password,
-          transfer_type: formData.transferType
+          transfer_type: formData.transferType || 'Transfer In'
         })
       });
 
