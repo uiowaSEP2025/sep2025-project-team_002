@@ -51,17 +51,21 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic validation: check if passwords match
     if (formData.password !== formData.verifyPassword) {
       setMessage("Passwords do not match!");
       return;
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/signup/`, {
+      // Make sure API_BASE_URL doesn't end with a slash
+      const signupUrl = `${API_BASE_URL.replace(/\/$/, '')}/api/users/signup`;
+      
+      const response = await fetch(signupUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Send first_name, last_name, email, password and transfer_type
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"  // Explicitly request JSON response
+        },
         body: JSON.stringify({
           first_name: formData.first_name,
           last_name: formData.last_name,
@@ -74,17 +78,24 @@ function Signup() {
       if (response.ok) {
         const data = await response.json();
         setMessage("Signup successful! Redirecting to login...");
-        // Redirect to the login page after a short delay
         setTimeout(() => {
           navigate("/login");
         }, 1500);
       } else {
-        const errorData = await response.json();
-        setMessage("Signup failed: " + "Please try again.");
-        // (errorData.error || "Please try again.") Use if need to see error for debugging
+        // More detailed error handling
+        let errorMessage;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || "Signup failed. Please try again.";
+        } catch (e) {
+          // If we can't parse the error as JSON
+          errorMessage = `Signup failed (${response.status}): Please try again.`;
+        }
+        setMessage(errorMessage);
       }
     } catch (error) {
-      setMessage("Network error: " + error.message);
+      console.error("Signup error:", error);
+      setMessage("Network error: Unable to connect to the server. Please try again later.");
     }
   };
 
