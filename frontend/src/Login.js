@@ -41,6 +41,7 @@ function Login() {
   // Handle form submission and send data to backend
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Login attempt with:", formData); // Debug log
 
     // Basic validation: check if email and password are entered
     if (!formData.email || !formData.password) {
@@ -60,16 +61,18 @@ function Login() {
         })
       });
 
+      console.log("Response status:", response.status); // Debug log
+      const data = await response.json();
+      console.log("Response data:", data); // Debug log
+
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.token); // Store auth token
-        navigate("/secure-home"); // Redirect to secure home page
+        localStorage.setItem("token", data.token);
+        navigate("/secure-home");
       } else {
-        const errorData = await response.json();
-        setMessage("Login failed: " + (errorData.error || "Not a user"));
+        setMessage("Login failed: " + (data.error || "Unknown error"));
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Login error:", error); // Debug log
       setMessage("Network error: " + error.message);
     }
   };
