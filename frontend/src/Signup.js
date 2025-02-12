@@ -16,6 +16,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
+import API_BASE_URL from "./utils/config";
 
 function Signup() {
   const navigate = useNavigate();
@@ -57,7 +58,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("http://52.15.224.36:8000/users/signup/", {
+      const response = await fetch(`${API_BASE_URL}/users/signup/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Send first_name, last_name, email, password and transfer_type
