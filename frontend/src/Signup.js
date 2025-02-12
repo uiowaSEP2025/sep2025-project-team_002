@@ -57,15 +57,15 @@ function Signup() {
     }
 
     try {
-      console.log("Form data before request:", formData); // Debug log
+      console.log("Form data before request:", formData);
 
-      const response = await fetch("https://3.23.251.210:8000/users/signup/", {  // Changed to HTTPS and correct path
+      const response = await fetch("https://3.23.251.210:8000/users/signup/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
         },
-        credentials: 'include',  // Include credentials if you're using sessions
+        credentials: 'include',  // Add this for cookies if needed
         body: JSON.stringify({
           first_name: formData.first_name,
           last_name: formData.last_name,
