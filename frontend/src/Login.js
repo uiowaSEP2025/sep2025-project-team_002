@@ -12,6 +12,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";  // Import useNavigate for redirection
+import API_BASE_URL from "./utils/config";
 
 function Login() {
   const navigate = useNavigate(); // Get navigation function
@@ -49,7 +50,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("http://52.15.224.36:8000/users/login/", {
+      const response = await fetch(`${API_BASE_URL}/users/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
