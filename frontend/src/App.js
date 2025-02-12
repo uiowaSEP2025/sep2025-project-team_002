@@ -2,20 +2,12 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import Signup from './Signup';
 import Home from './Home';
-import {createTheme, ThemeProvider} from "@mui/material/styles";
-import CssBaseline from '@mui/material/CssBaseline';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './Login';
 import SecureHome from "./SecureHome";
 import RequireAuth from "./RequireAuth";
 import API_BASE_URL from "./utils/config";
 
-// const theme = createTheme({
-//   palette: {
-//     primary: { main: '#1976d2' },   // blue tone
-//     secondary: { main: '#dc004e' }, // pink/red tone
-//   },
-// });
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -36,14 +28,6 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-
-{/* //           <ThemeProvider theme={theme}>
-//             <CssBaseline /> */}
-                {/* <Signup /> */}
-{/* //           </ThemeProvider> */}
-{/* 
-        <h1>Backend Response:</h1>
-        <p>{message}</p> */}
 
         <Router>
           <Routes>
