@@ -33,6 +33,7 @@ def signup(request):
             first_name=data["first_name"],
             last_name=data["last_name"],
             password=data["password"],
+            transfer_type=data.get("transfer_type")
         )
         # Optionally, if you want to record transfer info, you can extend this logic:
         # e.g., user.transfer_type = data.get('transfer_type')
