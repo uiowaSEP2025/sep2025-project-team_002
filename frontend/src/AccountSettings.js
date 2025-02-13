@@ -33,6 +33,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 import LogoutIcon from "@mui/icons-material/Logout";
+import API_BASE_URL from "./utils/config";
 
 function AccountSettings() {
   const navigate = useNavigate();
@@ -72,7 +73,7 @@ function AccountSettings() {
 
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch("http://localhost:8000/users/user/", {
+        const response = await fetch(`${API_BASE_URL}/users/user/`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
@@ -116,7 +117,7 @@ function AccountSettings() {
     }
     try {
       // Example: PATCH request to update user fields
-      const response = await fetch("http://localhost:8000/users/user/", {
+      const response = await fetch(`${API_BASE_URL}/users/user/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -173,7 +174,7 @@ function AccountSettings() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/users/change-password/", {
+      const response = await fetch(`${API_BASE_URL}/users/change-password/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
