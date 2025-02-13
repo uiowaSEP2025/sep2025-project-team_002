@@ -24,6 +24,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 import LogoutIcon from "@mui/icons-material/Logout";
+import API_BASE_URL from "./utils/config";
 
 function Account() {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ function Account() {
 
     const fetchUserInfo = async () => {
       try {
-        const response = await fetch("http://localhost:8000/users/user/", {
+        const response = await fetch(`${API_BASE_URL}/users/user/`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
