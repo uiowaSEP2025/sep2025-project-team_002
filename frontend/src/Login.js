@@ -49,7 +49,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("http://52.15.224.36:8000/users/login/", {
+      const response = await fetch("http://localhost:8000/users/login/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -62,7 +62,7 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem("token", data.token); // Store auth token
+        localStorage.setItem("token", data.access); // Store auth token
         navigate("/secure-home"); // Redirect to secure home page
       } else {
         const errorData = await response.json();
