@@ -1,10 +1,11 @@
+import uuid
 from django.db import models
 from schools.models import Schools
 from users.models import Users
 
 
 class Reviews(models.Model):
-    review_id = models.CharField(max_length=255)
+    review_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     school = models.ForeignKey(Schools, on_delete=models.CASCADE)
     user = models.ForeignKey(Users, on_delete=models.CASCADE)
     sport = models.CharField(max_length=255)
@@ -22,4 +23,4 @@ class Reviews(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.review
+        return f"Review {self.review_id} for {self.school.school_name}"
