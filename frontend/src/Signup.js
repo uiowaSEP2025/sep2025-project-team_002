@@ -16,7 +16,6 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from "./utils/config";
 
 function Signup() {
   const navigate = useNavigate();
@@ -58,7 +57,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/signup/`, {
+      const response = await fetch("http://localhost:8000/users/signup/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Send first_name, last_name, email, password and transfer_type
@@ -80,8 +79,7 @@ function Signup() {
         }, 1500);
       } else {
         const errorData = await response.json();
-        setMessage("Signup failed: " + "Please try again.");
-        // (errorData.error || "Please try again.") Use if need to see error for debugging
+        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
       }
     } catch (error) {
       setMessage("Network error: " + error.message);
