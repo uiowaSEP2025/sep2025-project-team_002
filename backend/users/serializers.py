@@ -10,6 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
+            "transfer_type",
             "role",
             "created_at",
             "updated_at",
