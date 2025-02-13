@@ -1,19 +1,18 @@
 from django.http import JsonResponse
-import json
 from django.contrib.auth.hashers import make_password
-from .models import Users
-from rest_framework import status
-from django.http import JsonResponse
+from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
-
-# from models import Users
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.http import JsonResponse
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from .models import Users
 from .serializers import UserSerializer
 
 
@@ -68,10 +67,18 @@ def test_api(request):
     return JsonResponse({"message": "Backend is working!"})
 
 
-class LoginView(TokenObtainPairView):
-    """Handles user login and returns JWT tokens"""
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """Customize JWT response if needed"""
 
-    pass
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data["first_name"] = self.user.first_name
+        data["last_name"] = self.user.last_name
+        return data  # Includes first_name and last_name in the token response for extra validation
+
+
+class LoginView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class UserDetailView(APIView):
