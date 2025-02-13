@@ -9,6 +9,7 @@ import Login from './Login';
 import SecureHome from "./SecureHome";
 import RequireAuth from "./RequireAuth";
 import Account from "./Account";
+import AccountSettings from "./AccountSettings";
 
 // const theme = createTheme({
 //   palette: {
@@ -53,6 +54,7 @@ function App() {
             {/* Public Home Page */}
             <Route path="/" element={<Home />} />
               <Route path="/account" element={<Account />} />
+              <Route path="/account/settings" element={<AccountSettings />} />
 
             {/* Secure Home Page (Only Accessible When Logged In) */}
             <Route
