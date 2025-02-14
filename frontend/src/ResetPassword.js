@@ -1,24 +1,31 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Box } from '@mui/material';
 import API_BASE_URL from "./utils/config";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-function ForgotPassword() {
-  const [email, setEmail] = useState('');
+function ResetPassword() {
+  const query = new URLSearchParams(useLocation().search);
+  const uid = query.get("uid");
+  const token = query.get("token");
+
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${API_BASE_URL}/users/forgot-password/`, {
+      const response = await fetch(`${API_BASE_URL}/users/reset-password/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ uid, token, new_password: newPassword, confirm_password: confirmPassword })
       });
       const data = await response.json();
       if (response.ok) {
         setMessage(data.message);
+        // 密码重置成功后可以重定向到登录页
+        navigate("/login");
       } else {
         setMessage(data.error);
       }
@@ -30,25 +37,34 @@ function ForgotPassword() {
   return (
     <Box sx={{ maxWidth: 400, margin: '0 auto', mt: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Forgot Password
+        Reset Password
       </Typography>
       {message && <Typography variant="body1" color="error">{message}</Typography>}
       <form onSubmit={handleSubmit}>
         <TextField
           fullWidth
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          label="New Password"
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          margin="normal"
+          required
+        />
+        <TextField
+          fullWidth
+          label="Confirm New Password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
           margin="normal"
           required
         />
         <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-          Send Reset Email
+          Reset Password
         </Button>
       </form>
     </Box>
   );
 }
 
-export default ForgotPassword;
+export default ResetPassword;
