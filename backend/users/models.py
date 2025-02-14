@@ -8,6 +8,7 @@ from django.utils.timezone import now
 from django.db import models
 from schools.models import Schools
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(
         self, email, first_name, last_name, password=None, transfer_type=None
@@ -30,6 +31,7 @@ class CustomUserManager(BaseUserManager):
         user.is_admin = True
         user.save(using=self._db)
         return user
+
 
 class Users(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255)
