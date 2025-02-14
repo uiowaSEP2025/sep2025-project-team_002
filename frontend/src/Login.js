@@ -63,7 +63,7 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem("token", data.token); // Store auth token
+        localStorage.setItem("token", data.access); // Store auth token
         navigate("/secure-home"); // Redirect to secure home page
       } else {
         const errorData = await response.json();
