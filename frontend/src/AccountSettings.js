@@ -21,7 +21,9 @@ import {
   RadioGroup,
   FormControlLabel,
   Radio,
-  useMediaQuery
+  useMediaQuery,
+  Tooltip,
+  InputAdornment
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -33,7 +35,15 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 import LogoutIcon from "@mui/icons-material/Logout";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import InfoIcon from "@mui/icons-material/Info";
+
+// Import your config base URL
 import API_BASE_URL from "./utils/config";
+
+// Import your password strength bar
+import PasswordStrengthBar from "./utils/PasswordStrengthBar";
 
 function AccountSettings() {
   const navigate = useNavigate();
@@ -48,7 +58,7 @@ function AccountSettings() {
   // For success/error messages
   const [message, setMessage] = useState("");
 
-  // User form data (editable)
+  // Main user form data (editable)
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -56,12 +66,28 @@ function AccountSettings() {
     transfer_type: ""
   });
 
-  // Dialog (popup) state for changing password
+  // Real-time email validation:
+  const emailIsInvalid =
+    formData.email.length > 0 &&
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+
+  // Dialog state for changing password
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+
+  // Current password, new password, and confirm new password
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState(""); // for dialog errors
+
+  // Show/hide toggles for each password field in the dialog
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfirmNewPass, setShowConfirmNewPass] = useState(false);
+
+  // For real-time matching check
+  const newPasswordsMatch =
+    confirmNewPassword.length > 0 && newPassword === confirmNewPassword;
 
   // Fetch user info on mount
   useEffect(() => {
@@ -98,7 +124,7 @@ function AccountSettings() {
     fetchUserInfo();
   }, [navigate]);
 
-  // Handle text/radio changes
+  // Handle text/radio changes in the main form
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -115,8 +141,9 @@ function AccountSettings() {
       navigate("/login");
       return;
     }
+
     try {
-      // Example: PATCH request to update user fields
+      // PATCH request to update user fields
       const response = await fetch(`${API_BASE_URL}/users/user/`, {
         method: "PATCH",
         headers: {
@@ -152,6 +179,9 @@ function AccountSettings() {
     setCurrentPassword("");
     setNewPassword("");
     setConfirmNewPassword("");
+    setShowCurrentPass(false);
+    setShowNewPass(false);
+    setShowConfirmNewPass(false);
   };
 
   // Handle the "change password" action inside the dialog
@@ -161,12 +191,11 @@ function AccountSettings() {
       setPasswordError("Please fill in all fields.");
       return;
     }
-    if (newPassword !== confirmNewPassword) {
+    if (!newPasswordsMatch) {
       setPasswordError("New passwords do not match.");
       return;
     }
 
-    // Make a request to your Django password-change endpoint
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
@@ -199,7 +228,7 @@ function AccountSettings() {
     }
   };
 
-  // Menu items (same as in Account.js)
+  // Menu items
   const menuItems = [
     {
       text: "Return to Dashboard",
@@ -231,7 +260,7 @@ function AccountSettings() {
     }
   ];
 
-  // Re-usable function that renders the menu items
+  // Render menu items
   const renderMenuList = () =>
     menuItems.map((item, index) => (
       <ListItem key={index} disablePadding>
@@ -256,13 +285,13 @@ function AccountSettings() {
       </ListItem>
     ));
 
-  // Collapsible side menu variants (desktop)
+  // Collapsible side menu (desktop)
   const menuVariants = {
     open: { width: 240, transition: { duration: 0.3 } },
     closed: { width: 72, transition: { duration: 0.3 } }
   };
 
-  // Mobile overlay slide-in/out from left
+  // Mobile overlay slide-in/out
   const overlayVariants = {
     hidden: { x: "-100%" },
     visible: { x: 0 },
@@ -460,6 +489,7 @@ function AccountSettings() {
                 InputProps={{ sx: { borderRadius: "40px" } }}
                 required
               />
+              {/* Real-time email validation */}
               <TextField
                 fullWidth
                 margin="normal"
@@ -470,6 +500,8 @@ function AccountSettings() {
                 InputProps={{ sx: { borderRadius: "40px" } }}
                 required
                 type="email"
+                error={emailIsInvalid}
+                helperText={emailIsInvalid ? "Invalid email address" : ""}
               />
 
               {/* Transfer Type (radio) */}
@@ -525,7 +557,7 @@ function AccountSettings() {
       </Grid>
 
       {/* DIALOG FOR CHANGING PASSWORD */}
-            <Dialog
+      <Dialog
         open={passwordDialogOpen}
         onClose={handleClosePasswordDialog}
         fullWidth
@@ -538,11 +570,13 @@ function AccountSettings() {
           }
         }}
       >
-        <DialogTitle sx={{
-          textAlign: "center",
-          fontWeight: 600,
-          fontSize: "1.5rem"
-        }}>
+        <DialogTitle
+          sx={{
+            textAlign: "center",
+            fontWeight: 600,
+            fontSize: "1.5rem"
+          }}
+        >
           Change Password
         </DialogTitle>
 
@@ -556,32 +590,82 @@ function AccountSettings() {
             </Typography>
           )}
 
+          {/* CURRENT PASSWORD FIELD (show/hide icon) */}
           <TextField
             fullWidth
             margin="normal"
             label="Current Password"
-            type="password"
+            type={showCurrentPass ? "text" : "password"}
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
-            InputProps={{ sx: { borderRadius: "40px" } }}
+            InputProps={{
+              sx: { borderRadius: "40px" },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowCurrentPass(!showCurrentPass)} edge="end">
+                    {showCurrentPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
+
+          {/* NEW PASSWORD FIELD with tooltip and show/hide */}
           <TextField
             fullWidth
             margin="normal"
             label="New Password"
-            type="password"
+            type={showNewPass ? "text" : "password"}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
-            InputProps={{ sx: { borderRadius: "40px" } }}
+            InputProps={{
+              sx: { borderRadius: "40px" },
+              endAdornment: (
+                <InputAdornment position="end">
+                  {/* Show/Hide password icon */}
+                  <IconButton onClick={() => setShowNewPass(!showNewPass)} edge="end">
+                    {showNewPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                  {/* Tooltip (min requirements) */}
+                  <Tooltip title="Min 6 chars, must have uppercase, lowercase, and number.">
+                    <IconButton edge="end">
+                      <InfoIcon />
+                    </IconButton>
+                  </Tooltip>
+                </InputAdornment>
+              )
+            }}
           />
+
+          {/* Password Strength Bar for new password */}
+          <PasswordStrengthBar password={newPassword} />
+
+          {/* CONFIRM NEW PASSWORD (real-time match) */}
           <TextField
             fullWidth
             margin="normal"
             label="Confirm New Password"
-            type="password"
+            type={showConfirmNewPass ? "text" : "password"}
             value={confirmNewPassword}
             onChange={(e) => setConfirmNewPassword(e.target.value)}
-            InputProps={{ sx: { borderRadius: "40px" } }}
+            error={confirmNewPassword.length > 0 && !newPasswordsMatch}
+            helperText={
+              confirmNewPassword.length > 0
+                ? newPasswordsMatch
+                  ? <Typography component="span" sx={{ color: "green" }}>Passwords match</Typography>
+                  : <Typography component="span" sx={{ color: "red" }}>Passwords do not match</Typography>
+                : ""
+            }
+            InputProps={{
+              sx: { borderRadius: "40px" },
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowConfirmNewPass(!showConfirmNewPass)} edge="end">
+                    {showConfirmNewPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
         </DialogContent>
 
