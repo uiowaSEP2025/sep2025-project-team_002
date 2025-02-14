@@ -9,6 +9,7 @@ import RequireAuth from "./RequireAuth";
 import API_BASE_URL from "./utils/config";
 import Account from "./Account";
 import AccountSettings from "./AccountSettings";
+import ReviewForm from "./ReviewForm";
 
 
 function App() {
@@ -51,6 +52,7 @@ function App() {
                 </RequireAuth>
               }
             />
+            <Route path="/review-form" element={<ReviewForm />} />
           </Routes>
         </Router>
 
