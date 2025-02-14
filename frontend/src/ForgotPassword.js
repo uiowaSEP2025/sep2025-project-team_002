@@ -23,7 +23,7 @@ function ForgotPassword() {
         setMessage(data.error);
       }
     } catch (error) {
-      setMessage("网络错误: " + error.message);
+      setMessage("Internet Error: " + error.message);
     }
   };
 

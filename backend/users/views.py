@@ -1,5 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -104,12 +105,15 @@ def forgot_password(request):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = token_generator.make_token(user)
 
-    reset_url = f"http://localhost:8000/users/reset-password/?uid={uid}&token={token}"
+    """Check: work for production env?"""
+    reset_url = request.build_absolute_uri(f"/reset-password/?uid={uid}&token={token}")
+    if settings.DEBUG:
+        reset_url = reset_url.replace("localhost:8000", "localhost:3000")
 
     # Send Email
     send_mail(
         "Password Reset Request",
-        f"Please click the following link to reset your password：{reset_url}",
+        f"Hello, this is Athletic Insider! \n Please click the following link to reset your password：\n {reset_url} \n The link is valid for one hour.",
         "noreply@example.com",
         [email],
         fail_silently=False,
