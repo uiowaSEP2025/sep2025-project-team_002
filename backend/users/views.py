@@ -15,7 +15,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Users
 from .serializers import UserSerializer
 
-
 @csrf_exempt
 @api_view(["POST"])
 def signup(request):
@@ -84,7 +83,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class LoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-
 
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
