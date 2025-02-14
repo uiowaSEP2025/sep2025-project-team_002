@@ -8,11 +8,18 @@ from schools.models import Schools
 
 
 class CustomUserManager(BaseUserManager):
-    def create_user(self, email, first_name, last_name, password=None):
+    def create_user(
+        self, email, first_name, last_name, password=None, transfer_type=None
+    ):
         if not email:
             raise ValueError("Users must have an email address")
         email = self.normalize_email(email)
-        user = self.model(email=email, first_name=first_name, last_name=last_name)
+        user = self.model(
+            email=email,
+            first_name=first_name,
+            last_name=last_name,
+            transfer_type=transfer_type,
+        )
         user.set_password(password)  # Hash password
         user.save(using=self._db)
         return user
@@ -46,6 +53,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
         blank=True,
         related_name="transfer_in_school",
     )
+
+    transfer_type = models.CharField(max_length=20, null=True, blank=True)
 
     objects = CustomUserManager()
 
