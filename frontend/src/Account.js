@@ -245,6 +245,7 @@ function Account() {
               backgroundColor: "#1a1a1a",
               zIndex: 4000,
               display: "flex",
+              color: "white",
               flexDirection: "column"
             }}
           >
