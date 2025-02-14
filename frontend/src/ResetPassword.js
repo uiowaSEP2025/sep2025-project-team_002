@@ -24,13 +24,13 @@ function ResetPassword() {
       const data = await response.json();
       if (response.ok) {
         setMessage(data.message);
-        // 密码重置成功后可以重定向到登录页
+        // Re-direct to Login
         navigate("/login");
       } else {
         setMessage(data.error);
       }
     } catch (error) {
-      setMessage("网络错误: " + error.message);
+      setMessage("Internet Server Error:" + error.message);
     }
   };
 
