@@ -3,8 +3,6 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-import uuid
-from django.utils.timezone import now
 from django.db import models
 from schools.models import Schools
 
@@ -66,11 +64,4 @@ class Users(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.first_name
 
-class ResetPasswordToken(models.Model):
-    user = models.ForeignKey(Users, on_delete=models.CASCADE, related_name="reset_tokens")
-    token = models.UUIDField(default=uuid.uuid4, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def is_valid(self):
-        """Token is valid for 1 hour"""
-        return (now() - self.created_at).total_seconds() < 3600
+    reset_token = models.CharField(max_length=255, null=True, blank=True)
