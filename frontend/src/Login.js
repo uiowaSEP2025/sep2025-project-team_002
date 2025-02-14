@@ -211,6 +211,15 @@ function Login() {
               required
               InputProps={{ sx: { borderRadius: '40px' } }}
             />
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography
+                variant="body2"
+                sx={{ cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => navigate("/forgot-password")}
+              >
+                Forgot Password?
+              </Typography>
+            </Box>
             <Button
               type="submit"
               variant="contained"
