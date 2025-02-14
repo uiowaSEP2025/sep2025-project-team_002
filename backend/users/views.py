@@ -15,7 +15,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Users
 from .serializers import UserSerializer
 
-
 @csrf_exempt
 @api_view(["POST"])
 def signup(request):
@@ -61,8 +60,6 @@ def change_password(request):
 
     return Response({"message": "Password changed successfully!"}, status=status.HTTP_200_OK)
 
-
-
 def test_api(request):
     return JsonResponse({"message": "Backend is working!"})
 
@@ -79,7 +76,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class LoginView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-
 
 class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
