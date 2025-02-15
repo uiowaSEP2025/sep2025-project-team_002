@@ -60,8 +60,10 @@ def test_signup_duplicate(live_server):
         "transferType": "transfer_in",
     }
 
+    # First signup attempt
     response1 = requests.post(url, json=data)
     assert response1.status_code == 201
 
+    # Second signup attempt
     response2 = requests.post(url, json=data)
     assert response2.status_code == 400
