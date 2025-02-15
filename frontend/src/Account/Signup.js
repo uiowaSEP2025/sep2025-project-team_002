@@ -24,7 +24,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
 
 // Use the PasswordStrengthBar you created
-import PasswordStrengthBar from "./utils/PasswordStrengthBar";
+import PasswordStrengthBar from "../utils/PasswordStrengthBar";
 
 function Signup() {
   const navigate = useNavigate();
