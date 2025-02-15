@@ -63,3 +63,5 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.first_name
+
+    reset_token = models.CharField(max_length=255, null=True, blank=True)
