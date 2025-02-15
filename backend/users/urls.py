@@ -1,5 +1,13 @@
 from django.urls import path
-from .views import test_api, LoginView, UserDetailView, signup, change_password, forgot_password, reset_password
+from .views import (
+    test_api,
+    LoginView,
+    UserDetailView,
+    signup,
+    change_password,
+    forgot_password,
+    reset_password,
+)
 
 urlpatterns = [
     path("test/", test_api, name="test_api"),

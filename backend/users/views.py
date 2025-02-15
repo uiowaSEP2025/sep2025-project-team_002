@@ -19,6 +19,7 @@ import re
 
 token_generator = PasswordResetTokenGenerator()
 
+
 @csrf_exempt
 @api_view(["POST"])
 def signup(request):
@@ -91,15 +92,20 @@ def change_password(request):
         {"message": "Password changed successfully!"}, status=status.HTTP_200_OK
     )
 
+
 @api_view(["POST"])
 def forgot_password(request):
     email = request.data.get("email")
     if not email:
-        return Response({"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST
+        )
     try:
         user = Users.objects.get(email=email)
     except Users.DoesNotExist:
-        return Response({"error": "Unregistered Email Address!"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Unregistered Email Address!"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     # Generate uid and token
     uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -129,11 +135,17 @@ def reset_password(request):
     confirm_password = request.data.get("confirm_password")
 
     if not all([uidb64, token, new_password, confirm_password]):
-        return Response({"error": "Please Fill Out the Form!"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Please Fill Out the Form!"}, status=status.HTTP_400_BAD_REQUEST
+        )
     if new_password != confirm_password:
-        return Response({"error": "Passwords don't match."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Passwords don't match."}, status=status.HTTP_400_BAD_REQUEST
+        )
     if not is_strong_password(new_password):
-        return Response({"error": "Use Strong Password!"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Use Strong Password!"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -142,11 +154,16 @@ def reset_password(request):
         return Response({"error": "Invalid Link!"}, status=status.HTTP_400_BAD_REQUEST)
 
     if not token_generator.check_token(user, token):
-        return Response({"error": "Link is invalid or expired!"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Link is invalid or expired!"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     user.set_password(new_password)
     user.save()
-    return Response({"message": "Successfully reset the password!"}, status=status.HTTP_200_OK)
+    return Response(
+        {"message": "Successfully reset the password!"}, status=status.HTTP_200_OK
+    )
+
 
 def test_api(request):
     return JsonResponse({"message": "Backend is working!"})
