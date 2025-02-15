@@ -28,6 +28,7 @@ def test_signup_creation(live_server):
     # You can also check that the email is as expected
     assert json_response["email"] == "john@example.com"
 
+
 @pytest.mark.django_db
 def test_signup_creation_with_invalid_data(live_server):
     url = f"{live_server.url}/users/signup/"
@@ -39,9 +40,28 @@ def test_signup_creation_with_invalid_data(live_server):
         "verifyPassword": "pass",
         "transferType": "transfer_in",
     }
-    response = requests.post(url, json = data)
+    response = requests.post(url, json=data)
     print(response.json())
 
     json_response = response.json()
     assert "error" in json_response
     assert "Password is not strong enough" in json_response["error"]
+
+
+@pytest.mark.django_db
+def test_signup_duplicate(live_server):
+    url = f"{live_server.url}/users/signup/"
+    data = {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password": "Password123",
+        "verifyPassword": "Password123",
+        "transferType": "transfer_in",
+    }
+
+    response1 = requests.post(url, json=data)
+    assert response1.status_code == 201
+
+    response2 = requests.post(url, json=data)
+    assert response2.status_code == 400
