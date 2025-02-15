@@ -99,6 +99,35 @@ def test_signup_invalid_email(live_server):
         assert expectedError in response.json().get("error")
 
 
+@pytest.mark.django_db
+def test_signup_missing_data(live_server):
+    url = f"{live_server.url}/users/signup/"
+
+    required_fields = [
+        ("first_name", "first_name is required."),
+        ("last_name", "last_name is required."),
+        ("email", "email is required."),
+        ("password", "password is required."),
+        # ("verifyPassword", "password confirmation is required."), #Currently, this won't work
+    ]
+
+    for field, expectedError in required_fields:
+        data = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john@example.com",
+            "password": "Password123",
+            "verifyPassword": "Password123",
+            "transferType": "transfer_in",
+        }
+        data.pop(field)
+
+        response = requests.post(url, json=data)
+
+        assert response.status_code == 400
+        assert expectedError in response.json().get("error")
+
+
 # # Currently, there's no backend way of checking to make sure
 # # the passwords match
 # @pytest.mark.django_db
