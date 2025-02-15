@@ -30,7 +30,7 @@ def test_signup_creation(live_server):
 
 
 @pytest.mark.django_db
-def test_signup_creation_with_invalid_data(live_server):
+def test_signup_invalid_password(live_server):
     url = f"{live_server.url}/users/signup/"
     data = {
         "first_name": "John",
