@@ -40,10 +40,12 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
 
 // Import your config base URL
-import API_BASE_URL from "./utils/config";
+import API_BASE_URL from "../utils/config";
 
 // Import your password strength bar
-import PasswordStrengthBar from "./utils/PasswordStrengthBar";
+import PasswordStrengthBar from "../utils/PasswordStrengthBar";
+
+import PasswordForm from "./PasswordForm";
 
 function AccountSettings() {
   const navigate = useNavigate();
@@ -185,17 +187,7 @@ function AccountSettings() {
   };
 
   // Handle the "change password" action inside the dialog
-  const handleChangePassword = async () => {
-    // Basic validation
-    if (!currentPassword || !newPassword || !confirmNewPassword) {
-      setPasswordError("Please fill in all fields.");
-      return;
-    }
-    if (!newPasswordsMatch) {
-      setPasswordError("New passwords do not match.");
-      return;
-    }
-
+  const handleChangePassword = async ({ currentPassword, newPassword }) => {
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/login");
@@ -590,106 +582,15 @@ function AccountSettings() {
               {passwordError}
             </Typography>
           )}
-
-          {/* CURRENT PASSWORD FIELD (show/hide icon) */}
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Current Password"
-            type={showCurrentPass ? "text" : "password"}
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-            InputProps={{
-              sx: { borderRadius: "40px" },
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setShowCurrentPass(!showCurrentPass)} edge="end">
-                    {showCurrentPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
-
-          {/* NEW PASSWORD FIELD with tooltip and show/hide */}
-          <TextField
-            fullWidth
-            margin="normal"
-            label="New Password"
-            type={showNewPass ? "text" : "password"}
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            InputProps={{
-              sx: { borderRadius: "40px" },
-              endAdornment: (
-                <InputAdornment position="end">
-                  {/* Show/Hide password icon */}
-                  <IconButton onClick={() => setShowNewPass(!showNewPass)} edge="end">
-                    {showNewPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                  {/* Tooltip (min requirements) */}
-                  <Tooltip title="Min 6 chars, must have uppercase, lowercase, and number.">
-                    <IconButton edge="end">
-                      <InfoIcon />
-                    </IconButton>
-                  </Tooltip>
-                </InputAdornment>
-              )
-            }}
-          />
-
-          {/* Password Strength Bar for new password */}
-          <PasswordStrengthBar password={newPassword} />
-
-          {/* CONFIRM NEW PASSWORD (real-time match) */}
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Confirm New Password"
-            type={showConfirmNewPass ? "text" : "password"}
-            value={confirmNewPassword}
-            onChange={(e) => setConfirmNewPassword(e.target.value)}
-            error={confirmNewPassword.length > 0 && !newPasswordsMatch}
-            helperText={
-              confirmNewPassword.length > 0
-                ? newPasswordsMatch
-                  ? <Typography component="span" sx={{ color: "green" }}>Passwords match</Typography>
-                  : <Typography component="span" sx={{ color: "red" }}>Passwords do not match</Typography>
-                : ""
-            }
-            InputProps={{
-              sx: { borderRadius: "40px" },
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={() => setShowConfirmNewPass(!showConfirmNewPass)} edge="end">
-                    {showConfirmNewPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
-          />
+          <PasswordForm onSubmit={handleChangePassword} includeCurrentPassword={true} />
         </DialogContent>
-
         <DialogActions sx={{ justifyContent: "center", mb: 1 }}>
           <Button
             variant="outlined"
-            sx={{
-              borderRadius: "40px",
-              width: "140px"
-            }}
+            sx={{ borderRadius: "40px", width: "140px" }}
             onClick={handleClosePasswordDialog}
           >
             Cancel
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              borderRadius: "40px",
-              width: "140px"
-            }}
-            onClick={handleChangePassword}
-          >
-            Submit
           </Button>
         </DialogActions>
       </Dialog>
