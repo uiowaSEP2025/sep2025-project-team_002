@@ -27,3 +27,21 @@ def test_signup_creation(live_server):
     assert "id" in json_response
     # You can also check that the email is as expected
     assert json_response["email"] == "john@example.com"
+
+@pytest.mark.django_db
+def test_signup_creation_with_invalid_data(live_server):
+    url = f"{live_server.url}/users/signup/"
+    data = {
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "password": "pass",
+        "verifyPassword": "pass",
+        "transferType": "transfer_in",
+    }
+    response = requests.post(url, json = data)
+    print(response.json())
+
+    json_response = response.json()
+    assert "error" in json_response
+    assert "Password is not strong enough" in json_response["error"]
