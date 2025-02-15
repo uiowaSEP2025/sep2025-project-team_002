@@ -67,3 +67,54 @@ def test_signup_duplicate(live_server):
     # Second signup attempt
     response2 = requests.post(url, json=data)
     assert response2.status_code == 400
+
+
+@pytest.mark.django_db
+def test_signup_invalid_email(live_server):
+    url = f"{live_server.url}/users/signup/"
+
+    errormsg = "Invalid email format."
+
+    invalid_emails = [
+        ("johnexample.com", errormsg),
+        ("john@example", errormsg),
+        ("@example", errormsg),
+        ("@example.com", errormsg),
+        ("john.com", errormsg),
+    ]
+
+    for email, expectedError in invalid_emails:
+        invalid_email_data = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": email,
+            "password": "Password123",
+            "verifyPassword": "Password123",
+            "transferType": "transfer_in",
+        }
+
+        response = requests.post(url, json=invalid_email_data)
+
+        assert response.status_code == 400
+        assert expectedError in response.json().get("error")
+
+
+# # Currently, there's no backend way of checking to make sure
+# # the passwords match
+# @pytest.mark.django_db
+# def test_signup_mismatched_passwords(live_server):
+#     url = f"{live_server.url}/users/signup/"
+#     data = {
+#         "first_name": "John",
+#         "last_name": "Doe",
+#         "email": "john@example.com",
+#         "password": "Password123",
+#         "verifyPassword": "123Password",
+#         "transferType": "transfer_in",
+#     }
+#
+#     response = requests.post(url, json=data)
+#     json_repsonse = response.json()
+#     print(response.json())
+#
+#     assert response.status_code == 400
