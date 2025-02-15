@@ -12,6 +12,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";  // Import useNavigate for redirection
+import API_BASE_URL from "../utils/config";
 
 function Login() {
   const navigate = useNavigate(); // Get navigation function
@@ -49,7 +50,7 @@ function Login() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/users/login/", {
+      const response = await fetch(`${API_BASE_URL}/users/login/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -66,7 +67,8 @@ function Login() {
         navigate("/secure-home"); // Redirect to secure home page
       } else {
         const errorData = await response.json();
-        setMessage("Login failed: " + (errorData.error || "Not a user"));
+        setMessage("Login failed: " + "Username or password is incorrect"); 
+        //(errorData.error || "Username or password is incorrect") use if trying to debug
       }
     } catch (error) {
       console.error("Login error:", error);
