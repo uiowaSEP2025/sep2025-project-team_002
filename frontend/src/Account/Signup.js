@@ -22,6 +22,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
+import API_BASE_URL from '../utils/config';  // Adjust the path based on your file structure
 
 // Use the PasswordStrengthBar you created
 import PasswordStrengthBar from "../utils/PasswordStrengthBar";
@@ -84,7 +85,8 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/users/signup/", {
+      const response = await fetch(`${API_BASE_URL}/users/signup/`, 
+      {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
