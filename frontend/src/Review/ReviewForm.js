@@ -50,6 +50,7 @@ const submitReview = async (review) => {
 const ReviewForm = () => {
   const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
+  const [availableSports, setAvailableSports] = useState([]);
   const [review, setReview] = useState({
     school: "", // Updated to an empty string for better selection handling
     sport: "",
@@ -81,6 +82,15 @@ const ReviewForm = () => {
     setReview({ ...review, [name]: newValue });
   };
 
+  const handleSchoolChange = (e) => {
+    const selectedSchoolId = e.target.value;
+    setReview({ ...review, school: selectedSchoolId, sport: "" });
+  
+    // Find the selected school and update the available sports list
+    const selectedSchool = schools.find((school) => school.id === parseInt(selectedSchoolId));
+    setAvailableSports(selectedSchool ? selectedSchool.available_sports : []);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -110,21 +120,21 @@ const ReviewForm = () => {
           </motion.div>
 
           <Box component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: 4, borderRadius: 2, boxShadow: 3 }}>
-            <TextField
-              select
-              fullWidth
-              label="School"
-              name="school"
-              value={review.school}
-              onChange={handleChange}
-              sx={{ mb: 2 }}
-            >
-              {schools.map((school) => (
-                <MenuItem key={school.id} value={school.id}>
-                  {school.school_name}
-                </MenuItem>
-              ))}
-            </TextField>
+          <TextField
+            select
+            fullWidth
+            label="School"
+            name="school"
+            value={review.school}
+            onChange={handleSchoolChange}  // Update available sports when a school is selected
+            sx={{ mb: 2 }}
+          >
+            {schools.map((school) => (
+              <MenuItem key={school.id} value={school.id}>
+                {school.school_name}
+              </MenuItem>
+            ))}
+          </TextField>
 
             <TextField
               select
@@ -134,10 +144,13 @@ const ReviewForm = () => {
               value={review.sport}
               onChange={handleChange}
               sx={{ mb: 2 }}
+              disabled={!availableSports.length} 
             >
-              <MenuItem value="Basketball">Basketball</MenuItem>
-              <MenuItem value="Football">Football</MenuItem>
-              <MenuItem value="Soccer">Soccer</MenuItem>
+              {availableSports.map((sport, index) => (
+                <MenuItem key={index} value={sport}>
+                  {sport}
+                </MenuItem>
+              ))}
             </TextField>
 
             <TextField
