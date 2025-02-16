@@ -240,7 +240,7 @@ const ReviewForm = () => {
 
             <TextField
               fullWidth
-              label="Share additional thoughts on your experience and expand upon any categories above. *"
+              label="Share additional thoughts on your experience. *"
               name="review_message"
               multiline
               rows={4}
