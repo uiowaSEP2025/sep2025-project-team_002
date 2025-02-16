@@ -10,7 +10,7 @@ import {
   Rating
 } from "@mui/material";
 import { motion } from "framer-motion";
-import API_BASE_URL from "./utils/config";
+import API_BASE_URL from "../utils/config";
 
 const fetchSchools = async () => {
   try {

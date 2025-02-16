@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import ReviewForm from "./ReviewForm";
+import ReviewForm from "../Review/ReviewForm";
 
 function SecureHome() {
   const navigate = useNavigate();

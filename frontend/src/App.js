@@ -11,7 +11,7 @@ import Account from "./Account/Account";
 import AccountSettings from "./Account/AccountSettings";
 import ForgotPassword from './Account/ForgotPassword';
 import ResetPassword from './Account/ResetPassword';
-import ReviewForm from "./ReviewForm";
+import ReviewForm from "./Review/ReviewForm";
 
 
 function App() {
