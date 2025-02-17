@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import React from 'react';
-import Signup from './Account/Signup';
-import Home from './Home/Home';
+import Signup from './account/Signup';
+import Home from './home/Home';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './Account/Login';
-import SecureHome from "./Home/SecureHome";
+import Login from './account/Login';
+import SecureHome from "./home/SecureHome";
 import RequireAuth from "./RequireAuth";
 import API_BASE_URL from "./utils/config";
-import Account from "./Account/Account";
-import AccountSettings from "./Account/AccountSettings";
-import ForgotPassword from './Account/ForgotPassword';
-import ResetPassword from './Account/ResetPassword';
+import Account from "./account/Account";
+import AccountSettings from "./account/AccountSettings";
+import ForgotPassword from './account/ForgotPassword';
+import ResetPassword from './account/ResetPassword';
 
 function App() {
   const [message, setMessage] = useState("Loading...");
