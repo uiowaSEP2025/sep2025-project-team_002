@@ -340,18 +340,16 @@ function Schools() {
                     <TableRow 
                       key={school.id}
                       hover
-                      component={Link}
-                      to={`/school/${school.id}`}
+                      onClick={() => navigate(`/school/${school.id}`)}
                       sx={{
-                        textDecoration: 'none',
+                        cursor: 'pointer',
                         '&:hover': {
-                          cursor: 'pointer',
                           backgroundColor: '#f5f5f5'
                         }
                       }}
                     >
-                      <TableCell sx={{ color: 'inherit' }}>{school.name}</TableCell>
-                      <TableCell sx={{ color: 'inherit' }}>{school.conference}</TableCell>
+                      <TableCell>{school.name}</TableCell>
+                      <TableCell>{school.conference}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

@@ -38,28 +38,31 @@ def get_schools(request):
 @permission_classes([IsAuthenticated])
 def get_school_detail(request, school_id):
     try:
+        print(f"Attempting to fetch school with ID: {school_id}")
         school = Schools.objects.get(id=school_id)
-        school_data = {
+        print(f"Found school: {school.school_name}")
+        data = {
             'id': school.id,
-            'name': school.school_name,
+            'school_name': school.school_name,
             'conference': school.conference,
             'ports': [
                 {
                     'id': port.id,
                     'name': port.name,
-                    # Add any other port fields you want to include
                 }
                 for port in school.ports.all()
-            ]
+            ] if hasattr(school, 'ports') else []
         }
-        return Response(school_data, status=status.HTTP_200_OK)
+        return Response(data, status=status.HTTP_200_OK)
     except Schools.DoesNotExist:
+        print(f"School with ID {school_id} not found")
         return Response(
-            {'error': 'School not found'},
+            {'error': 'School not found'}, 
             status=status.HTTP_404_NOT_FOUND
         )
     except Exception as e:
+        print(f"Error in get_school_detail: {str(e)}")
         return Response(
-            {'error': str(e)},
+            {'error': str(e)}, 
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
