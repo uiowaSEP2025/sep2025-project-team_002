@@ -12,6 +12,7 @@ import AccountSettings from "./Account/AccountSettings";
 import ForgotPassword from './Account/ForgotPassword';
 import ResetPassword from './Account/ResetPassword';
 import Schools from "./Schools/Schools";
+import SchoolDetail from './Schools/SchoolDetail';
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -58,6 +59,7 @@ function App() {
             />
 
             <Route path="/school" element={<Schools />} />
+            <Route path="/school/:id" element={<SchoolDetail />} />
           </Routes>
         </Router>
 

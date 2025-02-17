@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   Grid,
   Typography,
@@ -337,9 +337,21 @@ function Schools() {
                 </TableHead>
                 <TableBody>
                   {schools.map((school) => (
-                    <TableRow key={school.id}>
-                      <TableCell>{school.name}</TableCell>
-                      <TableCell>{school.conference}</TableCell>
+                    <TableRow 
+                      key={school.id}
+                      hover
+                      component={Link}
+                      to={`/school/${school.id}`}
+                      sx={{
+                        textDecoration: 'none',
+                        '&:hover': {
+                          cursor: 'pointer',
+                          backgroundColor: '#f5f5f5'
+                        }
+                      }}
+                    >
+                      <TableCell sx={{ color: 'inherit' }}>{school.name}</TableCell>
+                      <TableCell sx={{ color: 'inherit' }}>{school.conference}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
