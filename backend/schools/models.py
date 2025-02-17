@@ -22,4 +22,4 @@ class Schools(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.school_name
+        return f"{self.name} - {self.conference}"

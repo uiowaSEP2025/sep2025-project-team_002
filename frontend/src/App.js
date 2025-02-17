@@ -11,6 +11,7 @@ import Account from "./Account/Account";
 import AccountSettings from "./Account/AccountSettings";
 import ForgotPassword from './Account/ForgotPassword';
 import ResetPassword from './Account/ResetPassword';
+import Schools from "./Schools/Schools";
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -55,6 +56,8 @@ function App() {
                 </RequireAuth>
               }
             />
+
+            <Route path="/school" element={<Schools />} />
           </Routes>
         </Router>
 
