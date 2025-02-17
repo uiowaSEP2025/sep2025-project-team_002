@@ -112,7 +112,7 @@ function Signup() {
 
   return (
     <Box sx={{ position: "relative" }}>
-      {/* Back Arrow to Home */}
+      {/* Back Arrow to home */}
       <Box
         sx={{
           position: "fixed",
