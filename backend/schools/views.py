@@ -33,3 +33,33 @@ def get_schools(request):
             {'error': str(e)},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_school_detail(request, school_id):
+    try:
+        school = Schools.objects.get(id=school_id)
+        school_data = {
+            'id': school.id,
+            'name': school.school_name,
+            'conference': school.conference,
+            'ports': [
+                {
+                    'id': port.id,
+                    'name': port.name,
+                    # Add any other port fields you want to include
+                }
+                for port in school.ports.all()
+            ]
+        }
+        return Response(school_data, status=status.HTTP_200_OK)
+    except Schools.DoesNotExist:
+        return Response(
+            {'error': 'School not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

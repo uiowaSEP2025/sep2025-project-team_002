@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+from .views import SchoolViewSet, get_schools, get_school_detail
 
 urlpatterns = [
-    path("schools/", views.get_schools, name="get_schools"),
+    path('', get_schools, name='schools-list'),
+    path('<int:school_id>/', get_school_detail, name='school-detail'),
 ] 
