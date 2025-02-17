@@ -41,18 +41,26 @@ def get_school_detail(request, school_id):
         print(f"Attempting to fetch school with ID: {school_id}")
         school = Schools.objects.get(id=school_id)
         print(f"Found school: {school.school_name}")
+        
+        # Create sports list using the correct field names
+        sports = []
+        if school.mbb:  # Using direct field access
+            sports.append({"id": "mbb", "name": "Men's Basketball"})
+        if school.wbb:
+            sports.append({"id": "wbb", "name": "Women's Basketball"})
+        if school.fb:
+            sports.append({"id": "fb", "name": "Football"})
+            
+        print(f"Sports for {school.school_name}:", sports)  # Debug print
+
         data = {
             'id': school.id,
             'school_name': school.school_name,
             'conference': school.conference,
-            'ports': [
-                {
-                    'id': port.id,
-                    'name': port.name,
-                }
-                for port in school.ports.all()
-            ] if hasattr(school, 'ports') else []
+            'location': school.location,
+            'sports': sports
         }
+        print("Sending data:", data)  # Debug print
         return Response(data, status=status.HTTP_200_OK)
     except Schools.DoesNotExist:
         print(f"School with ID {school_id} not found")
