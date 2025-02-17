@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (
     test_api,
+    healthcheck,
     LoginView,
     UserDetailView,
     signup,
@@ -11,6 +12,7 @@ from .views import (
 
 urlpatterns = [
     path("test/", test_api, name="test_api"),
+    path("healthcheck/", healthcheck, name="healthcheck"),
     path("signup/", signup, name="signup"),
     path("login/", LoginView.as_view(), name="login"),
     path("user/", UserDetailView.as_view(), name="user_detail"),
