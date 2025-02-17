@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Box,
-  Grid,
-  Typography,
-  TextField,
-  Button,
-  MenuItem,
-  Rating, 
-  Tooltip,
-  IconButton
+  Box, Grid,
+  Typography, TextField, Button, MenuItem, Rating, Tooltip, IconButton,
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from "@mui/material";
 import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
 import InfoIcon from "@mui/icons-material/Info";
 
+
+const fetchUserReviews = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch user reviews");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching user reviews:", error);
+    return [];
+  }
+};
 
 const fetchSchools = async () => {
   try {
@@ -59,6 +71,9 @@ const ReviewForm = () => {
   const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
   const [availableSports, setAvailableSports] = useState([]);
+  const [userReviews, setUserReviews] = useState([]); // Store user's past reviews
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [openConfirm, setOpenConfirm] = useState(false);
   const [review, setReview] = useState({
     school: "", // Updated to an empty string for better selection handling
     sport: "",
@@ -75,11 +90,14 @@ const ReviewForm = () => {
   });
 
   useEffect(() => {
-    const loadSchools = async () => {
+    const loadData = async () => {
       const fetchedSchools = await fetchSchools();
+      const fetchedReviews = await fetchUserReviews();
       setSchools(fetchedSchools);
+      setUserReviews(fetchedReviews);
     };
-    loadSchools();
+    loadData();
+
   }, []);
 
   const handleChange = (e) => {
@@ -99,40 +117,50 @@ const ReviewForm = () => {
     setAvailableSports(selectedSchool ? selectedSchool.available_sports : []);
   };
 
-  const [isSubmitted, setIsSubmitted] = useState(false); // Track submission attempt
+  const normalizeString = (str) => str.replace(/\s+/g, "").toLowerCase();
+  const isDuplicateReview = userReviews.some(
+    (r) =>
+      r.school === review.school &&
+      r.sport === review.sport &&
+      normalizeString(r.head_coach_name) === normalizeString(review.head_coach_name)
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitted(true); // Mark form as attempted
+    setIsSubmitted(true);
   
-    // Check if required fields are empty
-    const requiredFields = ["school", "sport", "review_message", "head_coach_name"];
-    const ratingFields = [
-      "head_coach",
-      "assistant_coaches",
-      "team_culture",
-      "campus_life",
-      "athletic_facilities",
-      "athletic_department",
-      "player_development",
-      "nil_opportunity",
-    ];
+    // Check for duplicate review dynamically
+    const duplicateReview = userReviews.some(
+      (r) =>
+        r.school === review.school &&
+        r.sport === review.sport &&
+        normalizeString(r.head_coach_name) === normalizeString(review.head_coach_name)
+    );
   
-    const isFormValid =
-      requiredFields.every((field) => review[field]) &&
-      ratingFields.every((field) => review[field] > 0); // Ensure ratings are filled
-  
-    if (!isFormValid) {
-      return; // Stop submission if validation fails
+    if (duplicateReview) {
+      console.warn("Duplicate review detected, preventing submission.");
+      return;
     }
   
     try {
-      await submitReview(review);
-      navigate("/secure-home"); // Redirect after successful submission
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${API_BASE_URL}/api/reviews/review-form/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(review),
+      });
+  
+      if (!response.ok) {
+        const data = await response.json();
+        console.error("API Error Response:", data);
+        return;
+      }
+  
+      navigate("/secure-home");
     } catch (error) {
       console.error("Submission failed", error);
     }
-  };  
+  };
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: 4 }}>
@@ -200,7 +228,15 @@ const ReviewForm = () => {
               sx={{ mb: 2 }}
               error={!review.head_coach_name.trim() && isSubmitted}
               helperText={!review.head_coach_name.trim() && isSubmitted ? "This field is required" : ""}
-
+              InputProps={{
+                endAdornment: (
+                  <Tooltip title="Enter ONLY the full first and last name of the coach." arrow>
+                    <IconButton>
+                      <InfoIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                ),
+              }}
             />
 
             {/* Ratings */}
@@ -251,9 +287,36 @@ const ReviewForm = () => {
               helperText={!review.review_message && isSubmitted ? "This field is required" : ""}
             />
 
-            <Button type="submit" variant="contained" color="primary" fullWidth>
+            <Button 
+              type="button"  
+              variant="contained" 
+              color="primary" 
+              fullWidth
+              onClick={() => setOpenConfirm(true)}
+              disabled={userReviews.some(
+                (r) =>
+                  r.school === review.school &&
+                  r.sport === review.sport &&
+                  normalizeString(r.head_coach_name) === normalizeString(review.head_coach_name)
+              )} 
+            >
               Submit Review
             </Button>
+
+            {isDuplicateReview && (
+              <Typography color="error" sx={{ mt: 2, textAlign: "center" }}>
+                You have already submitted a review for this school, sport, and head coach.
+              </Typography>
+            )}
+
+            <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+              <DialogTitle>Confirm Submission</DialogTitle>
+              <DialogContent><DialogContentText>Are you sure you want to submit your review?</DialogContentText></DialogContent>
+              <DialogActions>
+                <Button onClick={() => setOpenConfirm(false)} color="secondary">Cancel</Button>
+                <Button onClick={handleSubmit} color="primary" variant="contained">Confirm</Button>
+              </DialogActions>
+            </Dialog>
           </Box>
         </Grid>
       </Grid>
