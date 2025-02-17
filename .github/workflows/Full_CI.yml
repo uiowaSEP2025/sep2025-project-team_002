@@ -52,7 +52,7 @@ jobs:
           echo "Waiting for Django backend to be ready..."
           RETRIES=10
           COUNT=0
-          until curl -sSf http://backend:8000/healthcheck/ > /dev/null; do
+          until curl -sSf http://localhost:8000/healthcheck/ > /dev/null; do
             echo "Backend is unavailable - retrying... ($COUNT/$RETRIES)"
             COUNT=$((COUNT+1))
             if [ "$COUNT" -ge "$RETRIES" ]; then
