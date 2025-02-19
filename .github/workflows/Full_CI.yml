@@ -1,4 +1,4 @@
-name: Django CI
+name: Django and React CI
 
 on:
   push:
@@ -36,7 +36,7 @@ jobs:
           echo "Waiting for PostgreSQL to be ready..."
           RETRIES=10
           COUNT=0
-          until docker compose exec -T db pg_isready -h db -p 5432 -U $DB_USER -d $DB_NAME; do
+          until docker compose --env-file backend/.env exec -T db pg_isready -h db -p 5432 -U $DB_USER -d $DB_NAME; do
             echo "PostgreSQL is unavailable - retrying... ($COUNT/$RETRIES)"
             COUNT=$((COUNT+1))
             if [ "$COUNT" -ge "$RETRIES" ]; then
@@ -47,19 +47,40 @@ jobs:
           done
           echo "PostgreSQL is ready!"
 
+      - name: Wait for backend to be ready
+        run: |
+          echo "Waiting for Django backend to be ready..."
+          RETRIES=10
+          COUNT=0
+          until curl -sSf http://localhost:8000/healthcheck/ > /dev/null; do
+            echo "Backend is unavailable - retrying... ($COUNT/$RETRIES)"
+            COUNT=$((COUNT+1))
+            if [ "$COUNT" -ge "$RETRIES" ]; then
+              echo "Backend did not become ready in time. Exiting..."
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "Backend is ready!"
+
       - name: Run code linting
         run: |
-          docker compose exec -T backend black --check .
-          docker compose exec -T backend flake8 . || echo "Flake8 warnings detected, but not failing CI/CD."
+          docker compose --env-file backend/.env exec -T backend black --check .
+          docker compose --env-file backend/.env exec -T backend flake8 . || echo "Flake8 warnings detected, but not failing CI/CD."
+          docker compose --env-file backend/.env exec -T frontend npm run lint
 
       - name: Run migrations
         run: |
-          docker compose exec -T backend python manage.py migrate
+          docker compose --env-file backend/.env exec -T backend python manage.py migrate
 
-      - name: Run tests
+      - name: Run Pytest tests
         run: |
-          docker compose exec -T backend pytest --cov=. --cov-report=term-missing
+          docker compose --env-file backend/.env exec -T backend pytest --cov=. --cov-report=term-missing
+
+      - name: Run Jest tests
+        run: |
+          docker compose --env-file backend/.env exec -T frontend npm test -- --coverage --watchAll=false
 
       - name: Stop Docker containers
         run: |
-          docker compose down
+          docker compose --env-file backend/.env down

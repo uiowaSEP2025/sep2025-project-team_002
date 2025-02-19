@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
 import React from 'react';
-import Signup from './Signup';
-import Home from './Home';
+import Signup from './account/Signup';
+import Home from './home/Home';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './Login';
-import SecureHome from "./SecureHome";
+import Login from './account/Login';
+import SecureHome from "./home/SecureHome";
 import RequireAuth from "./RequireAuth";
 import API_BASE_URL from "./utils/config";
-import Account from "./Account";
-import AccountSettings from "./AccountSettings";
-
+import Account from "./account/Account";
+import AccountSettings from "./account/AccountSettings";
+import ForgotPassword from './account/ForgotPassword';
+import ResetPassword from './account/ResetPassword';
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -41,6 +42,9 @@ function App() {
             <Route path="/" element={<Home />} />
               <Route path="/account" element={<Account />} />
               <Route path="/account/settings" element={<AccountSettings />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+
 
             {/* Secure Home Page (Only Accessible When Logged In) */}
             <Route

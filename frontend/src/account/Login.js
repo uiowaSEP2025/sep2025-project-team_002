@@ -12,7 +12,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";  // Import useNavigate for redirection
-import API_BASE_URL from "./utils/config";
+import API_BASE_URL from "../utils/config";
 
 function Login() {
   const navigate = useNavigate(); // Get navigation function
@@ -213,6 +213,15 @@ function Login() {
               required
               InputProps={{ sx: { borderRadius: '40px' } }}
             />
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography
+                variant="body2"
+                sx={{ cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => navigate("/forgot-password")}
+              >
+                Forgot Password?
+              </Typography>
+            </Box>
             <Button
               type="submit"
               variant="contained"
