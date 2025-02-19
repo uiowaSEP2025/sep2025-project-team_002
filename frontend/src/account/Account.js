@@ -100,11 +100,11 @@ function Account() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-    {
-      text: "School",
-      action: () => navigate("/school"),
-      icon: <SchoolIcon fontSize="medium" />
-    },
+    // {
+    //   text: "School",
+    //   action: () => navigate("/school"),
+    //   icon: <SchoolIcon fontSize="medium" />
+    // },
     {
       text: "Logout",
       action: () => {
