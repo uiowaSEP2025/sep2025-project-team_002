@@ -11,7 +11,7 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
-import PasswordStrengthBar from "../utils/PasswordStrengthBar";
+import PasswordStrengthBar from "../utils/PasswordStrengthBar.jsx";
 
 function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
   const [currentPassword, setCurrentPassword] = useState("");
