@@ -16,7 +16,7 @@ function App() {
   const [message, setMessage] = useState("Loading...");
 
   useEffect(() => {
-    console.log("API_BASE_URL:", API_BASE_URL);
+    console.log("App API Fetch Debugging... API_BASE_URL:", API_BASE_URL);
     fetch(`${API_BASE_URL}/users/test/`)
       .then((response) => response.json())
       .then((data) => {
