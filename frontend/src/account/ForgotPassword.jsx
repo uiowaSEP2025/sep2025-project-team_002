@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Box } from '@mui/material';
-import API_BASE_URL from "../utils/config";
+import API_BASE_URL from "../utils/config.js";
 import { useNavigate } from 'react-router-dom';
 
 function ForgotPassword() {

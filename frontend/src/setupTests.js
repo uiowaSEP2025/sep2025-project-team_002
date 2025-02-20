@@ -3,14 +3,16 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 
-try {
-  require.resolve('react-router-dom');
-} catch (e) {
-  console.error('react-router-dom not found in Jest environment');
-}
-
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: jest.fn(),
-}));
+// Mock `window.location`
+Object.defineProperty(window, 'location', {
+  value: {
+    href: 'http://localhost/',
+    origin: 'http://localhost/',
+    pathname: '/',
+    assign: vi.fn(),
+    replace: vi.fn(),
+  },
+  writable: true,
+});
