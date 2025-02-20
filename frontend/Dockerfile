@@ -2,7 +2,7 @@ FROM node:20
 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json yarn.lock ./
 
 RUN corepack enable && yarn install
 
