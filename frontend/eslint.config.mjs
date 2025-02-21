@@ -29,7 +29,7 @@ export default [
       'react/prop-types': 'off',
       'prettier/prettier': [
           "error", {
-        "endOfLine": "If",
+        "endOfLine": "lf",
         "semi" : true,
         "singleQuote": true
       }
