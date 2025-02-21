@@ -29,8 +29,7 @@ export default [
       'react/prop-types': 'off',
       'prettier/prettier': [
           "error", {
-        "endOfLine": "auto",
-        "quotes": ["ignore", "double"]
+        "endOfLine": "auto"
       }
       ]
     }

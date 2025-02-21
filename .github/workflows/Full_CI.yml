@@ -67,6 +67,7 @@ jobs:
         run: |
           docker compose --env-file backend/.env exec -T backend black --check .
           docker compose --env-file backend/.env exec -T backend flake8 . || echo "Flake8 warnings detected, but not failing CI/CD."
+          docker compose --env-file backend/.env exec -T frontend yarn lint:fix
           docker compose --env-file backend/.env exec -T frontend yarn lint
 
       - name: Run migrations
