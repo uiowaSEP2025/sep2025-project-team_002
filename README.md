@@ -33,7 +33,7 @@ EMAIL_ADDRESS=***@gmail.com
 EMAIL_PWD=***
 ```
 #### Frontend Configuration
-Navigate to the `frontend/` directory and create a `.env` file with:
+Navigate to the `frontend/` directory and create:
 
 - Development Environment (.env):
 
