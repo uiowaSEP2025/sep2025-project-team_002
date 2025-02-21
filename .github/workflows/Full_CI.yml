@@ -20,7 +20,7 @@ jobs:
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
           echo "DB_NAME=${{ secrets.DB_NAME }}"
 
-      - name: Create .env file
+      - name: Create backend .env file
         run: |
           echo "DB_USER=${{ secrets.DB_USER }}" >> backend/.env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend/.env
@@ -67,7 +67,8 @@ jobs:
         run: |
           docker compose --env-file backend/.env exec -T backend black --check .
           docker compose --env-file backend/.env exec -T backend flake8 . || echo "Flake8 warnings detected, but not failing CI/CD."
-          docker compose --env-file backend/.env exec -T frontend npm run lint
+          docker compose --env-file backend/.env exec -T frontend yarn lint:fix
+          docker compose --env-file backend/.env exec -T frontend yarn lint
 
       - name: Run migrations
         run: |
@@ -79,7 +80,8 @@ jobs:
 
       - name: Run Jest tests
         run: |
-          docker compose --env-file backend/.env exec -T frontend npm test -- --coverage --watchAll=false
+          docker compose --env-file backend/.env exec -T frontend yarn test:coverage --no-watch
+
 
       - name: Stop Docker containers
         run: |
