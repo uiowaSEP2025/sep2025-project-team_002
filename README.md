@@ -84,7 +84,7 @@ The application should be up and running! 🚀
 
 ### ✅ Before PR: Run Linting & Tests
 
-- **Run flake8 for backend code linting**:
+- **Run code linting**:
 ```bash
 docker exec -it transfer_portal_backend black .
 docker exec -it transfer_portal_frontend yarn lint:fix
