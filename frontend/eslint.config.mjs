@@ -27,7 +27,7 @@ export default [
     },
     rules: {
       'react/prop-types': 'off',
-      'prettier/prettier': 'error'
+      'prettier/prettier': ["error", { "endOfLine": "auto" }]
     }
   },
   prettierConfig
