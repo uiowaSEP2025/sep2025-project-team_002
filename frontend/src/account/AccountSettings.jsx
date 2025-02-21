@@ -40,12 +40,12 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
 
 // Import your config base URL
-import API_BASE_URL from "../utils/config";
+import API_BASE_URL from "../utils/config.js";
 
 // Import your password strength bar
-import PasswordStrengthBar from "../utils/PasswordStrengthBar";
+import PasswordStrengthBar from "../utils/PasswordStrengthBar.jsx";
 
-import PasswordForm from "./PasswordForm";
+import PasswordForm from "./PasswordForm.jsx";
 
 function AccountSettings() {
   const navigate = useNavigate();
