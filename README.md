@@ -86,7 +86,7 @@ The application should be up and running! 🚀
 
 - **Run flake8 for backend code linting**:
 ```bash
-docker compose run backend black .
+docker exec -it transfer_portal_backend black .
 docker exec -it transfer_portal_frontend yarn lint:fix
 docker exec -it transfer_portal_backend flake8 .
 ```
@@ -156,5 +156,16 @@ docker system prune -a
 ⚠️ Warning: This command will delete all unused containers, images and volumes. While it helps free up disk space, it can slow down future builds since Docker will have to re-download all images and rebuild everything from scratch. **If plan to restart soon, DO NOT run this command**.
 
 ---
+## 🏆 Team Members  
+
+*(Listed alphabetically by first name)*  
+
+| Name | GitHub |
+|------|--------|
+| Anna Davis | [@adavis72](https://github.com/adavis72) |
+| Jingming Liang | [@Mirrorigin](https://github.com/Mirrorigin) |
+| Rodrigo Medina | [@rmdna-uiowa](https://github.com/rmdna-uiowa) |
+| Samantha Pothitakis | [@samanthapoth](https://github.com/samanthapoth) |
+| Yusuf Halim | [@halimyu](https://github.com/halimyu) |
 
 For any further assistance, please reach out to the development team. Happy Coding! 🎉
