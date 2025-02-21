@@ -80,7 +80,8 @@ jobs:
 
       - name: Run Jest tests
         run: |
-          docker compose --env-file backend/.env exec -T frontend yarn test:coverage
+          docker compose --env-file backend/.env exec -T frontend yarn test:coverage --no-watch
+
 
       - name: Stop Docker containers
         run: |
