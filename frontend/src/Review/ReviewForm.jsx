@@ -117,6 +117,23 @@ const ReviewForm = () => {
     setAvailableSports(selectedSchool ? selectedSchool.available_sports : []);
   };
 
+//   const isFormValid = () => {
+//   return (
+//     review.school &&
+//     review.sport &&
+//     review.head_coach_name.trim() &&
+//     review.review_message &&
+//     review.head_coach > 0 &&
+//     review.assistant_coaches > 0 &&
+//     review.team_culture > 0 &&
+//     review.campus_life > 0 &&
+//     review.athletic_facilities > 0 &&
+//     review.athletic_department > 0 &&
+//     review.player_development > 0 &&
+//     review.nil_opportunity > 0
+//   );
+// };
+
   const normalizeString = (str) => str.replace(/\s+/g, "").toLowerCase();
   const isDuplicateReview = userReviews.some(
     (r) =>
@@ -265,6 +282,7 @@ const ReviewForm = () => {
                     max={10}
                     onChange={(event, newValue) => handleRatingChange(field.name, newValue)}
                     sx={{ color: !review[field.name] && isSubmitted ? "red" : "" }} // Highlight error
+                    data-testid={`rating-${field.name}`}
                   />
                   {isSubmitted && !review[field.name] && (
                     <Typography sx={{ color: "red", ml: 2, fontSize: "0.9rem" }}>
@@ -298,7 +316,7 @@ const ReviewForm = () => {
                   r.school === review.school &&
                   r.sport === review.sport &&
                   normalizeString(r.head_coach_name) === normalizeString(review.head_coach_name)
-              )} 
+              )}
             >
               Submit Review
             </Button>
