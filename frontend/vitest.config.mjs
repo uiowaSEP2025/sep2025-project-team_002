@@ -8,4 +8,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './src/vitest.setup.js'
   },
+  server: {
+    allowedHosts: [
+      'localhost',
+      'theathleticinsider.com'
+    ]
+  }
 });
