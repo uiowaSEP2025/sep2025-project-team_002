@@ -117,22 +117,22 @@ const ReviewForm = () => {
     setAvailableSports(selectedSchool ? selectedSchool.available_sports : []);
   };
 
-//   const isFormValid = () => {
-//   return (
-//     review.school &&
-//     review.sport &&
-//     review.head_coach_name.trim() &&
-//     review.review_message &&
-//     review.head_coach > 0 &&
-//     review.assistant_coaches > 0 &&
-//     review.team_culture > 0 &&
-//     review.campus_life > 0 &&
-//     review.athletic_facilities > 0 &&
-//     review.athletic_department > 0 &&
-//     review.player_development > 0 &&
-//     review.nil_opportunity > 0
-//   );
-// };
+  const isFormValid = () => {
+  return (
+    review.school &&
+    review.sport &&
+    review.head_coach_name.trim() &&
+    review.review_message &&
+    review.head_coach > 0 &&
+    review.assistant_coaches > 0 &&
+    review.team_culture > 0 &&
+    review.campus_life > 0 &&
+    review.athletic_facilities > 0 &&
+    review.athletic_department > 0 &&
+    review.player_development > 0 &&
+    review.nil_opportunity > 0
+  );
+};
 
   const normalizeString = (str) => str.replace(/\s+/g, "").toLowerCase();
   const isDuplicateReview = userReviews.some(
@@ -311,7 +311,7 @@ const ReviewForm = () => {
               color="primary" 
               fullWidth
               onClick={() => setOpenConfirm(true)}
-              disabled={userReviews.some(
+              disabled={(!isFormValid() )|| userReviews.some(
                 (r) =>
                   r.school === review.school &&
                   r.sport === review.sport &&
