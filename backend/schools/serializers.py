@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Schools  # Assuming your model is named School
 
+
 class SchoolSerializer(serializers.ModelSerializer):
     available_sports = serializers.SerializerMethodField()
 
