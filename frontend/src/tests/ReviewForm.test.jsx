@@ -223,7 +223,6 @@ await waitFor(() => {
     target: { value: "This is a great program!" },
   });
 
-
     // Click submit
   fireEvent.click(screen.getByText("Submit Review"));
 
@@ -232,12 +231,10 @@ await waitFor(() => {
   expect(within(document.body).getByText("Confirm Submission")).toBeInTheDocument();
 });
 
-
   // Click "Confirm" in the dialog
       await waitFor(() => {
   fireEvent.click(screen.getByText("Confirm"))
         });
-
 
 }, 100000);
 });

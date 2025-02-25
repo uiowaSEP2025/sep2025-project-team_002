@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 from .models import Reviews
 from .serializers import ReviewSerializer
 
+
 class CreateReviewView(generics.CreateAPIView):
     queryset = Reviews.objects.all()
     serializer_class = ReviewSerializer
@@ -9,6 +10,7 @@ class CreateReviewView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)  # Assign logged-in user
+
 
 class UserReviewsView(generics.ListAPIView):
     serializer_class = ReviewSerializer
