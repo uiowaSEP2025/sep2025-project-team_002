@@ -11,6 +11,7 @@ import Account from "./account/Account.jsx";
 import AccountSettings from "./account/AccountSettings.jsx";
 import ForgotPassword from './account/ForgotPassword.jsx';
 import ResetPassword from './account/ResetPassword.jsx';
+import ReviewForm from './Review/ReviewForm.jsx';
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -55,6 +56,7 @@ function App() {
                 </RequireAuth>
               }
             />
+            <Route path="/review-form" element={<ReviewForm />} />
           </Routes>
         </Router>
 
