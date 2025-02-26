@@ -126,14 +126,22 @@ function Footer() {
                 position: 'absolute',
                 top: '10px',
                 right: '10px',
-                background: 'transparent',
+                backgroundColor: '#555',
+                color: '#fff',
                 border: 'none',
-                fontSize: '20px',
+                borderRadius: '20%',
+                width: '20px',
+                height: '20px',
+                fontSize: '16px',
+                lineHeight: '20px',
+                textAlign: 'center',
                 cursor: 'pointer',
               }}
             >
               &times;
             </button>
+
+
 
             <h2>Report an Issue</h2>
             <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
