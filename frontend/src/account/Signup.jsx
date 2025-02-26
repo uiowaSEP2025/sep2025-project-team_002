@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import API_BASE_URL from '../utils/config.js';  // Adjust the path based on your file structure
 
 // Use the PasswordStrengthBar you created
-import PasswordStrengthBar from "../utils/PasswordStrengthBar.jsx";
+import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
 
 function Signup() {
   const navigate = useNavigate();
