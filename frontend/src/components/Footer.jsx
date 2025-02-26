@@ -114,7 +114,9 @@ function Footer() {
               borderRadius: '8px',
               width: '400px',
               maxWidth: '90%',
-              textAlign: 'center'
+              textAlign: 'center',
+              maxHeight: '80vh',
+              overflow: 'auto',
             }}
           >
             {/* Close (X) icon in the top-right corner */}
@@ -137,7 +139,7 @@ function Footer() {
             <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
               {/* Email (required) */}
               <label style={{ display: 'block', marginBottom: '5px' }}>
-                Email *
+                Email*
               </label>
               <input
                 type="email"
@@ -170,12 +172,14 @@ function Footer() {
 
               {/* Issue description */}
               <label style={{ display: 'block', marginBottom: '5px' }}>
-                Issue Description *
+                Issue Description*
               </label>
               <textarea
                 style={{
                   width: '100%',
                   height: '100px',
+                  maxHeight: '150px',
+                  resize: 'vertical',
                   marginBottom: '10px',
                   padding: '8px',
                   boxSizing: 'border-box'

@@ -21,7 +21,7 @@ def report_issue(request):
 
     # Prepare email subject and message
     subject = 'New Issue Reported'
-    message = f"Email: {email}\nName: {name}\nDescription:\n{description}"
+    message = f"Reporter Email: {email}\nReporter Name: {name}\nReport Description:\n{description}"
 
     # Send email using Django's send_mail function
     try:
@@ -34,7 +34,5 @@ def report_issue(request):
         )
     except Exception as e:
         return Response({'error': f'Email sending failed: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    # Optionally, you can also save the feedback into the database here
 
     return Response({'message': 'Issue reported successfully.'}, status=status.HTTP_201_CREATED)
