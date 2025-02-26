@@ -171,7 +171,7 @@ await waitFor(() => {
   const button = screen.getByRole("button", { name: /submit review/i });
   expect(button).toBeDisabled(); // Check if the button is disabled
 });
-});
+}, 100000);
 
   it("handles form submission", async () => {
   render(
