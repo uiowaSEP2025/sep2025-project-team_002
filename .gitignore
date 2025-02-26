@@ -1,9 +1,28 @@
-node_modules/
-__pycache__/
-.DS_Store
+# === Global Ignore Rules ===
+**/node_modules/
+**/.pnp
+**/.pnp.js
+**/coverage/
+**/build/
+**/.DS_Store
+**/.env
+
+# === Backend Specific Ignore Rules ===
 backend/.venv/
 backend/db.sqlite3
+__pycache__/
 .idea
 .coverage
 venv/
-**/.env
+
+# === Frontend Specific Ignore Rules ===
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/.env.production
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/.gitignore
+
