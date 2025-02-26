@@ -3,16 +3,20 @@ import React, { useState } from 'react';
 function Footer() {
   // Control the open/close state of the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Store the issue description input by the user
+  // Store the user's inputs
   const [issueDescription, setIssueDescription] = useState('');
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
 
   // Function to open the modal
   const openModal = () => setIsModalOpen(true);
 
-  // Function to close the modal and reset the input
+  // Function to close the modal and reset the inputs
   const closeModal = () => {
     setIsModalOpen(false);
     setIssueDescription('');
+    setEmail('');
+    setName('');
   };
 
   // Handle form submission
@@ -24,7 +28,12 @@ function Footer() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ description: issueDescription }),
+        // Send email, name, and description to the backend
+        body: JSON.stringify({
+          email: email,
+          name: name,
+          description: issueDescription
+        }),
       });
       if (response.ok) {
         alert('Your issue has been submitted. Thank you for your feedback!');
@@ -40,7 +49,7 @@ function Footer() {
 
   // Common pill-shaped button style for the Submit button
   const pillButtonStyle = {
-    backgroundColor: '#007bff',   // You can change this color to match your brand
+    backgroundColor: '#007bff',
     color: '#fff',
     border: 'none',
     borderRadius: '25px',
@@ -125,15 +134,60 @@ function Footer() {
             </button>
 
             <h2>Report an Issue</h2>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
+              {/* Email (required) */}
+              <label style={{ display: 'block', marginBottom: '5px' }}>
+                Email *
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                style={{
+                  width: '100%',
+                  marginBottom: '10px',
+                  padding: '8px',
+                  boxSizing: 'border-box'
+                }}
+              />
+
+              {/* Name (optional) */}
+              <label style={{ display: 'block', marginBottom: '5px' }}>
+                Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{
+                  width: '100%',
+                  marginBottom: '10px',
+                  padding: '8px',
+                  boxSizing: 'border-box'
+                }}
+              />
+
+              {/* Issue description */}
+              <label style={{ display: 'block', marginBottom: '5px' }}>
+                Issue Description *
+              </label>
               <textarea
-                style={{ width: '100%', height: '100px', marginTop: '10px' }}
+                style={{
+                  width: '100%',
+                  height: '100px',
+                  marginBottom: '10px',
+                  padding: '8px',
+                  boxSizing: 'border-box'
+                }}
                 value={issueDescription}
                 onChange={(e) => setIssueDescription(e.target.value)}
                 placeholder="Please describe the issue in detail..."
+                required
               />
-              <div style={{ marginTop: '20px' }}>
-                {/* Pill-shaped Submit button */}
+
+              {/* Submit button */}
+              <div style={{ textAlign: 'center' }}>
                 <button
                   type="submit"
                   style={pillButtonStyle}
