@@ -1,4 +1,10 @@
 from django.urls import path
+from .views import SchoolListView
+
+urlpatterns = [
+    path("schools/", SchoolListView.as_view(), name="school-list"),
+]
+from django.urls import path
 from .views import SchoolViewSet, get_schools, get_school_detail
 
 urlpatterns = [

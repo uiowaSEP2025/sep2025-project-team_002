@@ -22,10 +22,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
-import API_BASE_URL from '../utils/config';  // Adjust the path based on your file structure
+import API_BASE_URL from '../utils/config.js';  // Adjust the path based on your file structure
 
 // Use the PasswordStrengthBar you created
-import PasswordStrengthBar from "../utils/PasswordStrengthBar";
+import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
 
 function Signup() {
   const navigate = useNavigate();
@@ -112,7 +112,7 @@ function Signup() {
 
   return (
     <Box sx={{ position: "relative" }}>
-      {/* Back Arrow to Home */}
+      {/* Back Arrow to home */}
       <Box
         sx={{
           position: "fixed",

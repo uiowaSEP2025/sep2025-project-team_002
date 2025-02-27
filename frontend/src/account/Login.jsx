@@ -12,7 +12,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";  // Import useNavigate for redirection
-import API_BASE_URL from "../utils/config";
+import API_BASE_URL from "../utils/config.js";
 
 function Login() {
   const navigate = useNavigate(); // Get navigation function

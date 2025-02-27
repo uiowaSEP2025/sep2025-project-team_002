@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Typography, Box } from "@mui/material";
 import PasswordForm from "./PasswordForm";
 import { useLocation, useNavigate } from "react-router-dom";
-import API_BASE_URL from "../utils/config";
+import API_BASE_URL from "../utils/config.js";
 
 function ResetPassword() {
   const query = new URLSearchParams(useLocation().search);

@@ -169,6 +169,11 @@ def test_api(request):
     return JsonResponse({"message": "Backend is working!"})
 
 
+# For CI tests
+def healthcheck(request):
+    return JsonResponse({"status": "ok"})
+
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """Customize JWT response if needed"""
 

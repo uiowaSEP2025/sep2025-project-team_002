@@ -6,7 +6,8 @@ import {
   Typography,
   IconButton,
   Menu,
-  MenuItem
+  MenuItem,
+  Button
 } from "@mui/material";
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -31,6 +32,11 @@ function SecureHome() {
     localStorage.removeItem("token");
     navigate("/");
   };
+
+    // Navigate to review form
+    const handleGoToReviewForm = () => {
+      navigate("/review-form");
+    };
 
   // Account info handler: redirect to account info page (update route as needed)
   const handleAccountInfo = () => {
@@ -75,9 +81,17 @@ function SecureHome() {
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 2 }}>
               Welcome to the Secure Home Page
             </Typography>
+
             <Typography variant="h6" sx={{ fontWeight: 400, mb: 4 }}>
               You are now logged in.
             </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleGoToReviewForm}
+            >
+              Submit a Review
+            </Button>
             {/* Additional secure content can be added here */}
           </motion.div>
         </Grid>

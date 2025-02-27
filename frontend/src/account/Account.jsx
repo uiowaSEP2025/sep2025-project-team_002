@@ -24,7 +24,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 import LogoutIcon from "@mui/icons-material/Logout";
-import API_BASE_URL from "../utils/config";
+import API_BASE_URL from "../utils/config.js";
 
 function Account() {
   const navigate = useNavigate();
@@ -100,11 +100,11 @@ function Account() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-    {
-      text: "School",
-      action: () => navigate("/school"),
-      icon: <SchoolIcon fontSize="medium" />
-    },
+    // {
+    //   text: "School",
+    //   action: () => navigate("/school"),
+    //   icon: <SchoolIcon fontSize="medium" />
+    // },
     {
       text: "Logout",
       action: () => {
