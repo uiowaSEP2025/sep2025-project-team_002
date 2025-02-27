@@ -8,19 +8,22 @@ from django.core.mail import send_mail
 from django.conf import settings
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 def report_issue(request):
     # Extract data from request
-    email = request.data.get('email')
-    name = request.data.get('name', '')
-    description = request.data.get('description', '')
+    email = request.data.get("email")
+    name = request.data.get("name", "")
+    description = request.data.get("description", "")
 
     # Validate required fields
     if not email or not description:
-        return Response({'error': 'Email and description are required.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Email and description are required."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     # Prepare email subject and message
-    subject = 'New Issue Reported'
+    subject = "New Issue Reported"
     message = f"Reporter Email: {email}\nReporter Name: {name}\nReport Description:\n{description}"
 
     # Send email using Django's send_mail function
@@ -33,6 +36,11 @@ def report_issue(request):
             fail_silently=False,
         )
     except Exception as e:
-        return Response({'error': f'Email sending failed: {e}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(
+            {"error": f"Email sending failed: {e}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
-    return Response({'message': 'Issue reported successfully.'}, status=status.HTTP_201_CREATED)
+    return Response(
+        {"message": "Issue reported successfully."}, status=status.HTTP_201_CREATED
+    )

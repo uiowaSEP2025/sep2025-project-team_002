@@ -7,6 +7,11 @@ function Footer() {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
 
+  // State for custom notification
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState('');
+  const [notificationIsSuccess, setNotificationIsSuccess] = useState(false);
+
   // Function to open the modal
   const openModal = () => setIsModalOpen(true);
 
@@ -16,6 +21,13 @@ function Footer() {
     setIssueDescription('');
     setEmail('');
     setName('');
+  };
+
+  // Close the notification
+  const closeNotification = () => {
+    setShowNotification(false);
+    setNotificationMessage('');
+    setNotificationIsSuccess(false);
   };
 
   // Check if required fields are filled
@@ -40,14 +52,25 @@ function Footer() {
         }),
       });
       if (response.ok) {
-        alert('Your issue has been submitted. Thank you for your feedback!');
+        // Show success notification
+        setNotificationMessage('Your issue has been submitted. Thank you for your feedback!');
+        setNotificationIsSuccess(true);
+        setShowNotification(true);
+
+        // Close the modal on success
         closeModal();
       } else {
-        alert('Submission failed. Please try again later.');
+        // Show error notification
+        setNotificationMessage('Submission failed. Please try again later.');
+        setNotificationIsSuccess(false);
+        setShowNotification(true);
       }
     } catch (error) {
       console.error(error);
-      alert('Submission error. Please check your network or server.');
+      // Show error notification
+      setNotificationMessage('Submission error. Please check your network or server.');
+      setNotificationIsSuccess(false);
+      setShowNotification(true);
     }
   };
 
@@ -133,7 +156,7 @@ function Footer() {
                 backgroundColor: '#555',
                 color: '#fff',
                 border: 'none',
-                borderRadius: '20%',
+                borderRadius: '0',
                 width: '20px',
                 height: '20px',
                 fontSize: '14px',
@@ -202,12 +225,55 @@ function Footer() {
                 <button
                   type="submit"
                   style={pillButtonStyle}
-                  disabled={!isFormValid} // disable if not valid
+                  disabled={!isFormValid}
                 >
                   Submit
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Custom notification overlay */}
+      {showNotification && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.4)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 20000  // higher than the modal
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              padding: '20px',
+              borderRadius: '8px',
+              minWidth: '300px',
+              textAlign: 'center'
+            }}
+          >
+            <p style={{ color: notificationIsSuccess ? '#306731' : '#a13432' }}>
+              {notificationMessage}
+            </p>
+            <button
+              onClick={closeNotification}
+              style={{
+                marginTop: '10px',
+                padding: '8px 16px',
+                cursor: 'pointer',
+                border: 'none',
+                borderRadius: '4px',
+                backgroundColor: notificationIsSuccess ? 'rgba(94,161,94,0.9)' : '#ea6471',
+                color: '#fff'
+              }}
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
