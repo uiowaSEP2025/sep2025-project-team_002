@@ -13,6 +13,7 @@ import ForgotPassword from './account/ForgotPassword.jsx';
 import ResetPassword from './account/ResetPassword.jsx';
 import ReviewForm from './review/ReviewForm.jsx';
 import Footer from './components/Footer.jsx';
+import AboutUs from './components/AboutUs.jsx'
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -58,6 +59,7 @@ function App() {
               }
             />
             <Route path="/review-form" element={<ReviewForm />} />
+            <Route path="/about" element={<AboutUs />} />
           </Routes>
           <Footer />
         </Router>
