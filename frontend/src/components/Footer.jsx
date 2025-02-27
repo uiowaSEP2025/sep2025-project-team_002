@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
+import API_BASE_URL from "../utils/config.js";
 
 function Footer() {
-  // Control the open/close state of the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Store the user's inputs
   const [issueDescription, setIssueDescription] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -11,7 +10,7 @@ function Footer() {
   // Function to open the modal
   const openModal = () => setIsModalOpen(true);
 
-  // Function to close the modal and reset the inputs
+  // Function to close the modal and reset all inputs
   const closeModal = () => {
     setIsModalOpen(false);
     setIssueDescription('');
@@ -19,16 +18,21 @@ function Footer() {
     setName('');
   };
 
+  // Check if required fields are filled
+  const isFormValid = email.trim() !== '' && issueDescription.trim() !== '';
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // If form is invalid, do nothing
+    if (!isFormValid) return;
+
     try {
-      const response = await fetch('http://localhost:8000/api/report/report_issue/', {
+      const response = await fetch(`${API_BASE_URL}/api/report/report_issue/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        // Send email, name, and description to the backend
         body: JSON.stringify({
           email: email,
           name: name,
@@ -47,17 +51,20 @@ function Footer() {
     }
   };
 
-  // Common pill-shaped button style for the Submit button
+  // Pill-shaped button style
   const pillButtonStyle = {
-    backgroundColor: '#007bff',
-    color: '#fff',
     border: 'none',
     borderRadius: '25px',
     padding: '12px 24px',
     fontSize: '16px',
-    cursor: 'pointer',
     boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
     marginTop: '10px',
+    // Change background color based on form validity
+    backgroundColor: isFormValid ? '#007bff' : '#ccc',
+    // Change text color based on form validity
+    color: isFormValid ? '#fff' : '#666',
+    // Change cursor based on form validity
+    cursor: isFormValid ? 'pointer' : 'not-allowed'
   };
 
   return (
@@ -81,7 +88,6 @@ function Footer() {
       >
         <span>© 2025 Athletic Insider</span>
         <span style={{ margin: '0 10px' }}>|</span>
-        {/* Clickable text to open the report modal */}
         <span
           onClick={openModal}
           style={{
@@ -114,12 +120,10 @@ function Footer() {
               borderRadius: '8px',
               width: '400px',
               maxWidth: '90%',
-              textAlign: 'center',
-              maxHeight: '80vh',
-              overflow: 'auto',
+              textAlign: 'center'
             }}
           >
-            {/* Close (X) icon in the top-right corner */}
+            {/* Square gray-black close button */}
             <button
               onClick={closeModal}
               style={{
@@ -132,26 +136,23 @@ function Footer() {
                 borderRadius: '20%',
                 width: '20px',
                 height: '20px',
-                fontSize: '16px',
+                fontSize: '14px',
                 lineHeight: '20px',
                 textAlign: 'center',
                 cursor: 'pointer',
+                padding: 0
               }}
             >
               &times;
             </button>
 
-
-
-            <h2>Report an Issue</h2>
+            <h2 style={{ marginBottom: '20px' }}>Report an Issue</h2>
             <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
-              {/* Email (required) */}
               <label style={{ display: 'block', marginBottom: '5px' }}>
-                Email*
+                Email *
               </label>
               <input
                 type="email"
-                required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{
@@ -160,11 +161,11 @@ function Footer() {
                   padding: '8px',
                   boxSizing: 'border-box'
                 }}
+                required
               />
 
-              {/* Name (optional) */}
               <label style={{ display: 'block', marginBottom: '5px' }}>
-                Name
+                Name (optional)
               </label>
               <input
                 type="text"
@@ -178,19 +179,18 @@ function Footer() {
                 }}
               />
 
-              {/* Issue description */}
               <label style={{ display: 'block', marginBottom: '5px' }}>
-                Issue Description*
+                Issue Description *
               </label>
               <textarea
                 style={{
                   width: '100%',
-                  height: '100px',
-                  maxHeight: '150px',
-                  resize: 'vertical',
+                  height: '80px',
                   marginBottom: '10px',
                   padding: '8px',
-                  boxSizing: 'border-box'
+                  boxSizing: 'border-box',
+                  resize: 'vertical',
+                  maxHeight: '150px'
                 }}
                 value={issueDescription}
                 onChange={(e) => setIssueDescription(e.target.value)}
@@ -198,11 +198,11 @@ function Footer() {
                 required
               />
 
-              {/* Submit button */}
               <div style={{ textAlign: 'center' }}>
                 <button
                   type="submit"
                   style={pillButtonStyle}
+                  disabled={!isFormValid} // disable if not valid
                 >
                   Submit
                 </button>

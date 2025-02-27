@@ -29,7 +29,7 @@ def report_issue(request):
             subject,
             message,
             settings.DEFAULT_FROM_EMAIL,  # sender email
-            [settings.REPORT_RECEIVER_EMAIL],  # receiver list
+            settings.REPORT_RECEIVER_EMAIL,  # receiver list
             fail_silently=False,
         )
     except Exception as e:
