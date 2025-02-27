@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     "users",
     "schools",
     "reviews",
+    "report",
 ]
 
 AUTH_USER_MODEL = "users.Users"
@@ -129,6 +130,11 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.getenv("EMAIL_ADDRESS")
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PWD")
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_ADDRESS")
+REPORT_RECEIVER_EMAIL = [
+    email.strip()
+    for email in os.getenv("REPORT_EMAIL_ADDRESS", "").split(",")
+    if email.strip()
+]
 
 
 # Password validation
