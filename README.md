@@ -31,6 +31,8 @@ DB_PORT=5432
 
 EMAIL_ADDRESS=***@gmail.com 
 EMAIL_PWD=***
+
+REPORT_EMAIL_ADDRESS=***@gmail.com, ***@uiowa.edu
 ```
 #### Frontend Configuration
 Navigate to the `frontend/` directory and create:
