@@ -43,7 +43,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import API_BASE_URL from "../utils/config.js";
 
 // Import your password strength bar
-import PasswordStrengthBar from "../utils/PasswordStrengthBar.jsx";
+import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
 
 import PasswordForm from "./PasswordForm.jsx";
 
