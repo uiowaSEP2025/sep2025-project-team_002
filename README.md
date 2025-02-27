@@ -1,6 +1,8 @@
 # TEAM_002: Athletic Insider
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/4tPelvOm)
 
+[![Alt text](./frontend/public/Poster.png)](https://theathleticinsider.com/)
+
 Welcome to the **Athletic Insider** project! This web application is designed to support student-athletes in their transfer and recruiting journeys. It allows athletes to anonymously rate their experiences at different universities!
 
 ## 🌐 Deployment Site
