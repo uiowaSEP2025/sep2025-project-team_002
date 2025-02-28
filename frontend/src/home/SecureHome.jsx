@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -7,15 +7,21 @@ import {
   IconButton,
   Menu,
   MenuItem,
-  Button
+  Button,
+  Card,
+  CardContent,
+  Stack,
+  Grid as MuiGrid
 } from "@mui/material";
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import API_BASE_URL from "../utils/config";
 
 function SecureHome() {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const [schools, setSchools] = useState([]);
 
   // Handle opening the dropdown menu
   const handleMenuOpen = (event) => {
@@ -41,6 +47,26 @@ function SecureHome() {
   // Account info handler: redirect to account info page (update route as needed)
   const handleAccountInfo = () => {
     navigate("/account");
+  };
+
+  const handleSchoolClick = (schoolId) => {
+    navigate(`/school/${schoolId}`);
+  };
+
+  useEffect(() => {
+    // Fetch schools data when component mounts
+    fetchSchools();
+  }, []);
+
+  const fetchSchools = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/schools/`);
+      const data = await response.json();
+      console.log('Schools data:', data);
+      setSchools(data);
+    } catch (error) {
+      console.error('Error fetching schools:', error);
+    }
   };
 
   return (
@@ -70,29 +96,61 @@ function SecureHome() {
         </Menu>
       </Box>
 
-      <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: "100vh" }}>
-        <Grid item xs={12} md={8}>
+      <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: "100vh", py: 4 }}>
+        <Grid item xs={12} md={10}>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            style={{ textAlign: "center" }}
           >
-            <Typography variant="h3" sx={{ fontWeight: 700, mb: 2 }}>
-              Welcome to the Secure Home Page
+            <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, textAlign: "center" }}>
+              Schools and Sports
             </Typography>
 
-            <Typography variant="h6" sx={{ fontWeight: 400, mb: 4 }}>
-              You are now logged in.
-            </Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleGoToReviewForm}
-            >
-              Submit a Review
-            </Button>
-            {/* Additional secure content can be added here */}
+            <Box sx={{ textAlign: "center", mb: 4 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleGoToReviewForm}
+              >
+                Submit a Review
+              </Button>
+            </Box>
+
+            <Stack spacing={2} sx={{ px: 2 }}>
+              {schools?.map((school) => (
+                <Card 
+                  key={school.id} 
+                  sx={{ 
+                    width: '100%',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: '#f5f5f5'
+                    }
+                  }}
+                  onClick={() => handleSchoolClick(school.id)}
+                >
+                  <CardContent>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 2,
+                      flexWrap: 'wrap'
+                    }}>
+                      <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                        {school.school_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        {school.available_sports && school.available_sports.length > 0 
+                          ? school.available_sports.join(' • ')
+                          : 'No sports listed'
+                        }
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
           </motion.div>
         </Grid>
       </Grid>
