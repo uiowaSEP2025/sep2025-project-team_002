@@ -49,6 +49,10 @@ function SecureHome() {
     navigate("/account");
   };
 
+  const handleSchoolClick = (schoolId) => {
+    navigate(`/school/${schoolId}`);
+  };
+
   useEffect(() => {
     // Fetch schools data when component mounts
     fetchSchools();
@@ -115,7 +119,17 @@ function SecureHome() {
 
             <Stack spacing={2} sx={{ px: 2 }}>
               {schools?.map((school) => (
-                <Card key={school.id} sx={{ width: '100%' }}>
+                <Card 
+                  key={school.id} 
+                  sx={{ 
+                    width: '100%',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: '#f5f5f5'
+                    }
+                  }}
+                  onClick={() => handleSchoolClick(school.id)}
+                >
                   <CardContent>
                     <Box sx={{ 
                       display: 'flex', 
@@ -125,6 +139,9 @@ function SecureHome() {
                     }}>
                       <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
                         {school.school_name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Sports:
                       </Typography>
                       <Typography variant="body2">
                         {school.available_sports && school.available_sports.length > 0 

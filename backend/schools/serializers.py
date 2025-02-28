@@ -7,7 +7,7 @@ class SchoolSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Schools
-        fields = ["id", "school_name", "available_sports", "conference", "location"]
+        fields = ['id', 'school_name', 'mbb', 'wbb', 'fb', 'conference', 'location', 'available_sports']
 
     def get_available_sports(self, obj):
         sports = []
