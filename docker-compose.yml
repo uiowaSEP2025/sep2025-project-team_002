@@ -38,6 +38,15 @@ services:
     networks:
       - transfer_network
 
+  selenium:
+    image: selenium/standalone-chrome
+    container_name: selenium_chrome
+    ports:
+      - "4444:4444"
+    shm_size: "2g"
+    networks:
+      - transfer_network
+
 networks:
   transfer_network:
     name: transfer_network
