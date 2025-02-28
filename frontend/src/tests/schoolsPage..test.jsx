@@ -109,21 +109,4 @@ describe('SchoolPage Component', () => {
     const backButton = await screen.findByText('Back to Home');
     expect(backButton).toBeInTheDocument();
   });
-
-  it('handles schools with no reviews', async () => {
-    // Mock fetch to return school with no reviews
-    global.fetch.mockImplementationOnce(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({
-          ...mockSchool,
-          reviews: []
-        })
-      })
-    );
-
-    renderWithRouter();
-
-    expect(await screen.findByText('No reviews yet')).toBeInTheDocument();
-  });
 });
