@@ -36,7 +36,7 @@ function SchoolPage() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
           <Button
             startIcon={<HomeIcon />}
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/secure-home')}
             variant="contained"
           >
             Back to Home

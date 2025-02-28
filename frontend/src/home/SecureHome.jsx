@@ -140,9 +140,6 @@ function SecureHome() {
                       <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
                         {school.school_name}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Sports:
-                      </Typography>
                       <Typography variant="body2">
                         {school.available_sports && school.available_sports.length > 0 
                           ? school.available_sports.join(' • ')
