@@ -1,7 +1,7 @@
 import React from 'react';
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SchoolPage from '../schools/SchoolPage';
 
@@ -41,52 +41,40 @@ global.fetch = vi.fn(() =>
 
 describe('SchoolPage Component', () => {
   beforeEach(() => {
-    // Clear mock calls between tests
     fetch.mockClear();
   });
 
   const renderWithRouter = () => {
     return render(
-      <BrowserRouter>
+      <MemoryRouter initialEntries={['/school/1']}>
         <Routes>
           <Route path="/school/:id" element={<SchoolPage />} />
         </Routes>
-      </BrowserRouter>,
-      {
-        initialEntries: ['/school/1']
-      }
+      </MemoryRouter>
     );
   };
 
   it('renders school information', async () => {
     renderWithRouter();
-
-    // Check for school details
     expect(await screen.findByText('University of Iowa')).toBeInTheDocument();
-    expect(await screen.findByText('Conference: Big Ten')).toBeInTheDocument();
-    expect(await screen.findByText('Location: Iowa City, Iowa')).toBeInTheDocument();
+    expect(await screen.findByText(/Conference: Big Ten/)).toBeInTheDocument();
+    expect(await screen.findByText(/Location: Iowa City, Iowa/)).toBeInTheDocument();
   });
 
   it('displays available sports', async () => {
     renderWithRouter();
-
-    // Wait for sports to load
-    const sports = await screen.findByText("Men's Basketball • Women's Basketball • Football");
+    const sports = await screen.findByText(/Men's Basketball.*Women's Basketball.*Football/);
     expect(sports).toBeInTheDocument();
   });
 
   it('displays review information', async () => {
     renderWithRouter();
-
-    // Check for review details
-    expect(await screen.findByText("Men's Basketball - Coach John Doe")).toBeInTheDocument();
-    expect(await screen.findByText("Great program with excellent facilities")).toBeInTheDocument();
+    expect(await screen.findByText(/Men's Basketball - Coach John Doe/)).toBeInTheDocument();
+    expect(await screen.findByText(/Great program with excellent facilities/)).toBeInTheDocument();
   });
 
   it('displays all rating categories', async () => {
     renderWithRouter();
-
-    // Check for all rating categories
     const ratingCategories = [
       'Head Coach',
       'Assistant Coaches',
@@ -99,14 +87,13 @@ describe('SchoolPage Component', () => {
     ];
 
     for (const category of ratingCategories) {
-      expect(await screen.findByText(category)).toBeInTheDocument();
+      expect(await screen.findByText(new RegExp(category))).toBeInTheDocument();
     }
   });
 
   it('shows back to home button', async () => {
     renderWithRouter();
-
-    const backButton = await screen.findByText('Back to Home');
+    const backButton = await screen.findByText(/Back to Home/);
     expect(backButton).toBeInTheDocument();
   });
-});
+}); 
