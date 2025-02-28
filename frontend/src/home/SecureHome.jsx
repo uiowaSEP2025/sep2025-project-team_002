@@ -117,21 +117,22 @@ function SecureHome() {
               {schools?.map((school) => (
                 <Card key={school.id} sx={{ width: '100%' }}>
                   <CardContent>
-                    <Typography variant="h6" sx={{ mb: 1 }}>
-                      {school.school_name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                      Sports:
-                    </Typography>
-                    {school.available_sports && school.available_sports.length > 0 ? (
-                      school.available_sports.map((sport, index) => (
-                        <Typography key={index} variant="body2">
-                          • {sport}
-                        </Typography>
-                      ))
-                    ) : (
-                      <Typography variant="body2">No sports listed</Typography>
-                    )}
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 2,
+                      flexWrap: 'wrap'
+                    }}>
+                      <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                        {school.school_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        {school.available_sports && school.available_sports.length > 0 
+                          ? school.available_sports.join(' • ')
+                          : 'No sports listed'
+                        }
+                      </Typography>
+                    </Box>
                   </CardContent>
                 </Card>
               ))}
