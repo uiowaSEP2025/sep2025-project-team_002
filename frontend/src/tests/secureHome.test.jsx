@@ -35,6 +35,7 @@ global.fetch = vi.fn(() =>
 
 describe('SecureHome Component', () => {
   beforeEach(() => {
+    console.log("Running SecureHome test suite");
     // Clear mock calls between tests
     fetch.mockClear();
     
@@ -48,6 +49,7 @@ describe('SecureHome Component', () => {
   });
 
   it('renders schools list', async () => {
+    console.log("Testing schools list rendering");
     render(
       <BrowserRouter>
         <SecureHome />
