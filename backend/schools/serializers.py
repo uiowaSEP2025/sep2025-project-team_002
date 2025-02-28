@@ -3,13 +3,24 @@ from .models import Schools
 from reviews.models import Reviews
 from reviews.serializers import ReviewSerializer
 
+
 class SchoolSerializer(serializers.ModelSerializer):
     available_sports = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
 
     class Meta:
         model = Schools
-        fields = ['id', 'school_name', 'mbb', 'wbb', 'fb', 'conference', 'location', 'available_sports', 'reviews']
+        fields = [
+            "id",
+            "school_name",
+            "mbb",
+            "wbb",
+            "fb",
+            "conference",
+            "location",
+            "available_sports",
+            "reviews",
+        ]
 
     def get_available_sports(self, obj):
         sports = []
