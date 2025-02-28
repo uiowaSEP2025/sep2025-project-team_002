@@ -6,3 +6,8 @@ from .serializers import SchoolSerializer
 class SchoolListView(generics.ListAPIView):
     queryset = Schools.objects.all()
     serializer_class = SchoolSerializer
+
+
+class SchoolDetailView(generics.RetrieveAPIView):
+    queryset = Schools.objects.all()
+    serializer_class = SchoolSerializer
