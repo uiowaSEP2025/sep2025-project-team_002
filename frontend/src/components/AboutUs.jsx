@@ -56,7 +56,7 @@ function AboutUs() {
         <p><b>Samantha Pothitakis:</b> Electrical and Computer Engineering, MS student </p>
         <p><b>Rodrigo Medina:</b> Computer Science, BA student </p>
         <p><b>Jingming Liang:</b> PhD student in Electrical and Computer Engineering</p>
-        <p><b>Yusuf Halim:</b> Electrical and Computer Engineering, BSE student</p>
+        <p><b>Yusuf Halim:</b> Computer Science and Engineering, BSE student</p>
         <p><b>Anna Davis:</b> Master of Computer Science student</p>
 
         <p>WE WILLA ADD A TEAM IMAGE ON THIS PAGE TOO</p>
