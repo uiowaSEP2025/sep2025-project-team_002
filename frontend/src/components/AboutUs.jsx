@@ -41,7 +41,7 @@ function AboutUs() {
     <div style={{ maxWidth: '900px', margin: 'auto', padding: '20px', backgroundColor: "#f5f5f5" }}>
 
       <h1>Who we are!</h1>
-      <p>Welcome to Athletic Insider, your go-to platform for the latest in sports transfer insights.</p>
+      <h2>Welcome to Athletic Insider, your go-to platform for the latest in sports transfer insights.</h2>
     </div>
           </>
   );
