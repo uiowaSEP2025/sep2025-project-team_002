@@ -67,12 +67,15 @@ function Login() {
         navigate("/secure-home"); // Redirect to secure home page
       } else {
         const errorData = await response.json();
-        setMessage("Login failed: " + "Username or password is incorrect"); 
-        //(errorData.error || "Username or password is incorrect") use if trying to debug
+        setMessage("Login failed: " + (errorData.detail || errorData.error || "Invalid credentials"));
       }
     } catch (error) {
       console.error("Login error:", error);
-      setMessage("Network error: " + error.message);
+      if (error.message.includes("Failed to fetch")) {
+        setMessage("Unable to reach the server. Please check your internet connection or try again later.");
+      } else {
+        setMessage("Network error: " + error.message);
+      }
     }
   };
 
