@@ -31,20 +31,23 @@ def signup(request):
     for field in required_fields:
         if field not in data or not data[field]:
             return Response(
-                {"error": f"{field} is required."},
-                status=status.HTTP_400_BAD_REQUEST
+                {"error": f"{field} is required."}, status=status.HTTP_400_BAD_REQUEST
             )
 
     # Email format check
     if not is_valid_email(data["email"]):
-        return Response({"error": "Invalid email format."},
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Invalid email format."}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     # Password strength check
     if not is_strong_password(data["password"]):
-        return Response({
-            "error": "Password is not strong enough. Must be >=6 chars, with upper, lower, and digit."
-        }, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {
+                "error": "Password is not strong enough. Must be >=6 chars, with upper, lower, and digit."
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     try:
         user = Users.objects.create_user(
@@ -61,12 +64,11 @@ def signup(request):
         # Specifically handle duplicate email
         return Response(
             {"error": "An account with this email already exists."},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
     except Exception as e:
         # Handle other unexpected errors
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 @api_view(["POST"])
