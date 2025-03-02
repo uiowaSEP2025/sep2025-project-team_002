@@ -103,10 +103,16 @@ function Signup() {
         setTimeout(() => navigate("/login"), 1500);
       } else {
         const errorData = await response.json();
-        setMessage("Signup failed: " + (errorData.error || "Unknown error"));
+        setMessage("Signup failed: " + (errorData.detail || errorData.error || "Unknown error"));
       }
     } catch (error) {
-      setMessage("Network error: " + error.message);
+      console.error("Login error:", error);
+
+      if (error.message.includes("Failed to fetch")) {
+        setMessage("Unable to reach the server. Please check your internet connection or try again later.");
+      } else {
+        setMessage("Network error: " + error.message);
+      }
     }
   };
 

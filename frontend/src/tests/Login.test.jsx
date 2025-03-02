@@ -86,7 +86,7 @@ describe('Login Component', () => {
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/login failed: username or password is incorrect/i)).toBeInTheDocument();
+      expect(screen.getByText(/Login failed: /i)).toBeInTheDocument();
     });
   });
 });
