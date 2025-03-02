@@ -56,7 +56,7 @@ def test_login_invalid_credentials(api_client, create_user):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "detail" in response.data
     assert (
-        response.data["detail"] == "No active account found with the given credentials"
+        response.data["detail"] == "Invalid email or password. Please try again."
     )
 
 
