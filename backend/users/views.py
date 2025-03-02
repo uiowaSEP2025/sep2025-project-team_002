@@ -15,6 +15,9 @@ from django.utils.encoding import force_bytes, force_str
 from .models import Users
 from .serializers import UserSerializer
 import re
+from django.db import IntegrityError
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework.exceptions import AuthenticationFailed
 
 
 token_generator = PasswordResetTokenGenerator()
@@ -28,26 +31,22 @@ def signup(request):
     for field in required_fields:
         if field not in data or not data[field]:
             return Response(
-                {"error": f"{field} is required."}, status=status.HTTP_400_BAD_REQUEST
+                {"error": f"{field} is required."},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
     # Email format check
     if not is_valid_email(data["email"]):
-        return Response(
-            {"error": "Invalid email format."}, status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response({"error": "Invalid email format."},
+                        status=status.HTTP_400_BAD_REQUEST)
 
     # Password strength check
     if not is_strong_password(data["password"]):
-        return Response(
-            {
-                "error": "Password is not strong enough. Must be >=6 chars, with upper, lower, and digit."
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        return Response({
+            "error": "Password is not strong enough. Must be >=6 chars, with upper, lower, and digit."
+        }, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        # Use the custom manager on your Users model
         user = Users.objects.create_user(
             email=data["email"],
             first_name=data["first_name"],
@@ -57,8 +56,17 @@ def signup(request):
         )
         serializer = UserSerializer(user, many=False)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    except IntegrityError:
+        # Specifically handle duplicate email
+        return Response(
+            {"error": "An account with this email already exists."},
+            status=status.HTTP_400_BAD_REQUEST
+        )
     except Exception as e:
+        # Handle other unexpected errors
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 @api_view(["POST"])
@@ -175,13 +183,17 @@ def healthcheck(request):
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """Customize JWT response if needed"""
-
     def validate(self, attrs):
-        data = super().validate(attrs)
-        data["first_name"] = self.user.first_name
-        data["last_name"] = self.user.last_name
-        return data  # Includes first_name and last_name in the token response for extra validation
+        try:
+            data = super().validate(attrs)
+            # Add extra fields if you want
+            data["first_name"] = self.user.first_name
+            data["last_name"] = self.user.last_name
+            return data
+        except AuthenticationFailed:
+            raise AuthenticationFailed("Invalid email or password. Please try again.")
+        except TokenError as e:
+            raise AuthenticationFailed("Invalid token or credentials.")
 
 
 class LoginView(TokenObtainPairView):

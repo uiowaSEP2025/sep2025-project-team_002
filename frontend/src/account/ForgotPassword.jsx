@@ -16,14 +16,24 @@ function ForgotPassword() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
       });
-      const data = await response.json();
+
       if (response.ok) {
+        const data = await response.json();
         setMessage(data.message);
       } else {
-        setMessage(data.error);
+        const errorData = await response.json();
+        setMessage(errorData.detail || errorData.error || "Failed to send reset email.");
       }
     } catch (error) {
-      setMessage("Internet Error: " + error.message);
+      console.error("ForgotPassword error:", error);
+
+      if (error.message.includes("Failed to fetch")) {
+        setMessage(
+          "Unable to connect to the server. Check your network connection."
+        );
+      } else {
+        setMessage("Network error: " + error.message);
+      }
     }
   };
 
