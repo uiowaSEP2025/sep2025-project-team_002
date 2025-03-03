@@ -24,4 +24,25 @@ describe('Signup Component', () => {
     expect(passwordFields[0]).toBeInTheDocument();
     expect(passwordFields[1]).toBeInTheDocument();
   });
+
+   it('validates password matching', async () => {
+        render(
+            <MemoryRouter>
+                <Signup />
+            </MemoryRouter>
+        );
+
+        const passwordFields = screen.getAllByLabelText(/password/i);
+        expect(passwordFields).toHaveLength(2);
+
+
+        // Simulate user typing in the password and confirm password fields
+        fireEvent.change(passwordFields[0], { target: { value: 'password123' } });
+        fireEvent.change(passwordFields[1], { target: { value: 'password321' } });
+
+        // Wait for validation to reflect the error state
+        await waitFor(() => {
+            expect(screen.getByText(/Passwords do not match/i)).toBeInTheDocument();
+        });
+    });
 });
