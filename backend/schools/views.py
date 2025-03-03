@@ -1,13 +1,26 @@
 from rest_framework import generics
-from .models import Schools
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from .models import School
 from .serializers import SchoolSerializer
 
-
+# Public views
 class SchoolListView(generics.ListAPIView):
-    queryset = Schools.objects.all()
+    queryset = School.objects.all()
     serializer_class = SchoolSerializer
-
+    permission_classes = [AllowAny]
 
 class SchoolDetailView(generics.RetrieveAPIView):
-    queryset = Schools.objects.all()
+    queryset = School.objects.all()
     serializer_class = SchoolSerializer
+    permission_classes = [AllowAny]
+
+# Protected views
+class ProtectedSchoolListView(generics.ListCreateAPIView):
+    queryset = School.objects.all()
+    serializer_class = SchoolSerializer
+    permission_classes = [IsAuthenticated]
+
+class ProtectedSchoolDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = School.objects.all()
+    serializer_class = SchoolSerializer
+    permission_classes = [IsAuthenticated]

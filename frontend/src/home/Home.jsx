@@ -1,8 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom"
-
+import { Stack, Card, CardContent, Box, Typography } from "@mui/material";
 
 function Home() {
+  const [schools, setSchools] = useState([]);
+
+  useEffect(() => {
+    fetchSchools();
+  }, []);
+
+  const fetchSchools = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/public/schools/`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setSchools(data);
+    } catch (error) {
+      console.error('Error fetching schools:', error);
+      setSchools([]);
+    }
+  };
 
   return (
     <div>
@@ -17,6 +36,39 @@ function Home() {
         {/* Main Content */}
         <div style = {styles.container}>
             <h1> Welcome to Athletic Insider! </h1>
+            <Stack spacing={2} sx={{ px: 2 }}>
+              {schools?.map((school) => (
+                <Card 
+                  key={school.id} 
+                  sx={{ 
+                    width: '100%',
+                    cursor: 'pointer',
+                    '&:hover': {
+                      backgroundColor: '#f5f5f5'
+                    }
+                  }}
+                >
+                  <CardContent>
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 2,
+                      flexWrap: 'wrap'
+                    }}>
+                      <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                        {school.school_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        {school.available_sports && school.available_sports.length > 0 
+                          ? school.available_sports.join(' • ')
+                          : 'No sports listed'
+                        }
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
         </div>
     </div>
   );
