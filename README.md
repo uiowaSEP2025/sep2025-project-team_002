@@ -160,9 +160,11 @@ docker system prune -a
 ⚠️ Warning: This command will delete all unused containers, images and volumes. While it helps free up disk space, it can slow down future builds since Docker will have to re-download all images and rebuild everything from scratch. **If plan to restart soon, DO NOT run this command**.
 
 ---
-## 🏆 Team Members  
+## 🏆 Team Members
 
-*(Listed alphabetically by first name)*  
+[![Alt text](./frontend/public/AboutUs.png)](https://theathleticinsider.com/)
+
+*(Listed alphabetically by first name)*
 
 | Name | GitHub |
 |------|--------|
