@@ -107,6 +107,7 @@ function AccountSettings() {
             Authorization: `Bearer ${token}`
           }
         });
+
         if (response.ok) {
           const data = await response.json();
           setFormData({
@@ -116,10 +117,17 @@ function AccountSettings() {
             transfer_type: data.transfer_type || ""
           });
         } else {
-          setMessage("Failed to fetch user info.");
+          const errorData = await response.json();
+          setMessage(errorData.detail || errorData.error || "Failed to fetch user info.");
         }
       } catch (error) {
-        setMessage("Error: " + error.message);
+        console.error("AccountSettings error:", error);
+
+        if (error.message.includes("Failed to fetch")) {
+          setMessage("Unable to reach server. Check your connection.");
+        } else {
+          setMessage("Network error: " + error.message);
+        }
       }
     };
 
@@ -161,13 +169,36 @@ function AccountSettings() {
       });
 
       if (response.ok) {
-        setMessage("Account info updated successfully!");
+        setMessage("Account info updated successfully");
       } else {
-        const errorData = await response.json();
-        setMessage("Update failed: " + (errorData.error || "Unknown error"));
+        let errorText = "Unknown error";
+
+        try {
+          const errorData = await response.json();
+          // Some backends return { "error": "..."} or { "detail": "..."}
+          errorText = errorData.detail;
+        } catch (parseError) {
+          // If we fail to parse JSON, it might be an HTML error page
+          const textData = await response.text();
+          console.error("Raw error response (not JSON):", textData);
+          // Provide a fallback message to the user
+          errorText = "Server returned an unexpected error page.";
+        }
+
+        setMessage("Update failed: " + errorText);
       }
     } catch (error) {
-      setMessage("Network error: " + error.message);
+      console.error("AccountSettings error:", error);
+
+      if (error.message.includes("Failed to fetch")) {
+        setMessage("Unable to reach server. Check your connection.");
+      }
+      else if (error.message.includes("body stream already read")){
+          setMessage("Update failed: Email already in use");
+        }
+      else {
+        setMessage("Network error: " + error.message);
+      }
     }
   };
 
@@ -208,15 +239,22 @@ function AccountSettings() {
       });
 
       if (response.ok) {
+        const data = await response.json();
         // Successfully changed password
         handleClosePasswordDialog();
-        setMessage("Password changed successfully!");
+        setMessage(data.message);
       } else {
         const errorData = await response.json();
-        setPasswordError(errorData.error || "Unable to change password.");
+        setPasswordError(errorData.detail || errorData.error || "Could not change password");
       }
     } catch (error) {
-      setPasswordError("Network error: " + error.message);
+      console.error("AccountSettings error:", error);
+
+      if (error.message.includes("Failed to fetch")) {
+        setMessage("Unable to reach server. Check your connection.");
+      } else {
+        setMessage("Network error: " + error.message);
+      }
     }
   };
 
