@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Stack, Card, CardContent, Box, Typography } from "@mui/material";
 import API_BASE_URL from "../utils/config";
 
 function Home() {
+  const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
 
   useEffect(() => {
     fetchSchools();
   }, []);
+
+  const handleSchoolClick = (schoolId) => {
+    navigate(`/school/${schoolId}`);
+  };
 
   const fetchSchools = async () => {
     try {
@@ -48,6 +53,7 @@ function Home() {
                       backgroundColor: '#f5f5f5'
                     }
                   }}
+                  onClick={() => handleSchoolClick(school.id)}
                 >
                   <CardContent>
                     <Box sx={{ 
