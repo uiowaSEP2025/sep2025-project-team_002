@@ -23,11 +23,23 @@ function SchoolPage() {
   useEffect(() => {
     const fetchSchool = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/schools/${id}/`);
+        const token = localStorage.getItem('token');
+        const response = await fetch(`${API_BASE_URL}/api/schools/${id}/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         setSchool(data);
       } catch (error) {
         console.error('Error fetching school:', error);
+        // You might want to add some UI error state here
       }
     };
 

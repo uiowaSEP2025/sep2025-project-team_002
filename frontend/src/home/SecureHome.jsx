@@ -60,12 +60,38 @@ function SecureHome() {
 
   const fetchSchools = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/schools/`);
-      const data = await response.json();
+      const token = localStorage.getItem('token');
+      console.log('Fetching schools from:', `${API_BASE_URL}/api/schools/`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/schools/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      });
+      
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      
+      if (!response.ok) {
+        const text = await response.text();
+        console.log('Error response body:', text);
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // Try to get the response as text first to debug
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
+      
+      // Then parse it as JSON
+      const data = JSON.parse(responseText);
       console.log('Schools data:', data);
       setSchools(data);
     } catch (error) {
       console.error('Error fetching schools:', error);
+      console.error('Error details:', error.message);
+      setSchools([]);
     }
   };
 
