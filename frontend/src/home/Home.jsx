@@ -40,9 +40,11 @@ function Home() {
             </div>
         </nav>
         {/* Main Content */}
-        <div style = {styles.container}>
-            <h1> Welcome to Athletic Insider! </h1>
-            <Stack spacing={2} sx={{ px: 2 }}>
+        <div style={styles.container}>
+            <Typography variant="h4" sx={{ mb: 3 }}>
+                Schools
+            </Typography>
+            <Stack spacing={2} sx={{ px: 2, pb: 4 }}>
               {schools?.map((school) => (
                 <Card 
                   key={school.id} 
@@ -101,6 +103,7 @@ const styles = {
     container: {
         textAlign: "center",
         marginTop: "50px",
+        marginBottom: "50px",
     },
 };
 
