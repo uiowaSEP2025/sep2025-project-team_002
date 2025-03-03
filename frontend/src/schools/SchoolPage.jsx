@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -19,11 +19,29 @@ function SchoolPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [school, setSchool] = useState(null);
+  const isAuthenticated = !!localStorage.getItem('token');
 
   useEffect(() => {
     const fetchSchool = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/schools/${id}/`);
+        const endpoint = isAuthenticated 
+          ? `${API_BASE_URL}/api/schools/${id}/`
+          : `${API_BASE_URL}/api/public/schools/${id}/`;
+        
+        const headers = {
+          'Content-Type': 'application/json',
+        };
+
+        if (isAuthenticated) {
+          headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+        }
+
+        const response = await fetch(endpoint, { headers });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         setSchool(data);
       } catch (error) {
@@ -32,7 +50,7 @@ function SchoolPage() {
     };
 
     fetchSchool();
-  }, [id]);
+  }, [id, isAuthenticated]);
 
   const ratingFields = [
     { label: "Head Coach", field: "head_coach" },
@@ -51,7 +69,7 @@ function SchoolPage() {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
           <Button
             startIcon={<HomeIcon />}
-            onClick={() => navigate('/secure-home')}
+            onClick={() => navigate(isAuthenticated ? '/secure-home' : '/')}
             variant="contained"
           >
             Back to Home
@@ -88,9 +106,24 @@ function SchoolPage() {
 
             <Card>
               <CardContent>
-                <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
-                  Reviews
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                    Reviews
+                  </Typography>
+                  {!isAuthenticated ? (
+                    <Link to="/login" style={{ textDecoration: 'none' }}>
+                      <Button variant="contained" color="primary">
+                        Log in to Write a Review
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link to={`/review-form`} style={{ textDecoration: 'none' }}>
+                      <Button variant="contained" color="primary">
+                        Write a Review
+                      </Button>
+                    </Link>
+                  )}
+                </Box>
                 
                 {school.reviews && school.reviews.length > 0 ? (
                   school.reviews.map((review, index) => (
