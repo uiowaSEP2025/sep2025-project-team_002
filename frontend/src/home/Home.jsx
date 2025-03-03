@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom"
 import { Stack, Card, CardContent, Box, Typography } from "@mui/material";
+import API_BASE_URL from "../utils/config";
 
 function Home() {
   const [schools, setSchools] = useState([]);
@@ -11,7 +12,7 @@ function Home() {
 
   const fetchSchools = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/public/schools/`);
+      const response = await fetch(`${API_BASE_URL}/api/schools/`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
