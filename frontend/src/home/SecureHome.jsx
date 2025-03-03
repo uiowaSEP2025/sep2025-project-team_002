@@ -72,20 +72,12 @@ function SecureHome() {
       });
       
       console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
-        const text = await response.text();
-        console.log('Error response body:', text);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      // Try to get the response as text first to debug
-      const responseText = await response.text();
-      console.log('Response text:', responseText);
-      
-      // Then parse it as JSON
-      const data = JSON.parse(responseText);
+      const data = await response.json();
       console.log('Schools data:', data);
       setSchools(data);
     } catch (error) {
