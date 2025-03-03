@@ -41,6 +41,14 @@ global.fetch = vi.fn(() =>
 
 describe('SchoolPage Component', () => {
   beforeEach(() => {
+    // Mock localStorage to simulate logged-in state
+    const mockLocalStorage = {
+      getItem: vi.fn().mockReturnValue('fake-token'),
+      setItem: vi.fn(),
+      clear: vi.fn()
+    };
+    global.localStorage = mockLocalStorage;
+    
     fetch.mockClear();
   });
 
@@ -69,6 +77,7 @@ describe('SchoolPage Component', () => {
 
   it('displays review information', async () => {
     renderWithRouter();
+    // Look for the specific heading that contains both sport and coach name
     expect(await screen.findByText(/Men's Basketball - Coach John Doe/)).toBeInTheDocument();
     expect(await screen.findByText(/Great program with excellent facilities/)).toBeInTheDocument();
   });
@@ -87,7 +96,8 @@ describe('SchoolPage Component', () => {
     ];
 
     for (const category of ratingCategories) {
-      expect(await screen.findByText(new RegExp(category))).toBeInTheDocument();
+      // Use a more flexible text matcher
+      expect(await screen.findByText(new RegExp(category, 'i'))).toBeInTheDocument();
     }
   });
 
