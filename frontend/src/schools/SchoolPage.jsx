@@ -24,19 +24,11 @@ function SchoolPage() {
     const fetchSchool = async () => {
       try {
         const token = localStorage.getItem('token');
-        const isAuthenticated = !!token;
-        const endpoint = isAuthenticated ? 'schools' : 'public/schools';
-        
-        const headers = {
-          'Content-Type': 'application/json',
-        };
-        
-        if (isAuthenticated) {
-          headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        const response = await fetch(`${API_BASE_URL}/api/${endpoint}/${id}/`, {
-          headers: headers,
+        const response = await fetch(`${API_BASE_URL}/api/schools/${id}/`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
 
         if (!response.ok) {
