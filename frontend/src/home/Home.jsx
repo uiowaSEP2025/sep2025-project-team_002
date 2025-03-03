@@ -12,7 +12,7 @@ function Home() {
 
   const fetchSchools = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/schools/`);
+      const response = await fetch(`${API_BASE_URL}/api/public/schools/`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
