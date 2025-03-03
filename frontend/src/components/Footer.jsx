@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import API_BASE_URL from "../utils/config.js";
 
 function Footer() {
@@ -120,6 +121,13 @@ function Footer() {
         >
           Report Issue
         </span>
+            <span style={{ margin: '0 10px' }}>|</span>
+        <Link
+          to="/about"
+          style={{ color: '#fff', textDecoration: 'underline' }}
+        >
+          About Us
+        </Link>
       </footer>
 
       {/* Modal overlay */}
