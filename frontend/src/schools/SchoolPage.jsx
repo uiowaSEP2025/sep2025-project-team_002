@@ -24,7 +24,7 @@ function SchoolPage() {
     const fetchSchool = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/schools/${id}/`, {
+        const response = await fetch(`${API_BASE_URL}/api/schools/${id}/`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

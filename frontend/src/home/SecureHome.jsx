@@ -61,9 +61,9 @@ function SecureHome() {
   const fetchSchools = async () => {
     try {
       const token = localStorage.getItem('token');
-      console.log('Fetching schools from:', `${API_BASE_URL}/schools/`);
+      console.log('Fetching schools from:', `${API_BASE_URL}/api/schools/`);
       
-      const response = await fetch(`${API_BASE_URL}/schools/`, {
+      const response = await fetch(`${API_BASE_URL}/api/schools/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
