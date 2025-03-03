@@ -104,69 +104,70 @@ function SchoolPage() {
               </CardContent>
             </Card>
 
-            {isAuthenticated && (
-              <Card>
-                <CardContent>
-                  <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
+            <Card>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h5" sx={{ fontWeight: 700 }}>
                     Reviews
                   </Typography>
-                  
-                  {school.reviews && school.reviews.length > 0 ? (
-                    school.reviews.map((review, index) => (
-                      <Box key={index} sx={{ mb: 4 }}>
-                        <Box sx={{ mb: 2 }}>
-                          <Typography variant="h6" sx={{ mb: 1 }}>
-                            {review.sport} - Coach {review.head_coach_name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Posted on {new Date(review.created_at).toLocaleDateString()}
-                          </Typography>
-                        </Box>
-
-                        <Grid container spacing={2} sx={{ mb: 2 }}>
-                          {ratingFields.map((field) => (
-                            <Grid item xs={12} sm={6} md={3} key={field.field}>
-                              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                                <Typography variant="body2" color="text.secondary">
-                                  {field.label}
-                                </Typography>
-                                <Rating 
-                                  value={review[field.field]} 
-                                  readOnly 
-                                  max={10}
-                                />
-                              </Box>
-                            </Grid>
-                          ))}
-                        </Grid>
-
-                        <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
-                          {review.review_message}
-                        </Typography>
-
-                        <Divider sx={{ mt: 3 }} />
-                      </Box>
-                    ))
-                  ) : (
-                    <Typography variant="body1" color="text.secondary">
-                      No reviews yet
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-
-            {!isAuthenticated && (
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" sx={{ textAlign: 'center' }}>
-                    <Link to="/login" style={{ textDecoration: 'none', color: 'primary.main' }}>
-                      Log in to view and submit reviews
+                  {!isAuthenticated ? (
+                    <Link to="/login" style={{ textDecoration: 'none' }}>
+                      <Button variant="contained" color="primary">
+                        Log in to Write a Review
+                      </Button>
                     </Link>
+                  ) : (
+                    <Link to={`/review-form`} style={{ textDecoration: 'none' }}>
+                      <Button variant="contained" color="primary">
+                        Write a Review
+                      </Button>
+                    </Link>
+                  )}
+                </Box>
+                
+                {school.reviews && school.reviews.length > 0 ? (
+                  school.reviews.map((review, index) => (
+                    <Box key={index} sx={{ mb: 4 }}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography variant="h6" sx={{ mb: 1 }}>
+                          {review.sport} - Coach {review.head_coach_name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Posted on {new Date(review.created_at).toLocaleDateString()}
+                        </Typography>
+                      </Box>
+
+                      <Grid container spacing={2} sx={{ mb: 2 }}>
+                        {ratingFields.map((field) => (
+                          <Grid item xs={12} sm={6} md={3} key={field.field}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                              <Typography variant="body2" color="text.secondary">
+                                {field.label}
+                              </Typography>
+                              <Rating 
+                                value={review[field.field]} 
+                                readOnly 
+                                max={10}
+                              />
+                            </Box>
+                          </Grid>
+                        ))}
+                      </Grid>
+
+                      <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
+                        {review.review_message}
+                      </Typography>
+
+                      <Divider sx={{ mt: 3 }} />
+                    </Box>
+                  ))
+                ) : (
+                  <Typography variant="body1" color="text.secondary">
+                    No reviews yet
                   </Typography>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </CardContent>
+            </Card>
           </Stack>
         ) : (
           <Typography>Loading...</Typography>
