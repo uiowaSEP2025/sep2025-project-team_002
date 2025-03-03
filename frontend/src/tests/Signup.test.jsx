@@ -6,6 +6,6 @@ import App from '../App.jsx';
 
 test('renders welcome message', () => {
   render(<App />);
-  const linkElement = screen.getByText(/Are you a transfer athlete/);
+  const linkElement = screen.getByText(/Sign Up/i);
   expect(linkElement).toBeInTheDocument();
 });
