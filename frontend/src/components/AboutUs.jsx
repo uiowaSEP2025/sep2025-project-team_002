@@ -1,16 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import annaImage from '../assets/anna.png';
+import yusufImage from '../assets/yusuf.png';
+import samImage from '../assets/sam.png';
+import rodImage from '../assets/rod.png';
+import jingmingImage from '../assets/jingming.png';
+
 
 function AboutUs() {
   const navigate = useNavigate();
 
   // Assign a unique image to each team member
   const teamMembers = [
-    { name: "Samantha Pothitakis", role: "Electrical and Computer Engineering, MS student", image: annaImage },
-    { name: "Rodrigo Medina", role: "Computer Science, BA student", image: annaImage },
-    { name: "Jingming Liang", role: "Electrical and Computer Engineering PhD student", image: annaImage },
-    { name: "Yusuf Halim", role: "Computer Science and Engineering, BSE student", image: annaImage },
+    { name: "Samantha Pothitakis", role: "Electrical and Computer Engineering, MS student", image: samImage },
+    { name: "Rodrigo Medina", role: "Computer Science, BS student", image: rodImage },
+    { name: "Jingming Liang", role: "Electrical and Computer Engineering PhD student", image: jingmingImage },
+    { name: "Yusuf Halim", role: "Computer Science and Engineering, BSE student", image: yusufImage },
     { name: "Anna Davis", role: "Master of Computer Science student", image: annaImage }
   ];
 
@@ -50,7 +55,7 @@ function AboutUs() {
       </div>
 
       <div style={{ maxWidth: '900px', margin: 'auto', padding: '20px', backgroundColor: "#f5f5f5" }}>
-        <h1>Who we are!</h1>
+        <h1>Who we are:</h1>
         <h2>Your go-to platform for the latest in sports transfer insights.</h2>
         <p>We’re a team of five passionate students from the University of Iowa who came together with a shared mission:
           to make the student-athlete transfer process smoother, more transparent, and fair.
@@ -68,7 +73,7 @@ function AboutUs() {
             <img
               src={member.image}
               alt={member.name}
-              style={{ width: '175px', height: '175px', borderRadius: '5%', objectFit: 'cover', marginBottom: '10px' }}
+              style={{ width: '175px', height: '175px',  objectFit: 'cover', marginBottom: '10px' }}
             />
             <p><b>{member.name}</b> <br /> {member.role}</p>
           </div>
