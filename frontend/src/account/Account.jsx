@@ -65,6 +65,7 @@ function Account() {
             Authorization: `Bearer ${token}`
           }
         });
+
         if (response.ok) {
           const data = await response.json();
           setUser({
@@ -74,10 +75,17 @@ function Account() {
             transfer_type: data.transfer_type || ""
           });
         } else {
-          setMessage("Failed to fetch user info.");
+          const errorData = await response.json();
+          setMessage(errorData.detail || errorData.error || "Unknown Error");
         }
       } catch (error) {
-        setMessage("Error: " + error.message);
+        console.error("Account page error:", error);
+
+        if (error.message.includes("Failed to fetch")) {
+          setMessage("Cannot connect to the server. Please check your network.");
+        } else {
+          setMessage("Network error: " + error.message);
+        }
       }
     };
     fetchUserInfo();

@@ -25,17 +25,27 @@ function ResetPassword() {
           confirm_password: newPassword,
         }),
       });
-      const data = await response.json();
+
       if (response.ok) {
-        setMessage("Your password has been reset successfully. Please log in.");
+        const data = await response.json();
+        setMessage(data.message);
         setTimeout(() => {
           navigate("/login");
         }, 2000);
       } else {
-        setMessage(data.error);
+        const errorData = await response.json();
+        setMessage(errorData.detail || errorData.error || "Unable to reset password.");
       }
     } catch (err) {
-      setMessage("Network error: " + err.message);
+      console.error("ResetPassword error:", err);
+
+      if (err.message.includes("Failed to fetch")) {
+        setMessage(
+          "Unable to connect to the server. Check your network connection."
+        );
+      } else {
+        setMessage("Network error: " + err.message);
+      }
     }
   };
 

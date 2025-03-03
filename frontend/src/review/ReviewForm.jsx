@@ -185,6 +185,39 @@ const ReviewForm = () => {
   };
 
   return (
+      <>
+        <div style={{
+        maxWidth: '800px',
+        margin: 'auto',
+        padding: '20px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'relative'
+      }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            padding: '12px 25px',
+            backgroundColor: '#007bff',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            position: 'absolute',
+            left: 0
+          }}
+        >
+          ← Back
+        </button>
+        <h2 style={{
+          flex: 1,
+          textAlign: 'center',
+          margin: 0
+        }}>
+          Athletic Insider
+        </h2>
+      </div>
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: 4 }}>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={6}>
@@ -344,6 +377,7 @@ const ReviewForm = () => {
         </Grid>
       </Grid>
     </Box>
+        </>
   );
 };
 
