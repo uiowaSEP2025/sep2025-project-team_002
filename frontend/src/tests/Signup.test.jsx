@@ -3,8 +3,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Signup from "../account/Signup.jsx";
 import userEvent from "@testing-library/user-event";
-import { act } from 'react';
-
 
 
 describe('Signup Component', () => {
@@ -21,9 +19,6 @@ describe('Signup Component', () => {
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
 
     const passwordFields = screen.getAllByLabelText(/password/i);
-    //expect(passwordFields).toHaveLength(2);
-
-    //const confrimPasswordField = screen.getByLabelText(/confirm password/i);
 
     expect(passwordFields[0]).toBeInTheDocument();
     expect(passwordFields[1]).toBeInTheDocument();
@@ -37,8 +32,9 @@ describe('Signup Component', () => {
         );
 
         const passwordFields = screen.getAllByLabelText(/password/i);
-        //expect(passwordFields).toHaveLength(2);
-
+        // Might need to expect the number of variables here
+            // It's 3 (password, confirm password, and show password
+            // As of 03/05/2025
 
         // Simulate user typing in the password and confirm password fields
         fireEvent.change(passwordFields[0], { target: { value: 'password123' } });
@@ -135,4 +131,32 @@ describe('Signup Component', () => {
  });
 
      */
+
+    it('should update password strength bar based on input', async () => {
+        render(
+            <MemoryRouter>
+                <Signup />
+            </MemoryRouter>
+         );
+
+        const passwordFields = screen.getAllByLabelText(/password/i);
+        const passwordInput = passwordFields[0];
+        const strengthFill = screen.getByTestId('password-strength-fill');
+
+          // Simulate typing a weak password
+          fireEvent.change(passwordInput, { target: { value: 'weak' } });
+          expect(strengthFill).toHaveStyle({ width: '25%' });
+
+          // Simulate typing a fair password
+          fireEvent.change(passwordInput, { target: { value: "fairer"}});
+          expect(strengthFill).toHaveStyle({ width: '50%' });
+
+          // Simulate typing a strong password
+          fireEvent.change(passwordInput, { target: { value: "Str0ng"}});
+          expect(strengthFill).toHaveStyle({ width: '70%' });
+
+          // Simulate typing a Very Strong password
+          fireEvent.change(passwordInput, { target: { value: "Very_Str0ng"}});
+          expect(strengthFill).toHaveStyle({ width: '100%' });
+    });
 });
