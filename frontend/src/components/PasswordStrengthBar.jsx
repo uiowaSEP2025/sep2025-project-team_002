@@ -76,6 +76,7 @@ const PasswordStrengthBar = ({ password }) => {
       >
         {/* Filled portion */}
         <Box
+            data-testid="password-strength-fill"
           sx={{
             width: `${percentage}%`,
             backgroundColor: color,
