@@ -294,7 +294,7 @@ function Signup() {
                   endAdornment: (
                     <InputAdornment position="end">
                       {/* Show/Hide password icon */}
-                      <IconButton edge="end" onClick={toggleShowPassword}>
+                      <IconButton edge="end" onClick={toggleShowPassword} aria-label = "toggle password visibility">
                         {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                       </IconButton>
                       {/* Tooltip (min requirements) */}
