@@ -3,6 +3,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Signup from "../account/Signup.jsx";
 import userEvent from "@testing-library/user-event";
+import { act } from 'react';
+
 
 
 describe('Signup Component', () => {
@@ -104,4 +106,33 @@ describe('Signup Component', () => {
             expect(screen.queryByText(/invalid email address/i)).not.toBeInTheDocument();
         });
     });
+
+    /*
+    it("should toggle password visibility", async () => {
+        render(
+            <MemoryRouter>
+                <Signup />
+            </MemoryRouter>
+        );
+
+        const passwordFields = screen.getAllByLabelText(/password/i);
+        let passwordInput = passwordFields[0];
+        const toggleButton = screen.getByRole("button", { name: /toggle password visibility/i });
+
+        console.log("Before Click - Password Type:", passwordInput.getAttribute("type")); // Should log "password"
+
+        expect(passwordInput).toHaveAttribute("type", "password");
+
+        await userEvent.click(toggleButton);
+        //await userEvent.click(toggleButton);
+
+        await waitFor(() => {
+            expect(passwordInput).toHaveAttribute("type","text");
+        });
+        console.log("Afer Click - Password Type:", passwordInput.getAttribute("type"));
+
+        //expect(passwordInput).toHaveAttribute("type","text");
+ });
+
+     */
 });
