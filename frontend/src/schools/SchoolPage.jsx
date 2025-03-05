@@ -47,6 +47,7 @@ function SchoolPage() {
         setSchool(data);
       } catch (error) {
         console.error('Error fetching school:', error);
+        Bugsnag.notify(error);
       }
     };
 
