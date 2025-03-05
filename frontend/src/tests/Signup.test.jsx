@@ -103,35 +103,6 @@ describe('Signup Component', () => {
         });
     });
 
-    /*
-    it("should toggle password visibility", async () => {
-        render(
-            <MemoryRouter>
-                <Signup />
-            </MemoryRouter>
-        );
-
-        const passwordFields = screen.getAllByLabelText(/password/i);
-        let passwordInput = passwordFields[0];
-        const toggleButton = screen.getByRole("button", { name: /toggle password visibility/i });
-
-        console.log("Before Click - Password Type:", passwordInput.getAttribute("type")); // Should log "password"
-
-        expect(passwordInput).toHaveAttribute("type", "password");
-
-        await userEvent.click(toggleButton);
-        //await userEvent.click(toggleButton);
-
-        await waitFor(() => {
-            expect(passwordInput).toHaveAttribute("type","text");
-        });
-        console.log("Afer Click - Password Type:", passwordInput.getAttribute("type"));
-
-        //expect(passwordInput).toHaveAttribute("type","text");
- });
-
-     */
-
     it('should update password strength bar based on input', async () => {
         render(
             <MemoryRouter>
