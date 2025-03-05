@@ -90,4 +90,18 @@ describe('Signup Component', () => {
             expect(screen.getByText(/invalid email address/i)).toBeInTheDocument();
         });
     });
+
+    it("should not show an error for a valid email format", async () => {
+        render(
+            <MemoryRouter>
+                <Signup />
+            </MemoryRouter>
+        );
+        const emailInput = screen.getByLabelText(/email/i);
+        userEvent.type(emailInput, "test@example.com");
+        await waitFor(()=>{
+            fireEvent.blur(emailInput);
+            expect(screen.queryByText(/invalid email address/i)).not.toBeInTheDocument();
+        });
+    });
 });
