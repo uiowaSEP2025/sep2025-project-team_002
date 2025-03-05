@@ -65,14 +65,6 @@ function SchoolPage() {
     { label: "NIL Opportunity", field: "nil_opportunity" },
   ];
 
-  const testBugsnag = () => {
-    // Test error monitoring
-    Bugsnag.notify(new Error('Test error from SchoolPage'));
-    
-    // You can also test breadcrumbs
-    Bugsnag.leaveBreadcrumb('User clicked test button');
-  };
-
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", pt: 4 }}>
       <Container maxWidth="lg">
@@ -83,13 +75,6 @@ function SchoolPage() {
             variant="contained"
           >
             Back to Home
-          </Button>
-          <Button
-            onClick={testBugsnag}
-            variant="contained"
-            color="secondary"
-          >
-            Test Bugsnag
           </Button>
         </Box>
 
