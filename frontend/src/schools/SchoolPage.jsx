@@ -27,7 +27,7 @@ function SchoolPage() {
       try {
         const endpoint = isAuthenticated 
           ? `${API_BASE_URL}/api/schools/${id}/`
-          : `${API_BASE_URL}/api/public/schoold/${id}/`;
+          : `${API_BASE_URL}/api/public/schools/${id}/`;
         
         const headers = {
           'Content-Type': 'application/json',

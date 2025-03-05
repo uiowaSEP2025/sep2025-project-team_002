@@ -16,6 +16,7 @@ import {
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import API_BASE_URL from "../utils/config";
+import Bugsnag from '@bugsnag/js';
 
 function SecureHome() {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ function SecureHome() {
     } catch (error) {
       console.error('Error fetching schools:', error);
       console.error('Error details:', error.message);
+      Bugsnag.notify(error);
       setSchools([]);
     }
   };

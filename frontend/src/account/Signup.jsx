@@ -23,6 +23,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from '../utils/config.js';  // Adjust the path based on your file structure
+import Bugsnag from '@bugsnag/js';
 
 // Use the PasswordStrengthBar you created
 import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
@@ -107,6 +108,7 @@ function Signup() {
       }
     } catch (error) {
       console.error("Login error:", error);
+      Bugsnag.notify(error);
 
       if (error.message.includes("Failed to fetch")) {
         setMessage("Unable to reach the server. Please check your internet connection or try again later.");
