@@ -67,4 +67,27 @@ describe('Signup Component', () => {
             expect(screen.getByText(/Passwords match/i)).toBeInTheDocument();
         });
     });
+
+    it.each([
+        ["missing @", "invalidemail.com"],
+        ["missing domain", "invalid@.com"],
+        ["missing username", "@domain.com"],
+        ["consecutive dots", "user..name@email.com"],
+        ["spaces included", "user name@email.com"],
+        ["missing .com or other", "user@domain"],
+        ["special chars", "user@domain!com"]
+    ])("should give an error for an invalid email format: %s", async (_, invalidEmail) => {
+        render(
+            <MemoryRouter>
+                <Signup />
+            </MemoryRouter>
+        );
+        const emailInput = screen.getByLabelText(/email/i);
+        userEvent.clear(emailInput);
+        userEvent.type(emailInput, invalidEmail);
+        await waitFor(() => {
+            fireEvent.blur(emailInput); // Simulate moving out of the field
+            expect(screen.getByText(/invalid email address/i)).toBeInTheDocument();
+        });
+    });
 });
