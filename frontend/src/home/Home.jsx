@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"
-import { Stack, Card, CardContent, Box, Typography } from "@mui/material";
+import { Stack, Card, CardContent, Box, Typography, TextField } from "@mui/material";
 import API_BASE_URL from "../utils/config";
 
 function Home() {
   const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
    useEffect(() => {
     const token = localStorage.getItem("token");
@@ -34,6 +35,8 @@ function Home() {
     }
   };
 
+  const filteredSchools = schools.filter((school) => school.school_name.toLowerCase().includes(searchQuery.toLowerCase()));
+
   return (
     <div>
         {/* Navbar */}
@@ -45,48 +48,54 @@ function Home() {
             </div>
         </nav>
         {/* Main Content */}
-        <div style={styles.container}>
-            <Typography variant="h4" sx={{ mb: 3 }}>
-                Schools
+        <div style={styles.searchContainer}>
+            <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
+                Explore the Schools and their Sports!
             </Typography>
-            <Stack spacing={2} sx={{ px: 2, pb: 4 }}>
-              {schools?.map((school) => (
-                <Card 
-                  key={school.id} 
-                  sx={{ 
-                    width: '100%',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: '#f5f5f5'
-                    }
-                  }}
-                  onClick={() => handleSchoolClick(school.id)}
-                >
-                  <CardContent>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 2,
-                      flexWrap: 'wrap'
-                    }}>
-                      <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
-                        {school.school_name}
-                      </Typography>
-                      <Typography variant="body2">
-                        {school.available_sports && school.available_sports.length > 0 
-                          ? school.available_sports.join(' • ')
-                          : 'No sports listed'
-                        }
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              ))}
-            </Stack>
+
+            {/* Search Bar */}
+            <TextField
+                label="Search Schools"
+                variant="outlined"
+                fullWidth
+                sx={{ width: "50%" }}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+            />
         </div>
+
+
+        {/* Schools List */}
+        <Stack spacing={2} sx={{ px: 2, pb: 4, textAlign: "center" }}>
+            {filteredSchools.length > 0 ? (
+                filteredSchools.map((school) => (
+                    <Card
+                        key={school.id}
+                        sx={{ width: "100%", cursor: "pointer", "&:hover": { backgroundColor: "#f5f5f5" } }}
+                        onClick={() => navigate(`/school/${school.id}`)}
+                    >
+                        <CardContent>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+                                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                                    {school.school_name}
+                                </Typography>
+                                <Typography variant="body2">
+                                    {school.available_sports?.length > 0
+                                        ? school.available_sports.join(" • ")
+                                        : "No sports listed"}
+                                </Typography>
+                            </Box>
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                <Typography variant="h6" sx={{ mt: 3 }}>No results found</Typography>
+            )}
+        </Stack>
     </div>
   );
 }
+
 
 const styles = {
     navbar: {
@@ -104,6 +113,14 @@ const styles = {
         color: "#fff",
         textDecoration: "none",
         margin: "0 10px",
+    },
+    searchContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "10px",
+        marginTop: "20px",
+        marginBottom: "20px",
     },
     container: {
         textAlign: "center",
