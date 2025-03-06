@@ -238,6 +238,7 @@ function Signup() {
                 label="First Name"
                 name="first_name"
                 value={formData.first_name}
+                id="signup-first-name"
                 onChange={handleChange}
                 required
                 InputProps={{ sx: { borderRadius: "40px" } }}
@@ -248,6 +249,7 @@ function Signup() {
                 label="Last Name"
                 name="last_name"
                 value={formData.last_name}
+                id="signup-last-name"
                 onChange={handleChange}
                 required
                 InputProps={{ sx: { borderRadius: "40px" } }}
@@ -258,6 +260,7 @@ function Signup() {
                 label="Email"
                 name="email"
                 type="email"
+                id="signup-email"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -280,6 +283,7 @@ function Signup() {
                 label="Password"
                 name="password"
                 type={showPassword ? "text" : "password"}
+                id="signup-password"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -312,6 +316,7 @@ function Signup() {
                 label="Confirm Password"
                 name="verifyPassword"
                 type={showConfirmPassword ? "text" : "password"}
+                id="signup-confirm-password"
                 value={formData.verifyPassword}
                 onChange={handleChange}
                 required
@@ -358,12 +363,13 @@ function Signup() {
                   value={formData.transferType}
                   onChange={handleChange}
                 >
-                  <FormControlLabel value="transfer_in" control={<Radio />} label="Transfer In" />
-                  <FormControlLabel value="transfer_out" control={<Radio />} label="Transfer Out" />
+                  <FormControlLabel value="transfer_in" control={<Radio id="signup-transfer-in" />} label="Transfer In" />
+                  <FormControlLabel value="transfer_out" control={<Radio id="signup-transfer-out" />} label="Transfer Out" />
                 </RadioGroup>
               </FormControl>
 
               <Button
+                id="signup-button"
                 type="submit"
                 variant="contained"
                 fullWidth

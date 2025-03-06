@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
-import SecureHome from '../home/SecureHome';
+import SecureHome from '../../home/SecureHome.jsx';
 
 // Mock the authentication state
 const mockAuthState = {

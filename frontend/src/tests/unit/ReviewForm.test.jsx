@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 import {expect, vi} from "vitest";
 import { BrowserRouter } from "react-router-dom";
-import ReviewForm from "../review/ReviewForm";
+import ReviewForm from "../../review/ReviewForm.jsx";
 
 vi.mock("../utils/config", () => ({
   default: "http://localhost:8000",

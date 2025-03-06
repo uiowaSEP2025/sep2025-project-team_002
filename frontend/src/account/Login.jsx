@@ -196,6 +196,7 @@ function Login() {
               margin="normal"
               label="Email"
               name="email"
+              id="email"
               type="email"
               value={formData.email}
               onChange={handleChange}
@@ -208,6 +209,7 @@ function Login() {
               label="Password"
               name="password"
               type="password"
+              id="password"
               value={formData.password}
               onChange={handleChange}
               required
@@ -223,6 +225,7 @@ function Login() {
               </Typography>
             </Box>
             <Button
+              id="login-button"
               type="submit"
               variant="contained"
               fullWidth

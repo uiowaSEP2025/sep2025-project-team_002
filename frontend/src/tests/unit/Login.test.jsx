@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
-import Login from "../account/Login.jsx";
+import Login from "../../account/Login.jsx";
 import { useNavigate } from "react-router-dom";
 
 // Mock the navigate function from react-router-dom
