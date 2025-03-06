@@ -78,7 +78,7 @@ jobs:
         run: |
           docker compose --env-file backend/.env exec -T backend pytest --cov=. --cov-report=term-missing
 
-      - name: Run Jest tests
+      - name: Run Vitest tests
         run: |
           docker compose --env-file backend/.env exec -T frontend yarn test:coverage
 
@@ -88,16 +88,16 @@ jobs:
       - name: Check Selenium Logs
         run: docker logs $(docker ps -q --filter "ancestor=selenium/standalone-chrome")
 
-      - name: Wait for Selenium to be ready
+      - name: Wait for Selenium to be healthy
         run: |
-          echo "Waiting for Selenium to be ready..."
+          echo "Waiting for Selenium to be healthy..."
           RETRIES=10
           COUNT=0
-          until curl -sSf http://localhost:4444/wd/hub/status | grep -q '"ready":true'; do
-            echo "Selenium is unavailable - retrying... ($COUNT/$RETRIES)"
+          until [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q selenium_chrome))" == "healthy" ]; do
+            echo "Selenium is not healthy - retrying... ($COUNT/$RETRIES)"
             COUNT=$((COUNT+1))
             if [ "$COUNT" -ge "$RETRIES" ]; then
-              echo "Selenium did not become ready in time. Exiting..."
+              echo "Selenium did not become healthy in time. Exiting..."
               exit 1
             fi
             sleep 5
