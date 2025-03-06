@@ -8,8 +8,13 @@ function Home() {
   const [schools, setSchools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    fetchSchools();
+   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/secure-home");
+    } else {
+      fetchSchools();
+    }
   }, []);
 
   const handleSchoolClick = (schoolId) => {
