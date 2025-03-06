@@ -166,7 +166,7 @@ docker system prune -a
 ---
 ## 🏆 Team Members
 
-[![Alt text](./frontend/public/AboutUs.png)](https://theathleticinsider.com/)
+[![Alt text](./frontend/public/AboutUs.png)](https://theathleticinsider.com/about)
 
 *(Listed alphabetically by first name)*
 
