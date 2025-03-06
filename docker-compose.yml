@@ -48,6 +48,11 @@ services:
       - transfer_network
     depends_on:
       - frontend
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4444/wd/hub/status" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
 
 networks:
   transfer_network:
