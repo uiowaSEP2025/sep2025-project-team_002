@@ -93,7 +93,7 @@ jobs:
           echo "Waiting for Selenium to be healthy..."
           RETRIES=10
           COUNT=0
-          until [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q selenium_chrome))" == "healthy" ]; do
+          until [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q selenium))" == "healthy" ]; do
             echo "Selenium is not healthy - retrying... ($COUNT/$RETRIES)"
             COUNT=$((COUNT+1))
             if [ "$COUNT" -ge "$RETRIES" ]; then
