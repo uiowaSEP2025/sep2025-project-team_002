@@ -43,59 +43,63 @@ function Home() {
             </div>
         </nav>
         {/* Main Content */}
-        <div style={styles.container}>
-            <Typography variant="h4" sx={{ mb: 3 }}>
-                Schools
+        <div style={styles.searchContainer}>
+            <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
+                Explore the Schools!
             </Typography>
 
             {/* Search Bar */}
             <TextField
-                label="Search schools..."
+                label="Search Schools"
                 variant="outlined"
                 fullWidth
-                sx={{ mb: 2 }}
+                sx={{ width: "50%" }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
             />
+        </div>
 
+      {/* Show schools only if a search query exists */}
+            {/* Show schools only if there’s a search query */}
+      {searchQuery && (
+        <div style={styles.container}>
+          {filteredSchools.length > 0 ? (
             <Stack spacing={2} sx={{ px: 2, pb: 4 }}>
-                {filteredSchools.length > 0 ? (
-                    filteredSchools.map((school) => (
+              {filteredSchools.map((school) => (
                 <Card
-                    key={school.id}
-                    sx={{
+                  key={school.id}
+                  sx={{
                     width: "100%",
                     cursor: "pointer",
-                    "&:hover": { backgroundColor: "#f5f5f5" },
-                    }}
-                    onClick={() => handleSchoolClick(school.id)}
+                    "&:hover": {
+                      backgroundColor: "#f5f5f5",
+                    },
+                  }}
+                  onClick={() => handleSchoolClick(school.id)}
                 >
-                <CardContent>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 2,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
-                      {school.school_name}
-                    </Typography>
-                    <Typography variant="body2">
-                      {school.available_sports && school.available_sports.length > 0
-                        ? school.available_sports.join(" • ")
-                        : "No sports listed"}
-                    </Typography>
-                  </Box>
-                </CardContent>
-              </Card>
-            ))
+                  <CardContent>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+                      <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                        {school.school_name}
+                      </Typography>
+                      <Typography variant="body2">
+                        {school.available_sports.length > 0
+                          ? school.available_sports.join(" • ")
+                          : "No sports listed"}
+                      </Typography>
+                    </Box>
+                  </CardContent>
+                </Card>
+              ))}
+            </Stack>
           ) : (
-            <Typography variant="body1">No schools found</Typography>
+            // "No results found" message when there are no matching schools
+            <Typography variant="h6" sx={{ mt: 3, textAlign: "center", color: "gray" }}>
+              No results found
+            </Typography>
           )}
-        </Stack>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -117,6 +121,14 @@ const styles = {
         color: "#fff",
         textDecoration: "none",
         margin: "0 10px",
+    },
+    searchContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "10px",
+        marginTop: "20px",
+        marginBottom: "20px",
     },
     container: {
         textAlign: "center",
