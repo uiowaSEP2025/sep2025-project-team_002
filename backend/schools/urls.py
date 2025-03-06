@@ -1,9 +1,11 @@
+
 from django.urls import path
 from .views import (
     SchoolListView,
     SchoolDetailView,
     ProtectedSchoolListView,
     ProtectedSchoolDetailView,
+    get_schools,
 )
 
 urlpatterns = [
@@ -19,4 +21,5 @@ urlpatterns = [
     path(
         "schools/<int:pk>/", ProtectedSchoolDetailView.as_view(), name="school-detail"
     ),
+    path("api/public/schools/", get_schools, name="get_schools"),
 ]
