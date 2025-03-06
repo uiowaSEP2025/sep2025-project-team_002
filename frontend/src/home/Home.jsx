@@ -45,7 +45,7 @@ function Home() {
         {/* Main Content */}
         <div style={styles.searchContainer}>
             <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
-                Explore the Schools!
+                Explore the Schools and their Sports!
             </Typography>
 
             {/* Search Bar */}
@@ -59,47 +59,34 @@ function Home() {
             />
         </div>
 
-      {/* Show schools only if a search query exists */}
-            {/* Show schools only if there’s a search query */}
-      {searchQuery && (
-        <div style={styles.container}>
-          {filteredSchools.length > 0 ? (
-            <Stack spacing={2} sx={{ px: 2, pb: 4 }}>
-              {filteredSchools.map((school) => (
-                <Card
-                  key={school.id}
-                  sx={{
-                    width: "100%",
-                    cursor: "pointer",
-                    "&:hover": {
-                      backgroundColor: "#f5f5f5",
-                    },
-                  }}
-                  onClick={() => handleSchoolClick(school.id)}
-                >
-                  <CardContent>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                      <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
-                        {school.school_name}
-                      </Typography>
-                      <Typography variant="body2">
-                        {school.available_sports.length > 0
-                          ? school.available_sports.join(" • ")
-                          : "No sports listed"}
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              ))}
-            </Stack>
-          ) : (
-            // "No results found" message when there are no matching schools
-            <Typography variant="h6" sx={{ mt: 3, textAlign: "center", color: "gray" }}>
-              No results found
-            </Typography>
-          )}
-        </div>
-      )}
+
+        {/* Schools List */}
+        <Stack spacing={2} sx={{ px: 2, pb: 4, textAlign: "center" }}>
+            {filteredSchools.length > 0 ? (
+                filteredSchools.map((school) => (
+                    <Card
+                        key={school.id}
+                        sx={{ width: "100%", cursor: "pointer", "&:hover": { backgroundColor: "#f5f5f5" } }}
+                        onClick={() => navigate(`/school/${school.id}`)}
+                    >
+                        <CardContent>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+                                <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                                    {school.school_name}
+                                </Typography>
+                                <Typography variant="body2">
+                                    {school.available_sports?.length > 0
+                                        ? school.available_sports.join(" • ")
+                                        : "No sports listed"}
+                                </Typography>
+                            </Box>
+                        </CardContent>
+                    </Card>
+                ))
+            ) : (
+                <Typography variant="h6" sx={{ mt: 3 }}>No results found</Typography>
+            )}
+        </Stack>
     </div>
   );
 }
