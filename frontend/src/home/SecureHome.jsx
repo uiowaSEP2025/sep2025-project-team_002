@@ -60,12 +60,30 @@ function SecureHome() {
 
   const fetchSchools = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/schools/`);
+      const token = localStorage.getItem('token');
+      console.log('Fetching schools from:', `${API_BASE_URL}/api/schools/`);
+      
+      const response = await fetch(`${API_BASE_URL}/api/schools/`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      });
+      
+      console.log('Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       console.log('Schools data:', data);
       setSchools(data);
     } catch (error) {
       console.error('Error fetching schools:', error);
+      console.error('Error details:', error.message);
+      setSchools([]);
     }
   };
 
