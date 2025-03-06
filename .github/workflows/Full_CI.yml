@@ -82,6 +82,25 @@ jobs:
         run: |
           docker compose --env-file backend/.env exec -T frontend yarn test:coverage
 
+      - name: Wait for Selenium to be ready
+        run: |
+          echo "Waiting for Selenium to be ready..."
+          RETRIES=10
+          COUNT=0
+          until curl -sSf http://localhost:4444/wd/hub/status | grep '"ready":true'; do
+            echo "Selenium is unavailable - retrying... ($COUNT/$RETRIES)"
+            COUNT=$((COUNT+1))
+            if [ "$COUNT" -ge "$RETRIES" ]; then
+              echo "Selenium did not become ready in time. Exiting..."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "Selenium is ready!"
+
+      - name: Run Selenium tests
+        run: |
+          docker compose --env-file backend/.env exec -T frontend yarn selenium
 
       - name: Stop Docker containers
         run: |
