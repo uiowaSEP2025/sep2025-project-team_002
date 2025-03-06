@@ -105,6 +105,10 @@ docker exec -it transfer_portal_backend pytest
 docker exec -it transfer_portal_frontend yarn test:coverage
 ```
 
+- **Run selenium tests**:
+```bash
+docker exec -it transfer_portal_frontend yarn selenium
+```
 ### 📦 Generate new migration files
 
 **If Django models have changed**, create migration files before applying migrations:
