@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
-import Signup from "../account/Signup.jsx";
+import Signup from "../../account/Signup.jsx";
 import userEvent from "@testing-library/user-event";
 
 
@@ -110,10 +110,6 @@ describe('Signup Component', () => {
             </MemoryRouter>
          );
 // This will be the testing file for Frontend Signup
-import React from 'react';
-import { expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import App from '../../App.jsx';
 
         const passwordFields = screen.getAllByLabelText(/password/i);
         const passwordInput = passwordFields[0];

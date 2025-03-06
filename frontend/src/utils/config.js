@@ -1,3 +1,5 @@
+/* global navigator */
+
 const isSelenium = navigator.webdriver === true;
 
 const API_BASE_URL =
