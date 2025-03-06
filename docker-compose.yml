@@ -46,6 +46,8 @@ services:
     shm_size: "2g"
     networks:
       - transfer_network
+    depends_on:
+      - frontend
 
 networks:
   transfer_network:

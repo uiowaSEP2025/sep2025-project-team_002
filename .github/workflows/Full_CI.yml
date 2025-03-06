@@ -87,7 +87,7 @@ jobs:
           echo "Waiting for Selenium to be ready..."
           RETRIES=10
           COUNT=0
-          until curl -sSf http://localhost:4444/wd/hub/status | grep '"ready":true'; do
+          until curl -sSf http://localhost:4444/wd/hub/status | grep -q '"ready":true'; do
             echo "Selenium is unavailable - retrying... ($COUNT/$RETRIES)"
             COUNT=$((COUNT+1))
             if [ "$COUNT" -ge "$RETRIES" ]; then
@@ -97,6 +97,9 @@ jobs:
             sleep 5
           done
           echo "Selenium is ready!"
+
+      - name: Check running containers
+        run: docker ps -a
 
       - name: Run Selenium tests
         run: |
