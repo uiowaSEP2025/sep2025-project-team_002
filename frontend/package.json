@@ -38,7 +38,9 @@
     "prettier": "^3.5.1",
     "rimraf": "^6.0.1",
     "vite": "^6.1.1",
-    "vitest": "^3.0.6"
+    "vitest": "^3.0.6",
+    "selenium-webdriver": "^4.11.0",
+    "mocha": "^10.0.0"
   },
   "scripts": {
     "dev": "vite --host",
@@ -48,7 +50,8 @@
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage --no-watch",
     "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
-    "lint:fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix"
+    "lint:fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
+    "selenium": "mocha 'src/tests/selenium/**/*.test.js'"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

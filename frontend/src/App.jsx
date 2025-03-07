@@ -61,7 +61,14 @@ function App() {
                 </RequireAuth>
               }
             />
-            <Route path="/review-form" element={<ReviewForm />} />
+            <Route
+                path="/review-form"
+                element={
+                  <RequireAuth>
+                    <ReviewForm />
+                  </RequireAuth>
+                }
+              />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/school/:id" element={<SchoolPage />} />
           </Routes>

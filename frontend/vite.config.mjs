@@ -18,6 +18,7 @@ export default defineConfig(({ mode }) => {
         }
       },
       allowedHosts: [
+        'frontend',
         'localhost',
         'theathleticinsider.com'
       ]

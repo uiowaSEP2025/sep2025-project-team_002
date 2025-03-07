@@ -3,7 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
-import Home from '../home/Home.jsx';
+import Home from '../../home/Home.jsx';
 
 describe('App Component', () => {
   beforeEach(() => {
@@ -30,7 +30,7 @@ describe('App Component', () => {
         <Home />
       </BrowserRouter>
     );
-    const schoolsElement = screen.getByText('Schools');
+    const schoolsElement = screen.getByText('Explore the Schools and their Sports!');
     expect(schoolsElement).toBeInTheDocument();
   });
 

@@ -1,6 +1,8 @@
 # TEAM_002: Athletic Insider
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/4tPelvOm)
 
+[![Alt text](./frontend/public/Poster.png)](https://theathleticinsider.com/)
+
 Welcome to the **Athletic Insider** project! This web application is designed to support student-athletes in their transfer and recruiting journeys. It allows athletes to anonymously rate their experiences at different universities!
 
 ## 🌐 Deployment Site
@@ -103,6 +105,10 @@ docker exec -it transfer_portal_backend pytest
 docker exec -it transfer_portal_frontend yarn test:coverage
 ```
 
+- **Run selenium tests**:
+```bash
+docker exec -it transfer_portal_frontend yarn selenium
+```
 ### 📦 Generate new migration files
 
 **If Django models have changed**, create migration files before applying migrations:
@@ -158,9 +164,11 @@ docker system prune -a
 ⚠️ Warning: This command will delete all unused containers, images and volumes. While it helps free up disk space, it can slow down future builds since Docker will have to re-download all images and rebuild everything from scratch. **If plan to restart soon, DO NOT run this command**.
 
 ---
-## 🏆 Team Members  
+## 🏆 Team Members
 
-*(Listed alphabetically by first name)*  
+[![Alt text](./frontend/public/AboutUs.png)](https://theathleticinsider.com/about)
+
+*(Listed alphabetically by first name)*
 
 | Name | GitHub |
 |------|--------|
