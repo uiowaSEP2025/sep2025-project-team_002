@@ -1,0 +1,194 @@
+[
+    {
+      "model": "schools.Schools",
+      "pk": 1,
+      "fields": {
+        "school_name": "University of Alabama",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Tuscaloosa, Alabama"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 2,
+      "fields": {
+        "school_name": "University of Arkansas",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Fayetteville, Arkansas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 3,
+      "fields": {
+        "school_name": "Auburn University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Auburn, Alabama"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 4,
+      "fields": {
+        "school_name": "University of Florida",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Gainesville, Florida"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 5,
+      "fields": {
+        "school_name": "University of Georgia",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Athens, Georgia"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 6,
+      "fields": {
+        "school_name": "University of Kentucky",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Lexington, Kentucky"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 7,
+      "fields": {
+        "school_name": "Louisiana State University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Baton Rouge, Louisiana"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 8,
+      "fields": {
+        "school_name": "University of Mississippi",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "University, Mississippi"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 9,
+      "fields": {
+        "school_name": "Mississippi State University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Mississippi State, Mississippi"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 10,
+      "fields": {
+        "school_name": "University of Missouri",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Columbia, Missouri"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 11,
+      "fields": {
+        "school_name": "University of Oklahoma",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Norman, Oklahoma"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 12,
+      "fields": {
+        "school_name": "University of South Carolina",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Columbia, South Carolina"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 13,
+      "fields": {
+        "school_name": "University of Tennessee",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Knoxville, Tennessee"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 14,
+      "fields": {
+        "school_name": "University of Texas at Austin",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Austin, Texas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 15,
+      "fields": {
+        "school_name": "Texas A&M University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "College Station, Texas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 16,
+      "fields": {
+        "school_name": "Vanderbilt University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "SEC",
+        "location": "Nashville, Tennessee"
+      }
+    }
+  ] 
