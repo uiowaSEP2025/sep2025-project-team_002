@@ -15,6 +15,7 @@ import ReviewForm from './review/ReviewForm.jsx';
 import Footer from './components/Footer.jsx';
 import AboutUs from './components/AboutUs.jsx'
 import SchoolPage from "./schools/SchoolPage";
+import Bugsnag from '@bugsnag/js';
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -29,6 +30,7 @@ function App() {
       })
       .catch((error) => {
         console.error("Fetch Error:", error);
+        Bugsnag.notify(error);
         setMessage("Error: " + error.message);
       });
   }, []);

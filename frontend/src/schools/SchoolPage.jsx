@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
+import Bugsnag from '@bugsnag/js';
 
 function SchoolPage() {
   const { id } = useParams();
@@ -46,6 +47,7 @@ function SchoolPage() {
         setSchool(data);
       } catch (error) {
         console.error('Error fetching school:', error);
+        Bugsnag.notify(error);
       }
     };
 

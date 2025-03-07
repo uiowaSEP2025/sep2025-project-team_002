@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@bugsnag/browser-performance": "^2.11.0",
+    "@bugsnag/js": "^8.2.0",
+    "@bugsnag/plugin-react": "^8.2.0"
+  }
+}

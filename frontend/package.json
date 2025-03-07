@@ -13,7 +13,10 @@
     "framer-motion": "^12.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.2.0"
+    "react-router-dom": "^7.2.0",
+    "@bugsnag/js": "^7.22.4",
+    "@bugsnag/plugin-react": "^7.22.4",
+    "@bugsnag/browser-performance": "^2.1.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
