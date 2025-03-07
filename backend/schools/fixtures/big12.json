@@ -1,0 +1,195 @@
+[
+    {
+      "model": "schools.Schools",
+      "pk": 1,
+      "fields": {
+        "school_name": "University of Arizona",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Tucson, Arizona"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 2,
+      "fields": {
+        "school_name": "Arizona State University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Tempe, Arizona"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 3,
+      "fields": {
+        "school_name": "Baylor University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Waco, Texas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 4,
+      "fields": {
+        "school_name": "Brigham Young University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Provo, Utah"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 5,
+      "fields": {
+        "school_name": "University of Central Florida",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Orlando, Florida"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 6,
+      "fields": {
+        "school_name": "University of Cincinnati",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Cincinnati, Ohio"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 7,
+      "fields": {
+        "school_name": "University of Colorado Boulder",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Boulder, Colorado"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 8,
+      "fields": {
+        "school_name": "University of Houston",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Houston, Texas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 9,
+      "fields": {
+        "school_name": "Iowa State University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Ames, Iowa"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 10,
+      "fields": {
+        "school_name": "University of Kansas",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Lawrence, Kansas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 11,
+      "fields": {
+        "school_name": "Kansas State University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Manhattan, Kansas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 12,
+      "fields": {
+        "school_name": "Oklahoma State University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Stillwater, Oklahoma"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 13,
+      "fields": {
+        "school_name": "Texas Christian University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Fort Worth, Texas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 14,
+      "fields": {
+        "school_name": "Texas Tech University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Lubbock, Texas"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 15,
+      "fields": {
+        "school_name": "University of Utah",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Salt Lake City, Utah"
+      }
+    },
+    {
+      "model": "schools.Schools",
+      "pk": 16,
+      "fields": {
+        "school_name": "West Virginia University",
+        "mbb": true,
+        "wbb": true,
+        "fb": true,
+        "conference": "Big 12",
+        "location": "Morgantown, West Virginia"
+      }
+    }
+  ]
+  
