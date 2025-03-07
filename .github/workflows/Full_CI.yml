@@ -78,10 +78,29 @@ jobs:
         run: |
           docker compose --env-file backend/.env exec -T backend pytest --cov=. --cov-report=term-missing
 
-      - name: Run Jest tests
+      - name: Run Vitest tests
         run: |
           docker compose --env-file backend/.env exec -T frontend yarn test:coverage
 
+      - name: Wait for Selenium to be healthy
+        run: |
+          echo "Waiting for Selenium to be healthy..."
+          RETRIES=10
+          COUNT=0
+          until [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker compose --env-file backend/.env ps -q selenium))" == "healthy" ]; do
+            echo "Selenium is not healthy - retrying... ($COUNT/$RETRIES)"
+            COUNT=$((COUNT+1))
+            if [ "$COUNT" -ge "$RETRIES" ]; then
+              echo "Selenium did not become healthy in time. Exiting..."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "Selenium is ready!"
+
+      - name: Run Selenium tests
+        run: |
+          docker compose --env-file backend/.env exec -T frontend yarn selenium
 
       - name: Stop Docker containers
         run: |

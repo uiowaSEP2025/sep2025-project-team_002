@@ -3,7 +3,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom';
-import SchoolPage from '../schools/SchoolPage';
+import SchoolPage from '../../schools/SchoolPage.jsx';
 
 // Mock school data with reviews
 const mockSchool = {

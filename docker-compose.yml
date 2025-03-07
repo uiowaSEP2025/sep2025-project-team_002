@@ -38,6 +38,22 @@ services:
     networks:
       - transfer_network
 
+  selenium:
+    image: selenium/standalone-chrome
+    container_name: selenium_chrome
+    ports:
+      - "4444:4444"
+    shm_size: "2g"
+    networks:
+      - transfer_network
+    depends_on:
+      - frontend
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:4444/wd/hub/status" ]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+
 networks:
   transfer_network:
     name: transfer_network
