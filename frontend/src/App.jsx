@@ -16,7 +16,7 @@ import Footer from './components/Footer.jsx';
 import AboutUs from './components/AboutUs.jsx'
 import SchoolPage from "./schools/SchoolPage";
 import Bugsnag from '@bugsnag/js';
-import BugsnagPluginReact from '@bugsnag/plugin-react'
+import BugsnagPerformance from '@bugsnag/browser-performance'
 
 BugsnagPerformance.start('ce859eba59f45518ad9f330a53eea9f8')
 function App() {
