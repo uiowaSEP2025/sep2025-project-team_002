@@ -11,7 +11,8 @@ import {
   Card,
   CardContent,
   Stack,
-  Grid as MuiGrid
+  Grid as MuiGrid,
+  TextField
 } from "@mui/material";
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -23,6 +24,7 @@ function SecureHome() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [schools, setSchools] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Handle opening the dropdown menu
   const handleMenuOpen = (event) => {
@@ -89,6 +91,10 @@ function SecureHome() {
     }
   };
 
+  const filteredSchools = schools.filter((school) => 
+    school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Box sx={{ position: "relative", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
       {/* Top Right Circular Icon */}
@@ -116,7 +122,7 @@ function SecureHome() {
         </Menu>
       </Box>
 
-      <Grid container justifyContent="center" alignItems="center" sx={{ minHeight: "100vh", py: 4 }}>
+      <Grid container justifyContent="center" sx={{ pt: 4, pb: 4 }}>
         <Grid item xs={12} md={10}>
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -126,6 +132,17 @@ function SecureHome() {
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, textAlign: "center" }}>
               Schools and Sports
             </Typography>
+
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+              <TextField
+                label="Search Schools"
+                variant="outlined"
+                fullWidth
+                sx={{ width: "50%" }}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </Box>
 
             <Box sx={{ textAlign: "center", mb: 4 }}>
               <Button
@@ -138,38 +155,44 @@ function SecureHome() {
             </Box>
 
             <Stack spacing={2} sx={{ px: 2 }}>
-              {schools?.map((school) => (
-                <Card 
-                  key={school.id} 
-                  sx={{ 
-                    width: '100%',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: '#f5f5f5'
-                    }
-                  }}
-                  onClick={() => handleSchoolClick(school.id)}
-                >
-                  <CardContent>
-                    <Box sx={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 2,
-                      flexWrap: 'wrap'
-                    }}>
-                      <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
-                        {school.school_name}
-                      </Typography>
-                      <Typography variant="body2">
-                        {school.available_sports && school.available_sports.length > 0 
-                          ? school.available_sports.join(' • ')
-                          : 'No sports listed'
-                        }
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </Card>
-              ))}
+              {filteredSchools.length > 0 ? (
+                filteredSchools.map((school) => (
+                  <Card 
+                    key={school.id} 
+                    sx={{ 
+                      width: '100%',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        backgroundColor: '#f5f5f5'
+                      }
+                    }}
+                    onClick={() => handleSchoolClick(school.id)}
+                  >
+                    <CardContent>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: 2,
+                        flexWrap: 'wrap'
+                      }}>
+                        <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                          {school.school_name}
+                        </Typography>
+                        <Typography variant="body2">
+                          {school.available_sports && school.available_sports.length > 0 
+                            ? school.available_sports.join(' • ')
+                            : 'No sports listed'
+                          }
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                ))
+              ) : (
+                <Typography variant="h6" sx={{ mt: 3, textAlign: "center" }}>
+                  No results found
+                </Typography>
+              )}
             </Stack>
           </motion.div>
         </Grid>
