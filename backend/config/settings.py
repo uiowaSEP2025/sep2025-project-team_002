@@ -14,12 +14,18 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from datetime import timedelta
+import bugsnag
 
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+bugsnag.configure(
+    api_key=os.getenv("BUGSNAG_API_KEY"),
+    project_root=str(BASE_DIR),
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -74,6 +80,7 @@ SIMPLE_JWT = {
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
+    'bugsnag.django.middleware.BugsnagMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

@@ -18,7 +18,7 @@ import SchoolPage from "./schools/SchoolPage";
 import Bugsnag from '@bugsnag/js';
 import BugsnagPerformance from '@bugsnag/browser-performance'
 
-BugsnagPerformance.start('ce859eba59f45518ad9f330a53eea9f8')
+BugsnagPerformance.start(os.getenv("BUGSNAG_API_KEY"))
 function App() {
   const [message, setMessage] = useState("Loading...");
 
