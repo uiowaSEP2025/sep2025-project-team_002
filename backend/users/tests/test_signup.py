@@ -15,7 +15,7 @@ def test_signup_creation(live_server):
         "email": "john@example.com",
         "password": "Password123",
         "verifyPassword": "Password123",
-        "transferType": "transfer_in",
+        "transferType": "transfer",
     }
     response = requests.post(url, json=data)
     print(response.json())
@@ -38,7 +38,7 @@ def test_signup_invalid_password(live_server):
         "email": "john@example.com",
         "password": "pass",
         "verifyPassword": "pass",
-        "transferType": "transfer_in",
+        "transferType": "high",
     }
     response = requests.post(url, json=data)
     print(response.json())
@@ -57,7 +57,7 @@ def test_signup_duplicate(live_server):
         "email": "john@example.com",
         "password": "Password123",
         "verifyPassword": "Password123",
-        "transferType": "transfer_in",
+        "transferType": "transfer",
     }
 
     # First signup attempt
@@ -90,7 +90,7 @@ def test_signup_invalid_email(live_server):
             "email": email,
             "password": "Password123",
             "verifyPassword": "Password123",
-            "transferType": "transfer_in",
+            "transferType": "transfer",
         }
 
         response = requests.post(url, json=invalid_email_data)
@@ -118,7 +118,7 @@ def test_signup_missing_data(live_server):
             "email": "john@example.com",
             "password": "Password123",
             "verifyPassword": "Password123",
-            "transferType": "transfer_in",
+            "transferType": "transfer",
         }
         data.pop(field)
 

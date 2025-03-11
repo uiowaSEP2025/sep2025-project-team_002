@@ -39,10 +39,11 @@ describe("Selenium Signup & Login Test", function () {
       let passwordInput = await driver.findElement(By.id("signup-password"));
       let confirmPasswordInput = await driver.findElement(By.id("signup-confirm-password"));
       let signupButton = await driver.findElement(By.id("signup-button"));
-      let transferInRadio = await driver.findElement(By.id("signup-transfer-in"));
-      let transferOutRadio = await driver.findElement(By.id("signup-transfer-out"));
+      let highSchoolRadio = await driver.findElement(By.id("signup-high_school"));
+      let transferRadio = await driver.findElement(By.id("signup-transfer"));
+      let graduateRadio = await driver.findElement(By.id("signup-graduate"));
 
-      let transferOptions = [transferInRadio, transferOutRadio];
+      let transferOptions = [highSchoolRadio, transferRadio, graduateRadio];
       let randomIndex = Math.floor(Math.random() * transferOptions.length);
 
       // Fill in the registration form
