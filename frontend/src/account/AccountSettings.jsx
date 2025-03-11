@@ -540,26 +540,26 @@ function AccountSettings() {
               />
 
               {/* Transfer Type (radio) */}
-              <FormControl component="fieldset" sx={{ mt: 2 }}>
-                <FormLabel component="legend">Transfer Type</FormLabel>
-                <RadioGroup
-                  row
-                  name="transfer_type"
-                  value={formData.transfer_type}
-                  onChange={handleChange}
-                >
-                  <FormControlLabel
-                    value="transfer_in"
-                    control={<Radio />}
-                    label="Transfer In"
-                  />
-                  <FormControlLabel
-                    value="transfer_out"
-                    control={<Radio />}
-                    label="Transfer Out"
-                  />
-                </RadioGroup>
-              </FormControl>
+              {/*<FormControl component="fieldset" sx={{ mt: 2 }}>*/}
+              {/*  <FormLabel component="legend">Transfer Type</FormLabel>*/}
+              {/*  <RadioGroup*/}
+              {/*    row*/}
+              {/*    name="transfer_type"*/}
+              {/*    value={formData.transfer_type}*/}
+              {/*    onChange={handleChange}*/}
+              {/*  >*/}
+              {/*    <FormControlLabel*/}
+              {/*      value="transfer_in"*/}
+              {/*      control={<Radio />}*/}
+              {/*      label="Transfer In"*/}
+              {/*    />*/}
+              {/*    <FormControlLabel*/}
+              {/*      value="transfer_out"*/}
+              {/*      control={<Radio />}*/}
+              {/*      label="Transfer Out"*/}
+              {/*    />*/}
+              {/*  </RadioGroup>*/}
+              {/*</FormControl>*/}
 
               {/* SAVE CHANGES BUTTON */}
               <Button
