@@ -368,12 +368,16 @@ function Account() {
               <TextField
                 fullWidth
                 margin="normal"
-                label="Transfer Type"
+                label="Athlete Status"
                 value={
                   user.transfer_type
-                    ? user.transfer_type === "transfer_in"
-                      ? "Transfer In"
-                      : "Transfer Out"
+                    ? user.transfer_type === "high_school"
+                      ? "Prospective High School Athlete"
+                      : user.transfer_type === "transfer"
+                    ? "Transferring Athlete"
+                    : user.transfer_type === "graduate"
+                    ? "Graduated Athlete"
+                                  :"Other"
                     : "Not Specified"
                 }
                 disabled

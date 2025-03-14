@@ -363,7 +363,7 @@ function Signup() {
               {/* TRANSFER TYPE RADIO */}
               <FormControl component="fieldset" margin="normal">
                 <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                  Are you a transfer athlete?
+                  Choose your athletic status:
                 </Typography>
                 <RadioGroup
                   row
@@ -371,8 +371,9 @@ function Signup() {
                   value={formData.transferType}
                   onChange={handleChange}
                 >
-                  <FormControlLabel value="transfer_in" control={<Radio id="signup-transfer-in" />} label="Transfer In" />
-                  <FormControlLabel value="transfer_out" control={<Radio id="signup-transfer-out" />} label="Transfer Out" />
+                  <FormControlLabel value="high_school" control={<Radio id="signup-high_school" />} label="Prospective High School Athlete" />
+                  <FormControlLabel value="transfer" control={<Radio id="signup-transfer" />} label="Transferring Athlete" />
+                  <FormControlLabel value="graduate" control={<Radio id="signup-graduate" />} label="Graduated Athlete" />
                 </RadioGroup>
               </FormControl>
 

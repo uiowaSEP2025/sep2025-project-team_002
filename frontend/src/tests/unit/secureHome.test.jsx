@@ -75,14 +75,93 @@ describe('SecureHome Component', () => {
     });
   });
 
-  it('shows submit review button', () => {
-    render(
-      <BrowserRouter>
-        <SecureHome />
-      </BrowserRouter>
-    );
+it('shows submit review button when transfer_type is not "high_school"', async () => {
+  // Mock the user API response for a transfer student
+  const transferUserResponse = {
+    first_name: "Test",
+    last_name: "User",
+    email: "test@example.com",
+    transfer_type: "transfer"
+  };
 
+  // Set up mock fetch to return different responses based on URL
+  global.fetch = vi.fn((url) => {
+    if (url.includes('/users/user/')) {
+      // Return the transfer user data
+      return Promise.resolve(new Response(JSON.stringify(transferUserResponse), {
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'application/json' })
+      }));
+    } else if (url.includes('/api/schools/')) {
+      // Return the schools data
+      return Promise.resolve(new Response(JSON.stringify(mockSchools), {
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'application/json' })
+      }));
+    }
+    return Promise.reject(new Error('Unhandled endpoint'));
+  });
+
+  render(
+    <BrowserRouter>
+      <SecureHome />
+    </BrowserRouter>
+  );
+
+  // Wait for schools data to load
+  await waitFor(() => {
+    expect(screen.getByText(/University of Iowa/i)).toBeInTheDocument();
+  });
+
+  // Verify the submit review button IS present
+  await waitFor(() => {
     const submitButton = screen.getByText(/Submit a Review/i);
     expect(submitButton).toBeInTheDocument();
   });
 });
+
+it('does not show submit review button when transfer_type is "high_school"', async () => {
+  // Mock the user API response for a high school student
+  const highSchoolUserResponse = {
+    first_name: "Test",
+    last_name: "User",
+    email: "testHS@example.com",
+    transfer_type: "high_school"
+  };
+
+  // Set up mock fetch to return different responses based on URL
+  global.fetch = vi.fn((url) => {
+    if (url.includes('/users/user/')) {
+      // Return the high school user data
+      return Promise.resolve(new Response(JSON.stringify(highSchoolUserResponse), {
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'application/json' })
+      }));
+    } else if (url.includes('/api/schools/')) {
+      // Return the schools data
+      return Promise.resolve(new Response(JSON.stringify(mockSchools), {
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'application/json' })
+      }));
+    }
+    return Promise.reject(new Error('Unhandled endpoint'));
+  });
+
+  render(
+    <BrowserRouter>
+      <SecureHome />
+    </BrowserRouter>
+  );
+
+  // Wait for schools data to load (which confirms the component has rendered)
+  await waitFor(() => {
+    expect(screen.getByText(/University of Iowa/i)).toBeInTheDocument();
+  });
+
+  // Verify the submit review button is NOT present
+  const submitButton = screen.queryByText(/Submit a Review/i);
+  expect(submitButton).not.toBeInTheDocument();
+});
+
+});
+
