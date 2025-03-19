@@ -1,5 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.conf import settings
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -7,9 +8,19 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.core.mail import send_mail
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
 from .models import Users
 from .serializers import UserSerializer
 import re
+from django.db import IntegrityError
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework.exceptions import AuthenticationFailed
+
+
+token_generator = PasswordResetTokenGenerator()
 
 
 @csrf_exempt
@@ -39,7 +50,6 @@ def signup(request):
         )
 
     try:
-        # Use the custom manager on your Users model
         user = Users.objects.create_user(
             email=data["email"],
             first_name=data["first_name"],
@@ -49,7 +59,15 @@ def signup(request):
         )
         serializer = UserSerializer(user, many=False)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    except IntegrityError:
+        # Specifically handle duplicate email
+        return Response(
+            {"error": "An account with this email already exists."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
     except Exception as e:
+        # Handle other unexpected errors
         return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -85,18 +103,99 @@ def change_password(request):
     )
 
 
+@api_view(["POST"])
+def forgot_password(request):
+    email = request.data.get("email")
+    if not email:
+        return Response(
+            {"error": "Email is required."}, status=status.HTTP_400_BAD_REQUEST
+        )
+    try:
+        user = Users.objects.get(email=email)
+    except Users.DoesNotExist:
+        return Response(
+            {"error": "Unregistered Email Address!"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    # Generate uid and token
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = token_generator.make_token(user)
+
+    """Check: work for production env?"""
+    reset_url = request.build_absolute_uri(f"/reset-password/?uid={uid}&token={token}")
+    if settings.DEBUG:
+        reset_url = reset_url.replace("localhost:8000", "localhost:3000")
+
+    # Send Email
+    send_mail(
+        "Password Reset Request",
+        f"Hello, this is Athletic Insider! \n Please click the following link to reset your password：\n {reset_url} \n The link is valid for one hour.",
+        "noreply@example.com",
+        [email],
+        fail_silently=False,
+    )
+    return Response({"message": "An email has been sent!"}, status=status.HTTP_200_OK)
+
+
+@api_view(["POST"])
+def reset_password(request):
+    uidb64 = request.data.get("uid")
+    token = request.data.get("token")
+    new_password = request.data.get("new_password")
+    confirm_password = request.data.get("confirm_password")
+
+    if not all([uidb64, token, new_password, confirm_password]):
+        return Response(
+            {"error": "Please Fill Out the Form!"}, status=status.HTTP_400_BAD_REQUEST
+        )
+    if new_password != confirm_password:
+        return Response(
+            {"error": "Passwords don't match."}, status=status.HTTP_400_BAD_REQUEST
+        )
+    if not is_strong_password(new_password):
+        return Response(
+            {"error": "Use Strong Password!"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = Users.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, Users.DoesNotExist):
+        return Response({"error": "Invalid Link!"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not token_generator.check_token(user, token):
+        return Response(
+            {"error": "Link is invalid or expired!"}, status=status.HTTP_400_BAD_REQUEST
+        )
+
+    user.set_password(new_password)
+    user.save()
+    return Response(
+        {"message": "Successfully reset the password!"}, status=status.HTTP_200_OK
+    )
+
+
 def test_api(request):
     return JsonResponse({"message": "Backend is working!"})
 
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    """Customize JWT response if needed"""
+# For CI tests
+def healthcheck(request):
+    return JsonResponse({"status": "ok"})
 
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        data = super().validate(attrs)
-        data["first_name"] = self.user.first_name
-        data["last_name"] = self.user.last_name
-        return data  # Includes first_name and last_name in the token response for extra validation
+        try:
+            data = super().validate(attrs)
+            # Add extra fields if you want
+            data["first_name"] = self.user.first_name
+            data["last_name"] = self.user.last_name
+            return data
+        except AuthenticationFailed:
+            raise AuthenticationFailed("Invalid email or password. Please try again.")
+        except TokenError as e:
+            raise AuthenticationFailed("Invalid token or credentials.")
 
 
 class LoginView(TokenObtainPairView):

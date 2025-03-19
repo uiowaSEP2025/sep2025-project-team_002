@@ -1,0 +1,107 @@
+name: Django and React CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Debug GitHub Secrets
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}"
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}"
+          echo "DB_NAME=${{ secrets.DB_NAME }}"
+
+      - name: Create backend .env file
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}" >> backend/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> backend/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> backend/.env
+          echo "DB_HOST=db" >> backend/.env
+
+      - name: Build and start Docker containers
+        run: |
+          docker compose --env-file backend/.env up -d
+
+      - name: Wait for database to be ready
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          RETRIES=10
+          COUNT=0
+          until docker compose --env-file backend/.env exec -T db pg_isready -h db -p 5432 -U $DB_USER -d $DB_NAME; do
+            echo "PostgreSQL is unavailable - retrying... ($COUNT/$RETRIES)"
+            COUNT=$((COUNT+1))
+            if [ "$COUNT" -ge "$RETRIES" ]; then
+              echo "PostgreSQL did not become ready in time. Exiting..."
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Wait for backend to be ready
+        run: |
+          echo "Waiting for Django backend to be ready..."
+          RETRIES=10
+          COUNT=0
+          until curl -sSf http://localhost:8000/healthcheck/ > /dev/null; do
+            echo "Backend is unavailable - retrying... ($COUNT/$RETRIES)"
+            COUNT=$((COUNT+1))
+            if [ "$COUNT" -ge "$RETRIES" ]; then
+              echo "Backend did not become ready in time. Exiting..."
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "Backend is ready!"
+
+      - name: Run code linting
+        run: |
+          docker compose --env-file backend/.env exec -T backend black --check .
+          docker compose --env-file backend/.env exec -T backend flake8 . || echo "Flake8 warnings detected, but not failing CI/CD."
+          docker compose --env-file backend/.env exec -T frontend yarn lint:fix
+          docker compose --env-file backend/.env exec -T frontend yarn lint
+
+      - name: Run migrations
+        run: |
+          docker compose --env-file backend/.env exec -T backend python manage.py migrate
+
+      - name: Run Pytest tests
+        run: |
+          docker compose --env-file backend/.env exec -T backend pytest --cov=. --cov-report=term-missing
+
+      - name: Run Vitest tests
+        run: |
+          docker compose --env-file backend/.env exec -T frontend yarn test:coverage
+
+      - name: Wait for Selenium to be healthy
+        run: |
+          echo "Waiting for Selenium to be healthy..."
+          RETRIES=10
+          COUNT=0
+          until [ "$(docker inspect --format='{{.State.Health.Status}}' $(docker compose --env-file backend/.env ps -q selenium))" == "healthy" ]; do
+            echo "Selenium is not healthy - retrying... ($COUNT/$RETRIES)"
+            COUNT=$((COUNT+1))
+            if [ "$COUNT" -ge "$RETRIES" ]; then
+              echo "Selenium did not become healthy in time. Exiting..."
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "Selenium is ready!"
+
+      - name: Run Selenium tests
+        run: |
+          docker compose --env-file backend/.env exec -T frontend yarn selenium
+
+      - name: Stop Docker containers
+        run: |
+          docker compose --env-file backend/.env down

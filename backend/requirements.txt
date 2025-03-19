@@ -17,7 +17,11 @@ python-dotenv
 pytest
 pytest-django
 pytest-cov
+selenium
 
 # Code quality and formatting
 flake8
 black
+
+# Dependency
+requests
