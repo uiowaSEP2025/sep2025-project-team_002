@@ -371,13 +371,15 @@ function Account() {
                 label="Athlete Status"
                 value={
                   user.transfer_type
-                    ? user.transfer_type === "high_school"
-                      ? "Prospective High School Athlete"
-                      : user.transfer_type === "transfer"
-                    ? "Transferring Athlete"
-                    : user.transfer_type === "graduate"
-                    ? "Graduated Athlete"
-                                  :"Other"
+                      ? user.transfer_type === "transfer"
+                      ? "Transferring Athlete"
+                      : user.transfer_type === "graduate"
+                      ? "Graduated Athlete"
+                      : user.transfer_type === "transfer_in"
+                      ? "Transfer In"
+                      : user.transfer_type === "transfer_out"
+                      ? "Transfer Out"
+                      : "Other"
                     : "Not Specified"
                 }
                 disabled
