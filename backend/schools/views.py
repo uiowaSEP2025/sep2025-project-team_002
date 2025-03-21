@@ -50,36 +50,35 @@ class ProtectedSchoolDetailView(generics.RetrieveUpdateDestroyAPIView):
 @permission_classes([AllowAny])
 def get_review_summary(request, school_id):
     logger.info(f"Received review summary request for school_id: {school_id}")
-    sport = request.GET.get('sport')  # Get sport from query parameter
+    sport = request.GET.get('sport')
     
     try:
-        # Get the school
         school = Schools.objects.get(pk=school_id)
         
-        # Get the latest review date for this sport
+        # Get the latest review for this sport
         latest_review = Reviews.objects.filter(
             school_id=school_id,
-            sport=sport  # Filter by sport
+            sport=sport
         ).order_by('-created_at').first()
         
-        # If there are no reviews for this sport, return appropriate message
         if not latest_review:
             return Response({
                 "summary": f"No reviews available for {sport} at this school yet."
             })
         
-        # If we have a stored summary and no new reviews have been added since last summary
-        # Note: We'll store summaries by sport in a JSON field
-        summaries = school.review_summary or {}
-        last_dates = school.last_review_date or {}
+        # Get stored summaries and dates
+        summaries = school.sport_summaries or {}
+        last_dates = school.sport_review_dates or {}
         
-        if sport in summaries and sport in last_dates and \
-           last_dates[sport] >= latest_review.created_at.isoformat():
-            return Response({"summary": summaries[sport]})
+        # Check if we have a valid stored summary for this sport
+        if sport in summaries and sport in last_dates:
+            stored_date = last_dates[sport]
+            latest_date = latest_review.created_at.isoformat()
+            if stored_date >= latest_date:
+                return Response({"summary": summaries[sport]})
         
-        # If we need to generate a new summary
+        # Generate new summary if needed
         try:
-            # Check if OpenAI API key is configured
             if not settings.OPENAI_API_KEY:
                 logger.error("OpenAI API key is not configured")
                 return Response(
@@ -87,14 +86,13 @@ def get_review_summary(request, school_id):
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
 
-            # Get all reviews for this sport and combine them
+            # Get all reviews for this sport
             reviews = Reviews.objects.filter(
                 school_id=school_id,
-                sport=sport  # Filter by sport
+                sport=sport
             )
             reviews_text = " ".join([review.review_message for review in reviews])
             
-            # Generate new summary
             client = OpenAI()
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
@@ -110,11 +108,11 @@ def get_review_summary(request, school_id):
             
             summary = response.choices[0].message.content
             
-            # Store the new summary and update last_review_date
+            # Store the new summary and date
             summaries[sport] = summary
             last_dates[sport] = latest_review.created_at.isoformat()
-            school.review_summary = summaries
-            school.last_review_date = last_dates
+            school.sport_summaries = summaries
+            school.sport_review_dates = last_dates
             school.save()
             
             return Response({"summary": summary})
