@@ -9,7 +9,13 @@ class CreateReviewView(generics.CreateAPIView):
     permission_classes = [permissions.IsAuthenticated]  # Require JWT authentication
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)  # Assign logged-in user
+        review = serializer.save(user=self.request.user)
+        
+        # Clear the stored summary to force regeneration on next request
+        school = review.school
+        school.review_summary = None
+        school.last_review_date = None
+        school.save()
 
 
 class UserReviewsView(generics.ListAPIView):

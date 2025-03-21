@@ -52,35 +52,45 @@ def get_review_summary(request, school_id):
     logger.info(f"Received review summary request for school_id: {school_id}")
     
     try:
-        # Check if OpenAI API key is configured
-        if not settings.OPENAI_API_KEY:
-            logger.error("OpenAI API key is not configured")
-            return Response(
-                {"error": "OpenAI API key is not configured"}, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-        # Get all reviews for the school
-        reviews = Reviews.objects.filter(school_id=school_id)
+        # Get the school
+        school = Schools.objects.get(pk=school_id)
         
-        if not reviews.exists():
+        # Get the latest review date
+        latest_review = Reviews.objects.filter(school_id=school_id).order_by('-created_at').first()
+        
+        # If there are no reviews, return appropriate message
+        if not latest_review:
             return Response({
                 "summary": "No reviews available for this school yet."
             })
-
-        # Combine all review messages
-        reviews_text = " ".join([review.review_message for review in reviews])
         
+        # If we have a stored summary and no new reviews have been added since last summary
+        if school.review_summary and school.last_review_date and \
+           school.last_review_date >= latest_review.created_at:
+            return Response({"summary": school.review_summary})
+        
+        # If we need to generate a new summary
         try:
-            # Initialize OpenAI client with just the API key
-            client = OpenAI()  # The API key will be automatically loaded from environment variable
+            # Check if OpenAI API key is configured
+            if not settings.OPENAI_API_KEY:
+                logger.error("OpenAI API key is not configured")
+                return Response(
+                    {"error": "OpenAI API key is not configured"}, 
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+            # Get all reviews and combine them
+            reviews = Reviews.objects.filter(school_id=school_id)
+            reviews_text = " ".join([review.review_message for review in reviews])
             
+            # Generate new summary
+            client = OpenAI()
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "system", 
-                        "content": "You are a helpful assistant that summarizes school reviews. Provide a concise summary in exactly 2 sentences, without using bullet points or dashes. Focus on the most important themes and overall sentiment from the reviews."
+                        "content": "You are a helpful assistant that summarizes school reviews. Provide a concise summary in exactly 2 sentences, without using bullet points or dashes. Focus on the most important themes and overall sentiment from the reviews. Always talk about it form a reviews perspective, like 'reviewers state...'"
                     },
                     {"role": "user", "content": reviews_text}
                 ],
@@ -88,6 +98,12 @@ def get_review_summary(request, school_id):
             )
             
             summary = response.choices[0].message.content
+            
+            # Store the new summary and update last_review_date
+            school.review_summary = summary
+            school.last_review_date = latest_review.created_at
+            school.save()
+            
             return Response({"summary": summary})
             
         except Exception as e:
@@ -97,6 +113,11 @@ def get_review_summary(request, school_id):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
             
+    except Schools.DoesNotExist:
+        return Response(
+            {"error": "School not found"}, 
+            status=status.HTTP_404_NOT_FOUND
+        )
     except Exception as e:
         logger.error(f"Unexpected error in get_review_summary: {str(e)}")
         return Response(

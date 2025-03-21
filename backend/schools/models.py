@@ -11,6 +11,8 @@ class Schools(models.Model):
     location = models.CharField(max_length=255)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
+    review_summary = models.TextField(null=True, blank=True)
+    last_review_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Schools"
