@@ -15,6 +15,7 @@ import {
 import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
 import Bugsnag from '@bugsnag/js';
+import ReviewSummary from '../components/ReviewSummary';
 
 function SchoolPage() {
   const { id } = useParams();
@@ -25,21 +26,27 @@ function SchoolPage() {
   useEffect(() => {
     const fetchSchool = async () => {
       try {
-        const endpoint = isAuthenticated 
+        const token = localStorage.getItem('token');
+        console.log('Fetching school with token:', token ? 'Token exists' : 'No token');
+
+        // Use public route if no token, otherwise use protected route
+        const endpoint = token 
           ? `${API_BASE_URL}/api/schools/${id}/`
           : `${API_BASE_URL}/api/public/schools/${id}/`;
-        
-        const headers = {
-          'Content-Type': 'application/json',
-        };
 
-        if (isAuthenticated) {
-          headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
-        }
+        const headers = token
+          ? {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            }
+          : {
+              'Content-Type': 'application/json'
+            };
 
         const response = await fetch(endpoint, { headers });
 
         if (!response.ok) {
+          console.error('Server response:', await response.text());
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
@@ -52,7 +59,7 @@ function SchoolPage() {
     };
 
     fetchSchool();
-  }, [id, isAuthenticated]);
+  }, [id]);
 
   const ratingFields = [
     { label: "Head Coach", field: "head_coach" },
@@ -105,6 +112,8 @@ function SchoolPage() {
                 </Typography>
               </CardContent>
             </Card>
+
+            <ReviewSummary schoolId={id} />
 
             <Card>
               <CardContent>
