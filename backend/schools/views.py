@@ -50,24 +50,32 @@ class ProtectedSchoolDetailView(generics.RetrieveUpdateDestroyAPIView):
 @permission_classes([AllowAny])
 def get_review_summary(request, school_id):
     logger.info(f"Received review summary request for school_id: {school_id}")
+    sport = request.GET.get('sport')  # Get sport from query parameter
     
     try:
         # Get the school
         school = Schools.objects.get(pk=school_id)
         
-        # Get the latest review date
-        latest_review = Reviews.objects.filter(school_id=school_id).order_by('-created_at').first()
+        # Get the latest review date for this sport
+        latest_review = Reviews.objects.filter(
+            school_id=school_id,
+            sport=sport  # Filter by sport
+        ).order_by('-created_at').first()
         
-        # If there are no reviews, return appropriate message
+        # If there are no reviews for this sport, return appropriate message
         if not latest_review:
             return Response({
-                "summary": "No reviews available for this school yet."
+                "summary": f"No reviews available for {sport} at this school yet."
             })
         
         # If we have a stored summary and no new reviews have been added since last summary
-        if school.review_summary and school.last_review_date and \
-           school.last_review_date >= latest_review.created_at:
-            return Response({"summary": school.review_summary})
+        # Note: We'll store summaries by sport in a JSON field
+        summaries = school.review_summary or {}
+        last_dates = school.last_review_date or {}
+        
+        if sport in summaries and sport in last_dates and \
+           last_dates[sport] >= latest_review.created_at.isoformat():
+            return Response({"summary": summaries[sport]})
         
         # If we need to generate a new summary
         try:
@@ -79,8 +87,11 @@ def get_review_summary(request, school_id):
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
 
-            # Get all reviews and combine them
-            reviews = Reviews.objects.filter(school_id=school_id)
+            # Get all reviews for this sport and combine them
+            reviews = Reviews.objects.filter(
+                school_id=school_id,
+                sport=sport  # Filter by sport
+            )
             reviews_text = " ".join([review.review_message for review in reviews])
             
             # Generate new summary
@@ -90,7 +101,7 @@ def get_review_summary(request, school_id):
                 messages=[
                     {
                         "role": "system", 
-                        "content": "You are a helpful assistant that summarizes school reviews. Provide a concise summary in exactly 2 sentences, without using bullet points or dashes. Focus on the most important themes and overall sentiment from the reviews. Always talk about it form a reviews perspective, like 'reviewers state...'"
+                        "content": f"You are a helpful assistant that summarizes {sport} program reviews. Provide a concise summary in exactly 2 sentences, without using bullet points or dashes. Focus on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...'"
                     },
                     {"role": "user", "content": reviews_text}
                 ],
@@ -100,8 +111,10 @@ def get_review_summary(request, school_id):
             summary = response.choices[0].message.content
             
             # Store the new summary and update last_review_date
-            school.review_summary = summary
-            school.last_review_date = latest_review.created_at
+            summaries[sport] = summary
+            last_dates[sport] = latest_review.created_at.isoformat()
+            school.review_summary = summaries
+            school.last_review_date = last_dates
             school.save()
             
             return Response({"summary": summary})
