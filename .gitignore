@@ -26,3 +26,7 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/.gitignore
 
+# === Duplicated Files ===
+yarn.lock
+package.json
+
