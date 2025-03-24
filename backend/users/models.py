@@ -39,6 +39,8 @@ class Users(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=255, default="user")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_school_verified = models.BooleanField(default=False)
+
     transfer_out_school = models.ForeignKey(
         Schools,
         on_delete=models.CASCADE,

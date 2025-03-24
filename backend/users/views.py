@@ -10,9 +10,10 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.core.mail import send_mail
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from .tokens import school_email_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from .models import Users
+from .models import Users, Organization
 from .serializers import UserSerializer
 import re
 from django.db import IntegrityError
@@ -58,6 +59,7 @@ def signup(request):
             transfer_type=data.get("transfer_type"),
         )
         serializer = UserSerializer(user, many=False)
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     except IntegrityError:
@@ -128,10 +130,15 @@ def forgot_password(request):
 
     # Send Email
     send_mail(
-        "Password Reset Request",
-        f"Hello, this is Athletic Insider! \n Please click the following link to reset your password：\n {reset_url} \n The link is valid for one hour.",
-        "noreply@example.com",
-        [email],
+        subject="Password Reset Request",
+        message=(
+            f"Hello, this is Athletic Insider! \n,"
+            f"Please click the following link to reset your password,"
+            f"\n {reset_url} \n,"
+            f"The link is valid for one hour."
+        ),
+        from_email="noreply@example.com",
+        recipient_list=[email],
         fail_silently=False,
     )
     return Response({"message": "An email has been sent!"}, status=status.HTTP_200_OK)
@@ -174,6 +181,53 @@ def reset_password(request):
         {"message": "Successfully reset the password!"}, status=status.HTTP_200_OK
     )
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def send_school_verification(request):
+    user = request.user
+    email = user.email
+    domain = email.split("@")[1].lower()
+
+    if not domain.endswith(".edu"):
+        return Response({"error": "Only .edu emails can be verified."}, status=status.HTTP_400_BAD_REQUEST)
+
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
+    token = school_email_token_generator.make_token(user)
+
+    verify_url = request.build_absolute_uri(f"/verify-school-email/?uid={uid}&token={token}")
+    if settings.DEBUG:
+        verify_url = verify_url.replace("localhost:8000", "localhost:3000")
+
+    send_mail(
+        subject="Verify Your School Email",
+        message=(
+            f"Hi {user.first_name},\n\n"
+            f"Click the link below to verify your school email:\n{verify_url}\n\n"
+            f"This link is valid for a limited time."
+        ),
+        from_email="noreply@yourapp.com",
+        recipient_list=[email],
+    )
+
+    return Response({"message": "Verification email sent!"})
+
+@api_view(["POST"])
+def verify_school_email(request):
+    uidb64 = request.data.get("uid")
+    token = request.data.get("token")
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = Users.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, Users.DoesNotExist):
+        return Response({"error": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not school_email_token_generator.check_token(user, token):
+        return Response({"error": "Verification link is expired or invalid."}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.is_school_verified = True
+    user.save()
+    return Response({"message": "School email verified successfully!"}, status=status.HTTP_200_OK)
 
 def test_api(request):
     return JsonResponse({"message": "Backend is working!"})
