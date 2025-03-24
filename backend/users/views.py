@@ -59,27 +59,6 @@ def signup(request):
             transfer_type=data.get("transfer_type"),
         )
 
-        email_domain = user.email.split("@")[1].lower()
-
-        if email_domain.endswith(".edu"):
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = school_email_token_generator.make_token(user)
-
-            verify_url = request.build_absolute_uri(f"/verify-school-email/?uid={uid}&token={token}")
-            if settings.DEBUG:
-                verify_url = verify_url.replace("localhost:8000", "localhost:3000")
-
-            send_mail(
-                subject="Verify Your School Email",
-                message=(
-                    f"Hi {user.first_name},\n\n"
-                    f"Click the link below to verify your school email:\n{verify_url}\n\n"
-                    f"This link is valid for a limited time."
-                ),
-                from_email="noreply@yourapp.com",
-                recipient_list=[user.email],
-            )
-
         serializer = UserSerializer(user, many=False)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -301,7 +280,9 @@ class UserDetailView(APIView):
             # If email is valid, check for uniqueness (if needed)
             # if Users.objects.exclude(pk=user.pk).filter(email=new_email).exists():
             #     return Response({"error": "Email already taken."}, status=400)
-            user.email = new_email
+            if new_email != user.email.lower():
+                user.email = new_email
+                user.is_school_verified = False
 
         # If user wants to update other fields:
         user.first_name = data.get("first_name", user.first_name)

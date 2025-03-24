@@ -100,14 +100,7 @@ function Signup() {
       });
 
       if (response.ok) {
-        const emailIsEdu = formData.email.trim().toLowerCase().endsWith(".edu");
-
-        /* If organization_slug is returned, then navigate to organization page */
-        if (emailIsEdu) {
-          setMessage(`Signup successful! We've sent a school verification link to your email.`);
-        } else {
-          setMessage("Signup successful! Redirecting to login...");
-        }
+        setMessage("Signup successful! Redirecting to login...");
         setTimeout(() => navigate("/login"), 1500);
       } else {
         const errorData = await response.json();
