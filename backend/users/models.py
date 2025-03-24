@@ -7,6 +7,14 @@ from django.db import models
 from schools.models import Schools
 
 
+PROFILE_PICTURE_CHOICES = [
+    ('profile_picture1.png', 'Pic1'),
+    ('profile_picture2.png', 'Pic2'),
+    ('profile_picture3.png', 'Pic3'),
+    ('profile_picture4.png', 'Pic4'),
+    ('profile_picture5.png', 'Pic5'),
+]
+
 class CustomUserManager(BaseUserManager):
     def create_user(
         self, email, first_name, last_name, password=None, transfer_type=None
@@ -39,6 +47,9 @@ class Users(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=255, default="user")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    profile_picture = models.CharField(
+        max_length=255, choices=PROFILE_PICTURE_CHOICES, default="profile_picture1.png"
+    )
     transfer_out_school = models.ForeignKey(
         Schools,
         on_delete=models.CASCADE,
