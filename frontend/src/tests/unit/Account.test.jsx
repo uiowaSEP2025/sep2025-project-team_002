@@ -76,7 +76,7 @@ describe("Account Page Testing", () => {
     // Because no first_name/last_name => fields might be "", check that:
     expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
     expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Email/i)).toHaveValue("anonymous@example.com");
+    expect(screen.getByRole("textbox", { name: /Email/i })).toHaveValue("anonymous@example.com");
     expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Not Specified");
   });
 
@@ -103,7 +103,7 @@ describe("Account Page Testing", () => {
     // Confirm the displayed fields
     expect(screen.getByLabelText(/First Name/i)).toHaveValue("John");
     expect(screen.getByLabelText(/Last Name/i)).toHaveValue("Doe");
-    expect(screen.getByLabelText(/Email/i)).toHaveValue("john@example.com");
+    expect(screen.getByRole("textbox", { name: /Email/i })).toHaveValue("john@example.com");
     expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Transfer In");
   });
 

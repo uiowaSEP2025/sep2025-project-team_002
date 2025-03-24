@@ -182,6 +182,7 @@ def reset_password(request):
         {"message": "Successfully reset the password!"}, status=status.HTTP_200_OK
     )
 
+
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def send_school_verification(request):
@@ -190,12 +191,17 @@ def send_school_verification(request):
     domain = email.split("@")[1].lower()
 
     if not domain.endswith(".edu"):
-        return Response({"error": "Only .edu emails can be verified."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Only .edu emails can be verified."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = school_email_token_generator.make_token(user)
 
-    verify_url = request.build_absolute_uri(f"/verify-school-email/?uid={uid}&token={token}")
+    verify_url = request.build_absolute_uri(
+        f"/verify-school-email/?uid={uid}&token={token}"
+    )
     if settings.DEBUG:
         verify_url = verify_url.replace("localhost:8000", "localhost:3000")
 
@@ -212,6 +218,7 @@ def send_school_verification(request):
 
     return Response({"message": "Verification email sent!"})
 
+
 @api_view(["POST"])
 def verify_school_email(request):
     uidb64 = request.data.get("uid")
@@ -221,14 +228,22 @@ def verify_school_email(request):
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = Users.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, Users.DoesNotExist):
-        return Response({"error": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Invalid verification link."}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     if not school_email_token_generator.check_token(user, token):
-        return Response({"error": "Verification link is expired or invalid."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "Verification link is expired or invalid."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
 
     user.is_school_verified = True
     user.save()
-    return Response({"message": "School email verified successfully!"}, status=status.HTTP_200_OK)
+    return Response(
+        {"message": "School email verified successfully!"}, status=status.HTTP_200_OK
+    )
+
 
 def test_api(request):
     return JsonResponse({"message": "Backend is working!"})

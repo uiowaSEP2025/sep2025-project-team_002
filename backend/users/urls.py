@@ -9,7 +9,7 @@ from .views import (
     forgot_password,
     reset_password,
     send_school_verification,
-    verify_school_email
+    verify_school_email,
 )
 
 urlpatterns = [
