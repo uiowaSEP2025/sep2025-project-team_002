@@ -100,7 +100,6 @@ function Signup() {
       });
 
       if (response.ok) {
-        const responseData = await response.json();
         const emailIsEdu = formData.email.trim().toLowerCase().endsWith(".edu");
 
         /* If organization_slug is returned, then navigate to organization page */
