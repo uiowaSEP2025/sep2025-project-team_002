@@ -14,4 +14,5 @@ class UserSerializer(serializers.ModelSerializer):
             "role",
             "created_at",
             "updated_at",
+            "is_school_verified",
         ]
