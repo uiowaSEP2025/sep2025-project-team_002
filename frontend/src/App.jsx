@@ -12,6 +12,7 @@ import AccountSettings from "./account/AccountSettings.jsx";
 import ForgotPassword from './account/ForgotPassword.jsx';
 import ResetPassword from './account/ResetPassword.jsx';
 import ReviewForm from './review/ReviewForm.jsx';
+import VerifySchoolEmail from './account/VerifySchoolEmail.jsx'
 import Footer from './components/Footer.jsx';
 import AboutUs from './components/AboutUs.jsx'
 import SchoolPage from "./schools/SchoolPage";
@@ -50,6 +51,7 @@ function App() {
               <Route path="/account/settings" element={<AccountSettings />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verify-school-email" element={<VerifySchoolEmail />} />
 
 
             {/* Secure Home Page (Only Accessible When Logged In) */}
