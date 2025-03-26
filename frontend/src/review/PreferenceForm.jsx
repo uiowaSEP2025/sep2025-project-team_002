@@ -5,6 +5,12 @@ import {
   Typography, TextField, Button, MenuItem, Rating, Tooltip, IconButton,
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from "@mui/material";
+import Slider from '@mui/material/Slider';
+import {
+  Radio,
+  RadioGroup,
+  FormControlLabel
+} from '@mui/material';
 import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
 import InfoIcon from "@mui/icons-material/Info";
@@ -15,6 +21,7 @@ const PreferenceForm = () => {
   const navigate = useNavigate();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [hasExistingPreferences, setHasExistingPreferences] = useState(false);
   const [preference, setPreference] = useState({
     sport: "",
     head_coach: 0,
@@ -26,6 +33,31 @@ const PreferenceForm = () => {
     player_development: 0,
     nil_opportunity: 0,
   });
+
+  useEffect(() => {
+    const checkExistingPreferences = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`${API_BASE_URL}/api/preferences/user-preferences/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            setHasExistingPreferences(true);
+          }
+        }
+      } catch (error) {
+        console.error("Error checking preferences:", error);
+        Bugsnag.notify(error);
+      }
+    };
+
+    checkExistingPreferences();
+  }, []);
 
   const handleChange = (e) => {
     setPreference({ ...preference, [e.target.name]: e.target.value });
@@ -98,6 +130,68 @@ const PreferenceForm = () => {
     }
   };
 
+  if (hasExistingPreferences) {
+    return (
+      <>
+        {/* Keep your header */}
+        <div style={{
+          maxWidth: '800px',
+          margin: 'auto',
+          padding: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          position: 'relative'
+        }}>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              padding: '12px 25px',
+              backgroundColor: '#007bff',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              position: 'absolute',
+              left: 0
+            }}
+          >
+            ← Back
+          </button>
+          <h2 style={{
+            flex: 1,
+            textAlign: 'center',
+            margin: 0
+          }}>
+            Athletic Insider
+          </h2>
+        </div>
+
+        <Dialog open={hasExistingPreferences} onClose={() => navigate("/secure-home")}>
+          <DialogTitle>Preferences Already Submitted</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              You've already submitted your preferences!
+              <br />
+              You can only submit one preference at this time.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+              <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+            <Button
+              onClick={() => navigate("/secure-home")}
+              color="primary"
+              variant="contained"
+            >
+              Return to Dashboard
+            </Button>
+              </Box>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
+  }
+
 
   return (
       <>
@@ -152,7 +246,7 @@ const PreferenceForm = () => {
               <Typography variant="subtitle2" sx={{ fontWeight: 200, mb: 4 }}>
               <strong>NOTE:</strong> A rating of 10 indicates that this factor is extremely important in your decision,
                   while a 1 means it has little to no impact on your choice.
-                  If a factor doesn’t matter to you at all, select 1.
+                  If a factor doesn’t matter to you at all, select 0.
             </Typography>
           </motion.div>
 
@@ -196,14 +290,21 @@ const PreferenceForm = () => {
                       </IconButton>
                     </Tooltip>
                   </Typography>
-                  <Rating
-                    name={field.name}
-                    value={preference[field.name]}
-                    max={10}
-                    onChange={(event, newValue) => handleRatingChange(field.name, newValue)}
-                    sx={{ color: !preference[field.name] && isSubmitted ? "red" : "" }} // Highlight error
-                    data-testid={`rating-${field.name}`}
-                  />
+
+            <Slider
+                  value={preference[field.name]}
+                  onChange={(e, newValue) => handleRatingChange(field.name, newValue)}
+                  min={0}
+                  max={10}
+                  step={1}
+                  marks={[
+                    { value: 0, label: '0' },
+                    { value: 5, label: '5' },
+                    { value: 10, label: '10' }
+                  ]}
+                  valueLabelDisplay="auto"
+                  sx={{ width: '80%' }}
+                />
                   {isSubmitted && !preference[field.name] && (
                     <Typography sx={{ color: "red", ml: 2, fontSize: "0.9rem" }}>
                       Required
