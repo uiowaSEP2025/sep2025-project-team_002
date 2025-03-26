@@ -2,15 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box, Grid,
-  Typography, TextField, Button, MenuItem, Rating, Tooltip, IconButton,
+  Typography, TextField, Button, MenuItem, Tooltip, IconButton,
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
 } from "@mui/material";
 import Slider from '@mui/material/Slider';
-import {
-  Radio,
-  RadioGroup,
-  FormControlLabel
-} from '@mui/material';
 import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
 import InfoIcon from "@mui/icons-material/Info";
