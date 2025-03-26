@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 from preferences.models import Preferences
 
+
 @pytest.mark.django_db
 class TestPreferencesAPI:
     @pytest.fixture
@@ -13,6 +14,7 @@ class TestPreferencesAPI:
     def create_user(self, django_user_model):
         def make_user(**kwargs):
             return django_user_model.objects.create_user(**kwargs)
+
         return make_user
 
     @pytest.fixture
@@ -42,7 +44,9 @@ class TestPreferencesAPI:
             "nil_opportunity": 3,
         }
 
-        response = client.post("/api/preferences/preferences-form/", data, format="json")
+        response = client.post(
+            "/api/preferences/preferences-form/", data, format="json"
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert Preferences.objects.count() == 1
@@ -58,7 +62,9 @@ class TestPreferencesAPI:
             # Missing required integer fields
         }
 
-        response = client.post("/api/preferences/preferences-form/", data, format="json")
+        response = client.post(
+            "/api/preferences/preferences-form/", data, format="json"
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert Preferences.objects.count() == 0  # No preference should be created

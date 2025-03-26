@@ -2,6 +2,7 @@ from rest_framework import generics, permissions
 from .models import Preferences
 from .serializers import PreferencesSerializer
 
+
 class CreatePreferencesView(generics.CreateAPIView):
     queryset = Preferences.objects.all()
     serializer_class = PreferencesSerializer

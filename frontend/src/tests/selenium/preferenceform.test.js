@@ -1,5 +1,4 @@
 import { Builder, By, until } from "selenium-webdriver";
-import { expect } from "chai";
 import { describe, it, before, after } from "mocha";
 
 describe("PreferenceForm Selenium Test", function () {
