@@ -81,6 +81,7 @@ function SchoolPage() {
       <Box sx={{ my: 4 }}>
         {/* Navigation */}
         <Button
+          id="back-button"
           startIcon={<HomeIcon />}
           onClick={() => navigate("/")}
           sx={{ mb: 2 }}
@@ -89,15 +90,15 @@ function SchoolPage() {
         </Button>
 
         {/* School Header */}
-        <Typography variant="h3" component="h1" gutterBottom>
+        <Typography id="school-name" variant="h3" component="h1" gutterBottom>
           {school.school_name}
         </Typography>
-        <Typography variant="h6" color="text.secondary" gutterBottom>
+        <Typography id="school-info" variant="h6" color="text.secondary" gutterBottom>
           {school.conference} • {school.location}
         </Typography>
 
         {/* Sport Selection Tabs */}
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Box id="sports-tabs" sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
           <Tabs
             value={selectedSport}
             onChange={(e, newValue) => setSelectedSport(newValue)}
@@ -105,6 +106,7 @@ function SchoolPage() {
           >
             {availableSports.map((sport) => (
               <Tab
+                id={`sport-tab-${sport.replace(/\s+/g, '-').toLowerCase()}`}
                 key={sport}
                 label={sport}
                 value={sport}
@@ -115,15 +117,15 @@ function SchoolPage() {
 
         {/* Sport-specific Content */}
         {selectedSport && (
-          <Box>
-            <Typography variant="h4" gutterBottom>
+          <Box id={`${selectedSport.replace(/\s+/g, '-').toLowerCase()}-content`}>
+            <Typography id="program-title" variant="h4" gutterBottom>
               {selectedSport} Program
             </Typography>
             
             {/* Reviews Summary */}
-            <Card sx={{ mb: 3 }}>
+            <Card id="summary-card" sx={{ mb: 3 }}>
               <CardContent>
-                <Typography variant="h6" gutterBottom>
+                <Typography id="summary-title" variant="h6" gutterBottom>
                   Program Summary
                 </Typography>
                 <ReviewSummary schoolId={id} sport={selectedSport} />
@@ -131,14 +133,15 @@ function SchoolPage() {
             </Card>
 
             {/* Reviews Section */}
-            <Card>
+            <Card id="reviews-section">
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                  <Typography variant="h6">
+                  <Typography id="reviews-title" variant="h6">
                     Reviews
                   </Typography>
                   {isAuthenticated && (
                     <Button
+                      id="write-review-button"
                       variant="contained"
                       color="primary"
                       onClick={() => navigate(`/reviews/new`, {
@@ -158,55 +161,44 @@ function SchoolPage() {
                 {school.reviews
                   .filter(review => review.sport === selectedSport)
                   .map((review) => (
-                    <Card key={review.review_id} sx={{ mb: 2 }}>
+                    <Card 
+                      id={`review-${review.review_id}`}
+                      key={review.review_id} 
+                      sx={{ mb: 2 }}
+                    >
                       <CardContent>
-                        <Typography variant="h6" gutterBottom>
+                        <Typography id={`coach-name-${review.review_id}`} variant="h6" gutterBottom>
                           Head Coach: {review.head_coach_name}
                         </Typography>
-                        <Typography variant="body1" paragraph>
+                        <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
                         </Typography>
                         <Grid container spacing={2}>
-                          <Grid item xs={6} sm={3}>
-                            <Typography variant="subtitle2">Head Coach</Typography>
-                            <Rating value={review.head_coach} readOnly max={10} />
-                            <Typography variant="caption">{review.head_coach}/10</Typography>
-                          </Grid>
-                          <Grid item xs={6} sm={3}>
-                            <Typography variant="subtitle2">Assistant Coaches</Typography>
-                            <Rating value={review.assistant_coaches} readOnly max={10} />
-                            <Typography variant="caption">{review.assistant_coaches}/10</Typography>
-                          </Grid>
-                          <Grid item xs={6} sm={3}>
-                            <Typography variant="subtitle2">Team Culture</Typography>
-                            <Rating value={review.team_culture} readOnly max={10} />
-                            <Typography variant="caption">{review.team_culture}/10</Typography>
-                          </Grid>
-                          <Grid item xs={6} sm={3}>
-                            <Typography variant="subtitle2">Campus Life</Typography>
-                            <Rating value={review.campus_life} readOnly max={10} />
-                            <Typography variant="caption">{review.campus_life}/10</Typography>
-                          </Grid>
-                          <Grid item xs={6} sm={3}>
-                            <Typography variant="subtitle2">Athletic Facilities</Typography>
-                            <Rating value={review.athletic_facilities} readOnly max={10} />
-                            <Typography variant="caption">{review.athletic_facilities}/10</Typography>
-                          </Grid>
-                          <Grid item xs={6} sm={3}>
-                            <Typography variant="subtitle2">Athletic Department</Typography>
-                            <Rating value={review.athletic_department} readOnly max={10} />
-                            <Typography variant="caption">{review.athletic_department}/10</Typography>
-                          </Grid>
-                          <Grid item xs={6} sm={3}>
-                            <Typography variant="subtitle2">Player Development</Typography>
-                            <Rating value={review.player_development} readOnly max={10} />
-                            <Typography variant="caption">{review.player_development}/10</Typography>
-                          </Grid>
-                          <Grid item xs={6} sm={3}>
-                            <Typography variant="subtitle2">NIL Opportunity</Typography>
-                            <Rating value={review.nil_opportunity} readOnly max={10} />
-                            <Typography variant="caption">{review.nil_opportunity}/10</Typography>
-                          </Grid>
+                          {[
+                            ['head_coach', 'Head Coach'],
+                            ['assistant_coaches', 'Assistant Coaches'],
+                            ['team_culture', 'Team Culture'],
+                            ['campus_life', 'Campus Life'],
+                            ['athletic_facilities', 'Athletic Facilities'],
+                            ['athletic_department', 'Athletic Department'],
+                            ['player_development', 'Player Development'],
+                            ['nil_opportunity', 'NIL Opportunity']
+                          ].map(([field, label]) => (
+                            <Grid item xs={6} sm={3} key={field}>
+                              <Typography id={`${field}-label-${review.review_id}`} variant="subtitle2">
+                                {label}
+                              </Typography>
+                              <Rating 
+                                id={`${field}-rating-${review.review_id}`}
+                                value={review[field]} 
+                                readOnly 
+                                max={10} 
+                              />
+                              <Typography id={`${field}-score-${review.review_id}`} variant="caption">
+                                {review[field]}/10
+                              </Typography>
+                            </Grid>
+                          ))}
                         </Grid>
                       </CardContent>
                     </Card>

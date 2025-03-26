@@ -225,6 +225,7 @@ const ReviewForm = () => {
         position: 'relative'
       }}>
         <button
+          id="back-button"
           onClick={() => navigate(-1)}
           style={{
             padding: '12px 25px',
@@ -239,7 +240,7 @@ const ReviewForm = () => {
         >
           ← Back
         </button>
-        <h2 style={{
+        <h2 id="form-title" style={{
           flex: 1,
           textAlign: 'center',
           margin: 0
@@ -256,7 +257,7 @@ const ReviewForm = () => {
             transition={{ duration: 0.6 }}
             style={{ textAlign: "center" }}
           >
-            <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
+            <Typography id="page-title" variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
               Submit Your Review
             </Typography>
             <Typography variant="h6" sx={{ fontWeight: 400, mb: 4 }}>
@@ -264,8 +265,9 @@ const ReviewForm = () => {
             </Typography>
           </motion.div>
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: 4, borderRadius: 2, boxShadow: 3 }}>
+          <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: 4, borderRadius: 2, boxShadow: 3 }}>
           <TextField
+            id="school-select"
             select
             fullWidth
             label="School *"
@@ -277,13 +279,14 @@ const ReviewForm = () => {
             helperText={!review.school && isSubmitted ? "This field is required" : ""}
           >
             {schools.map((school) => (
-              <MenuItem key={school.id} value={school.id}>
+              <MenuItem id={`school-option-${school.id}`} key={school.id} value={school.id}>
                 {school.school_name}
               </MenuItem>
             ))}
           </TextField>
 
             <TextField
+              id="sport-select"
               select
               fullWidth
               label="Sport *"
@@ -296,13 +299,14 @@ const ReviewForm = () => {
               helperText={!review.sport && isSubmitted ? "This field is required" : ""}
             >
               {availableSports.map((sport, index) => (
-                <MenuItem key={index} value={sport}>
+                <MenuItem id={`sport-option-${sport.replace(/\s+/g, '-').toLowerCase()}`} key={index} value={sport}>
                   {sport}
                 </MenuItem>
               ))}
             </TextField>
 
             <TextField
+              id="coach-name-input"
               fullWidth
               label="Head Coach's Name *"
               name="head_coach_name"
@@ -334,22 +338,22 @@ const ReviewForm = () => {
                   { label: "Player Development* ", name: "player_development", info: "Assess how well the coaches helps athletes improve their skills." },
                   { label: "NIL Opportunity* ", name: "nil_opportunity", info: "Rate your school's NIL potential and the opportunities for athletes to profit." }
               ].map((field, index) => (
-                <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  <Typography sx={{ width: "50%" }}>
+                <Box id={`rating-container-${field.name}`} key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                  <Typography id={`rating-label-${field.name}`} sx={{ width: "50%" }}>
                     {field.label}:
                     <Tooltip title={field.info} arrow>
-                      <IconButton size="small" sx={{ ml: 1 }}>
+                      <IconButton id={`info-button-${field.name}`} size="small" sx={{ ml: 1 }}>
                         <InfoIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   </Typography>
                   <Rating
+                    id={`rating-${field.name}`}
                     name={field.name}
                     value={review[field.name]}
                     max={10}
                     onChange={(event, newValue) => handleRatingChange(field.name, newValue)}
                     sx={{ color: !review[field.name] && isSubmitted ? "red" : "" }} // Highlight error
-                    data-testid={`rating-${field.name}`}
                   />
                   {isSubmitted && !review[field.name] && (
                     <Typography sx={{ color: "red", ml: 2, fontSize: "0.9rem" }}>
@@ -360,6 +364,7 @@ const ReviewForm = () => {
               ))}
 
             <TextField
+              id="review-message"
               fullWidth
               label="Share additional thoughts on your experience. *"
               name="review_message"
@@ -373,6 +378,7 @@ const ReviewForm = () => {
             />
 
             <Button 
+              id="submit-review-button"
               type="button"  
               variant="contained" 
               color="primary" 
@@ -389,17 +395,17 @@ const ReviewForm = () => {
             </Button>
 
             {isDuplicateReview && (
-              <Typography color="error" sx={{ mt: 2, textAlign: "center" }}>
+              <Typography id="duplicate-error" color="error" sx={{ mt: 2, textAlign: "center" }}>
                 You have already submitted a review for this school, sport, and head coach.
               </Typography>
             )}
 
-            <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
+            <Dialog id="confirm-dialog" open={openConfirm} onClose={() => setOpenConfirm(false)}>
               <DialogTitle>Confirm Submission</DialogTitle>
               <DialogContent><DialogContentText>Are you sure you want to submit your review?</DialogContentText></DialogContent>
               <DialogActions>
-                <Button onClick={() => setOpenConfirm(false)} color="secondary">Cancel</Button>
-                <Button onClick={handleSubmit} color="primary" variant="contained">Confirm</Button>
+                <Button id="cancel-button" onClick={() => setOpenConfirm(false)} color="secondary">Cancel</Button>
+                <Button id="confirm-button" onClick={handleSubmit} color="primary" variant="contained">Confirm</Button>
               </DialogActions>
             </Dialog>
           </Box>
