@@ -12,6 +12,7 @@ import AccountSettings from "./account/AccountSettings.jsx";
 import ForgotPassword from './account/ForgotPassword.jsx';
 import ResetPassword from './account/ResetPassword.jsx';
 import ReviewForm from './review/ReviewForm.jsx';
+import PreferenceForm from './review/PreferenceForm.jsx';
 import VerifySchoolEmail from './account/VerifySchoolEmail.jsx'
 import Footer from './components/Footer.jsx';
 import AboutUs from './components/AboutUs.jsx'
@@ -68,6 +69,14 @@ function App() {
                 element={
                   <RequireAuth>
                     <ReviewForm />
+                  </RequireAuth>
+                }
+              />
+               <Route
+                path="/preferenceForm-form"
+                element={
+                  <RequireAuth>
+                    <PreferenceForm />
                   </RequireAuth>
                 }
               />
