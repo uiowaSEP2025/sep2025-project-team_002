@@ -73,7 +73,7 @@ function App() {
                 }
               />
                <Route
-                path="/preferenceForm-form"
+                path="/preference-form"
                 element={
                   <RequireAuth>
                     <PreferenceForm />
