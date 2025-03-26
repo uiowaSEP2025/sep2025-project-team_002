@@ -2,7 +2,7 @@ import { Builder, By, until } from "selenium-webdriver";
 import { expect } from "chai"; // Using Chai for assertions
 import { describe, it, before, after } from "mocha";
 
-describe("Selenium Signup & Login Test", function () {
+describe("Login and Create Review Test", function () {
   let driver;
   const testEmail = `testuser${Date.now()}@example.com`;
   const testPassword = "TestPassword123!";
@@ -23,44 +23,8 @@ describe("Selenium Signup & Login Test", function () {
     await driver.quit();
   });
 
-  it("should successfully sign up and log in", async function () {
+  it("should successfully log in and create a review", async function () {
     try {
-      // Navigate to the Signup page
-      await driver.get("http://frontend:3000/signup");
-
-      // Retrieve API URL for debugging
-      const apiUrl = await driver.findElement(By.css("body")).getAttribute("data-api-url");
-      console.log("Selenium Debugging: API URL =", apiUrl);
-
-      // Locate form elements
-      let firstNameInput = await driver.findElement(By.id("signup-first-name"));
-      let lastNameInput = await driver.findElement(By.id("signup-last-name"));
-      let emailInput = await driver.findElement(By.id("signup-email"));
-      let passwordInput = await driver.findElement(By.id("signup-password"));
-      let confirmPasswordInput = await driver.findElement(By.id("signup-confirm-password"));
-      let signupButton = await driver.findElement(By.id("signup-button"));
-      let highSchoolRadio = await driver.findElement(By.id("signup-high_school"));
-      let transferRadio = await driver.findElement(By.id("signup-transfer"));
-      let graduateRadio = await driver.findElement(By.id("signup-graduate"));
-
-      let transferOptions = [highSchoolRadio, transferRadio, graduateRadio];
-      let randomIndex = Math.floor(Math.random() * transferOptions.length);
-
-      // Fill in the registration form
-      await firstNameInput.sendKeys("Test");
-      await lastNameInput.sendKeys("User");
-      await emailInput.sendKeys(testEmail);
-      await passwordInput.sendKeys(testPassword);
-      await confirmPasswordInput.sendKeys(testPassword);
-      await transferOptions[randomIndex].click();
-      await signupButton.click();
-
-      // let pageSource = await driver.getPageSource();
-      // console.log(pageSource);
-
-      // Wait for redirection to the login page
-      await driver.wait(until.urlContains("/login"), 10000);
-
       // Navigate to the Login page
       await driver.get("http://frontend:3000/login");
 
