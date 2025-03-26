@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
   Box, Grid,
   Typography, TextField, Button, MenuItem, Rating, Tooltip, IconButton,
@@ -76,15 +76,19 @@ const submitReview = async (review) => {
 
 
 const ReviewForm = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const { schoolId, schoolName, selectedSport } = location.state || {};
+  const [searchParams] = useSearchParams();
   const [schools, setSchools] = useState([]);
   const [availableSports, setAvailableSports] = useState([]);
   const [userReviews, setUserReviews] = useState([]); // Store user's past reviews
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
+  const [selectedSchool, setSelectedSchool] = useState(null);
   const [review, setReview] = useState({
-    school: "", // Updated to an empty string for better selection handling
-    sport: "",
+    school: schoolId || "",
+    sport: selectedSport || "",
     head_coach_name: "",
     review_message: "",
     head_coach: 0,
@@ -103,10 +107,24 @@ const ReviewForm = () => {
       const fetchedReviews = await fetchUserReviews();
       setSchools(fetchedSchools);
       setUserReviews(fetchedReviews);
+
+      // If we have a schoolId, find and set the selected school
+      if (schoolId) {
+        const school = fetchedSchools.find(s => s.id.toString() === schoolId.toString());
+        if (school) {
+          setSelectedSchool(school);
+          // Set available sports based on the pre-selected school
+          const sports = [];
+          if (school.mbb) sports.push("Men's Basketball");
+          if (school.wbb) sports.push("Women's Basketball");
+          if (school.fb) sports.push("Football");
+          setAvailableSports(sports);
+        }
+      }
     };
     loadData();
 
-  }, []);
+  }, [schoolId]);
 
   const handleChange = (e) => {
     setReview({ ...review, [e.target.name]: e.target.value });
@@ -117,12 +135,19 @@ const ReviewForm = () => {
   };
 
   const handleSchoolChange = (e) => {
-    const selectedSchoolId = e.target.value;
-    setReview({ ...review, school: selectedSchoolId, sport: "" });
-  
-    // Find the selected school and update the available sports list
-    const selectedSchool = schools.find((school) => school.id === parseInt(selectedSchoolId));
-    setAvailableSports(selectedSchool ? selectedSchool.available_sports : []);
+    const schoolId = e.target.value;
+    setReview({ ...review, school: schoolId });
+    
+    const selectedSchool = schools.find(s => s.id.toString() === schoolId.toString());
+    if (selectedSchool) {
+      setSelectedSchool(selectedSchool);
+      // Update available sports
+      const sports = [];
+      if (selectedSchool.mbb) sports.push("Men's Basketball");
+      if (selectedSchool.wbb) sports.push("Women's Basketball");
+      if (selectedSchool.fb) sports.push("Football");
+      setAvailableSports(sports);
+    }
   };
 
   const isFormValid = () => {

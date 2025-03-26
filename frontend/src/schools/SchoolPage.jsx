@@ -11,6 +11,8 @@ import {
   Rating,
   Stack,
   Grid,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
@@ -21,15 +23,13 @@ function SchoolPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [school, setSchool] = useState(null);
+  const [selectedSport, setSelectedSport] = useState(null);
   const isAuthenticated = !!localStorage.getItem('token');
 
   useEffect(() => {
     const fetchSchool = async () => {
       try {
         const token = localStorage.getItem('token');
-        console.log('Fetching school with token:', token ? 'Token exists' : 'No token');
-
-        // Use public route if no token, otherwise use protected route
         const endpoint = token 
           ? `${API_BASE_URL}/api/schools/${id}/`
           : `${API_BASE_URL}/api/public/schools/${id}/`;
@@ -46,12 +46,16 @@ function SchoolPage() {
         const response = await fetch(endpoint, { headers });
 
         if (!response.ok) {
-          console.error('Server response:', await response.text());
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         setSchool(data);
+        
+        // Set default selected sport if available
+        if (data.mbb) setSelectedSport("Men's Basketball");
+        else if (data.wbb) setSelectedSport("Women's Basketball");
+        else if (data.fb) setSelectedSport("Football");
       } catch (error) {
         console.error('Error fetching school:', error);
         Bugsnag.notify(error);
@@ -61,130 +65,158 @@ function SchoolPage() {
     fetchSchool();
   }, [id]);
 
-  const ratingFields = [
-    { label: "Head Coach", field: "head_coach" },
-    { label: "Assistant Coaches", field: "assistant_coaches" },
-    { label: "Team Culture", field: "team_culture" },
-    { label: "Campus Life", field: "campus_life" },
-    { label: "Athletic Facilities", field: "athletic_facilities" },
-    { label: "Athletic Department", field: "athletic_department" },
-    { label: "Player Development", field: "player_development" },
-    { label: "NIL Opportunity", field: "nil_opportunity" },
-  ];
+  if (!school) return <div>Loading...</div>;
+
+  const availableSports = [];
+  if (school.mbb) availableSports.push("Men's Basketball");
+  if (school.wbb) availableSports.push("Women's Basketball");
+  if (school.fb) availableSports.push("Football");
+
+  const handleWriteReview = (sport) => {
+    navigate(`/reviews/new?school=${id}&sport=${encodeURIComponent(sport)}`);
+  };
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", pt: 4 }}>
-      <Container maxWidth="lg">
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 4 }}>
-          <Button
-            startIcon={<HomeIcon />}
-            onClick={() => navigate(isAuthenticated ? '/secure-home' : '/')}
-            variant="contained"
+    <Container maxWidth="lg">
+      <Box sx={{ my: 4 }}>
+        {/* Navigation */}
+        <Button
+          startIcon={<HomeIcon />}
+          onClick={() => navigate("/")}
+          sx={{ mb: 2 }}
+        >
+          Back to Schools
+        </Button>
+
+        {/* School Header */}
+        <Typography variant="h3" component="h1" gutterBottom>
+          {school.school_name}
+        </Typography>
+        <Typography variant="h6" color="text.secondary" gutterBottom>
+          {school.conference} • {school.location}
+        </Typography>
+
+        {/* Sport Selection Tabs */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs
+            value={selectedSport}
+            onChange={(e, newValue) => setSelectedSport(newValue)}
+            aria-label="sports tabs"
           >
-            Back to Home
-          </Button>
+            {availableSports.map((sport) => (
+              <Tab
+                key={sport}
+                label={sport}
+                value={sport}
+              />
+            ))}
+          </Tabs>
         </Box>
 
-        {school ? (
-          <Stack spacing={3}>
-            <Card>
+        {/* Sport-specific Content */}
+        {selectedSport && (
+          <Box>
+            <Typography variant="h4" gutterBottom>
+              {selectedSport} Program
+            </Typography>
+            
+            {/* Reviews Summary */}
+            <Card sx={{ mb: 3 }}>
               <CardContent>
-                <Typography variant="h4" sx={{ mb: 3, fontWeight: 700 }}>
-                  {school.school_name}
+                <Typography variant="h6" gutterBottom>
+                  Program Summary
                 </Typography>
-                
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Conference: {school.conference}
-                </Typography>
-                
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Location: {school.location}
-                </Typography>
-                
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Available Sports:
-                </Typography>
-                <Typography variant="body1">
-                  {school.available_sports && school.available_sports.length > 0 
-                    ? school.available_sports.join(' • ')
-                    : 'No sports listed'
-                  }
-                </Typography>
+                <ReviewSummary schoolId={id} sport={selectedSport} />
               </CardContent>
             </Card>
 
-            <ReviewSummary schoolId={id} />
-
+            {/* Reviews Section */}
             <Card>
               <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                  <Typography variant="h5" sx={{ fontWeight: 700 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                  <Typography variant="h6">
                     Reviews
                   </Typography>
-                  {!isAuthenticated ? (
-                    <Link to="/login" style={{ textDecoration: 'none' }}>
-                      <Button variant="contained" color="primary">
-                        Log in to Write a Review
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Link to={`/review-form`} style={{ textDecoration: 'none' }}>
-                      <Button variant="contained" color="primary">
-                        Write a Review
-                      </Button>
-                    </Link>
+                  {isAuthenticated && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate(`/reviews/new`, {
+                        state: { 
+                          schoolId: id,
+                          schoolName: school.school_name,
+                          selectedSport: selectedSport 
+                        }
+                      })}
+                    >
+                      Write a Review
+                    </Button>
                   )}
                 </Box>
                 
-                {school.reviews && school.reviews.length > 0 ? (
-                  school.reviews.map((review, index) => (
-                    <Box key={index} sx={{ mb: 4 }}>
-                      <Box sx={{ mb: 2 }}>
-                        <Typography variant="h6" sx={{ mb: 1 }}>
-                          {review.sport} - Coach {review.head_coach_name}
+                {/* Filter reviews by sport */}
+                {school.reviews
+                  .filter(review => review.sport === selectedSport)
+                  .map((review) => (
+                    <Card key={review.review_id} sx={{ mb: 2 }}>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          Head Coach: {review.head_coach_name}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Posted on {new Date(review.created_at).toLocaleDateString()}
+                        <Typography variant="body1" paragraph>
+                          {review.review_message}
                         </Typography>
-                      </Box>
-
-                      <Grid container spacing={2} sx={{ mb: 2 }}>
-                        {ratingFields.map((field) => (
-                          <Grid item xs={12} sm={6} md={3} key={field.field}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                              <Typography variant="body2" color="text.secondary">
-                                {field.label}
-                              </Typography>
-                              <Rating 
-                                value={review[field.field]} 
-                                readOnly 
-                                max={10}
-                              />
-                            </Box>
+                        <Grid container spacing={2}>
+                          <Grid item xs={6} sm={3}>
+                            <Typography variant="subtitle2">Head Coach</Typography>
+                            <Rating value={review.head_coach} readOnly max={10} />
+                            <Typography variant="caption">{review.head_coach}/10</Typography>
                           </Grid>
-                        ))}
-                      </Grid>
-
-                      <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
-                        {review.review_message}
-                      </Typography>
-
-                      <Divider sx={{ mt: 3 }} />
-                    </Box>
-                  ))
-                ) : (
-                  <Typography variant="body1" color="text.secondary">
-                    No reviews yet
-                  </Typography>
-                )}
+                          <Grid item xs={6} sm={3}>
+                            <Typography variant="subtitle2">Assistant Coaches</Typography>
+                            <Rating value={review.assistant_coaches} readOnly max={10} />
+                            <Typography variant="caption">{review.assistant_coaches}/10</Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={3}>
+                            <Typography variant="subtitle2">Team Culture</Typography>
+                            <Rating value={review.team_culture} readOnly max={10} />
+                            <Typography variant="caption">{review.team_culture}/10</Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={3}>
+                            <Typography variant="subtitle2">Campus Life</Typography>
+                            <Rating value={review.campus_life} readOnly max={10} />
+                            <Typography variant="caption">{review.campus_life}/10</Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={3}>
+                            <Typography variant="subtitle2">Athletic Facilities</Typography>
+                            <Rating value={review.athletic_facilities} readOnly max={10} />
+                            <Typography variant="caption">{review.athletic_facilities}/10</Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={3}>
+                            <Typography variant="subtitle2">Athletic Department</Typography>
+                            <Rating value={review.athletic_department} readOnly max={10} />
+                            <Typography variant="caption">{review.athletic_department}/10</Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={3}>
+                            <Typography variant="subtitle2">Player Development</Typography>
+                            <Rating value={review.player_development} readOnly max={10} />
+                            <Typography variant="caption">{review.player_development}/10</Typography>
+                          </Grid>
+                          <Grid item xs={6} sm={3}>
+                            <Typography variant="subtitle2">NIL Opportunity</Typography>
+                            <Rating value={review.nil_opportunity} readOnly max={10} />
+                            <Typography variant="caption">{review.nil_opportunity}/10</Typography>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+                    </Card>
+                  ))}
               </CardContent>
             </Card>
-          </Stack>
-        ) : (
-          <Typography>Loading...</Typography>
+          </Box>
         )}
-      </Container>
-    </Box>
+      </Box>
+    </Container>
   );
 }
 
