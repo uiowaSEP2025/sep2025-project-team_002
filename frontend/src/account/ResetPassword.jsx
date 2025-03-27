@@ -50,7 +50,7 @@ function ResetPassword() {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
+    <Box sx={{ maxWidth: 400, mx: "auto", mt: 4, px: 2 }}>
       <Typography variant="h4" gutterBottom>
         Reset Password
       </Typography>

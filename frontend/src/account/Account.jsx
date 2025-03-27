@@ -24,7 +24,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
-import SchoolIcon from "@mui/icons-material/School";
 import LogoutIcon from "@mui/icons-material/Logout";
 import API_BASE_URL from "../utils/config.js";
 
@@ -112,11 +111,6 @@ function Account() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-    // {
-    //   text: "School",
-    //   action: () => navigate("/school"),
-    //   icon: <SchoolIcon fontSize="medium" />
-    // },
     {
       text: "Logout",
       action: () => {
@@ -127,14 +121,12 @@ function Account() {
     }
   ];
 
-  // Re-usable function that renders the menu items
   const renderMenuList = () =>
     menuItems.map((item, index) => (
       <ListItem key={index} disablePadding>
         <ListItemButton
           onClick={() => {
             item.action();
-            // If on mobile, close the overlay after navigating
             if (isMobile) setMobileMenuOpen(false);
           }}
           sx={{ borderRadius: "20px", mb: 1, pl: 2 }}
@@ -144,7 +136,7 @@ function Account() {
           {!isMobile && menuOpen && (
             <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
           )}
-          {/* Mobile: always show text in the overlay */}
+          {/* Mobile: always show text */}
           {isMobile && (
             <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
           )}
@@ -152,13 +144,12 @@ function Account() {
       </ListItem>
     ));
 
-  // Collapsible side menu variants (desktop)
+  // Animation variants
   const menuVariants = {
     open: { width: 240, transition: { duration: 0.3 } },
     closed: { width: 72, transition: { duration: 0.3 } }
   };
 
-  // Mobile overlay slide-in/out from left
   const overlayVariants = {
     hidden: { x: "-100%" },
     visible: { x: 0 },
@@ -196,7 +187,7 @@ function Account() {
 
   return (
     <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-      {/* DESKTOP / LARGE TABLET: Collapsible Side Menu */}
+      {/* Desktop side menu */}
       {!isMobile && (
         <Grid item xs={12} md={3} sx={{ p: 0 }}>
           <motion.div
@@ -238,13 +229,12 @@ function Account() {
 
             <Divider sx={{ bgcolor: "grey.600", mb: 2 }} />
 
-            {/* List of items */}
             <List>{renderMenuList()}</List>
           </motion.div>
         </Grid>
       )}
 
-      {/* MOBILE: Hamburger icon in top-left corner */}
+      {/* Mobile hamburger */}
       {isMobile && (
         <Box
           sx={{
@@ -267,7 +257,7 @@ function Account() {
         </Box>
       )}
 
-      {/* MOBILE OVERLAY MENU */}
+      {/* Mobile overlay */}
       <AnimatePresence>
         {isMobile && mobileMenuOpen && (
           <motion.div
@@ -290,7 +280,7 @@ function Account() {
               flexDirection: "column"
             }}
           >
-            {/* Sticky header at the top */}
+            {/* Overlay header */}
             <Box
               sx={{
                 position: "sticky",
@@ -323,12 +313,11 @@ function Account() {
               <Divider sx={{ bgcolor: "grey.600", mt: 2 }} />
             </Box>
 
-            {/* Scrollable menu list area */}
             <Box
               sx={{
                 flex: 1,
                 overflowY: "auto",
-                p: 2  // extra padding for the list
+                p: 2
               }}
             >
               <List>{renderMenuList()}</List>
@@ -337,22 +326,26 @@ function Account() {
         )}
       </AnimatePresence>
 
-      {/* MAIN CONTENT AREA (Account Info) */}
+      {/* Main content area */}
       <Grid
         item
         xs={12}
         md={isMobile ? 12 : 9}
         sx={{
           p: 4,
-          // Add top spacing on mobile so content isn't hidden behind the hamburger
-          mt: isMobile ? 6 : 0
+          mt: isMobile ? 6 : 0 // NEW: add top margin on mobile so overlay button doesn't overlap
         }}
       >
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}
+          style={{
+            maxWidth: "600px",
+            margin: "0 auto",
+            textAlign: "left",
+            // You could add responsive width or padding here if needed
+          }}
         >
           <Typography
             variant="h4"
@@ -373,7 +366,7 @@ function Account() {
           )}
 
           {user ? (
-            <Box component="form" sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2 }}>
               <TextField
                 fullWidth
                 margin="normal"

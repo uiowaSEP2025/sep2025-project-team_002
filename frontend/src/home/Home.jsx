@@ -42,7 +42,7 @@ function Home() {
         {/* Navbar */}
         <nav style = {styles.navbar}>
             <h2 style = {styles.logo}>Athletic Insider </h2>
-            <div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
                 <Link to = "/signup" style = {styles.navLink}> Sign Up</Link>
                 <Link to = "/login" style = {styles.navLink}> Login </Link>
             </div>
@@ -58,7 +58,7 @@ function Home() {
                 label="Search Schools"
                 variant="outlined"
                 fullWidth
-                sx={{ width: "50%" }}
+                sx={{ width: "90%", maxWidth: "500px" }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
             />

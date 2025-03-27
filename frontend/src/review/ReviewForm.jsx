@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
   Box, Grid,
   Typography, TextField, Button, MenuItem, Rating, Tooltip, IconButton,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, useMediaQuery
 } from "@mui/material";
 import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
@@ -98,6 +98,8 @@ const ReviewForm = () => {
     player_development: 0,
     nil_opportunity: 0,
   });
+
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   useEffect(() => {
     const loadData = async () => {
@@ -219,7 +221,9 @@ const ReviewForm = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        position: 'relative'
+        position: 'relative',
+        width: "100%",
+        boxSizing: "border-box"
       }}>
         <button
           id="back-button"
@@ -245,7 +249,7 @@ const ReviewForm = () => {
           Athletic Insider
         </h2>
       </div>
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: 4 }}>
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: { xs: 2, md: 4 }, overflowX: "hidden"}}>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={6}>
           <motion.div
@@ -261,8 +265,7 @@ const ReviewForm = () => {
               Share your experience with the school's athletic program.
             </Typography>
           </motion.div>
-
-          <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: 4, borderRadius: 2, boxShadow: 3 }}>
+          <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: { xs: 2, md: 4 }, borderRadius: 2, boxShadow: 3 }}>
           <TextField
             id="school-select"
             select

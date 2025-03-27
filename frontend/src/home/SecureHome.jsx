@@ -213,7 +213,7 @@ function SecureHome() {
                 label="Search Schools"
                 variant="outlined"
                 fullWidth
-                sx={{ width: "50%" }}
+                sx={{ width: "90%", maxWidth: 600 }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
