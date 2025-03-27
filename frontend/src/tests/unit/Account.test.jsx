@@ -80,12 +80,12 @@ describe("Account Page Testing", () => {
     expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Not Specified");
   });
 
-  it("handles successful fetch with all fields + 'transfer_in'", async () => {
+  it("handles successful fetch with all fields + 'high_school'", async () => {
     mockSuccessfulFetch({
       first_name: "John",
       last_name: "Doe",
       email: "john@example.com",
-      transfer_type: "transfer_in",
+      transfer_type: "high_school",
     });
 
     render(
@@ -104,15 +104,15 @@ describe("Account Page Testing", () => {
     expect(screen.getByLabelText(/First Name/i)).toHaveValue("John");
     expect(screen.getByLabelText(/Last Name/i)).toHaveValue("Doe");
     expect(screen.getByRole("textbox", { name: /Email/i })).toHaveValue("john@example.com");
-    expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Transfer In");
+    expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Prospective High School Athlete");
   });
 
-  it("handles 'transfer_out' as 'Transfer Out'", async () => {
+  it("handles 'transfer' as 'Transferring Athlete'", async () => {
     mockSuccessfulFetch({
       first_name: "Kate",
       last_name: "Smith",
       email: "kate@example.com",
-      transfer_type: "transfer_out",
+      transfer_type: "transfer",
     });
 
     render(
@@ -125,7 +125,7 @@ describe("Account Page Testing", () => {
     );
 
     expect(await screen.findByText(/Account Information/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Transfer Out");
+    expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Transferring Athlete");
   });
 
   it("handles 'graduate' => 'Graduated Athlete'", async () => {

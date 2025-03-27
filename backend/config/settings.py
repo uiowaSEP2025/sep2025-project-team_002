@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "schools",
     "reviews",
     "report",
+    "preferences",
 ]
 
 AUTH_USER_MODEL = "users.Users"

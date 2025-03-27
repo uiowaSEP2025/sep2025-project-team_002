@@ -24,6 +24,12 @@ function SchoolPage() {
   const [school, setSchool] = useState(null);
   const [selectedSport, setSelectedSport] = useState(null);
   const isAuthenticated = !!localStorage.getItem('token');
+    const [user, setUser] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    transfer_type: ""
+  });
 
   useEffect(() => {
     const fetchSchool = async () => {
@@ -62,6 +68,42 @@ function SchoolPage() {
 
     fetchSchool();
   }, [id]);
+
+  useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) return;  // No user logged in
+
+  // Fetch User Info
+  const fetchUserInfo = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/user/`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUser({
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          email: data.email || "",
+          transfer_type: data.transfer_type || "",
+        });
+      } else {
+        console.error("Error fetching user data");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      Bugsnag.notify(error);
+    }
+  };
+
+  fetchUserInfo();
+}, []);
+
+
 
   if (!school) return <div>Loading...</div>;
 
@@ -137,7 +179,7 @@ function SchoolPage() {
                   <Typography id="reviews-title" variant="h6">
                     Reviews
                   </Typography>
-                  {isAuthenticated && (
+                  {isAuthenticated && user.transfer_type !== "high_school" && (
                     <Button
                       id="write-review-button"
                       variant="contained"

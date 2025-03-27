@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
+  "resolutions": {
+  "esbuild": "0.25.1"
+},
   "dependencies": {
     "@bugsnag/browser-performance": "^2.1.1",
     "@bugsnag/js": "^7.22.4",
