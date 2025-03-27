@@ -8,7 +8,6 @@ import {
 import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
 import InfoIcon from "@mui/icons-material/Info";
-import Bugsnag from '@bugsnag/js';
 
 
 const fetchUserReviews = async () => {
@@ -69,7 +68,6 @@ const submitReview = async (review) => {
     return data;
   } catch (error) {
     console.error("Error submitting review:", error);
-    Bugsnag.notify(error);
     return null;
   }
 };
@@ -209,7 +207,6 @@ const ReviewForm = () => {
       navigate("/secure-home");
     } catch (error) {
       console.error("Submission failed", error);
-      Bugsnag.notify(error);
     }
   };
 
