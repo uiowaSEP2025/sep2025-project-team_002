@@ -309,7 +309,7 @@ const ReviewForm = () => {
                   { label: "Team Culture* ", name: "team_culture", info: "Rate the atmosphere, team chemistry, and overall culture of the program." },
                   { label: "Campus Life* ", name: "campus_life", info: "Assess the school's campus environment, student experience, and activities." },
                   { label: "Athletic Facilities* ", name: "athletic_facilities", info: "Evaluate the quality of training rooms, venues, and practice facilities." },
-                  { label: "Athletic Department* ", name: "athletic_department", info: "Rate the support, culture, and effectiveness of the school's athletic department." },
+                  { label: "Athletic Department* ", name: "athletic_department", info: "Rate the support, culture, and effectiveness of the school's overall athletic department." },
                   { label: "Player Development* ", name: "player_development", info: "Assess how well the coaches helps athletes improve their skills." },
                   { label: "NIL Opportunity* ", name: "nil_opportunity", info: "Rate your school's NIL potential and the opportunities for athletes to profit." }
               ].map((field, index) => (
@@ -375,7 +375,8 @@ const ReviewForm = () => {
 
             <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
               <DialogTitle>Confirm Submission</DialogTitle>
-              <DialogContent><DialogContentText>Are you sure you want to submit your review?</DialogContentText></DialogContent>
+              <DialogContent><DialogContentText>Are you sure you want to submit your review?
+              <br />You cannot change your review once it is submitted.</DialogContentText></DialogContent>
               <DialogActions>
                 <Button onClick={() => setOpenConfirm(false)} color="secondary">Cancel</Button>
                 <Button onClick={handleSubmit} color="primary" variant="contained">Confirm</Button>
