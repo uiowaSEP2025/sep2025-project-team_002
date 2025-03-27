@@ -248,7 +248,8 @@ function SecureHome() {
               {filteredSchools.length > 0 ? (
                 filteredSchools.map((school) => (
                   <Card 
-                    key={school.id} 
+                    key={school.id}
+                    id={`school-${school.id}`}
                     sx={{ 
                       width: '100%',
                       cursor: 'pointer',

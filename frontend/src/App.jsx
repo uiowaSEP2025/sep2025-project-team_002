@@ -82,6 +82,7 @@ function App() {
               />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/school/:id" element={<SchoolPage />} />
+            <Route path="/reviews/new" element={<ReviewForm />} />
           </Routes>
           <Footer />
         </Router>

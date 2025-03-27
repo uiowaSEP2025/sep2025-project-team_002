@@ -25,3 +25,6 @@ black
 
 # Dependency
 requests
+
+# OpenAI
+openai==1.68.2

@@ -11,6 +11,12 @@ class Schools(models.Model):
     location = models.CharField(max_length=255)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(default=timezone.now)
+    review_summaries = models.JSONField(null=True, blank=True, default=dict)
+    review_dates = models.JSONField(null=True, blank=True, default=dict)
+    review_summary = models.TextField(null=True, blank=True)
+    last_review_date = models.DateTimeField(null=True, blank=True)
+    sport_summaries = models.JSONField(null=True, blank=True, default=dict)
+    sport_review_dates = models.JSONField(null=True, blank=True, default=dict)
 
     class Meta:
         verbose_name_plural = "Schools"

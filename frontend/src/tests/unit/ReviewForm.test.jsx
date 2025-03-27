@@ -15,8 +15,25 @@ beforeEach(() => {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve([
-            { school: 1, sport: "Basketball", head_coach_name: "John Duck" } // Mock duplicate review
-        ]), // Mock empty reviews
+          {
+            review_id: "123e4567-e89b-12d3-a456-426614174000",
+            school: 1,
+            user: 1,
+            sport: "Men's Basketball",
+            head_coach_name: "John Duck",
+            review_message: "Great experience!",
+            head_coach: 4,
+            assistant_coaches: 4,
+            team_culture: 5,
+            campus_life: 5,
+            athletic_facilities: 5,
+            athletic_department: 4,
+            player_development: 5,
+            nil_opportunity: 3,
+            created_at: "2024-02-14T00:00:00Z",
+            updated_at: "2024-02-14T00:00:00Z"
+          }
+        ]),
       });
     }
 
@@ -24,7 +41,23 @@ beforeEach(() => {
       return Promise.resolve({
         ok: true,
         json: () => Promise.resolve([
-          { id: 1, school_name: "Test School", available_sports: ["Basketball"] }
+          {
+            id: 1,
+            school_name: "Test School",
+            mbb: true,
+            wbb: false,
+            fb: false,
+            conference: "Test Conference",
+            location: "Test Location",
+            created_at: "2024-02-14T00:00:00Z",
+            updated_at: "2024-02-14T00:00:00Z",
+            review_summaries: {},
+            review_dates: {},
+            review_summary: null,
+            last_review_date: null,
+            sport_summaries: {},
+            sport_review_dates: {}
+          }
         ]),
       });
     }
@@ -120,10 +153,10 @@ it("prevents duplicate reviews", async () => {
   await waitFor(() => screen.getByText("Test School")); // Ensure option is visible
   fireEvent.click(screen.getByText("Test School")); // Selects the option
 
-  // Open the sport dropdown and select "Basketball"
+  // Open the sport dropdown and select "Men's Basketball"
   fireEvent.mouseDown(screen.getByRole("combobox", { name: /Sport/i })); // Use role for dropdown
-  await waitFor(() => screen.getByText("Basketball"));
-  fireEvent.click(screen.getByText("Basketball"));
+  await waitFor(() => screen.getByText("Men's Basketball"));
+  fireEvent.click(screen.getByText("Men's Basketball"));
 
   // Fill in head coach's name
   fireEvent.change(screen.getByRole("textbox", { name: /Head Coach/i }), {
@@ -154,10 +187,10 @@ it("prevents duplicate reviews", async () => {
   await waitFor(() => screen.getByText("Test School"));
   fireEvent.click(screen.getByText("Test School"));
 
-  // Open the sport dropdown and select "Basketball"
+  // Open the sport dropdown and select "Men's Basketball"
   fireEvent.mouseDown(screen.getByLabelText("Sport *"));
-  await waitFor(() => screen.getByText("Basketball"));
-  fireEvent.click(screen.getByText("Basketball"));
+  await waitFor(() => screen.getByText("Men's Basketball"));
+  fireEvent.click(screen.getByText("Men's Basketball"));
 
   // Fill in head coach's name
   fireEvent.change(screen.getByLabelText("Head Coach's Name *"), {
@@ -190,8 +223,8 @@ await waitFor(() => {
 
   // Sport dropdown
   fireEvent.mouseDown(screen.getByLabelText("Sport *"));
-  await waitFor(() => screen.getByText("Basketball"));
-  fireEvent.click(screen.getByText("Basketball"));
+  await waitFor(() => screen.getByText("Men's Basketball"));
+  fireEvent.click(screen.getByText("Men's Basketball"));
 
   // Head Coach's Name
   fireEvent.change(screen.getByLabelText("Head Coach's Name *"), {
