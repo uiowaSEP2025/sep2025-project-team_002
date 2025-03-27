@@ -120,6 +120,11 @@ function SecureHome() {
       navigate("/review-form");
     };
 
+    // Navigate to review form
+    const handleGoToPreferenceForm = () => {
+      navigate("/preference-form");
+    };
+
   // Account info handler: redirect to account info page (update route as needed)
   const handleAccountInfo = () => {
     navigate("/account");
@@ -225,6 +230,17 @@ function SecureHome() {
                 onClick={handleGoToReviewForm}
               >
                 Submit a Review
+              </Button>
+            </Box> )}
+
+            {user.transfer_type !== "graduate" && (
+            <Box sx={{ textAlign: "center", mb: 4 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleGoToPreferenceForm}
+              >
+                Submit your Preferences
               </Button>
             </Box> )}
 
