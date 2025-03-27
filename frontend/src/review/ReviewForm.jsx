@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Box, Grid,
   Typography, TextField, Button, MenuItem, Rating, Tooltip, IconButton,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, useMediaQuery
 } from "@mui/material";
 import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
@@ -96,6 +96,8 @@ const ReviewForm = () => {
     player_development: 0,
     nil_opportunity: 0,
   });
+
+  const isMobile = useMediaQuery("(max-width: 600px)");
 
   useEffect(() => {
     const loadData = async () => {
@@ -197,7 +199,9 @@ const ReviewForm = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        position: 'relative'
+        position: 'relative',
+        width: "100%",
+        boxSizing: "border-box"
       }}>
         <button
           onClick={() => navigate(-1)}
@@ -222,7 +226,7 @@ const ReviewForm = () => {
           Athletic Insider
         </h2>
       </div>
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: 4 }}>
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: { xs: 2, md: 4 }, overflowX: "hidden"}}>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={6}>
           <motion.div
@@ -239,7 +243,7 @@ const ReviewForm = () => {
             </Typography>
           </motion.div>
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: 4, borderRadius: 2, boxShadow: 3 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: { xs: 2, md: 4 }, borderRadius: 2, boxShadow: 3 }}>
           <TextField
             select
             fullWidth
@@ -309,7 +313,7 @@ const ReviewForm = () => {
                   { label: "Player Development* ", name: "player_development", info: "Assess how well the coaches helps athletes improve their skills." },
                   { label: "NIL Opportunity* ", name: "nil_opportunity", info: "Rate your school's NIL potential and the opportunities for athletes to profit." }
               ].map((field, index) => (
-                <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                <Box key={index} sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "flex-start", sm: "center" }, mb: 2 }}>
                   <Typography sx={{ width: "50%" }}>
                     {field.label}:
                     <Tooltip title={field.info} arrow>
