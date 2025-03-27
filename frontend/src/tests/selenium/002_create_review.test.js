@@ -1,5 +1,4 @@
 import { Builder, By, until } from "selenium-webdriver";
-import { expect } from "chai"; // Using Chai for assertions
 import { describe, it, before, after } from "mocha";
 
 describe("Create Review Test", function () {
@@ -80,8 +79,6 @@ describe("Create Review Test", function () {
 
       console.log("Navigating to secure home page");
       // Verify that the user is on the secure home page
-      let pageText = await driver.findElement(By.tagName("body")).getText();
-
       let school1Button = await driver.wait(until.elementLocated(By.id("school-1")), 10000);
       await school1Button.click();
 

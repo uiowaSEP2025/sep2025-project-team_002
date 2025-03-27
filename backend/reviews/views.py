@@ -10,7 +10,7 @@ class CreateReviewView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         review = serializer.save(user=self.request.user)
-        
+
         # Clear the stored summary to force regeneration on next request
         school = review.school
         school.review_summary = None
