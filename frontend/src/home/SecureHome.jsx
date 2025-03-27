@@ -17,7 +17,6 @@ import {
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import API_BASE_URL from "../utils/config";
-import Bugsnag from '@bugsnag/js';
 
 function SecureHome() {
   const navigate = useNavigate();
@@ -89,7 +88,6 @@ function SecureHome() {
       setSchools(data);
     } catch (error) {
       console.error("Error fetching schools:", error);
-      Bugsnag.notify(error);
       setSchools([]);
     }
   };
@@ -164,7 +162,6 @@ function SecureHome() {
   //   } catch (error) {
   //     console.error('Error fetching schools:', error);
   //     console.error('Error details:', error.message);
-  //     Bugsnag.notify(error);
   //     setSchools([]);
   //   }
   // };
@@ -248,7 +245,8 @@ function SecureHome() {
               {filteredSchools.length > 0 ? (
                 filteredSchools.map((school) => (
                   <Card 
-                    key={school.id} 
+                    key={school.id}
+                    id={`school-${school.id}`}
                     sx={{ 
                       width: '100%',
                       cursor: 'pointer',

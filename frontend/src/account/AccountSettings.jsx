@@ -26,7 +26,6 @@ import {
   InputAdornment
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
-import Bugsnag from '@bugsnag/js';
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";
@@ -123,7 +122,6 @@ function AccountSettings() {
         }
       } catch (error) {
         console.error("AccountSettings error:", error);
-        Bugsnag.notify(error);
 
         if (error.message.includes("Failed to fetch")) {
           setMessage("Unable to reach server. Check your connection.");
@@ -191,7 +189,6 @@ function AccountSettings() {
       }
     } catch (error) {
       console.error("AccountSettings error:", error);
-      Bugsnag.notify(error);
 
       if (error.message.includes("Failed to fetch")) {
         setMessage("Unable to reach server. Check your connection.");
@@ -252,7 +249,6 @@ function AccountSettings() {
       }
     } catch (error) {
       console.error("AccountSettings error:", error);
-      Bugsnag.notify(error);
 
       if (error.message.includes("Failed to fetch")) {
         setMessage("Unable to reach server. Check your connection.");

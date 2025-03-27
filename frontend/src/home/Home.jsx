@@ -71,6 +71,7 @@ function Home() {
                 filteredSchools.map((school) => (
                     <Card
                         key={school.id}
+                        id={`school-${school.id}`}
                         sx={{ width: "100%", cursor: "pointer", "&:hover": { backgroundColor: "#f5f5f5" } }}
                         onClick={() => navigate(`/school/${school.id}`)}
                     >

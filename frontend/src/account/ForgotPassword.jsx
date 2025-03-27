@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { TextField, Button, Typography, Box } from '@mui/material';
 import API_BASE_URL from "../utils/config.js";
 import { useNavigate } from 'react-router-dom';
-import Bugsnag from '@bugsnag/js';
 
 function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -27,7 +26,6 @@ function ForgotPassword() {
       }
     } catch (error) {
       console.error("ForgotPassword error:", error);
-      Bugsnag.notify(error);
 
       if (error.message.includes("Failed to fetch")) {
         setMessage(
