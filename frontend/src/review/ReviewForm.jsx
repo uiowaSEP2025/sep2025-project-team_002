@@ -265,12 +265,7 @@ const ReviewForm = () => {
               Share your experience with the school's athletic program.
             </Typography>
           </motion.div>
-
-<<<<<<< HEAD
-          <Box component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: { xs: 2, md: 4 }, borderRadius: 2, boxShadow: 3 }}>
-=======
-          <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: 4, borderRadius: 2, boxShadow: 3 }}>
->>>>>>> 1d7eff8c22bc9491584a4dbfdcaf23ff05d4e4d0
+          <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: { xs: 2, md: 4 }, borderRadius: 2, boxShadow: 3 }}>
           <TextField
             id="school-select"
             select
@@ -343,13 +338,8 @@ const ReviewForm = () => {
                   { label: "Player Development* ", name: "player_development", info: "Assess how well the coaches helps athletes improve their skills." },
                   { label: "NIL Opportunity* ", name: "nil_opportunity", info: "Rate your school's NIL potential and the opportunities for athletes to profit." }
               ].map((field, index) => (
-<<<<<<< HEAD
-                <Box key={index} sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: { xs: "flex-start", sm: "center" }, mb: 2 }}>
-                  <Typography sx={{ width: "50%" }}>
-=======
                 <Box id={`rating-container-${field.name}`} key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                   <Typography id={`rating-label-${field.name}`} sx={{ width: "50%" }}>
->>>>>>> 1d7eff8c22bc9491584a4dbfdcaf23ff05d4e4d0
                     {field.label}:
                     <Tooltip title={field.info} arrow>
                       <IconButton id={`info-button-${field.name}`} size="small" sx={{ ml: 1 }}>
