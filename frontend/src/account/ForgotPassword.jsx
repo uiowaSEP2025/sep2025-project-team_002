@@ -40,7 +40,7 @@ function ForgotPassword() {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, margin: '0 auto', mt: 4 }}>
+    <Box sx={{ maxWidth: 400, margin: '0 auto', mt: 4, px: 2 }}>
       <Typography variant="h4" gutterBottom>
         Forgot Password
       </Typography>
