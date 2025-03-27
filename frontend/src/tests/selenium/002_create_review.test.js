@@ -108,21 +108,18 @@ describe("Create Review Test", function () {
       for (const field of ratingFields) {
         console.log(`Setting rating for ${field}`);
         
-        // Find and click the 10th star (value="10") radio input directly
-        const radioId = `${field}-${field === 'head_coach' ? 'r1b' : 
-                         field === 'assistant_coaches' ? 'r1o' :
-                         field === 'team_culture' ? 'r25' :
-                         field === 'campus_life' ? 'r2i' :
-                         field === 'athletic_facilities' ? 'r2v' :
-                         field === 'athletic_department' ? 'r38' :
-                         field === 'player_development' ? 'r3l' :
-                         'r3y'}`;
-        
-        const tenthStar = await driver.wait(
-          until.elementLocated(By.id(radioId)),
+        // Find the rating container
+        const ratingContainer = await driver.wait(
+          until.elementLocated(By.id(`rating-${field}`)),
           10000
         );
-
+        
+        // Find all radio buttons within the rating
+        const stars = await ratingContainer.findElements(By.css('input[type="radio"]'));
+        
+        // Click the 10th star (last one)
+        const tenthStar = stars[9]; // Index 9 for the 10th star
+        
         // Scroll the element into view
         await driver.executeScript("arguments[0].scrollIntoView(true);", tenthStar);
         await driver.sleep(500);
