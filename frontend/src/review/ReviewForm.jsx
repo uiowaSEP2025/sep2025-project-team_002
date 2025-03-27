@@ -349,11 +349,12 @@ const ReviewForm = () => {
                   </Typography>
                   <Rating
                     id={`rating-${field.name}`}
+                    data-testid={`rating-${field.name.toLowerCase().replace(' ', '-')}`}
                     name={field.name}
                     value={review[field.name]}
                     max={10}
                     onChange={(event, newValue) => handleRatingChange(field.name, newValue)}
-                    sx={{ color: !review[field.name] && isSubmitted ? "red" : "" }} // Highlight error
+                    sx={{ color: !review[field.name] && isSubmitted ? "red" : "" }}
                   />
                   {isSubmitted && !review[field.name] && (
                     <Typography sx={{ color: "red", ml: 2, fontSize: "0.9rem" }}>

@@ -109,14 +109,14 @@ describe("Create Review Test", function () {
         console.log(`Setting rating for ${field}`);
         
         // Find and click the 10th star (value="10") radio input directly
-        const radioId = `${field}-:${field === 'head_coach' ? 'rs' : 
-                         field === 'assistant_coaches' ? 'r19' :
-                         field === 'team_culture' ? 'r1m' :
-                         field === 'campus_life' ? 'r23' :
-                         field === 'athletic_facilities' ? 'r2g' :
-                         field === 'athletic_department' ? 'r2t' :
-                         field === 'player_development' ? 'r3a' :
-                         'r3n'}:`;
+        const radioId = `${field}-${field === 'head_coach' ? 'r1b' : 
+                         field === 'assistant_coaches' ? 'r1o' :
+                         field === 'team_culture' ? 'r25' :
+                         field === 'campus_life' ? 'r2i' :
+                         field === 'athletic_facilities' ? 'r2v' :
+                         field === 'athletic_department' ? 'r38' :
+                         field === 'player_development' ? 'r3l' :
+                         'r3y'}`;
         
         const tenthStar = await driver.wait(
           until.elementLocated(By.id(radioId)),
