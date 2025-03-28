@@ -17,7 +17,6 @@ import {
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import API_BASE_URL from "../utils/config";
-import Bugsnag from '@bugsnag/js';
 
 function SecureHome() {
   const navigate = useNavigate();
@@ -89,7 +88,6 @@ function SecureHome() {
       setSchools(data);
     } catch (error) {
       console.error("Error fetching schools:", error);
-      Bugsnag.notify(error);
       setSchools([]);
     }
   };
@@ -118,6 +116,11 @@ function SecureHome() {
     // Navigate to review form
     const handleGoToReviewForm = () => {
       navigate("/review-form");
+    };
+
+    // Navigate to review form
+    const handleGoToPreferenceForm = () => {
+      navigate("/preference-form");
     };
 
   // Account info handler: redirect to account info page (update route as needed)
@@ -159,7 +162,6 @@ function SecureHome() {
   //   } catch (error) {
   //     console.error('Error fetching schools:', error);
   //     console.error('Error details:', error.message);
-  //     Bugsnag.notify(error);
   //     setSchools([]);
   //   }
   // };
@@ -211,7 +213,7 @@ function SecureHome() {
                 label="Search Schools"
                 variant="outlined"
                 fullWidth
-                sx={{ width: "50%" }}
+                sx={{ width: "90%", maxWidth: 600 }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -228,11 +230,23 @@ function SecureHome() {
               </Button>
             </Box> )}
 
+            {user.transfer_type !== "graduate" && (
+            <Box sx={{ textAlign: "center", mb: 4 }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleGoToPreferenceForm}
+              >
+                Submit your Preferences
+              </Button>
+            </Box> )}
+
             <Stack spacing={2} sx={{ px: 2 }}>
               {filteredSchools.length > 0 ? (
                 filteredSchools.map((school) => (
                   <Card 
-                    key={school.id} 
+                    key={school.id}
+                    id={`school-${school.id}`}
                     sx={{ 
                       width: '100%',
                       cursor: 'pointer',

@@ -15,6 +15,8 @@ import {
   useMediaQuery
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Tooltip from "@mui/material/Tooltip";
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";    // Hamburger icon
@@ -22,7 +24,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
-import SchoolIcon from "@mui/icons-material/School";
 import LogoutIcon from "@mui/icons-material/Logout";
 import API_BASE_URL from "../utils/config.js";
 
@@ -43,7 +44,8 @@ function Account() {
     first_name: "",
     last_name: "",
     email: "",
-    transfer_type: ""
+    transfer_type: "",
+    is_school_verified: false
   });
 
   // For any error or status messages
@@ -72,7 +74,8 @@ function Account() {
             first_name: data.first_name || "",
             last_name: data.last_name || "",
             email: data.email || "",
-            transfer_type: data.transfer_type || ""
+            transfer_type: data.transfer_type || "",
+            is_school_verified: data.is_school_verified || false
           });
         } else {
           const errorData = await response.json();
@@ -108,11 +111,6 @@ function Account() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-    // {
-    //   text: "School",
-    //   action: () => navigate("/school"),
-    //   icon: <SchoolIcon fontSize="medium" />
-    // },
     {
       text: "Logout",
       action: () => {
@@ -123,14 +121,12 @@ function Account() {
     }
   ];
 
-  // Re-usable function that renders the menu items
   const renderMenuList = () =>
     menuItems.map((item, index) => (
       <ListItem key={index} disablePadding>
         <ListItemButton
           onClick={() => {
             item.action();
-            // If on mobile, close the overlay after navigating
             if (isMobile) setMobileMenuOpen(false);
           }}
           sx={{ borderRadius: "20px", mb: 1, pl: 2 }}
@@ -140,7 +136,7 @@ function Account() {
           {!isMobile && menuOpen && (
             <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
           )}
-          {/* Mobile: always show text in the overlay */}
+          {/* Mobile: always show text */}
           {isMobile && (
             <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
           )}
@@ -148,22 +144,50 @@ function Account() {
       </ListItem>
     ));
 
-  // Collapsible side menu variants (desktop)
+  // Animation variants
   const menuVariants = {
     open: { width: 240, transition: { duration: 0.3 } },
     closed: { width: 72, transition: { duration: 0.3 } }
   };
 
-  // Mobile overlay slide-in/out from left
   const overlayVariants = {
     hidden: { x: "-100%" },
     visible: { x: 0 },
     exit: { x: "-100%" }
   };
 
+  const handleSendVerification = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/send-school-verification/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message || "Verification email sent!");
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to send verification email.");
+      }
+    } catch (error) {
+      console.error("Error sending verification:", error);
+      alert("Something went wrong. Please try again later.");
+    }
+  };
+
   return (
     <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-      {/* DESKTOP / LARGE TABLET: Collapsible Side Menu */}
+      {/* Desktop side menu */}
       {!isMobile && (
         <Grid item xs={12} md={3} sx={{ p: 0 }}>
           <motion.div
@@ -205,13 +229,12 @@ function Account() {
 
             <Divider sx={{ bgcolor: "grey.600", mb: 2 }} />
 
-            {/* List of items */}
             <List>{renderMenuList()}</List>
           </motion.div>
         </Grid>
       )}
 
-      {/* MOBILE: Hamburger icon in top-left corner */}
+      {/* Mobile hamburger */}
       {isMobile && (
         <Box
           sx={{
@@ -234,7 +257,7 @@ function Account() {
         </Box>
       )}
 
-      {/* MOBILE OVERLAY MENU */}
+      {/* Mobile overlay */}
       <AnimatePresence>
         {isMobile && mobileMenuOpen && (
           <motion.div
@@ -257,7 +280,7 @@ function Account() {
               flexDirection: "column"
             }}
           >
-            {/* Sticky header at the top */}
+            {/* Overlay header */}
             <Box
               sx={{
                 position: "sticky",
@@ -290,12 +313,11 @@ function Account() {
               <Divider sx={{ bgcolor: "grey.600", mt: 2 }} />
             </Box>
 
-            {/* Scrollable menu list area */}
             <Box
               sx={{
                 flex: 1,
                 overflowY: "auto",
-                p: 2  // extra padding for the list
+                p: 2
               }}
             >
               <List>{renderMenuList()}</List>
@@ -304,22 +326,26 @@ function Account() {
         )}
       </AnimatePresence>
 
-      {/* MAIN CONTENT AREA (Account Info) */}
+      {/* Main content area */}
       <Grid
         item
         xs={12}
         md={isMobile ? 12 : 9}
         sx={{
           p: 4,
-          // Add top spacing on mobile so content isn't hidden behind the hamburger
-          mt: isMobile ? 6 : 0
+          mt: isMobile ? 6 : 0 // NEW: add top margin on mobile so overlay button doesn't overlap
         }}
       >
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}
+          style={{
+            maxWidth: "600px",
+            margin: "0 auto",
+            textAlign: "left",
+            // You could add responsive width or padding here if needed
+          }}
         >
           <Typography
             variant="h4"
@@ -340,7 +366,7 @@ function Account() {
           )}
 
           {user ? (
-            <Box component="form" sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2 }}>
               <TextField
                 fullWidth
                 margin="normal"
@@ -371,20 +397,96 @@ function Account() {
                 label="Athlete Status"
                 value={
                   user.transfer_type
-                      ? user.transfer_type === "transfer"
-                      ? "Transferring Athlete"
-                      : user.transfer_type === "graduate"
-                      ? "Graduated Athlete"
-                      : user.transfer_type === "transfer_in"
-                      ? "Transfer In"
-                      : user.transfer_type === "transfer_out"
-                      ? "Transfer Out"
-                      : "Other"
+                      ? user.transfer_type === "high_school"
+                       ? "Prospective High School Athlete"
+                       : user.transfer_type === "transfer"
+                     ? "Transferring Athlete"
+                     : user.transfer_type === "graduate"
+                     ? "Graduated Athlete"
+                                   :"Other"
                     : "Not Specified"
                 }
                 disabled
                 InputProps={{ sx: { borderRadius: "40px" } }}
               />
+              {user.email && (
+                <Box
+                  sx={{
+                    mt: 3,
+                    p: 2,
+                    borderRadius: "12px",
+                    backgroundColor: user.email.endsWith(".edu")
+                      ? user.is_school_verified
+                        ? "#e8f5e9" // light green
+                        : "#fff8e1" // light yellow
+                      : "#ffebee", // light red
+                    border: "1px solid",
+                    borderColor: user.email.endsWith(".edu")
+                      ? user.is_school_verified
+                        ? "#66bb6a"
+                        : "#ffcc80"
+                      : "#ef9a9a",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: 1
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        fontWeight: 600,
+                        color: user.email.endsWith(".edu")
+                          ? user.is_school_verified
+                            ? "green"
+                            : "#ff9800"
+                          : "#d32f2f"
+                      }}
+                    >
+                      {user.email.endsWith(".edu")
+                        ? user.is_school_verified
+                          ? "✅ School Email Verified"
+                          : "⚠️ School Email Not Verified"
+                        : "⛔️ Personal Email without Verification"}
+                    </Typography>
+
+                    <Tooltip
+                      arrow
+                      title={
+                        user.email.endsWith(".edu")
+                          ? "Get verified to earn trust for your voice!"
+                          : "Only .edu emails can be verified. Update your email!"
+                      }
+                    >
+                      <InfoOutlinedIcon
+                        fontSize="small"
+                        sx={{ color: "#888", cursor: "pointer" }}
+                      />
+                    </Tooltip>
+                  </Box>
+
+                  {/* Only show button if it's a .edu and not verified */}
+                  {user.email.endsWith(".edu") && !user.is_school_verified && (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        borderRadius: "20px",
+                        backgroundColor: "#ff9800",
+                        color: "white",
+                        "&:hover": {
+                          backgroundColor: "#fb8c00"
+                        }
+                      }}
+                      onClick={handleSendVerification}
+                    >
+                      Verify Email
+                    </Button>
+                  )}
+                </Box>
+              )}
 
               {/* Button to go to the Account Settings page */}
               <Button

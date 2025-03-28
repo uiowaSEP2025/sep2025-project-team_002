@@ -28,6 +28,8 @@ services:
       - "8000:8000"
     networks:
       - transfer_network
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
 
   frontend:
     build: ./frontend

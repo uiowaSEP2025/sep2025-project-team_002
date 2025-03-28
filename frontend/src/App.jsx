@@ -12,10 +12,11 @@ import AccountSettings from "./account/AccountSettings.jsx";
 import ForgotPassword from './account/ForgotPassword.jsx';
 import ResetPassword from './account/ResetPassword.jsx';
 import ReviewForm from './review/ReviewForm.jsx';
+import PreferenceForm from './review/PreferenceForm.jsx';
+import VerifySchoolEmail from './account/VerifySchoolEmail.jsx'
 import Footer from './components/Footer.jsx';
 import AboutUs from './components/AboutUs.jsx'
 import SchoolPage from "./schools/SchoolPage";
-import Bugsnag from '@bugsnag/js';
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -30,7 +31,6 @@ function App() {
       })
       .catch((error) => {
         console.error("Fetch Error:", error);
-        Bugsnag.notify(error);
         setMessage("Error: " + error.message);
       });
   }, []);
@@ -50,6 +50,7 @@ function App() {
               <Route path="/account/settings" element={<AccountSettings />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verify-school-email" element={<VerifySchoolEmail />} />
 
 
             {/* Secure Home Page (Only Accessible When Logged In) */}
@@ -69,8 +70,17 @@ function App() {
                   </RequireAuth>
                 }
               />
+               <Route
+                path="/preference-form"
+                element={
+                  <RequireAuth>
+                    <PreferenceForm />
+                  </RequireAuth>
+                }
+              />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/school/:id" element={<SchoolPage />} />
+            <Route path="/reviews/new" element={<ReviewForm />} />
           </Routes>
           <Footer />
         </Router>

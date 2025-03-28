@@ -4,7 +4,6 @@ import { Typography, Box } from "@mui/material";
 import PasswordForm from "./PasswordForm";
 import { useLocation, useNavigate } from "react-router-dom";
 import API_BASE_URL from "../utils/config.js";
-import Bugsnag from '@bugsnag/js';
 
 function ResetPassword() {
   const query = new URLSearchParams(useLocation().search);
@@ -39,7 +38,6 @@ function ResetPassword() {
       }
     } catch (err) {
       console.error("ResetPassword error:", err);
-      Bugsnag.notify(err);
 
       if (err.message.includes("Failed to fetch")) {
         setMessage(
@@ -52,7 +50,7 @@ function ResetPassword() {
   };
 
   return (
-    <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
+    <Box sx={{ maxWidth: 400, mx: "auto", mt: 4, px: 2 }}>
       <Typography variant="h4" gutterBottom>
         Reset Password
       </Typography>

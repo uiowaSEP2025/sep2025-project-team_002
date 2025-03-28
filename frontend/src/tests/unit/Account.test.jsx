@@ -76,16 +76,16 @@ describe("Account Page Testing", () => {
     // Because no first_name/last_name => fields might be "", check that:
     expect(screen.getByLabelText(/First Name/i)).toHaveValue("");
     expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
-    expect(screen.getByLabelText(/Email/i)).toHaveValue("anonymous@example.com");
+    expect(screen.getByRole("textbox", { name: /Email/i })).toHaveValue("anonymous@example.com");
     expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Not Specified");
   });
 
-  it("handles successful fetch with all fields + 'transfer_in'", async () => {
+  it("handles successful fetch with all fields + 'high_school'", async () => {
     mockSuccessfulFetch({
       first_name: "John",
       last_name: "Doe",
       email: "john@example.com",
-      transfer_type: "transfer_in",
+      transfer_type: "high_school",
     });
 
     render(
@@ -103,16 +103,16 @@ describe("Account Page Testing", () => {
     // Confirm the displayed fields
     expect(screen.getByLabelText(/First Name/i)).toHaveValue("John");
     expect(screen.getByLabelText(/Last Name/i)).toHaveValue("Doe");
-    expect(screen.getByLabelText(/Email/i)).toHaveValue("john@example.com");
-    expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Transfer In");
+    expect(screen.getByRole("textbox", { name: /Email/i })).toHaveValue("john@example.com");
+    expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Prospective High School Athlete");
   });
 
-  it("handles 'transfer_out' as 'Transfer Out'", async () => {
+  it("handles 'transfer' as 'Transferring Athlete'", async () => {
     mockSuccessfulFetch({
       first_name: "Kate",
       last_name: "Smith",
       email: "kate@example.com",
-      transfer_type: "transfer_out",
+      transfer_type: "transfer",
     });
 
     render(
@@ -125,7 +125,7 @@ describe("Account Page Testing", () => {
     );
 
     expect(await screen.findByText(/Account Information/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Transfer Out");
+    expect(screen.getByLabelText(/Athlete Status/i)).toHaveValue("Transferring Athlete");
   });
 
   it("handles 'graduate' => 'Graduated Athlete'", async () => {
@@ -226,5 +226,113 @@ describe("Account Page Testing", () => {
     expect(
       await screen.findByText(/Cannot connect to the server/i)
     ).toBeInTheDocument();
+  });
+
+  it("shows warning + verify button if .edu email is not verified", async () => {
+    mockSuccessfulFetch({
+      first_name: "Lisa",
+      last_name: "Unverified",
+      email: "lisa@college.edu",
+      is_school_verified: false,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/account"]}>
+        <Routes>
+          <Route path="/account" element={<Account />} />
+          <Route path="/login" element={<div>Login Page</div>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(/Account Information/i)).toBeInTheDocument();
+    expect(screen.getByText(/School Email Not Verified/i)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /verify email/i })).toBeInTheDocument();
+  });
+
+  it("shows verified status and hides button for .edu email if already verified", async () => {
+    mockSuccessfulFetch({
+      first_name: "Anna",
+      last_name: "Verified",
+      email: "anna@university.edu",
+      is_school_verified: true,
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/account"]}>
+        <Routes>
+          <Route path="/account" element={<Account />} />
+          <Route path="/login" element={<div>Login Page</div>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(/School Email Verified/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /verify email/i })).not.toBeInTheDocument();
+  });
+
+  it("shows personal email warning and no button if not .edu", async () => {
+    mockSuccessfulFetch({
+      first_name: "Mike",
+      last_name: "Gmail",
+      email: "mike@gmail.com",
+      is_school_verified: false, // irrelevant for non .edu
+    });
+
+    render(
+      <MemoryRouter initialEntries={["/account"]}>
+        <Routes>
+          <Route path="/account" element={<Account />} />
+          <Route path="/login" element={<div>Login Page</div>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(await screen.findByText(/Personal Email without Verification/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /verify email/i })).not.toBeInTheDocument();
+  });
+
+  it("calls verification API and alerts on success", async () => {
+    // Initial user state
+    mockSuccessfulFetch({
+      first_name: "Alex",
+      last_name: "NotVerified",
+      email: "alex@school.edu",
+      is_school_verified: false,
+    });
+
+    // Render the component first
+    render(
+      <MemoryRouter initialEntries={["/account"]}>
+        <Routes>
+          <Route path="/account" element={<Account />} />
+          <Route path="/login" element={<div>Login Page</div>} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Wait for user data to load
+    await screen.findByText(/School Email Not Verified/i);
+
+    // Mock the verification fetch call
+    const mockMessage = { message: "Verification email sent!" };
+    global.fetch = vi.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockMessage),
+      })
+    );
+
+    // Spy on alert
+    const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+    const button = screen.getByRole("button", { name: /verify email/i });
+    fireEvent.click(button);
+
+    await waitFor(() =>
+      expect(alertSpy).toHaveBeenCalledWith("Verification email sent!")
+    );
+
+    alertSpy.mockRestore();
   });
 });
