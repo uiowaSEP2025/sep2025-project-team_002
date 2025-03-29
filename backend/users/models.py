@@ -7,9 +7,6 @@ from django.db import models
 from schools.models import Schools
 
 
-
-
-
 class CustomUserManager(BaseUserManager):
     def create_user(
         self, email, first_name, last_name, password=None, transfer_type=None
@@ -62,15 +59,15 @@ class Users(AbstractBaseUser, PermissionsMixin):
     transfer_type = models.CharField(max_length=20, null=True, blank=True)
 
     PROFILE_PICTURE_CHOICES = [
-        ('profile1.png', 'Profile 1'),
-        ('profile2.png', 'Profile 2'),
-        ('profile3.png', 'Profile 3'),
-        ('profile4.png', 'Profile 4'),
-        ('profile5.png', 'Profile 5'),
+        ("profile1.png", "Profile 1"),
+        ("profile2.png", "Profile 2"),
+        ("profile3.png", "Profile 3"),
+        ("profile4.png", "Profile 4"),
+        ("profile5.png", "Profile 5"),
     ]
 
     profile_picture = models.CharField(
-        max_length=255, choices=PROFILE_PICTURE_CHOICES, default='profile1.png'
+        max_length=255, choices=PROFILE_PICTURE_CHOICES, default="profile1.png"
     )
 
     objects = CustomUserManager()
