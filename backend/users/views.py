@@ -304,6 +304,13 @@ class UserDetailView(APIView):
         user.last_name = data.get("last_name", user.last_name)
         user.transfer_type = data.get("transfer_type", user.transfer_type)
 
+        if "profile_picture" in data:
+            profile_picture = data["profile_picture"]
+            if profile_picture not in dict(Users.PROFILE_PICTURE_CHOICES):
+                return Response(
+                    {"error": "Invalid profile picture choice."}, status=400
+                )
+
         user.save()
 
         serializer = UserSerializer(user)
