@@ -1,4 +1,4 @@
-import { Builder, By, until } from "selenium-webdriver";
+import { Builder } from "selenium-webdriver";
 import { describe, it, before, after } from "mocha";
 import {login, loadCredentials} from "../helpers/auth.js";
 
