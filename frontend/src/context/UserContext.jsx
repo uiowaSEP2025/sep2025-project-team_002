@@ -1,23 +1,26 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
+// Ensure the correct path to assets
+const defaultProfilePic = "/assets/profile-pictures/pic1.png";
+
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  // Load the profile picture from localStorage (if it exists)
+  // Load the profile picture from localStorage or set a default picture
   const [profilePic, setProfilePic] = useState(() => {
-    return localStorage.getItem("profilePic") || ""; // Default empty string or initial pic
+    return localStorage.getItem("pic1") || defaultProfilePic;
   });
 
   // Save the profile picture to localStorage whenever it changes
   useEffect(() => {
     if (profilePic) {
-      localStorage.setItem("profilePic", profilePic);
+      localStorage.setItem("pic1", profilePic);
     }
   }, [profilePic]);
 
   // Function to update profile picture
   const updateProfilePic = (newPic) => {
-    setProfilePic(newPic);
+    setProfilePic(`/assets/profile-pictures/${newPic}`);
   };
 
   return (
@@ -27,4 +30,7 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-export const useUser = () => useContext(UserContext);
+// Hook to use the user context
+export const useUser = () => {
+  return useContext(UserContext);
+};
