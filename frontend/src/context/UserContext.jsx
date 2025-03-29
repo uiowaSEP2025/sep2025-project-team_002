@@ -8,7 +8,7 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   // Load the profile picture from localStorage or set a default picture
   const [profilePic, setProfilePic] = useState(() => {
-    return localStorage.getItem("pic1") || defaultProfilePic;
+    return localStorage.getItem("profilePic") || defaultProfilePic;
   });
 
   // Save the profile picture to localStorage whenever it changes
@@ -20,7 +20,7 @@ export const UserProvider = ({ children }) => {
 
   // Function to update profile picture
   const updateProfilePic = (newPic) => {
-    setProfilePic(`/assets/profile-pictures/${newPic}`);
+    setProfilePic(newPic);
   };
 
   return (

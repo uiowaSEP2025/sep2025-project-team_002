@@ -26,7 +26,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import API_BASE_URL from "../utils/config.js";
-import pic1 from "../assets/profile-pictures/pic1.jpg";
+import pic1 from "../../public/assets/profile-pictures/pic1.jpg";
 
 function Account() {
   const navigate = useNavigate();

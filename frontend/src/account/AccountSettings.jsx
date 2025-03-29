@@ -329,6 +329,10 @@ function AccountSettings() {
     exit: { x: "-100%" }
   };
 
+
+  const { profilePic, updateProfilePic } = useUser();
+  const profilePictures = ["pic1.jpg", "pic2.jpg"]
+
   return (
     <>
       {/* MAIN GRID LAYOUT */}
@@ -499,6 +503,26 @@ function AccountSettings() {
                 {message}
               </Typography>
             )}
+
+            <div>
+      <h2>Choose Your Profile Picture</h2>
+      <img
+        src={profilePic}
+        alt="Selected Profile"
+        style={{ width: "150px", borderRadius: "50%" }}
+      />
+      <div>
+        {profilePictures.map((pic, index) => (
+          <button key={index} onClick={() => updateProfilePic(`/assets/profile-pictures/${pic}`)}>
+            <img
+              src={`/assets/profile-pictures/${pic}`}
+              alt={`Profile ${index + 1}`}
+              style={{ width: "50px", borderRadius: "50%" }}
+            />
+          </button>
+        ))}
+      </div>
+    </div>
 
             <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
               <TextField
