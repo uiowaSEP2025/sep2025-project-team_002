@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import React from 'react';
+import { UserProvider } from "./context/UserContext.jsx";
 import Signup from './account/Signup.jsx';
 import Home from './home/Home.jsx';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -36,57 +37,59 @@ function App() {
   }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
+      <UserProvider>
+        <div className="App">
+          <header className="App-header">
 
-        <Router>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Router>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
 
-            {/* Public Home Page */}
-            <Route path="/" element={<Home />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/account/settings" element={<AccountSettings />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/verify-school-email" element={<VerifySchoolEmail />} />
+                {/* Public Home Page */}
+                <Route path="/" element={<Home />} />
+                  <Route path="/account" element={<Account />} />
+                  <Route path="/account/settings" element={<AccountSettings />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/verify-school-email" element={<VerifySchoolEmail />} />
 
 
-            {/* Secure Home Page (Only Accessible When Logged In) */}
-            <Route
-              path="/secure-home"
-              element={
-                <RequireAuth>
-                  <SecureHome />
-                </RequireAuth>
-              }
-            />
-            <Route
-                path="/review-form"
-                element={
-                  <RequireAuth>
-                    <ReviewForm />
-                  </RequireAuth>
-                }
-              />
-               <Route
-                path="/preference-form"
-                element={
-                  <RequireAuth>
-                    <PreferenceForm />
-                  </RequireAuth>
-                }
-              />
-            <Route path="/about" element={<AboutUs />} />
-            <Route path="/school/:id" element={<SchoolPage />} />
-            <Route path="/reviews/new" element={<ReviewForm />} />
-          </Routes>
-          <Footer />
-        </Router>
+                {/* Secure Home Page (Only Accessible When Logged In) */}
+                <Route
+                  path="/secure-home"
+                  element={
+                    <RequireAuth>
+                      <SecureHome />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                    path="/review-form"
+                    element={
+                      <RequireAuth>
+                        <ReviewForm />
+                      </RequireAuth>
+                    }
+                  />
+                   <Route
+                    path="/preference-form"
+                    element={
+                      <RequireAuth>
+                        <PreferenceForm />
+                      </RequireAuth>
+                    }
+                  />
+                <Route path="/about" element={<AboutUs />} />
+                <Route path="/school/:id" element={<SchoolPage />} />
+                <Route path="/reviews/new" element={<ReviewForm />} />
+              </Routes>
+              <Footer />
+            </Router>
 
-      </header>
-    </div>
+          </header>
+        </div>
+      </UserProvider>
   );
 
 }
