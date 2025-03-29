@@ -26,6 +26,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import API_BASE_URL from "../utils/config.js";
+import pic1 from "../assets/profile-pictures/pic1.jpg";
 
 function Account() {
   const navigate = useNavigate();
@@ -184,6 +185,13 @@ function Account() {
       alert("Something went wrong. Please try again later.");
     }
   };
+
+   const [selectedProfilePic, setSelectedProfilePic] = useState(pic1); // Default profile pic
+
+  // List of available profile pictures
+  const profilePictures = [
+    { name: "Profile 1", image: pic1 },
+  ];
 
   return (
     <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
@@ -354,6 +362,24 @@ function Account() {
           >
             Account Information
           </Typography>
+
+
+          <div style={{ maxWidth: '500px', margin: 'auto', padding: '20px', backgroundColor: "#f5f5f5" }}>
+        {/* Display selected profile picture */}
+        <Box sx={{ textAlign: 'center', marginBottom: '20px' }}>
+          <img
+            src={selectedProfilePic}
+            alt="Selected Profile"
+            style={{
+              width: '175px',
+              height: '175px',
+              objectFit: 'cover',
+              borderRadius: '50%',
+              marginBottom: '10px'
+            }}
+          />
+        </Box>
+      </div>
 
           {message && (
             <Typography
