@@ -38,6 +38,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
+import { useUser } from "../context/UserContext.jsx"
 
 // Import your config base URL
 import API_BASE_URL from "../utils/config.js";
