@@ -1,10 +1,9 @@
 import { Builder, By, until } from "selenium-webdriver";
 import { describe, it, before, after } from "mocha";
+import { loadCredentials, login } from "../helpers/auth.js";
 
 describe("Create Review Test", function () {
   let driver;
-  const testEmail = `testuser${Date.now()}@example.com`;
-  const testPassword = "TestPassword123!";
 
   // Set timeout to prevent tests from failing due to long execution time
   this.timeout(30000); // 30 seconds timeout
@@ -22,69 +21,21 @@ describe("Create Review Test", function () {
     await driver.quit();
   });
 
-  it("should successfully sign up, log in, and create a review", async function () {
+  it("should create a review", async function () {
+
     try {
-      // Navigate to the Signup page
-      await driver.get("http://frontend:3000/signup");
+      // Extract the login process into a separate function to enable reused logic.
+      const { email, password } = loadCredentials();
+      await login(driver, email, password)
 
-      // Retrieve API URL for debugging
-      const apiUrl = await driver.findElement(By.css("body")).getAttribute("data-api-url");
-      console.log("Selenium Debugging: API URL =", apiUrl);
-
-      // Locate form elements
-      let firstNameInput = await driver.findElement(By.id("signup-first-name"));
-      let lastNameInput = await driver.findElement(By.id("signup-last-name"));
-      let emailInput = await driver.findElement(By.id("signup-email"));
-      let passwordInput = await driver.findElement(By.id("signup-password"));
-      let confirmPasswordInput = await driver.findElement(By.id("signup-confirm-password"));
-      let signupButton = await driver.findElement(By.id("signup-button"));
-      let highSchoolRadio = await driver.findElement(By.id("signup-high_school"));
-      let transferRadio = await driver.findElement(By.id("signup-transfer"));
-      let graduateRadio = await driver.findElement(By.id("signup-graduate"));
-
-      let transferOptions = [highSchoolRadio, transferRadio, graduateRadio];
-      let randomIndex = Math.floor(Math.random() * transferOptions.length);
-
-      // Fill in the registration form
-      await firstNameInput.sendKeys("Test");
-      await lastNameInput.sendKeys("User");
-      await emailInput.sendKeys(testEmail);
-      await passwordInput.sendKeys(testPassword);
-      await confirmPasswordInput.sendKeys(testPassword);
-      await transferOptions[randomIndex].click();
-      await signupButton.click();
-
-      // let pageSource = await driver.getPageSource();
-      // console.log(pageSource);
-
-      // Wait for redirection to the login page
-      await driver.wait(until.urlContains("/login"), 10000);
-
-      // Navigate to the Login page
-      await driver.get("http://frontend:3000/login");
-
-      // Locate login form elements
-      let loginEmailInput = await driver.findElement(By.id("email"));
-      let loginPasswordInput = await driver.findElement(By.id("password"));
-      let loginButton = await driver.findElement(By.id("login-button"));
-
-      // Fill in the login form
-      await loginEmailInput.sendKeys(testEmail);
-      await loginPasswordInput.sendKeys(testPassword);
-      await loginButton.click();
-
-      // Wait for redirection to the secure home page
-      await driver.wait(until.urlContains("/secure-home"), 5000);
-
-
-      console.log("Navigating to secure home page");
+      console.log("Successfully logged in with previous account! Now navigating to secure home page...");
       // Verify that the user is on the secure home page
       let school1Button = await driver.wait(until.elementLocated(By.id("school-1")), 10000);
       await school1Button.click();
 
-      let reviewButton = await driver.wait(until.elementLocated(By.id("write-review-button")), 10000);
+      const reviewButton = await driver.wait(until.elementLocated(By.id("write-review-button")), 15000);
+      await driver.wait(until.elementIsVisible(reviewButton), 5000);
       await reviewButton.click();
-
 
       // Fill coach name
       let coachNameInput = await driver.wait(until.elementLocated(By.id("coach-name-input")), 10000);
