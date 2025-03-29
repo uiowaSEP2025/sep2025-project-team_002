@@ -504,25 +504,40 @@ function AccountSettings() {
               </Typography>
             )}
 
-            <div>
-      <h2>Choose Your Profile Picture</h2>
-      <img
-        src={profilePic}
-        alt="Selected Profile"
-        style={{ width: "150px", borderRadius: "50%" }}
-      />
-      <div>
-        {profilePictures.map((pic, index) => (
-          <button key={index} onClick={() => updateProfilePic(`/assets/profile-pictures/${pic}`)}>
-            <img
-              src={`/assets/profile-pictures/${pic}`}
-              alt={`Profile ${index + 1}`}
-              style={{ width: "50px", borderRadius: "50%" }}
-            />
-          </button>
-        ))}
-      </div>
-    </div>
+            <div style={{ textAlign: "center" }}>
+  <h2>Choose Your Profile Picture</h2>
+  <img
+    src={profilePic}
+    alt="Selected Profile"
+    style={{
+      width: "150px",
+      height: "150px",
+      borderRadius: "50%",
+      border: "3px solid #007bff",
+      objectFit: "cover",
+      marginBottom: "10px"
+    }}
+  />
+  <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+    {profilePictures.map((pic, index) => (
+      <IconButton key={index} onClick={() => updateProfilePic(`/assets/profile-pictures/${pic}`)}>
+        <img
+          src={`/assets/profile-pictures/${pic}`}
+          alt={`Profile ${index + 1}`}
+          style={{
+            width: "50px",
+            height: "50px",
+            borderRadius: "50%",
+            objectFit: "cover",
+            cursor: "pointer",
+            border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
+          }}
+        />
+      </IconButton>
+    ))}
+  </div>
+</div>
+
 
             <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
               <TextField
