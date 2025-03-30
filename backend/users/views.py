@@ -318,6 +318,27 @@ class UserDetailView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=200)
 
+class UpdateProfilePictureView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        user = request.user  # Get logged-in user
+        new_picture = request.data.get("profile_picture")
+
+        # Validate the picture choice
+        valid_pictures = [choice[0] for choice in Users.PROFILE_PICTURE_CHOICES]
+        if new_picture not in valid_pictures:
+            return Response({"error": "Invalid profile picture choice"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update and save user profile picture
+        user.profile_picture = new_picture
+        user.save()
+
+        return Response(
+            {"message": "Profile picture updated", "profile_picture": user.profile_picture},
+            status=status.HTTP_200_OK,
+        )
+
 
 def is_valid_email(email: str) -> bool:
     """Simple regex-based check for email format."""
