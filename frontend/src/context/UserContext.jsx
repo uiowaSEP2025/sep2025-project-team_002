@@ -1,39 +1,68 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 
-
-// Ensure the correct path to assets
-const defaultProfilePic = "/assets/profile-pictures/pic1.jpg"; // Path to your first default image
-
-const UserContext = createContext();
+export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  // Load the profile picture from localStorage or set a default picture
-  const [profilePic, setProfilePic] = useState(() => {
-    return localStorage.getItem("profilePic") || defaultProfilePic;
-  });
+  const [user, setUser] = useState(null);
 
-  // Save the profile picture to localStorage whenever it changes
   useEffect(() => {
-    if (profilePic) {
-      localStorage.setItem("pic1", profilePic);
-    }
-  }, [profilePic]);
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
 
-  // Function to update profile picture
-  const updateProfilePic = (newPic) => {
-    const fullPath = `/assets/profile-pictures/${newPic}`;
-    setProfilePic(fullPath);
-    localStorage.setItem("profilePic", fullPath); // Ensure it persists
+      try {
+        const response = await fetch("http://localhost:8000/users/user/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  // Function to update user profile picture in state and backend
+  const updateProfilePic = async (newPic) => {
+    if (!user) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8000/users/update-profile-picture/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ profile_picture: newPic }),
+      });
+
+      if (response.ok) {
+        setUser((prevUser) => ({ ...prevUser, profile_picture: newPic }));
+      }
+    } catch (error) {
+      console.error("Failed to update profile picture:", error);
+    }
   };
 
+  // Ensure profile picture is correctly formatted
+  const profilePic = user?.profile_picture
+    ? `/assets/profile-pictures/${user.profile_picture}`
+    : "/assets/profile-pictures/pic1.jpg"; // Default image
+
   return (
-    <UserContext.Provider value={{ profilePic, updateProfilePic }}>
+    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic }}>
       {children}
     </UserContext.Provider>
   );
 };
 
-// Hook to use the user context
+// Export the custom hook
 export const useUser = () => {
   return useContext(UserContext);
 };

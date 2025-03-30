@@ -38,7 +38,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
-import { useUser } from "../context/UserContext.jsx"
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import {UserProvider, useUser} from "../context/UserContext.jsx"
 
 // Import your config base URL
 import API_BASE_URL from "../utils/config.js";
@@ -60,6 +62,10 @@ function AccountSettings() {
 
   // For success/error messages
   const [message, setMessage] = useState("");
+
+  // For profile picture updates (specifically)
+  const { user, setUser } = useContext(UserContext);
+  const { profilePic, updateProfilePic } = useUser();
 
   // Main user form data (editable)
   const [formData, setFormData] = useState({
@@ -330,11 +336,36 @@ function AccountSettings() {
   };
 
 
-  const { profilePic, updateProfilePic } = useUser();
-  const profilePictures = ["pic1.jpg", "pic2.jpg"]
+const handleProfilePictureUpdate = async (newProfilePicture) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch("http://localhost:8000/users/update-profile-picture/", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ profile_picture: newProfilePicture }),
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUser((prevUser) => ({
+          ...prevUser,
+          profile_picture: updatedUser.profile_picture, // Update user context
+        }));
+      } else {
+        console.error("Failed to update profile picture");
+      }
+    } catch (error) {
+      console.error("Error updating profile picture:", error);
+    }
+  };
 
   return (
     <>
+      <UserProvider>
       {/* MAIN GRID LAYOUT */}
       <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
         {/* DESKTOP / LARGE TABLET: Collapsible Side Menu */}
@@ -505,11 +536,14 @@ function AccountSettings() {
             )}
             <div style={{ textAlign: "center" }}>
             <h2>Choose Your Profile Picture</h2>
-            {profilePic && profilePic !== "null" ? (
+            {profilePic?.trim ? (
               <img
                 src={profilePic}
                 alt="Selected Profile"
-                onError={(e) => e.target.src = "/assets/default-user.png"} // Fallback image
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = "/assets/profile-pictures/pic1";// Fallback image
+                }}
                 style={{
                   width: "150px",
                   height: "150px",
@@ -682,7 +716,9 @@ function AccountSettings() {
           </Button>
         </DialogActions>
       </Dialog>
+      </UserProvider>
     </>
+
   );
 }
 
