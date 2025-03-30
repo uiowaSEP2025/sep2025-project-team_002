@@ -10,6 +10,7 @@ from .views import (
     reset_password,
     send_school_verification,
     verify_school_email,
+    UpdateProfilePictureView,
 )
 
 urlpatterns = [
@@ -23,4 +24,5 @@ urlpatterns = [
     path("reset-password/", reset_password, name="reset_password"),
     path("send-school-verification/", send_school_verification),
     path("verify-school-email/", verify_school_email),
+    path("update-profile-picture/", UpdateProfilePictureView.as_view(), name="update-profile-picture"),
 ]
