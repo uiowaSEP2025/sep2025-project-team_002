@@ -503,12 +503,13 @@ function AccountSettings() {
                 {message}
               </Typography>
             )}
-
             <div style={{ textAlign: "center" }}>
-              <h2>Choose Your Profile Picture</h2>
+            <h2>Choose Your Profile Picture</h2>
+            {profilePic && profilePic !== "null" ? (
               <img
                 src={profilePic}
                 alt="Selected Profile"
+                onError={(e) => e.target.src = "/assets/default-user.png"} // Fallback image
                 style={{
                   width: "150px",
                   height: "150px",
@@ -518,25 +519,36 @@ function AccountSettings() {
                   marginBottom: "10px"
                 }}
               />
-              <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-                {profilePictures.map((pic, index) => (
-                  <IconButton key={index} onClick={() => updateProfilePic(`/assets/profile-pictures/${pic}`)}>
-                    <img
-                      src={`/assets/profile-pictures/${pic}`}
-                      alt={`Profile ${index + 1}`}
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        cursor: "pointer",
-                        border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
-                      }}
-                    />
-                  </IconButton>
-                ))}
-              </div>
+            ) : (
+              <AccountCircleIcon
+                sx={{
+                  fontSize: "150px",
+                  color: "gray",
+                  borderRadius: "50%",
+                  backgroundColor: "#f0f0f0",
+                  padding: "10px"
+                }}
+              />
+            )}
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+              {profilePictures.map((pic, index) => (
+                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
+                  <img
+                    src={`/assets/profile-pictures/${pic}`}
+                    alt={`Profile ${index + 1}`}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
+                    }}
+                  />
+                </IconButton>
+              ))}
             </div>
+          </div>
             <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
               <TextField
                 fullWidth

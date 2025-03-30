@@ -1,7 +1,9 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle"; // Import the icon
+
 
 // Ensure the correct path to assets
-const defaultProfilePic = "/assets/profile-pictures/pic1.png";
+const defaultProfilePic = null;
 
 const UserContext = createContext();
 
@@ -20,7 +22,9 @@ export const UserProvider = ({ children }) => {
 
   // Function to update profile picture
   const updateProfilePic = (newPic) => {
-    setProfilePic(newPic);
+    const fullPath = `/assets/profile-pictures/${newPic}`;
+    setProfilePic(fullPath);
+    localStorage.setItem("profilePic", fullPath); // Ensure it persists
   };
 
   return (
