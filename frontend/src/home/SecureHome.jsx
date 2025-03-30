@@ -29,7 +29,8 @@ function SecureHome() {
     first_name: "",
     last_name: "",
     email: "",
-    transfer_type: ""
+    transfer_type: "",
+    profile_picture: "",
   });
 
   useEffect(() => {
@@ -56,6 +57,8 @@ function SecureHome() {
           last_name: data.last_name || "",
           email: data.email || "",
           transfer_type: data.transfer_type || "",
+          profile_picture: data.profile_picture || "",
+
         });
       } else {
         const errorData = await response.json();
@@ -179,7 +182,21 @@ function SecureHome() {
           size="large"
           sx={{ bgcolor: "#fff", borderRadius: "50%" }}
         >
+          {console.log(user.profile_picture)} {/* Log profile picture path */}
+          {user.profile_picture ? (
+            <img
+              src={`/assets/profile-pictures/${user.profile_picture}`}
+              alt="Profile"
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                objectFit: "cover"
+              }}
+            />
+          ) : (
           <AccountCircleIcon fontSize="large" />
+              )}
         </IconButton>
         <Menu
           anchorEl={anchorEl}

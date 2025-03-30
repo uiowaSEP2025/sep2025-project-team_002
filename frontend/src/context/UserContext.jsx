@@ -1,9 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle"; // Import the icon
 
 
 // Ensure the correct path to assets
-const defaultProfilePic = null;
+const defaultProfilePic = "/assets/profile-pictures/pic1.jpg"; // Path to your first default image
 
 const UserContext = createContext();
 

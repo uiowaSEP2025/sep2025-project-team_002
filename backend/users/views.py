@@ -261,6 +261,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             # Add extra fields if you want
             data["first_name"] = self.user.first_name
             data["last_name"] = self.user.last_name
+            data["profile_picture"] = self.user.profile_picture
             return data
         except AuthenticationFailed:
             raise AuthenticationFailed("Invalid email or password. Please try again.")
@@ -308,8 +309,9 @@ class UserDetailView(APIView):
             profile_picture = data["profile_picture"]
             if profile_picture not in dict(Users.PROFILE_PICTURE_CHOICES):
                 return Response(
-                    {"error": "Invalid profile picture choice."}, status=400
+                    {"error": "Invalid profile picture choice."}, status=status.HTTP_400_BAD_REQUEST
                 )
+            user.profile_picture = profile_picture
 
         user.save()
 
