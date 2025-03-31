@@ -1,4 +1,6 @@
 import { createContext, useState, useEffect, useContext } from "react";
+import API_BASE_URL from "../utils/config";
+
 
 export const UserContext = createContext();
 
@@ -12,7 +14,7 @@ export const UserProvider = ({ children }) => {
     if (!token) return;
 
     try {
-      const response = await fetch("http://localhost:8000/users/user/", {
+      const response = await fetch(`${API_BASE_URL}/users/user/`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -40,7 +42,7 @@ export const UserProvider = ({ children }) => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:8000/users/update-profile-picture/", {
+      const response = await fetch(`${API_BASE_URL}/users/update-profile-picture/`, {
         method: "PATCH",
         headers: {
           Authorization: `Bearer ${token}`,
