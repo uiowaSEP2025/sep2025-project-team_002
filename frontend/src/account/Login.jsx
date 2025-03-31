@@ -20,7 +20,7 @@ function Login() {
   const navigate = useNavigate(); // Get navigation function
 
   // Additions ---
-  const { fetchUser } = useUser();
+  const { fetchUser } = useUser() || {};
 
   // State for the login form
   const [formData, setFormData] = React.useState({

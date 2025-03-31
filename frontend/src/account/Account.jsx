@@ -50,7 +50,6 @@ function Account() {
     profile_picture: "",
   });
 
-  const { profilePic } = useUser();
   // For any error or status messages
   const [message, setMessage] = useState("");
 
