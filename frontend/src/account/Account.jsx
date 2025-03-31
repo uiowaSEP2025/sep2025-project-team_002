@@ -26,7 +26,6 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import API_BASE_URL from "../utils/config.js";
-import pic1 from "../../public/assets/profile-pictures/pic1.jpg";
 import {UserProvider, useUser} from "../context/UserContext.jsx"
 
 function Account() {
@@ -53,7 +52,7 @@ function Account() {
 
   const { profilePic, updateProfilePic } = useUser();
   console.log("Current profile picture:", profilePic); // Debug log
-  const profilePictures = ["pic1.jpg", "pic2.jpg"];
+  const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
 
   // For any error or status messages
   const [message, setMessage] = useState("");
