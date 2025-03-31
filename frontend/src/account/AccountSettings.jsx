@@ -542,7 +542,7 @@ function AccountSettings() {
             )}
             <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
               {profilePictures.map((pic, index) => (
-                <IconButton key={index} onClick={() => { console.log("Updating to:", pic); updateProfilePic(pic);}}>
+                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
                   <img
                     src={`/assets/profile-pictures/${pic}`}
                     alt={`Profile ${index + 1}`}

@@ -36,7 +36,6 @@ export const UserProvider = ({ children }) => {
 
   // Function to update user profile picture in state and backend
   const updateProfilePic = async (newPic) => {
-    console.log("Profile picture update triggered:", newPic); // Debug log
     if (!user) return;
 
     try {

@@ -309,7 +309,8 @@ class UserDetailView(APIView):
             profile_picture = data["profile_picture"]
             if profile_picture not in dict(Users.PROFILE_PICTURE_CHOICES):
                 return Response(
-                    {"error": "Invalid profile picture choice."}, status=status.HTTP_400_BAD_REQUEST
+                    {"error": "Invalid profile picture choice."},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
             user.profile_picture = profile_picture
 
@@ -318,29 +319,38 @@ class UserDetailView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data, status=200)
 
+
 class UpdateProfilePictureView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request):
         user = request.user  # Get logged-in user
         new_picture = request.data.get("profile_picture")
-        print(f"Received profile picture: {new_picture}")  # Debugging line
 
         # Check if profile_picture is provided
         if not new_picture:
-            return Response({"error": "Profile picture is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Profile picture is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Validate the picture choice
         valid_pictures = [choice[0] for choice in Users.PROFILE_PICTURE_CHOICES]
         if new_picture not in valid_pictures:
-            return Response({"error": "Invalid profile picture choice"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Invalid profile picture choice"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Update and save user profile picture
         user.profile_picture = new_picture
         user.save()
 
         return Response(
-            {"message": "Profile picture updated", "profile_picture": user.profile_picture},
+            {
+                "message": "Profile picture updated",
+                "profile_picture": user.profile_picture,
+            },
             status=status.HTTP_200_OK,
         )
 

@@ -24,5 +24,9 @@ urlpatterns = [
     path("reset-password/", reset_password, name="reset_password"),
     path("send-school-verification/", send_school_verification),
     path("verify-school-email/", verify_school_email),
-    path("update-profile-picture/", UpdateProfilePictureView.as_view(), name="update-profile-picture"),
+    path(
+        "update-profile-picture/",
+        UpdateProfilePictureView.as_view(),
+        name="update-profile-picture",
+    ),
 ]

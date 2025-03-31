@@ -51,8 +51,6 @@ function Account() {
   });
 
   const { profilePic } = useUser();
-  console.log("Current profile picture:", profilePic); // Debug log
-
   // For any error or status messages
   const [message, setMessage] = useState("");
 
