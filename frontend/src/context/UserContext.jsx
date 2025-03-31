@@ -4,6 +4,7 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     // Function to fetch the user data from the backend
   const fetchUser = async () => {
@@ -21,15 +22,17 @@ export const UserProvider = ({ children }) => {
       if (response.ok) {
         const userData = await response.json();
         setUser(userData);
+        setIsLoggedIn(true);
+      }
+      else {
+        setIsLoggedIn(false);
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
     }
   };
 
-  useEffect(() => {
-    fetchUser();
-  }, []);
+
 
   // Function to update user profile picture in state and backend
   const updateProfilePic = async (newPic) => {
@@ -41,16 +44,16 @@ export const UserProvider = ({ children }) => {
       const response = await fetch("http://localhost:8000/users/update-profile-picture/", {
         method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ profile_picture: newPic }),
       });
 
       if (response.ok) {
-        fetchUser();
-        setUser((prevUser) => ({ ...prevUser, profile_picture: newPic }));
-        fetchUser();
+        await fetchUser();
+        // setUser((prevUser) => ({ ...prevUser, profile_picture: newPic }));
+        // fetchUser();
       }
     } catch (error) {
       console.error("Failed to update profile picture:", error);
@@ -62,8 +65,12 @@ export const UserProvider = ({ children }) => {
     ? `/assets/profile-pictures/${user.profile_picture}`
     : "/assets/profile-pictures/pic1.jpg"; // Default image
 
+  useEffect(() => {
+    fetchUser()
+  }, [isLoggedIn]);
+
   return (
-    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic }}>
+    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser }}>
       {children}
     </UserContext.Provider>
   );

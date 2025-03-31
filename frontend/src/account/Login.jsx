@@ -13,9 +13,14 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";  // Import useNavigate for redirection
 import API_BASE_URL from "../utils/config.js";
+import { useUser } from '../context/UserContext';  // Import the context
+
 
 function Login() {
   const navigate = useNavigate(); // Get navigation function
+
+  // Additions ---
+  const { fetchUser } = useUser();
 
   // State for the login form
   const [formData, setFormData] = React.useState({
@@ -64,6 +69,7 @@ function Login() {
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.access); // Store auth token
+        await fetchUser();
         navigate("/secure-home"); // Redirect to secure home page
       } else {
         const errorData = await response.json();

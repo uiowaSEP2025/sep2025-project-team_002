@@ -326,6 +326,10 @@ class UpdateProfilePictureView(APIView):
         new_picture = request.data.get("profile_picture")
         print(f"Received profile picture: {new_picture}")  # Debugging line
 
+        # Check if profile_picture is provided
+        if not new_picture:
+            return Response({"error": "Profile picture is required"}, status=status.HTTP_400_BAD_REQUEST)
+
         # Validate the picture choice
         valid_pictures = [choice[0] for choice in Users.PROFILE_PICTURE_CHOICES]
         if new_picture not in valid_pictures:
