@@ -3,6 +3,11 @@ import { describe, it, expect, vi } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import Login from "../../account/Login.jsx";
 import { useNavigate } from "react-router-dom";
+import {useUser} from "../../context/UserContext.jsx";
+
+vi.mock('../../context/UserContext', () => ({
+  useUser: vi.fn(), // Mock the entire hook
+}));
 
 // Mock the navigate function from react-router-dom
 vi.mock('react-router-dom', async () => {
@@ -43,6 +48,9 @@ describe('Login Component', () => {
 
   it('handles successful login', async () => {
     const mockNavigate = vi.fn();
+    const mockFetchUser = vi.fn().mockResolvedValue({}); // Mocking fetchUser
+    // Set up useUser mock to return fetchUser
+    useUser.mockReturnValue({ fetchUser: mockFetchUser });
     vi.mocked(useNavigate).mockReturnValue(mockNavigate);
 
     global.fetch = vi.fn(() =>
