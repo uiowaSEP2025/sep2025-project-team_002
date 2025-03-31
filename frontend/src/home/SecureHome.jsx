@@ -182,7 +182,6 @@ function SecureHome() {
           size="large"
           sx={{ bgcolor: "#fff", borderRadius: "50%" }}
         >
-          {console.log(user.profile_picture)} {/* Log profile picture path */}
           {user.profile_picture ? (
             <img
               src={`/assets/profile-pictures/${user.profile_picture}`}

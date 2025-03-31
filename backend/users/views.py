@@ -324,6 +324,7 @@ class UpdateProfilePictureView(APIView):
     def patch(self, request):
         user = request.user  # Get logged-in user
         new_picture = request.data.get("profile_picture")
+        print(f"Received profile picture: {new_picture}")  # Debugging line
 
         # Validate the picture choice
         valid_pictures = [choice[0] for choice in Users.PROFILE_PICTURE_CHOICES]

@@ -64,8 +64,12 @@ function AccountSettings() {
   const [message, setMessage] = useState("");
 
   // For profile picture updates (specifically)
-  const { user, setUser } = useContext(UserContext);
   const { profilePic, updateProfilePic } = useUser();
+  console.log("Current profile picture:", profilePic); // Debug log
+
+  const profilePictures = ["pic1.jpg", "pic2.jpg"];
+
+
 
   // Main user form data (editable)
   const [formData, setFormData] = useState({
@@ -335,34 +339,6 @@ function AccountSettings() {
     exit: { x: "-100%" }
   };
 
-
-const handleProfilePictureUpdate = async (newProfilePicture) => {
-    const token = localStorage.getItem("token");
-
-    try {
-      const response = await fetch("http://localhost:8000/users/update-profile-picture/", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ profile_picture: newProfilePicture }),
-      });
-
-      if (response.ok) {
-        const updatedUser = await response.json();
-        setUser((prevUser) => ({
-          ...prevUser,
-          profile_picture: updatedUser.profile_picture, // Update user context
-        }));
-      } else {
-        console.error("Failed to update profile picture");
-      }
-    } catch (error) {
-      console.error("Error updating profile picture:", error);
-    }
-  };
-
   return (
     <>
       <UserProvider>
@@ -536,13 +512,13 @@ const handleProfilePictureUpdate = async (newProfilePicture) => {
             )}
             <div style={{ textAlign: "center" }}>
             <h2>Choose Your Profile Picture</h2>
-            {profilePic?.trim ? (
+            {profilePic && profilePic.trim() ? (
               <img
                 src={profilePic}
                 alt="Selected Profile"
                 onError={(e) => {
                   e.target.onerror = null; // Prevent infinite loop
-                  e.target.src = "/assets/profile-pictures/pic1";// Fallback image
+                  e.target.src = "/assets/profile-pictures/pic1.jpg";// Fallback image
                 }}
                 style={{
                   width: "150px",
@@ -566,7 +542,7 @@ const handleProfilePictureUpdate = async (newProfilePicture) => {
             )}
             <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
               {profilePictures.map((pic, index) => (
-                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
+                <IconButton key={index} onClick={() => { console.log("Updating to:", pic); updateProfilePic(pic);}}>
                   <img
                     src={`/assets/profile-pictures/${pic}`}
                     alt={`Profile ${index + 1}`}
