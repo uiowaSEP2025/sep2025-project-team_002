@@ -26,6 +26,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import API_BASE_URL from "../utils/config.js";
+import {UserProvider, useUser} from "../context/UserContext.jsx"
 
 function Account() {
   const navigate = useNavigate();
@@ -45,7 +46,8 @@ function Account() {
     last_name: "",
     email: "",
     transfer_type: "",
-    is_school_verified: false
+    is_school_verified: false,
+    profile_picture: "",
   });
 
   // For any error or status messages
@@ -75,7 +77,8 @@ function Account() {
             last_name: data.last_name || "",
             email: data.email || "",
             transfer_type: data.transfer_type || "",
-            is_school_verified: data.is_school_verified || false
+            is_school_verified: data.is_school_verified || false,
+            profile_picture: data.profile_picture || "",
           });
         } else {
           const errorData = await response.json();
@@ -355,6 +358,24 @@ function Account() {
             Account Information
           </Typography>
 
+          <div style={{ maxWidth: '500px', margin: 'auto', padding: '20px', backgroundColor: "#f5f5f5" }}>
+        {/* Display selected profile picture */}
+            <Box sx={{ textAlign: 'center', marginBottom: '20px' }}>
+              {user.profile_picture ? (
+                <img
+                  src={`/assets/profile-pictures/${user.profile_picture}`} // dynamic source based on user profile picture
+                  alt="Profile"
+                  style={{
+                    width: '175px',            // Larger size for the selected profile picture
+                    height: '175px',           // Same size for consistency
+                    objectFit: 'cover',        // Ensure the image covers the circle
+                    borderRadius: '50%',       // Circular image
+                    marginBottom: '10px',      // Optional: maintain spacing if needed
+                  }}
+                />
+              ) : null} {/* Optional: Display this only if a new picture is selected */}
+            </Box>
+          </div>
           {message && (
             <Typography
               variant="body1"

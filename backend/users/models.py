@@ -58,6 +58,18 @@ class Users(AbstractBaseUser, PermissionsMixin):
 
     transfer_type = models.CharField(max_length=20, null=True, blank=True)
 
+    PROFILE_PICTURE_CHOICES = [
+        ("pic1.png", "Profile 1"),
+        ("pic2.png", "Profile 2"),
+        ("pic3.png", "Profile 3"),
+        ("pic4.png", "Profile 4"),
+        ("pic5.png", "Profile 5"),
+    ]
+
+    profile_picture = models.CharField(
+        max_length=255, choices=PROFILE_PICTURE_CHOICES, default="pic1.png"
+    )
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = "email"  # Login will use email instead of username

@@ -38,6 +38,9 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import {UserProvider, useUser} from "../context/UserContext.jsx"
 
 // Import your config base URL
 import API_BASE_URL from "../utils/config.js";
@@ -59,6 +62,14 @@ function AccountSettings() {
 
   // For success/error messages
   const [message, setMessage] = useState("");
+
+  // For profile picture updates (specifically)
+  const { profilePic, updateProfilePic } = useUser();
+  console.log("Current profile picture:", profilePic); // Debug log
+
+  const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
+
+
 
   // Main user form data (editable)
   const [formData, setFormData] = useState({
@@ -330,6 +341,7 @@ function AccountSettings() {
 
   return (
     <>
+      <UserProvider>
       {/* MAIN GRID LAYOUT */}
       <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
         {/* DESKTOP / LARGE TABLET: Collapsible Side Menu */}
@@ -498,7 +510,55 @@ function AccountSettings() {
                 {message}
               </Typography>
             )}
-
+            <div style={{ textAlign: "center" }}>
+            <h2>Choose Your Profile Picture</h2>
+            {profilePic && profilePic.trim() ? (
+              <img
+                src={profilePic}
+                alt="Selected Profile"
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
+                }}
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  borderRadius: "50%",
+                  border: "3px solid #007bff",
+                  objectFit: "cover",
+                  marginBottom: "10px"
+                }}
+              />
+            ) : (
+              <AccountCircleIcon
+                sx={{
+                  fontSize: "150px",
+                  color: "gray",
+                  borderRadius: "50%",
+                  backgroundColor: "#f0f0f0",
+                  padding: "10px"
+                }}
+              />
+            )}
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+              {profilePictures.map((pic, index) => (
+                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
+                  <img
+                    src={`/assets/profile-pictures/${pic}`}
+                    alt={`Profile ${index + 1}`}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
+                    }}
+                  />
+                </IconButton>
+              ))}
+            </div>
+          </div>
             <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
               <TextField
                 fullWidth
@@ -632,7 +692,9 @@ function AccountSettings() {
           </Button>
         </DialogActions>
       </Dialog>
+      </UserProvider>
     </>
+
   );
 }
 
