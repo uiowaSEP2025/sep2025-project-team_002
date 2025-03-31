@@ -50,9 +50,8 @@ function Account() {
     profile_picture: "",
   });
 
-  const { profilePic, updateProfilePic } = useUser();
+  const { profilePic } = useUser();
   console.log("Current profile picture:", profilePic); // Debug log
-  const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
 
   // For any error or status messages
   const [message, setMessage] = useState("");

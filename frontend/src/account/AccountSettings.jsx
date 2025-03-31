@@ -67,7 +67,7 @@ function AccountSettings() {
   const { profilePic, updateProfilePic } = useUser();
   console.log("Current profile picture:", profilePic); // Debug log
 
-  const profilePictures = ["pic1.jpg", "pic2.jpg"];
+  const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
 
 
 
@@ -518,7 +518,7 @@ function AccountSettings() {
                 alt="Selected Profile"
                 onError={(e) => {
                   e.target.onerror = null; // Prevent infinite loop
-                  e.target.src = "/assets/profile-pictures/pic1.jpg";// Fallback image
+                  e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
                 }}
                 style={{
                   width: "150px",
