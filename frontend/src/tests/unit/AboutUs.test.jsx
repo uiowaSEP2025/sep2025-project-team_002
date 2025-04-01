@@ -4,11 +4,11 @@ import AboutUs from '../../components/AboutUs.jsx';
 import { describe, it, expect, vi } from 'vitest';
 
 // Mocking images to prevent errors during test rendering
-vi.mock('../assets/anna.png', () => 'anna.png');
-vi.mock('../assets/yusuf.png', () => 'yusuf.png');
-vi.mock('../assets/sam.png', () => 'sam.png');
-vi.mock('../assets/rod.png', () => 'rod.png');
-vi.mock('../assets/jingming.png', () => 'jingming.png');
+vi.mock('../aboutus/anna.png', () => 'anna.png');
+vi.mock('../aboutus/yusuf.png', () => 'yusuf.png');
+vi.mock('../aboutus/sam.png', () => 'sam.png');
+vi.mock('../aboutus/rod.png', () => 'rod.png');
+vi.mock('../aboutus/jingming.png', () => 'jingming.png');
 
 describe('AboutUs Component', () => {
   it('renders the header title correctly', () => {

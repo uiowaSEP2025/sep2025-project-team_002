@@ -1,10 +1,9 @@
 import { Builder, By, until } from "selenium-webdriver";
 import { describe, it, before, after } from "mocha";
+import { loadCredentials, login } from "../helpers/auth.js";
 
 describe("Create Review Test", function () {
   let driver;
-  const testEmail = `testuser${Date.now()}@example.com`;
-  const testPassword = "TestPassword123!";
 
   // Set timeout to prevent tests from failing due to long execution time
   this.timeout(30000); // 30 seconds timeout
@@ -22,69 +21,62 @@ describe("Create Review Test", function () {
     await driver.quit();
   });
 
-  it("should successfully sign up, log in, and create a review", async function () {
+  it("should create a review", async function () {
+
     try {
-      // Navigate to the Signup page
-      await driver.get("http://frontend:3000/signup");
+      // Extract the login process into a separate function to enable reused logic.
+      const { email, password } = loadCredentials();
+      await login(driver, email, password)
 
-      // Retrieve API URL for debugging
-      const apiUrl = await driver.findElement(By.css("body")).getAttribute("data-api-url");
-      console.log("Selenium Debugging: API URL =", apiUrl);
+      console.log("Successfully logged in with previous account!");
 
-      // Locate form elements
-      let firstNameInput = await driver.findElement(By.id("signup-first-name"));
-      let lastNameInput = await driver.findElement(By.id("signup-last-name"));
-      let emailInput = await driver.findElement(By.id("signup-email"));
-      let passwordInput = await driver.findElement(By.id("signup-password"));
-      let confirmPasswordInput = await driver.findElement(By.id("signup-confirm-password"));
-      let signupButton = await driver.findElement(By.id("signup-button"));
-      let highSchoolRadio = await driver.findElement(By.id("signup-high_school"));
-      let transferRadio = await driver.findElement(By.id("signup-transfer"));
-      let graduateRadio = await driver.findElement(By.id("signup-graduate"));
+      const token = await driver.executeScript("return localStorage.getItem('token');");
 
-      let transferOptions = [highSchoolRadio, transferRadio, graduateRadio];
-      let randomIndex = Math.floor(Math.random() * transferOptions.length);
+      // Check if the user is valid for creating a review
+      const res = await fetch("http://backend:8000/users/user/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
 
-      // Fill in the registration form
-      await firstNameInput.sendKeys("Test");
-      await lastNameInput.sendKeys("User");
-      await emailInput.sendKeys(testEmail);
-      await passwordInput.sendKeys(testPassword);
-      await confirmPasswordInput.sendKeys(testPassword);
-      await transferOptions[randomIndex].click();
-      await signupButton.click();
+      const user = await res.json();
 
-      // let pageSource = await driver.getPageSource();
-      // console.log(pageSource);
+      if (user.transfer_type === "high_school") {
+        console.log("User type is high_school. Creating a new valid user...");
 
-      // Wait for redirection to the login page
-      await driver.wait(until.urlContains("/login"), 10000);
+        const testEmail = `testuser${Date.now()}@example.com`;
+        const testPassword = "TestPassword123!";
 
-      // Navigate to the Login page
-      await driver.get("http://frontend:3000/login");
+        await driver.get("http://frontend:3000/signup");
 
-      // Locate login form elements
-      let loginEmailInput = await driver.findElement(By.id("email"));
-      let loginPasswordInput = await driver.findElement(By.id("password"));
-      let loginButton = await driver.findElement(By.id("login-button"));
+        await driver.findElement(By.id("signup-first-name")).sendKeys("Test");
+        await driver.findElement(By.id("signup-last-name")).sendKeys("User");
+        await driver.findElement(By.id("signup-email")).sendKeys(testEmail);
+        await driver.findElement(By.id("signup-password")).sendKeys(testPassword);
+        await driver.findElement(By.id("signup-confirm-password")).sendKeys(testPassword);
+        await driver.findElement(By.id("signup-transfer")).click();
+        await driver.findElement(By.id("signup-button")).click();
+        await driver.wait(until.urlContains("/login"), 10000);
 
-      // Fill in the login form
-      await loginEmailInput.sendKeys(testEmail);
-      await loginPasswordInput.sendKeys(testPassword);
-      await loginButton.click();
+        await driver.get("http://frontend:3000/login");
+        await driver.findElement(By.id("email")).sendKeys(testEmail);
+        await driver.findElement(By.id("password")).sendKeys(testPassword);
+        await driver.findElement(By.id("login-button")).click();
 
-      // Wait for redirection to the secure home page
-      await driver.wait(until.urlContains("/secure-home"), 5000);
+        await driver.wait(until.urlContains("/secure-home"), 5000);
+        console.log("Navigating to Secure Home...");
+      } else {
+        console.log("Existing user is valid. Proceeding...");
+      }
 
-
-      console.log("Navigating to secure home page");
       // Verify that the user is on the secure home page
       let school1Button = await driver.wait(until.elementLocated(By.id("school-1")), 10000);
       await school1Button.click();
 
-      let reviewButton = await driver.wait(until.elementLocated(By.id("write-review-button")), 10000);
+      const reviewButton = await driver.wait(until.elementLocated(By.id("write-review-button")), 15000);
+      await driver.wait(until.elementIsVisible(reviewButton), 5000);
       await reviewButton.click();
-
 
       // Fill coach name
       let coachNameInput = await driver.wait(until.elementLocated(By.id("coach-name-input")), 10000);
