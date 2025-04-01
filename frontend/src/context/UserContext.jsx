@@ -64,7 +64,7 @@ export const UserProvider = ({ children }) => {
   // Ensure profile picture is correctly formatted
   const profilePic = user?.profile_picture
     ? `/assets/profile-pictures/${user.profile_picture}`
-    : "/assets/profile-pictures/pic1.png"; // Default image
+    : "/aboutus/profile-pictures/pic1.png"; // Default image
 
   useEffect(() => {
     fetchUser()

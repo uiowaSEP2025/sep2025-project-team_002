@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import annaImage from '../assets/anna.png';
-import yusufImage from '../assets/yusuf.png';
-import samImage from '../assets/sam.png';
-import rodImage from '../assets/rod.png';
-import jingmingImage from '../assets/jingming.png';
+import annaImage from '../../public/assets/aboutus/anna.png';
+import yusufImage from '../../public/assets/aboutus/yusuf.png';
+import samImage from '../../public/assets/aboutus/sam.png';
+import rodImage from '../../public/assets/aboutus/rod.png';
+import jingmingImage from '../../public/assets/aboutus/jingming.png';
 
 
 function AboutUs() {

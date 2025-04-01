@@ -28,7 +28,48 @@ describe("Create Review Test", function () {
       const { email, password } = loadCredentials();
       await login(driver, email, password)
 
-      console.log("Successfully logged in with previous account! Now navigating to secure home page...");
+      console.log("Successfully logged in with previous account!");
+
+      const token = await driver.executeScript("return localStorage.getItem('token');");
+
+      // Check if the user is valid for creating a review
+      const res = await fetch("http://backend:8000/users/user/", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      const user = await res.json();
+
+      if (user.transfer_type === "high_school") {
+        console.log("User type is high_school. Creating a new valid user...");
+
+        const testEmail = `testuser${Date.now()}@example.com`;
+        const testPassword = "TestPassword123!";
+
+        await driver.get("http://frontend:3000/signup");
+
+        await driver.findElement(By.id("signup-first-name")).sendKeys("Test");
+        await driver.findElement(By.id("signup-last-name")).sendKeys("User");
+        await driver.findElement(By.id("signup-email")).sendKeys(testEmail);
+        await driver.findElement(By.id("signup-password")).sendKeys(testPassword);
+        await driver.findElement(By.id("signup-confirm-password")).sendKeys(testPassword);
+        await driver.findElement(By.id("signup-transfer")).click();
+        await driver.findElement(By.id("signup-button")).click();
+        await driver.wait(until.urlContains("/login"), 10000);
+
+        await driver.get("http://frontend:3000/login");
+        await driver.findElement(By.id("email")).sendKeys(testEmail);
+        await driver.findElement(By.id("password")).sendKeys(testPassword);
+        await driver.findElement(By.id("login-button")).click();
+
+        await driver.wait(until.urlContains("/secure-home"), 5000);
+        console.log("Navigating to Secure Home...");
+      } else {
+        console.log("Existing user is valid. Proceeding...");
+      }
+
       // Verify that the user is on the secure home page
       let school1Button = await driver.wait(until.elementLocated(By.id("school-1")), 10000);
       await school1Button.click();
