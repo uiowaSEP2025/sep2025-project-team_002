@@ -18,6 +18,7 @@ import VerifySchoolEmail from './account/VerifySchoolEmail.jsx'
 import Footer from './components/Footer.jsx';
 import AboutUs from './components/AboutUs.jsx'
 import SchoolPage from "./schools/SchoolPage";
+import UserPreferences from "./account/UserPreferences.jsx"
 
 function App() {
   const [message, setMessage] = useState("Loading...");
@@ -50,9 +51,11 @@ function App() {
                 <Route path="/" element={<Home />} />
                   <Route path="/account" element={<Account />} />
                   <Route path="/account/settings" element={<AccountSettings />} />
+                  <Route path="/user-preferences" element ={<UserPreferences />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/verify-school-email" element={<VerifySchoolEmail />} />
+
 
 
                 {/* Secure Home Page (Only Accessible When Logged In) */}
