@@ -200,7 +200,7 @@ const PreferenceForm = () => {
         position: 'relative'
       }}>
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/secure-home")}
           style={{
             padding: '12px 25px',
             backgroundColor: '#007bff',
