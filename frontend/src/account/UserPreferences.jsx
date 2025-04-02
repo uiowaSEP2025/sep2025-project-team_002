@@ -7,7 +7,6 @@ import API_BASE_URL from "../utils/config.js";
 function UserPreferences() {
   const navigate = useNavigate();
   const [preferences, setPreferences] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -36,15 +35,12 @@ function UserPreferences() {
         setPreferences(data[0]); // Assuming API returns an array, use the first item
       } catch (err) {
         setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchPreferences();
   }, [navigate]);
 
-  if (loading) return <CircularProgress sx={{ display: "block", mx: "auto", mt: 4 }} />;
   if (error) return <Typography color="error" align="center" sx={{ mt: 4 }}>{error}</Typography>;
 
     if (openDialog) {
