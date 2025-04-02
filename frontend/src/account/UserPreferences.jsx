@@ -75,10 +75,10 @@ function UserPreferences() {
 
 return (
     <Box sx={{ maxWidth: "600px", margin: "auto", padding: "20px", textAlign: "center", backgroundColor: "#fff", borderRadius: 2, boxShadow: 3 }}>
-      <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>Your Submitted Preferences</Typography>
+      <Typography id="submitted-preferences-title" variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>Your Submitted Preferences</Typography>
 
       <Typography variant="h5" sx={{ mt: 2, fontWeight: "bold" }}>Sport:</Typography>
-      <Typography variant="h6" sx={{ color: "#333", fontSize: "1.2rem" }}>{preferences.sport}</Typography>
+      <Typography id="user-sport" variant="h6" sx={{ color: "#333", fontSize: "1.2rem" }}>{preferences.sport}</Typography>
 
       <Box sx={{ mt: 3, textAlign: "left" }}>
         {[
@@ -100,6 +100,7 @@ return (
 
 
       <Button
+          id="back-to-account-btn"
         variant="contained"
         color="primary"
         sx={{ mt: 4, fontSize: "1rem",  padding: "10px 20px" }}
