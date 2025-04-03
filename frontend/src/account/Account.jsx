@@ -119,7 +119,8 @@ function Account() {
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
-          icon: <CheckCircleIcon fontSize="medium" />
+          icon: < CheckCircleIcon fontSize="medium" />,
+                  id: "completed-pref-form"
         }]
       : []
     ),

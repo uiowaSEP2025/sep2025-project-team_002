@@ -46,7 +46,7 @@ function UserPreferences() {
     if (openDialog) {
     return (
       <Dialog open={openDialog} onClose={() => navigate("/preference-form")}>
-        <DialogTitle>No Preferences Found</DialogTitle>
+        <DialogTitle id={"no-preferences-dialog"}>No Preferences Found</DialogTitle>
         <DialogContent>
           <DialogContentText>
             You haven't submitted any preferences yet.
@@ -60,6 +60,7 @@ function UserPreferences() {
               onClick={() => navigate("/preference-form")}
               color="primary"
               variant="contained"
+              id="fillout-pref-btn"
             >
               Go to Preference Form
             </Button>
@@ -69,7 +70,7 @@ function UserPreferences() {
     );
   }
      if (!preferences) {
-    return null; // or you could return a loading spinner here
+    return null;
   }
 
 
