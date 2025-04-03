@@ -53,7 +53,7 @@ describe("Selenium Signup & Login Test", function () {
       await emailInput.sendKeys(testEmail);
       await passwordInput.sendKeys(testPassword);
       await confirmPasswordInput.sendKeys(testPassword);
-      await transferOptions[randomIndex].click();
+      await transferOptions[1].click();
       await signupButton.click();
 
       // let pageSource = await driver.getPageSource();

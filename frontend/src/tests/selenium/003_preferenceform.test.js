@@ -1,15 +1,13 @@
-import { Builder } from "selenium-webdriver";
+import { Builder, By, until, Key } from "selenium-webdriver";
 import { describe, it, before, after } from "mocha";
-import {login, loadCredentials} from "../helpers/auth.js";
+import { loadCredentials, login } from "../helpers/auth.js";
 
-describe("PreferenceForm Selenium Test", function () {
+describe("Preference Form Test", function () {
   let driver;
 
-  // Increase timeout to 90 seconds for account creation
-  this.timeout(90000);
+  this.timeout(60000); // 60 seconds
 
   before(async function () {
-    // Initialize driver
     driver = await new Builder()
       .forBrowser("chrome")
       .usingServer("http://selenium:4444/wd/hub")
@@ -17,28 +15,33 @@ describe("PreferenceForm Selenium Test", function () {
   });
 
   after(async function () {
-    if (driver) {
-      await driver.quit();
-    }
+    await driver.quit();
   });
 
   it("should submit preferences successfully", async function () {
-    try {
-      // Login with the created account
-      const { email, password } = loadCredentials();
-      await login(driver, email, password)
-      console.log("Successfully logged in with previous account! Now navigating to secure home page...");
+     const { email, password } = loadCredentials();
+    await login(driver, email, password);
+    console.log("Logged in");
 
-      // Rest of your preference form test...
-      await driver.get("frontend:3000/preference-form");
-      // ... (continue with your preference form test logic)
+    await driver.get("http://frontend:3000/preference-form");
 
-    } catch (error) {
-      console.error("Test failed:", error);
-      throw error;
-    }
+    const header = await driver.wait(
+      until.elementLocated(By.xpath("//h4[contains(text(), 'Share your Preferences')]")),
+      10000
+    );
+    console.log("'Share your Preferences' header is present:", await header.isDisplayed());
+
+
+    const sportSelect = await driver.wait(
+      until.elementLocated(By.id("sport-select")),
+      10000
+    );
+    console.log("Sport select dropdown is present:", await sportSelect.isDisplayed());
+
+    const submitBtn = await driver.wait(
+      until.elementLocated(By.xpath("//button[contains(text(), 'Submit Preferences')]")),
+      10000
+    );
+    console.log("Submit button is present:", await submitBtn.isDisplayed());
   });
-
 });
-
-
