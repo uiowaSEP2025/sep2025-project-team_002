@@ -46,8 +46,6 @@ import {UserProvider, useUser} from "../context/UserContext.jsx"
 // Import your config base URL
 import API_BASE_URL from "../utils/config.js";
 
-// Import your password strength bar
-import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
 
 import PasswordForm from "./PasswordForm.jsx";
 
@@ -72,6 +70,7 @@ function AccountSettings() {
 
   // For success/error messages
   const [message, setMessage] = useState("");
+
 
   // For profile picture updates (specifically)
   const { profilePic, updateProfilePic } = useUser();
@@ -141,11 +140,12 @@ function AccountSettings() {
           profile_picture: data.profile_picture || ""
         });
 
+
           setFormData({
             first_name: data.first_name || "",
             last_name: data.last_name || "",
             email: data.email || "",
-            // transfer_type: data.transfer_type || ""
+            transfer_type: data.transfer_type || ""
           });
         } else {
           const errorData = await response.json();
@@ -311,7 +311,7 @@ function AccountSettings() {
     //   action: () => navigate("/school"),
     //   icon: <SchoolIcon fontSize="medium" />
     // },
-           ...(user.transfer_type !== "graduate"
+           ...(user.transfer_type && user.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
