@@ -35,6 +35,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 import LogoutIcon from "@mui/icons-material/Logout";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
@@ -45,8 +46,6 @@ import {UserProvider, useUser} from "../context/UserContext.jsx"
 // Import your config base URL
 import API_BASE_URL from "../utils/config.js";
 
-// Import your password strength bar
-import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
 
 import PasswordForm from "./PasswordForm.jsx";
 
@@ -57,11 +56,21 @@ function AccountSettings() {
   // Desktop collapsible menu
   const [menuOpen, setMenuOpen] = useState(true);
 
+  const [user, setUser] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    transfer_type: "",
+    is_school_verified: false,
+    profile_picture: "",
+  });
+
   // Mobile overlay menu
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // For success/error messages
   const [message, setMessage] = useState("");
+
 
   // For profile picture updates (specifically)
   const { profilePic, updateProfilePic } = useUser();
@@ -121,6 +130,17 @@ function AccountSettings() {
 
         if (response.ok) {
           const data = await response.json();
+
+          setUser({
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          email: data.email || "",
+          transfer_type: data.transfer_type || "",
+          is_school_verified: data.is_school_verified || false,
+          profile_picture: data.profile_picture || ""
+        });
+
+
           setFormData({
             first_name: data.first_name || "",
             last_name: data.last_name || "",
@@ -291,6 +311,14 @@ function AccountSettings() {
     //   action: () => navigate("/school"),
     //   icon: <SchoolIcon fontSize="medium" />
     // },
+           ...(user.transfer_type && user.transfer_type !== "graduate"
+      ? [{
+          text: "Completed Preference Form",
+          action: () => navigate("/user-preferences/"),
+          icon: <CheckCircleIcon fontSize="medium" />
+        }]
+      : []
+    ),
     {
       text: "Logout",
       action: () => {

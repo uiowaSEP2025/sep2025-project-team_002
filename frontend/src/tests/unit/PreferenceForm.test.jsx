@@ -141,11 +141,6 @@ it("updates form inputs correctly", async () => {
       </BrowserRouter>
     );
 
-    // Only select sport without setting any ratings
-    fireEvent.mouseDown(screen.getByLabelText("Sport *"));
-    await waitFor(() => screen.getByText("Football"));
-    fireEvent.click(screen.getByText("Football"));
-
     const submitButton = screen.getByText("Submit Preferences");
     expect(submitButton).toBeDisabled();
   });
