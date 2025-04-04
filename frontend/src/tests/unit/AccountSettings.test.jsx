@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import userEvent from '@testing-library/user-event';
+import { useUser } from "../../context/UserContext.jsx";
 
 
 import AccountSettings from "../../account/AccountSettings.jsx";
@@ -16,6 +17,13 @@ function mockSuccessfulFetch(data) {
     })
   );
 }
+
+vi.mock("../../context/UserContext", () => {
+  return {
+    useUser: vi.fn(),
+    UserProvider: ({ children }) => <div>{children}</div>,
+  };
+});
 
 function mockPatchSuccess(message = "Success") {
   global.fetch = vi.fn((url, options) => {
@@ -44,7 +52,12 @@ function renderWithRoutes() {
 
 describe("AccountSettings Page", () => {
     beforeEach(() => {
-        window.localStorage.setItem("token", "valid_token");
+         localStorage.setItem("token", "valid_token");
+
+  useUser.mockReturnValue({
+    profilePic: "/assets/profile-pictures/pic1.png",
+    updateProfilePic: vi.fn(),
+  });
     });
 
     afterEach(() => {
@@ -151,6 +164,67 @@ describe("AccountSettings Page", () => {
           mockPatch.mockRestore();
         });
 
-    // add test that I can open change password
-    // Also add changing user image
+    it("opens the change password form", async () => {
+        mockSuccessfulFetch({
+            first_name: "John",
+            last_name: "Doe",
+            email: "john@example.com",
+            transfer_type: "transfer",
+        });
+
+        renderWithRoutes();
+
+        expect(await screen.findByText(/Choose Your Profile Picture/i)).toBeInTheDocument();
+
+        expect(await screen.findByText(/Change Password/i)).toBeInTheDocument();
+
+        const changePasswordButton = screen.getByRole("button", { name: /change password/i });
+        await userEvent.click(changePasswordButton);
+    });
+
+
+    it("updates profile picture when an image is clicked", async () => {
+          const mockUpdateProfilePic = vi.fn();
+
+          // Mock the useUser hook
+          useUser.mockReturnValue({
+            profilePic: "/assets/profile-pictures/pic1.png",
+            updateProfilePic: mockUpdateProfilePic,
+          });
+
+          mockSuccessfulFetch({
+            first_name: "John",
+            last_name: "Doe",
+            email: "john@example.com",
+            transfer_type: "transfer",
+          });
+
+          renderWithRoutes();
+
+          expect(await screen.findByText(/Choose Your Profile Picture/i)).toBeInTheDocument();
+
+          const profile2Button = screen.getByRole("button", { name: /profile 2/i });
+          await userEvent.click(profile2Button);
+
+          expect(mockUpdateProfilePic).toHaveBeenCalledWith("pic2.png");
+        });
+
+    it("the menu list with all items is present", async() => {
+            mockSuccessfulFetch({
+            first_name: "John",
+            last_name: "Doe",
+            email: "john@example.com",
+            transfer_type: "transfer",
+            });
+
+            renderWithRoutes();
+
+            expect(await screen.findByText(/Choose Your Profile Picture/i)).toBeInTheDocument();
+
+            expect(await screen.findByText(/Return to Dashboard/i)).toBeInTheDocument();
+            expect(await screen.findByText(/Account Info/i)).toBeInTheDocument();
+            expect(await screen.findByRole("button", { name: /account settings/i,}));
+            // expect(await screen.findByText(/Completed Preference Form/i)).toBeInTheDocument();
+            expect(await screen.findByText(/Logout/i)).toBeInTheDocument();
+        })
 });
