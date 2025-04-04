@@ -125,6 +125,11 @@ function Account() {
       : []
     ),
     {
+      text: "My Reviews",
+      action: () => navigate ("/my-reviews"),
+      icon:
+    }
+    {
       text: "Logout",
       action: () => {
         localStorage.removeItem("token");
