@@ -83,4 +83,19 @@ describe("AccountSettings Page", () => {
         expect(screen.getByDisplayValue("Doe")).toBeInTheDocument();
         expect(screen.getByDisplayValue("john@example.com")).toBeInTheDocument();
     });
+
+    it("successfully changes data when updated", async () =>{
+        mockSuccessfulFetch({
+            first_name: "John",
+            last_name: "Doe",
+            email: "john@example.com",
+            transfer_type: "transfer",
+            });
+        renderWithRoutes();
+
+        expect(await screen.findByText(/Choose Your Profile Picture/i)).toBeInTheDocument();
+        expect(screen.getByDisplayValue("John")).toBeInTheDocument();
+
+
+    })
 });
