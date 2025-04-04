@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
+import SidebarWrapper from "../components/SidebarWrapper";
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";    // Hamburger icon
@@ -134,211 +135,8 @@ function Account() {
     }
   ];
 
-  const renderMenuList = () =>
-    menuItems.map((item, index) => (
-      <ListItem key={index} disablePadding>
-        <ListItemButton
-          onClick={() => {
-            item.action();
-            if (isMobile) setMobileMenuOpen(false);
-          }}
-          sx={{ borderRadius: "20px", mb: 1, pl: 2 }}
-        >
-          {item.icon}
-          {/* Desktop: only show text when side menu is expanded */}
-          {!isMobile && menuOpen && (
-            <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
-          )}
-          {/* Mobile: always show text */}
-          {isMobile && (
-            <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
-          )}
-        </ListItemButton>
-      </ListItem>
-    ));
-
-  // Animation variants
-  const menuVariants = {
-    open: { width: 240, transition: { duration: 0.3 } },
-    closed: { width: 72, transition: { duration: 0.3 } }
-  };
-
-  const overlayVariants = {
-    hidden: { x: "-100%" },
-    visible: { x: 0 },
-    exit: { x: "-100%" }
-  };
-
-  const handleSendVerification = async () => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/send-school-verification/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(data.message || "Verification email sent!");
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || "Failed to send verification email.");
-      }
-    } catch (error) {
-      console.error("Error sending verification:", error);
-      alert("Something went wrong. Please try again later.");
-    }
-  };
-
   return (
-    <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-      {/* Desktop side menu */}
-      {!isMobile && (
-        <Grid item xs={12} md={3} sx={{ p: 0 }}>
-          <motion.div
-            variants={menuVariants}
-            animate={menuOpen ? "open" : "closed"}
-            initial="open"
-            style={{
-              backgroundColor: "#1a1a1a",
-              color: "white",
-              height: "100vh",
-              padding: 16,
-              boxSizing: "border-box",
-              overflow: "hidden"
-            }}
-          >
-            {/* Top bar with title & arrow */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: menuOpen ? "space-between" : "center",
-                mb: 2
-              }}
-            >
-              {menuOpen && (
-                <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: 600 }}>
-                  My Account
-                </Typography>
-              )}
-              <IconButton onClick={() => setMenuOpen(!menuOpen)} sx={{ color: "white" }}>
-                <ArrowBackIcon
-                  sx={{
-                    transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.3s"
-                  }}
-                />
-              </IconButton>
-            </Box>
-
-            <Divider sx={{ bgcolor: "grey.600", mb: 2 }} />
-
-            <List>{renderMenuList()}</List>
-          </motion.div>
-        </Grid>
-      )}
-
-      {/* Mobile hamburger */}
-      {isMobile && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 16,
-            left: 16,
-            zIndex: 3000
-          }}
-        >
-          <IconButton
-            onClick={() => setMobileMenuOpen(true)}
-            sx={{
-              bgcolor: "#1a1a1a",
-              color: "white",
-              "&:hover": { backgroundColor: "#333" }
-            }}
-          >
-            <MenuIcon fontSize="large" />
-          </IconButton>
-        </Box>
-      )}
-
-      {/* Mobile overlay */}
-      <AnimatePresence>
-        {isMobile && mobileMenuOpen && (
-          <motion.div
-            key="mobile-menu"
-            variants={overlayVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            transition={{ duration: 0.3 }}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "#1a1a1a",
-              zIndex: 4000,
-              display: "flex",
-              color: "white",
-              flexDirection: "column"
-            }}
-          >
-            {/* Overlay header */}
-            <Box
-              sx={{
-                position: "sticky",
-                top: 0,
-                backgroundColor: "#1a1a1a",
-                zIndex: 4500,
-                p: 2
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center"
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  sx={{ fontSize: "1.5rem", fontWeight: 600, color: "#fff" }}
-                >
-                  My Account
-                </Typography>
-                <IconButton
-                  onClick={() => setMobileMenuOpen(false)}
-                  sx={{ color: "white" }}
-                >
-                  <ArrowBackIcon />
-                </IconButton>
-              </Box>
-              <Divider sx={{ bgcolor: "grey.600", mt: 2 }} />
-            </Box>
-
-            <Box
-              sx={{
-                flex: 1,
-                overflowY: "auto",
-                p: 2
-              }}
-            >
-              <List>{renderMenuList()}</List>
-            </Box>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+    <SidebarWrapper menuItems={menuItems} title="My Account">
       {/* Main content area */}
       <Grid
         item
@@ -539,7 +337,7 @@ function Account() {
           )}
         </motion.div>
       </Grid>
-    </Grid>
+    </SidebarWrapper>
   );
 }
 
