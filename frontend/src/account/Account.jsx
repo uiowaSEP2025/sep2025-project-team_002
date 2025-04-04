@@ -115,7 +115,7 @@ function Account() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-        ...(user.transfer_type !== "graduate"
+        ...(user.transfer_type && user.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
