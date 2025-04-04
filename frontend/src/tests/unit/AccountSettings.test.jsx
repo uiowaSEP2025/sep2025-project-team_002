@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
+import userEvent from '@testing-library/user-event';
+
 
 import AccountSettings from "../../account/AccountSettings.jsx";
 import { UserProvider } from "../../context/UserContext.jsx";
@@ -84,18 +86,71 @@ describe("AccountSettings Page", () => {
         expect(screen.getByDisplayValue("john@example.com")).toBeInTheDocument();
     });
 
-    it("successfully changes data when updated", async () =>{
-        mockSuccessfulFetch({
+    it("successfully changes data when updated", async () => {
+          mockSuccessfulFetch({
             first_name: "John",
             last_name: "Doe",
             email: "john@example.com",
             transfer_type: "transfer",
-            });
-        renderWithRoutes();
+          });
 
-        expect(await screen.findByText(/Choose Your Profile Picture/i)).toBeInTheDocument();
-        expect(screen.getByDisplayValue("John")).toBeInTheDocument();
+          renderWithRoutes(<AccountSettings />); // Remove UserProvider from here since it's already in the component
+
+          expect(await screen.findByText(/Choose Your Profile Picture/i)).toBeInTheDocument();
+          expect(screen.getByDisplayValue("John")).toBeInTheDocument();
+
+          // Get inputs by their displayed label text
+          const firstNameInput = screen.getByLabelText(/First Name/i);
+          const lastNameInput = screen.getByLabelText(/Last Name/i);
+          const emailInput = screen.getByLabelText(/Email/i);
 
 
-    })
+          await userEvent.clear(firstNameInput);
+          await userEvent.type(firstNameInput, "Jane");
+
+          await userEvent.clear(lastNameInput);
+          await userEvent.type(lastNameInput, "Smith");
+
+          await userEvent.clear(emailInput);
+          await userEvent.type(emailInput, "jane.smith@test.edu");
+          // Verify the input value changed
+          expect(lastNameInput).toHaveValue("Smith");
+          expect(firstNameInput).toHaveValue("Jane");
+          expect(emailInput).toHaveValue("jane.smith@test.edu");
+
+          // Mock PATCH request for saving changes
+          const mockPatch = vi.spyOn(global, "fetch").mockImplementationOnce(() =>
+            Promise.resolve({
+              ok: true,
+              json: () => Promise.resolve({ message: "Account info updated successfully" }),
+            })
+          );
+
+          // Submit the form
+          const saveButton = screen.getByRole("button", { name: /save changes/i });
+          await userEvent.click(saveButton);
+
+          // Wait for success message to appear
+          expect(await screen.findByText(/Account info updated successfully/i)).toBeInTheDocument();
+
+          // Verify the mock was called with the correct data
+          expect(mockPatch).toHaveBeenCalledWith(
+            expect.stringContaining("/users/user/"),
+            expect.objectContaining({
+              method: "PATCH",
+              body: JSON.stringify({
+                first_name: "Jane",
+                last_name: "Smith",
+                email: "jane.smith@test.edu",
+                transfer_type: "transfer"
+              })
+            })
+          );
+
+          // Restore fetch
+          mockPatch.mockRestore();
+        });
+
+    // add test that I can open change password
+    // Also add changing user image
 });
