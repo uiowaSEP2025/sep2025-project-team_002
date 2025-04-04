@@ -54,6 +54,7 @@ describe("Selenium Signup & Login Test", function () {
       await passwordInput.sendKeys(testPassword);
       await confirmPasswordInput.sendKeys(testPassword);
       await transferOptions[randomIndex].click();
+      await transferRadio.click();
       await signupButton.click();
 
       // let pageSource = await driver.getPageSource();
@@ -67,7 +68,8 @@ describe("Selenium Signup & Login Test", function () {
 
       fs.writeFileSync("test-user.json", JSON.stringify({
         email: testEmail,
-        password: testPassword
+        password: testPassword,
+        transfer_type: "transfer"
       }));
 
       console.log("Successfully write testEmail and testPassword for reusing!");

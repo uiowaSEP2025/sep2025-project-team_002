@@ -64,15 +64,7 @@ const PreferenceForm = () => {
 
   const isFormValid = () => {
     return (
-      preference.sport &&
-      preference.head_coach > 0 &&
-      preference.assistant_coaches > 0 &&
-      preference.team_culture > 0 &&
-      preference.campus_life > 0 &&
-      preference.athletic_facilities > 0 &&
-      preference.athletic_department > 0 &&
-      preference.player_development > 0 &&
-      preference.nil_opportunity > 0
+      preference.sport
     );
   };
 
@@ -200,7 +192,7 @@ const PreferenceForm = () => {
         position: 'relative'
       }}>
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/secure-home")}
           style={{
             padding: '12px 25px',
             backgroundColor: '#007bff',

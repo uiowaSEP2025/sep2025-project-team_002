@@ -25,6 +25,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import API_BASE_URL from "../utils/config.js";
 import {UserProvider, useUser} from "../context/UserContext.jsx"
 
@@ -114,6 +115,15 @@ function Account() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
+        ...(user.transfer_type && user.transfer_type !== "graduate"
+      ? [{
+          text: "Completed Preference Form",
+          action: () => navigate("/user-preferences/"),
+          icon: < CheckCircleIcon fontSize="medium" />,
+                  id: "completed-pref-form"
+        }]
+      : []
+    ),
     {
       text: "Logout",
       action: () => {
