@@ -35,6 +35,8 @@ EMAIL_ADDRESS=***@gmail.com
 EMAIL_PWD=***
 
 REPORT_EMAIL_ADDRESS=***@gmail.com, ***@uiowa.edu
+
+OPENAI_API_KEY=***
 ```
 #### Frontend Configuration
 Navigate to the `frontend/` directory and create:

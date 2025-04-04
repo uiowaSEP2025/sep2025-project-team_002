@@ -15,4 +15,5 @@ class UserSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "is_school_verified",
+            "profile_picture",
         ]

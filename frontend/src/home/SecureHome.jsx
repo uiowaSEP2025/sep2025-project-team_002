@@ -29,7 +29,8 @@ function SecureHome() {
     first_name: "",
     last_name: "",
     email: "",
-    transfer_type: ""
+    transfer_type: "",
+    profile_picture: "",
   });
 
   useEffect(() => {
@@ -56,6 +57,8 @@ function SecureHome() {
           last_name: data.last_name || "",
           email: data.email || "",
           transfer_type: data.transfer_type || "",
+          profile_picture: data.profile_picture || "",
+
         });
       } else {
         const errorData = await response.json();
@@ -171,15 +174,29 @@ function SecureHome() {
   );
 
   return (
-    <Box sx={{ position: "relative", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+    <Box id="secure-home" sx={{ position: "relative", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
       {/* Top Right Circular Icon */}
       <Box sx={{ position: "fixed", top: 16, right: 16, zIndex: 1000 }}>
         <IconButton
+            id={"account-icon"}
           onClick={handleMenuOpen}
           size="large"
           sx={{ bgcolor: "#fff", borderRadius: "50%" }}
         >
+          {user.profile_picture ? (
+            <img
+              src={`/assets/profile-pictures/${user.profile_picture}`}
+              alt="Profile"
+              style={{
+                width: 48,
+                height: 48,
+                borderRadius: "50%",
+                objectFit: "cover"
+              }}
+            />
+          ) : (
           <AccountCircleIcon fontSize="large" />
+              )}
         </IconButton>
         <Menu
           anchorEl={anchorEl}
@@ -188,7 +205,7 @@ function SecureHome() {
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <MenuItem onClick={() => { handleAccountInfo(); handleMenuClose(); }}>
+          <MenuItem id="account-info" onClick={() => { handleAccountInfo(); handleMenuClose(); }}>
             Account Info
           </MenuItem>
           <MenuItem onClick={() => { handleLogout(); handleMenuClose(); }}>

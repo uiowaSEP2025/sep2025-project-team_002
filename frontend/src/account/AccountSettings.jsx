@@ -35,15 +35,17 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import SchoolIcon from "@mui/icons-material/School";
 import LogoutIcon from "@mui/icons-material/Logout";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import {UserProvider, useUser} from "../context/UserContext.jsx"
 
 // Import your config base URL
 import API_BASE_URL from "../utils/config.js";
 
-// Import your password strength bar
-import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
 
 import PasswordForm from "./PasswordForm.jsx";
 
@@ -54,11 +56,29 @@ function AccountSettings() {
   // Desktop collapsible menu
   const [menuOpen, setMenuOpen] = useState(true);
 
+  const [user, setUser] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    transfer_type: "",
+    is_school_verified: false,
+    profile_picture: "",
+  });
+
   // Mobile overlay menu
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // For success/error messages
   const [message, setMessage] = useState("");
+
+
+  // For profile picture updates (specifically)
+  const { profilePic, updateProfilePic } = useUser();
+  console.log("Current profile picture:", profilePic); // Debug log
+
+  const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
+
+
 
   // Main user form data (editable)
   const [formData, setFormData] = useState({
@@ -110,6 +130,17 @@ function AccountSettings() {
 
         if (response.ok) {
           const data = await response.json();
+
+          setUser({
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          email: data.email || "",
+          transfer_type: data.transfer_type || "",
+          is_school_verified: data.is_school_verified || false,
+          profile_picture: data.profile_picture || ""
+        });
+
+
           setFormData({
             first_name: data.first_name || "",
             last_name: data.last_name || "",
@@ -280,6 +311,14 @@ function AccountSettings() {
     //   action: () => navigate("/school"),
     //   icon: <SchoolIcon fontSize="medium" />
     // },
+           ...(user.transfer_type && user.transfer_type !== "graduate"
+      ? [{
+          text: "Completed Preference Form",
+          action: () => navigate("/user-preferences/"),
+          icon: <CheckCircleIcon fontSize="medium" />
+        }]
+      : []
+    ),
     {
       text: "Logout",
       action: () => {
@@ -330,6 +369,7 @@ function AccountSettings() {
 
   return (
     <>
+      <UserProvider>
       {/* MAIN GRID LAYOUT */}
       <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
         {/* DESKTOP / LARGE TABLET: Collapsible Side Menu */}
@@ -498,7 +538,55 @@ function AccountSettings() {
                 {message}
               </Typography>
             )}
-
+            <div style={{ textAlign: "center" }}>
+            <h2>Choose Your Profile Picture</h2>
+            {profilePic && profilePic.trim() ? (
+              <img
+                src={profilePic}
+                alt="Selected Profile"
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
+                }}
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  borderRadius: "50%",
+                  border: "3px solid #007bff",
+                  objectFit: "cover",
+                  marginBottom: "10px"
+                }}
+              />
+            ) : (
+              <AccountCircleIcon
+                sx={{
+                  fontSize: "150px",
+                  color: "gray",
+                  borderRadius: "50%",
+                  backgroundColor: "#f0f0f0",
+                  padding: "10px"
+                }}
+              />
+            )}
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+              {profilePictures.map((pic, index) => (
+                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
+                  <img
+                    src={`/assets/profile-pictures/${pic}`}
+                    alt={`Profile ${index + 1}`}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
+                    }}
+                  />
+                </IconButton>
+              ))}
+            </div>
+          </div>
             <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
               <TextField
                 fullWidth
@@ -632,7 +720,9 @@ function AccountSettings() {
           </Button>
         </DialogActions>
       </Dialog>
+      </UserProvider>
     </>
+
   );
 }
 

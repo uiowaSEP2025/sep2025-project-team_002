@@ -1,6 +1,7 @@
 import { Builder, By, until } from "selenium-webdriver";
 import { expect } from "chai"; // Using Chai for assertions
 import { describe, it, before, after } from "mocha";
+import fs from "fs";
 
 describe("Selenium Signup & Login Test", function () {
   let driver;
@@ -53,6 +54,7 @@ describe("Selenium Signup & Login Test", function () {
       await passwordInput.sendKeys(testPassword);
       await confirmPasswordInput.sendKeys(testPassword);
       await transferOptions[randomIndex].click();
+      await transferRadio.click();
       await signupButton.click();
 
       // let pageSource = await driver.getPageSource();
@@ -63,6 +65,14 @@ describe("Selenium Signup & Login Test", function () {
 
       // Navigate to the Login page
       await driver.get("http://frontend:3000/login");
+
+      fs.writeFileSync("test-user.json", JSON.stringify({
+        email: testEmail,
+        password: testPassword,
+        transfer_type: "transfer"
+      }));
+
+      console.log("Successfully write testEmail and testPassword for reusing!");
 
       // Locate login form elements
       let loginEmailInput = await driver.findElement(By.id("email"));
