@@ -17,6 +17,7 @@ export default [
         document: "readonly",
         console: "readonly",
         fetch: "readonly",
+        process: "readonly"
       }
     },
     plugins: {
