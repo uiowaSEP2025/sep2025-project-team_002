@@ -367,6 +367,7 @@ function Account() {
         >
           <Typography
             variant="h4"
+            id="account-info-title"
             gutterBottom
             sx={{ fontWeight: 700, fontSize: "2rem" }}
           >
@@ -380,6 +381,7 @@ function Account() {
                 <img
                   src={`/assets/profile-pictures/${user.profile_picture}`} // dynamic source based on user profile picture
                   alt="Profile"
+                  id="account-profile-image"
                   style={{
                     width: '175px',            // Larger size for the selected profile picture
                     height: '175px',           // Same size for consistency
@@ -394,6 +396,7 @@ function Account() {
           {message && (
             <Typography
               variant="body1"
+              id="account-page-error"
               color="error"
               sx={{ mb: 2, fontSize: "1.2rem" }}
             >
@@ -405,6 +408,7 @@ function Account() {
             <Box sx={{ mt: 2 }}>
               <TextField
                 fullWidth
+                id="account-first-name"
                 margin="normal"
                 label="First Name"
                 value={user.first_name}
@@ -413,6 +417,7 @@ function Account() {
               />
               <TextField
                 fullWidth
+                id="account-last-name"
                 margin="normal"
                 label="Last Name"
                 value={user.last_name}
@@ -421,6 +426,7 @@ function Account() {
               />
               <TextField
                 fullWidth
+                id="account-email"
                 margin="normal"
                 label="Email"
                 value={user.email}
@@ -429,6 +435,7 @@ function Account() {
               />
               <TextField
                 fullWidth
+                id="account-athlete-status"
                 margin="normal"
                 label="Athlete Status"
                 value={
@@ -447,7 +454,8 @@ function Account() {
               />
               {user.email && (
                 <Box
-                  sx={{
+                    id="account-verification-box"
+                    sx={{
                     mt: 3,
                     p: 2,
                     borderRadius: "12px",
@@ -507,6 +515,7 @@ function Account() {
                   {user.email.endsWith(".edu") && !user.is_school_verified && (
                     <Button
                       variant="contained"
+                      id="verify-school-email-button"
                       size="small"
                       sx={{
                         borderRadius: "20px",
@@ -527,6 +536,7 @@ function Account() {
               {/* Button to go to the Account Settings page */}
               <Button
                 variant="contained"
+                id="edit-change-info-button"
                 fullWidth
                 sx={{ mt: 3, borderRadius: "40px" }}
                 component={motion.button}
