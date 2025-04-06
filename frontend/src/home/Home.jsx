@@ -23,7 +23,7 @@ function Home() {
   const [schools, setSchools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter state (School Name removed)
+  // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
     coach: "",

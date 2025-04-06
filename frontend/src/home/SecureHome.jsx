@@ -31,7 +31,7 @@ function SecureHome() {
   const [schools, setSchools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Filter state (school name removed)
+  // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
     coach: "",
