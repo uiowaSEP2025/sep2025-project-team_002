@@ -52,7 +52,7 @@ class TestFilterSchools:
                     "first_name": "Test",
                     "last_name": "User",
                     "password": "password123",
-                }
+                },
             )
             return Reviews.objects.create(
                 school=school,
@@ -125,7 +125,9 @@ class TestFilterSchools:
         assert "School Two" in returned_school_names
         assert "School One" not in returned_school_names
 
-    def test_filter_invalid_rating_and_school_name(self, api_client, create_school, create_review):
+    def test_filter_invalid_rating_and_school_name(
+        self, api_client, create_school, create_review
+    ):
         """
         Test that an invalid rating value is ignored (raising ValueError internally)
         and that filtering by school_name works.
