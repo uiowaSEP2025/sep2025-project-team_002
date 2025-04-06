@@ -1,6 +1,6 @@
 import React from 'react';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SecureHome from '../../home/SecureHome.jsx';
@@ -163,5 +163,105 @@ it('does not show submit review button when transfer_type is "high_school"', asy
   expect(submitButton).not.toBeInTheDocument();
 });
 
+});
+
+describe('SecureHome Filter Feature', () => {
+  beforeEach(() => {
+    // Mock localStorage for authentication
+    global.localStorage = {
+      getItem: vi.fn(() => 'fake-token'),
+      setItem: vi.fn(),
+      clear: vi.fn()
+    };
+
+    // Mock fetch for various endpoints
+    global.fetch = vi.fn((url) => {
+      if (url.includes('/api/filter/')) {
+        const urlObj = new URL(url, 'http://localhost');
+        const headCoachRating = urlObj.searchParams.get('head_coach');
+        // Return a filtered school when head_coach equals '8'
+        if (headCoachRating === '8') {
+          return Promise.resolve(new Response(JSON.stringify([
+            {
+              id: 2,
+              school_name: "Filtered School",
+              conference: "Test Conference",
+              location: "Test Location",
+              available_sports: ["Football"]
+            }
+          ]), {
+            status: 200,
+            headers: new Headers({ 'Content-Type': 'application/json' })
+          }));
+        } else {
+          return Promise.resolve(new Response(JSON.stringify([]), {
+            status: 200,
+            headers: new Headers({ 'Content-Type': 'application/json' })
+          }));
+        }
+      } else if (url.includes('/api/schools/')) {
+        // Return default school list
+        return Promise.resolve(new Response(JSON.stringify([
+          {
+            id: 1,
+            school_name: "Default School",
+            conference: "Test Conference",
+            location: "Test Location",
+            available_sports: ["Football"]
+          }
+        ]), {
+          status: 200,
+          headers: new Headers({ 'Content-Type': 'application/json' })
+        }));
+      } else if (url.includes('/users/user/')) {
+        // Return a mock user (transfer student)
+        return Promise.resolve(new Response(JSON.stringify({
+          first_name: "Test",
+          last_name: "User",
+          email: "test@example.com",
+          transfer_type: "transfer"
+        }), {
+          status: 200,
+          headers: new Headers({ 'Content-Type': 'application/json' })
+        }));
+      }
+      return Promise.reject(new Error('Unhandled endpoint'));
+    });
+  });
+
+  it('opens filter dialog and applies filter', async () => {
+    render(
+      <BrowserRouter>
+        <SecureHome />
+      </BrowserRouter>
+    );
+
+    // Wait for the default school to appear
+    await waitFor(() => {
+      expect(screen.getByText(/Default School/i)).toBeInTheDocument();
+    });
+
+    // Click the Filters button
+    const filtersButton = screen.getByRole('button', { name: /Filters/i });
+    fireEvent.click(filtersButton);
+
+    // Wait for the filter dialog to appear (e.g., dialog title "Apply Filters")
+    await waitFor(() => {
+      expect(screen.getByText(/Apply Filters/i)).toBeInTheDocument();
+    });
+
+    // Change the Head Coach Rating dropdown to 8
+    const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
+    fireEvent.change(headCoachSelect, { target: { value: '8' }});
+
+    // Click the Apply button by using its role and exact name "Apply"
+    const applyButton = screen.getByRole('button', { name: /^Apply$/i });
+    fireEvent.click(applyButton);
+
+    // Wait for the filtered school to appear
+    await waitFor(() => {
+      expect(screen.getByText(/Filtered School/i)).toBeInTheDocument();
+    });
+  });
 });
 
