@@ -127,8 +127,8 @@ function Account() {
     {
       text: "My Reviews",
       action: () => navigate ("/my-reviews"),
-      icon:
-    }
+      icon: <RateReviewIcon fontSize ="medium" />
+    },
     {
       text: "Logout",
       action: () => {

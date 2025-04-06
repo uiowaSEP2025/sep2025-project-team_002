@@ -58,6 +58,8 @@ function App() {
 
 
 
+
+
                 {/* Secure Home Page (Only Accessible When Logged In) */}
                 <Route
                   path="/secure-home"
