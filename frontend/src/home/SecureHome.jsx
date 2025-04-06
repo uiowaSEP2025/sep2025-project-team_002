@@ -329,35 +329,174 @@ function SecureHome() {
               onChange={handleFilterChange}
               fullWidth
             />
-            {[
-              { label: "Head Coach Rating", name: "head_coach" },
-              { label: "Assistant Coaches Rating", name: "assistant_coaches" },
-              { label: "Team Culture Rating", name: "team_culture" },
-              { label: "Campus Life Rating", name: "campus_life" },
-              { label: "Athletic Facilities Rating", name: "athletic_facilities" },
-              { label: "Athletic Department Rating", name: "athletic_department" },
-              { label: "Player Development Rating", name: "player_development" },
-              { label: "NIL Opportunity Rating", name: "nil_opportunity" },
-            ].map((field, index) => (
-              <FormControl key={index} fullWidth>
-                <InputLabel id={`${field.name}-label`}>{field.label}</InputLabel>
-                <Select
-                  labelId={`${field.name}-label`}
-                  label={field.label}
-                  name={field.name}
-                  value={filters[field.name]}
-                  onChange={handleFilterChange}
-                  native
-                >
-                  <option value=""> </option>
-                  {[...Array(10)].map((_, i) => (
-                    <option key={i + 1} value={i + 1}>
-                      {i + 1}
-                    </option>
-                  ))}
-                </Select>
-              </FormControl>
-            ))}
+            <FormControl fullWidth>
+              <InputLabel htmlFor="head_coach-select" id="head_coach-label">
+                Head Coach Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="head_coach-label"
+                id="head_coach-select"
+                label="Head Coach Rating"
+                name="head_coach"
+                value={filters.head_coach}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="assistant_coaches-select" id="assistant_coaches-label">
+                Assistant Coaches Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="assistant_coaches-label"
+                id="assistant_coaches-select"
+                label="Assistant Coaches Rating"
+                name="assistant_coaches"
+                value={filters.assistant_coaches}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="team_culture-select" id="team_culture-label">
+                Team Culture Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="team_culture-label"
+                id="team_culture-select"
+                label="Team Culture Rating"
+                name="team_culture"
+                value={filters.team_culture}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="campus_life-select" id="campus_life-label">
+                Campus Life Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="campus_life-label"
+                id="campus_life-select"
+                label="Campus Life Rating"
+                name="campus_life"
+                value={filters.campus_life}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="athletic_facilities-select" id="athletic_facilities-label">
+                Athletic Facilities Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="athletic_facilities-label"
+                id="athletic_facilities-select"
+                label="Athletic Facilities Rating"
+                name="athletic_facilities"
+                value={filters.athletic_facilities}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="athletic_department-select" id="athletic_department-label">
+                Athletic Department Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="athletic_department-label"
+                id="athletic_department-select"
+                label="Athletic Department Rating"
+                name="athletic_department"
+                value={filters.athletic_department}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="player_development-select" id="player_development-label">
+                Player Development Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="player_development-label"
+                id="player_development-select"
+                label="Player Development Rating"
+                name="player_development"
+                value={filters.player_development}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="nil_opportunity-select" id="nil_opportunity-label">
+                NIL Opportunity Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="nil_opportunity-label"
+                id="nil_opportunity-select"
+                label="NIL Opportunity Rating"
+                name="nil_opportunity"
+                value={filters.nil_opportunity}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
           </Box>
         </DialogContent>
         <DialogActions>
