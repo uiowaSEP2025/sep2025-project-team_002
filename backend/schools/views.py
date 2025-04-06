@@ -53,6 +53,8 @@ def get_review_summary(request, school_id):
 
     try:
         school = Schools.objects.get(pk=school_id)
+
+        # Get the latest review for this sport
         latest_review = (
             Reviews.objects.filter(school_id=school_id, sport=sport)
             .order_by("-created_at")
@@ -62,13 +64,19 @@ def get_review_summary(request, school_id):
             return Response(
                 {"summary": f"No reviews available for {sport} at this school yet."}
             )
+
+        # Get stored summaries and dates
         summaries = school.sport_summaries or {}
         last_dates = school.sport_review_dates or {}
+
+        # Check if we have a valid stored summary for this sport
         if sport in summaries and sport in last_dates:
             stored_date = last_dates[sport]
             latest_date = latest_review.created_at.isoformat()
             if stored_date >= latest_date:
                 return Response({"summary": summaries[sport]})
+
+        # Generate new summary if needed
         try:
             if not settings.OPENAI_API_KEY:
                 logger.error("OpenAI API key is not configured")
@@ -76,6 +84,8 @@ def get_review_summary(request, school_id):
                     {"error": "OpenAI API key is not configured"},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 )
+
+            # Get all reviews for this sport
             reviews = Reviews.objects.filter(school_id=school_id, sport=sport)
             reviews_text = " ".join([review.review_message for review in reviews])
             client = OpenAI()
@@ -91,6 +101,8 @@ def get_review_summary(request, school_id):
                 max_tokens=250,
             )
             summary = response.choices[0].message.content
+
+            # Store the new summary and date
             summaries[sport] = summary
             last_dates[sport] = latest_review.created_at.isoformat()
             school.sport_summaries = summaries
