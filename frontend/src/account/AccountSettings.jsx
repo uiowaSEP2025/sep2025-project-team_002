@@ -525,13 +525,14 @@ function AccountSettings() {
             transition={{ duration: 0.6 }}
             style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}
           >
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, fontSize: "2rem" }}>
+            <Typography id="account-settings-title" variant="h4" gutterBottom sx={{ fontWeight: 700, fontSize: "2rem" }}>
               Account Settings
             </Typography>
 
             {message && (
               <Typography
                 variant="body1"
+                id="settings-error"
                 color="error"
                 sx={{ mb: 2, fontSize: "1.2rem" }}
               >
@@ -539,10 +540,11 @@ function AccountSettings() {
               </Typography>
             )}
             <div style={{ textAlign: "center" }}>
-            <h2>Choose Your Profile Picture</h2>
+            <h2 id="profile-pic-label">Choose Your Profile Picture</h2>
             {profilePic && profilePic.trim() ? (
               <img
                 src={profilePic}
+                id="selected-profile-pic"
                 alt="Selected Profile"
                 onError={(e) => {
                   e.target.onerror = null; // Prevent infinite loop
@@ -590,6 +592,7 @@ function AccountSettings() {
             <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
               <TextField
                 fullWidth
+                id="settings-first-name"
                 margin="normal"
                 label="First Name"
                 name="first_name"
@@ -600,6 +603,7 @@ function AccountSettings() {
               />
               <TextField
                 fullWidth
+                id="settings-last-name"
                 margin="normal"
                 label="Last Name"
                 name="last_name"
@@ -611,6 +615,7 @@ function AccountSettings() {
               {/* Real-time email validation */}
               <TextField
                 fullWidth
+                id="settings-email"
                 margin="normal"
                 label="Email"
                 name="email"
@@ -648,6 +653,7 @@ function AccountSettings() {
               {/* SAVE CHANGES BUTTON */}
               <Button
                 type="submit"
+                id="save-changes-button"
                 variant="contained"
                 fullWidth
                 sx={{ mt: 3, borderRadius: "40px" }}
@@ -662,6 +668,7 @@ function AccountSettings() {
             {/* CHANGE PASSWORD BUTTON */}
             <Button
               variant="outlined"
+              id="change-password-button"
               fullWidth
               sx={{ mt: 2, borderRadius: "40px" }}
               component={motion.button}
@@ -678,6 +685,7 @@ function AccountSettings() {
       {/* DIALOG FOR CHANGING PASSWORD */}
       <Dialog
         open={passwordDialogOpen}
+        id="change-password-dialog"
         onClose={handleClosePasswordDialog}
         fullWidth
         maxWidth="sm"
@@ -704,7 +712,7 @@ function AccountSettings() {
         <DialogContent>
           {/* Error message if any */}
           {passwordError && (
-            <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+            <Typography id="change-password-error" color="error" sx={{ mb: 2, textAlign: "center" }}>
               {passwordError}
             </Typography>
           )}
@@ -713,6 +721,7 @@ function AccountSettings() {
         <DialogActions sx={{ justifyContent: "center", mb: 1 }}>
           <Button
             variant="outlined"
+            id="cancel-change-password-button"
             sx={{ borderRadius: "40px", width: "140px" }}
             onClick={handleClosePasswordDialog}
           >
