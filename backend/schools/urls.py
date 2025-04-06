@@ -6,6 +6,7 @@ from .views import (
     ProtectedSchoolDetailView,
     get_schools,
     get_review_summary,
+    filter_schools,
 )
 
 urlpatterns = [
@@ -32,4 +33,5 @@ urlpatterns = [
         get_review_summary,
         name="review-summary",
     ),
+    path("filter/", filter_schools, name="filter-schools"),
 ]
