@@ -1,6 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"
-import { Stack, Card, CardContent, Box, Typography, TextField } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Stack,
+  Card,
+  CardContent,
+  Box,
+  Typography,
+  TextField,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Select,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
 import API_BASE_URL from "../utils/config";
 
 function Home() {
@@ -8,18 +23,30 @@ function Home() {
   const [schools, setSchools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
 
-   useEffect(() => {
+  // Filter state
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    coach: "",
+    head_coach: "",
+    assistant_coaches: "",
+    team_culture: "",
+    campus_life: "",
+    athletic_facilities: "",
+    athletic_department: "",
+    player_development: "",
+    nil_opportunity: "",
+  });
+  const [filteredSchools, setFilteredSchools] = useState([]);
+  const [filterApplied, setFilterApplied] = useState(false);
+
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       navigate("/secure-home");
     } else {
       fetchSchools();
     }
-  }, []);
-
-  const handleSchoolClick = (schoolId) => {
-    navigate(`/school/${schoolId}`);
-  };
+  }, [navigate]);
 
   const fetchSchools = async () => {
     try {
@@ -30,104 +57,244 @@ function Home() {
       const data = await response.json();
       setSchools(data);
     } catch (error) {
-      console.error('Error fetching schools:', error);
+      console.error("Error fetching schools:", error);
       setSchools([]);
     }
   };
 
-  const filteredSchools = schools.filter((school) => school.school_name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const handleSchoolClick = (schoolId) => {
+    navigate(`/school/${schoolId}`);
+  };
+
+  // Filter dialog handlers
+  const openFilterDialog = () => {
+    setFilterDialogOpen(true);
+  };
+  const closeFilterDialog = () => {
+    setFilterDialogOpen(false);
+  };
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+  };
+  const applyFilters = async () => {
+    const queryParams = new URLSearchParams();
+    if (filters.coach) queryParams.append("coach", filters.coach);
+    // Append rating filters if provided
+    [
+      "head_coach",
+      "assistant_coaches",
+      "team_culture",
+      "campus_life",
+      "athletic_facilities",
+      "athletic_department",
+      "player_development",
+      "nil_opportunity",
+    ].forEach((field) => {
+      if (filters[field]) {
+        queryParams.append(field, filters[field]);
+      }
+    });
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/filter/?${queryParams.toString()}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setFilteredSchools(data);
+        setFilterApplied(true);
+      } else {
+        console.error("Error applying filters");
+      }
+    } catch (error) {
+      console.error("Error applying filters:", error);
+    }
+    closeFilterDialog();
+  };
+  const clearFilters = () => {
+    setFilters({
+      coach: "",
+      head_coach: "",
+      assistant_coaches: "",
+      team_culture: "",
+      campus_life: "",
+      athletic_facilities: "",
+      athletic_department: "",
+      player_development: "",
+      nil_opportunity: "",
+    });
+    setFilterApplied(false);
+    setFilteredSchools([]);
+    closeFilterDialog();
+  };
+
+  // Determine which schools to display: filtered if applied, else all
+  const schoolsToDisplay = filterApplied ? filteredSchools : schools;
+  // Apply search filter on top
+  const filteredBySearch = schoolsToDisplay.filter((school) =>
+    school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div>
-        {/* Navbar */}
-        <nav style = {styles.navbar}>
-            <h2 style = {styles.logo}>Athletic Insider </h2>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
-                <Link to = "/signup" style = {styles.navLink}> Sign Up</Link>
-                <Link to = "/login" style = {styles.navLink}> Login </Link>
-            </div>
-        </nav>
-        {/* Main Content */}
-        <div style={styles.searchContainer}>
-            <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
-                Explore the Schools and their Sports!
-            </Typography>
-
-            {/* Search Bar */}
-            <TextField
-                label="Search Schools"
-                variant="outlined"
-                fullWidth
-                sx={{ width: "90%", maxWidth: "500px" }}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-            />
+      {/* Navbar */}
+      <nav style={styles.navbar}>
+        <h2 style={styles.logo}>Athletic Insider</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+          <Link to="/signup" style={styles.navLink}>
+            Sign Up
+          </Link>
+          <Link to="/login" style={styles.navLink}>
+            Login
+          </Link>
         </div>
-
-
-        {/* Schools List */}
-        <Stack spacing={2} sx={{ px: 2, pb: 4, textAlign: "center" }}>
-            {filteredSchools.length > 0 ? (
-                filteredSchools.map((school) => (
-                    <Card
-                        key={school.id}
-                        id={`school-${school.id}`}
-                        sx={{ width: "100%", cursor: "pointer", "&:hover": { backgroundColor: "#f5f5f5" } }}
-                        onClick={() => navigate(`/school/${school.id}`)}
-                    >
-                        <CardContent>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                                    {school.school_name}
-                                </Typography>
-                                <Typography variant="body2">
-                                    {school.available_sports?.length > 0
-                                        ? school.available_sports.join(" • ")
-                                        : "No sports listed"}
-                                </Typography>
-                            </Box>
-                        </CardContent>
-                    </Card>
-                ))
-            ) : (
-                <Typography variant="h6" sx={{ mt: 3 }}>No results found</Typography>
-            )}
-        </Stack>
+      </nav>
+      {/* Main Content */}
+      <div style={styles.searchContainer}>
+        <Typography variant="h5" sx={{ mb: 2, textAlign: "center" }}>
+          Explore the Schools and their Sports!
+        </Typography>
+        {/* Search Bar */}
+        <TextField
+          label="Search Schools"
+          variant="outlined"
+          fullWidth
+          sx={{ width: "90%", maxWidth: "500px" }}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Box sx={{ mt: 2, display: "flex", gap: 2, justifyContent: "center" }}>
+          <Button variant="contained" color="primary" onClick={openFilterDialog}>
+            Filters
+          </Button>
+          {filterApplied && (
+            <Button variant="outlined" color="secondary" onClick={clearFilters}>
+              Clear Filters
+            </Button>
+          )}
+        </Box>
+      </div>
+      {/* Schools List */}
+      <Stack spacing={2} sx={{ px: 2, pb: 4, textAlign: "center" }}>
+        {filteredBySearch.length > 0 ? (
+          filteredBySearch.map((school) => (
+            <Card
+              key={school.id}
+              id={`school-${school.id}`}
+              sx={{
+                width: "100%",
+                cursor: "pointer",
+                "&:hover": { backgroundColor: "#f5f5f5" },
+              }}
+              onClick={() => handleSchoolClick(school.id)}
+            >
+              <CardContent>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
+                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
+                    {school.school_name}
+                  </Typography>
+                  <Typography variant="body2">
+                    {school.available_sports?.length > 0
+                      ? school.available_sports.join(" • ")
+                      : "No sports listed"}
+                  </Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography variant="h6" sx={{ mt: 3 }}>
+            No results found
+          </Typography>
+        )}
+      </Stack>
+      {/* Filter Dialog */}
+      <Dialog open={filterDialogOpen} onClose={closeFilterDialog} fullWidth maxWidth="sm">
+        <DialogTitle>Apply Filters</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+            <TextField
+              label="Coach Name"
+              name="coach"
+              value={filters.coach}
+              onChange={handleFilterChange}
+              fullWidth
+            />
+            {[
+              { label: "Head Coach Rating", name: "head_coach" },
+              { label: "Assistant Coaches Rating", name: "assistant_coaches" },
+              { label: "Team Culture Rating", name: "team_culture" },
+              { label: "Campus Life Rating", name: "campus_life" },
+              { label: "Athletic Facilities Rating", name: "athletic_facilities" },
+              { label: "Athletic Department Rating", name: "athletic_department" },
+              { label: "Player Development Rating", name: "player_development" },
+              { label: "NIL Opportunity Rating", name: "nil_opportunity" },
+            ].map((field, index) => (
+              <FormControl key={index} fullWidth>
+                <InputLabel id={`${field.name}-label`}>{field.label}</InputLabel>
+                <Select
+                  labelId={`${field.name}-label`}
+                  label={field.label}
+                  name={field.name}
+                  value={filters[field.name]}
+                  onChange={handleFilterChange}
+                  native
+                >
+                  <option value=""> </option>
+                  {[...Array(10)].map((_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {i + 1}
+                    </option>
+                  ))}
+                </Select>
+              </FormControl>
+            ))}
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={clearFilters} color="secondary">
+            Clear
+          </Button>
+          <Button onClick={applyFilters} color="primary" variant="contained">
+            Apply
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
 
-
 const styles = {
-    navbar: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        backgroundColor: "#333",
-        padding: "1rem",
-        color: "#fff",
-    },
-    logo: {
-        margin: "0",
-    },
-    navLink: {
-        color: "#fff",
-        textDecoration: "none",
-        margin: "0 10px",
-    },
-    searchContainer: {
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: "10px",
-        marginTop: "20px",
-        marginBottom: "20px",
-    },
-    container: {
-        textAlign: "center",
-        marginTop: "50px",
-        marginBottom: "50px",
-    },
+  navbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#333",
+    padding: "1rem",
+    color: "#fff",
+  },
+  logo: {
+    margin: "0",
+  },
+  navLink: {
+    color: "#fff",
+    textDecoration: "none",
+    margin: "0 10px",
+  },
+  searchContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "10px",
+    marginTop: "20px",
+    marginBottom: "20px",
+  },
+  container: {
+    textAlign: "center",
+    marginTop: "50px",
+    marginBottom: "50px",
+  },
 };
 
 export default Home;
