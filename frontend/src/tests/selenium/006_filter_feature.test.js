@@ -48,17 +48,18 @@ describe("Filter Feature Test", function () {
       );
       await filtersButton.click();
 
-      // Wait for the filter dialog to open (check for "Apply Filters" title)
+      // Wait for the filter dialog to open (check for dialog title "Apply Filters")
       await driver.wait(
         until.elementLocated(By.xpath("//*[contains(text(),'Apply Filters')]")),
         10000
       );
 
-      // Find the Head Coach Rating dropdown (id "head_coach-select") and set its value to "8"
+      // Find the Head Coach Rating dropdown by its id (set to "head_coach-select")
       const headCoachSelect = await driver.findElement(By.id("head_coach-select"));
+      // Set its value to "8"
       await headCoachSelect.sendKeys("8");
 
-      // Click the Apply button (using exact match for the button text "Apply")
+      // Find and click the Apply button (using its exact text "Apply")
       const applyButton = await driver.findElement(
         By.xpath("//button[normalize-space()='Apply']")
       );
@@ -69,15 +70,14 @@ describe("Filter Feature Test", function () {
 
       // Check the new school count (if no schools, the page might display "No results found")
       let newCount = await getSchoolCount();
-      // Alternatively, check if a "No results found" element is visible
       let noResults;
       try {
         noResults = await driver.findElement(By.xpath("//*[contains(text(),'No results found')]"));
-      } catch (err) {
+      } catch {
         noResults = null;
       }
       console.log("New school count:", newCount);
-      // Expect either that "No results found" is displayed or that the count has changed
+      // Expect that either "No results found" is displayed or that the count has changed
       expect(noResults || newCount).to.not.equal(initialCount);
     });
   });
@@ -89,7 +89,7 @@ describe("Filter Feature Test", function () {
       // Navigate to the home page
       await driver.get("http://frontend:3000/");
 
-      // Wait for the home page to load (check heading)
+      // Wait for the home page content to load (e.g., heading text)
       await driver.wait(
         until.elementLocated(By.xpath("//*[contains(text(),'Explore the Schools and their Sports!')]")),
         10000
@@ -112,7 +112,7 @@ describe("Filter Feature Test", function () {
         10000
       );
 
-      // Find the Head Coach Rating dropdown and set its value to "9"
+      // Find the Head Coach Rating dropdown by its id and set its value to "9"
       const headCoachSelect = await driver.findElement(By.id("head_coach-select"));
       await headCoachSelect.sendKeys("9");
 
@@ -130,7 +130,7 @@ describe("Filter Feature Test", function () {
       let noResults;
       try {
         noResults = await driver.findElement(By.xpath("//*[contains(text(),'No results found')]"));
-      } catch (err) {
+      } catch {
         noResults = null;
       }
       console.log("New public school count:", newCount);
