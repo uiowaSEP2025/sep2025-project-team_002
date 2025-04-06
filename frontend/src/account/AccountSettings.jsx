@@ -71,14 +71,9 @@ function AccountSettings() {
   // For success/error messages
   const [message, setMessage] = useState("");
 
-
   // For profile picture updates (specifically)
   const { profilePic, updateProfilePic } = useUser();
-  console.log("Current profile picture:", profilePic); // Debug log
-
   const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
-
-
 
   // Main user form data (editable)
   const [formData, setFormData] = useState({
