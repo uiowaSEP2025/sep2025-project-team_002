@@ -179,10 +179,11 @@ function Footer() {
 
             <h2 style={{ marginBottom: '20px' }}>Report an Issue</h2>
             <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
-              <label style={{ display: 'block', marginBottom: '5px' }}>
+              <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>
                 Email *
               </label>
               <input
+                  id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -195,10 +196,11 @@ function Footer() {
                 required
               />
 
-              <label style={{ display: 'block', marginBottom: '5px' }}>
+              <label htmlFor="name" style={{ display: 'block', marginBottom: '5px' }}>
                 Name (optional)
               </label>
               <input
+                  id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -210,10 +212,11 @@ function Footer() {
                 }}
               />
 
-              <label style={{ display: 'block', marginBottom: '5px' }}>
+              <label htmlFor="description" style={{ display: 'block', marginBottom: '5px' }}>
                 Issue Description *
               </label>
               <textarea
+                  id="description"
                 style={{
                   width: '100%',
                   height: '80px',
