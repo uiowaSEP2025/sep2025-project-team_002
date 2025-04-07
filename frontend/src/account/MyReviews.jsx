@@ -47,13 +47,11 @@ export async function fetchUserReviews() {
 
 function MyReviews() {
   const navigate = useNavigate();
-
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const [menuOpen, setMenuOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -75,6 +73,28 @@ function MyReviews() {
     hidden: { x: "-100%" },
     visible: { x: 0 },
     exit: { x: "-100%" },
+  };
+
+    useEffect(() => {
+    const loadReviews = async () => {
+      try {
+        const data = await fetchUserReviews();
+        setReviews(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadReviews();
+  }, []);
+
+      // Smooth loading transition with fade-in effect
+  const loadingTransition = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.5 },
   };
 
   // Menu items (the same for desktop/mobile)
@@ -136,28 +156,6 @@ function MyReviews() {
         </ListItemButton>
       </ListItem>
     ));
-
-  useEffect(() => {
-    const loadReviews = async () => {
-      try {
-        const data = await fetchUserReviews();
-        setReviews(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadReviews();
-  }, []);
-
-  // Smooth loading transition with fade-in effect
-  const loadingTransition = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-    transition: { duration: 0.5 },
-  };
 
   if (loading) {
     return (
