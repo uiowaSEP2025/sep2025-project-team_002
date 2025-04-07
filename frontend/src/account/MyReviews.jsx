@@ -27,33 +27,20 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import RateReviewIcon from "@mui/icons-material/RateReview"
 import API_BASE_URL from "../utils/config";
 
-export async function fetchUserReviews() {
-  try {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    if (!response.ok) {
-      throw new Error("Failed to fetch user reviews");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching user reviews:", error);
-    return [];
-  }
-}
+console.log("MyReviews Component Mounted");
+
+
+
 
 function MyReviews() {
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const [menuOpen, setMenuOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [menuOpen, setMenuOpen] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [user, setUser] = useState({
     first_name: "",
@@ -64,40 +51,36 @@ function MyReviews() {
     profile_picture: "",
   });
 
-  const menuVariants = {
-    open: { width: 240, transition: { duration: 0.3 } },
-    closed: { width: 72, transition: { duration: 0.3 } },
-  };
+  //   // Fetch user info on mount
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) {
+  //     navigate("/login");
+  //     return;
+  //   }
+  //
+  //   const fetchUserReviews = async () => {
+  //     try {
+  //       const token = localStorage.getItem("token");
+  //       console.log("Fetching user reviews...");
+  //       const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch user reviews");
+  //       }
+  //       return await response.json();
+  //     } catch (error) {
+  //       console.error("Error fetching user reviews:", error);
+  //       return [];
+  //     }
+  //   };
+  //   fetchUserReviews();
+  // }, [navigate]);
 
-  const overlayVariants = {
-    hidden: { x: "-100%" },
-    visible: { x: 0 },
-    exit: { x: "-100%" },
-  };
-
-    useEffect(() => {
-    const loadReviews = async () => {
-      try {
-        const data = await fetchUserReviews();
-        setReviews(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadReviews();
-  }, []);
-
-      // Smooth loading transition with fade-in effect
-  const loadingTransition = {
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-    transition: { duration: 0.5 },
-  };
-
-  // Menu items (the same for desktop/mobile)
+    // Menu items (the same for desktop/mobile)
   const menuItems = [
     {
       text: "Return to Dashboard",
@@ -119,7 +102,7 @@ function MyReviews() {
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
           icon: < CheckCircleIcon fontSize="medium" />,
-                  id: "completed-pref-form"
+          id: "completed-pref-form"
         }]
       : []
     ),
@@ -157,21 +140,113 @@ function MyReviews() {
       </ListItem>
     ));
 
-  if (loading) {
-    return (
-      <Box sx={{ textAlign: "center", marginTop: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // Fetch user reviews asynchronously
+    const fetchUserReviews = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user reviews");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching user reviews:", error);
+      return [];
+    }
+    };
 
-  if (error) {
-    return (
-      <Typography color="error" variant="body1">
-        {error}
-      </Typography>
-    );
-  }
+    useEffect(() => {
+    const loadUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      try {
+        // Fetch user info
+        const userResponse = await fetch(`${API_BASE_URL}/users/user/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const userData = await userResponse.json();
+        setUser(userData);  // Set user info state
+
+        // Fetch reviews after user info is loaded
+        const reviewsData = await fetchUserReviews();
+        setReviews(reviewsData);  // Set reviews state
+      } catch (error) {
+        setError("Failed to load data");
+        console.error(error);
+      } finally {
+        setLoading(false);  // Hide loading spinner after data is loaded
+      }
+    };
+    loadUserData();
+  }, [navigate]);
+
+  // Animation variants
+  const menuVariants = {
+    open: { width: 240, transition: { duration: 0.3 } },
+    closed: { width: 72, transition: { duration: 0.3 } },
+  };
+
+  const overlayVariants = {
+    hidden: { x: "-100%" },
+    visible: { x: 0 },
+    exit: { x: "-100%" },
+  };
+
+  useEffect(() => {
+    console.log("Fetching reviews...");
+    const loadReviews = async () => {
+      try {
+        const data = await fetchUserReviews();
+        console.log("Data received in loadReviews:", data);  // Log the data received from fetchUserReviews
+        setReviews(data); // Update the state with fetched reviews
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+        // console.log("Reviews loaded:", reviews); // Log when reviews are loaded
+      }
+    };
+    loadReviews();
+  }, []);
+
+  // Smooth loading transition with fade-in effect
+  const loadingTransition = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.5 },
+  };
+
+
+
+
+
+    // Debugging: Log the current loading and reviews states
+  console.log("Loading State:", loading);
+  console.log("Reviews:", reviews);
+
+  // if (loading) {
+  //   return (
+  //     <Box sx={{ textAlign: "center", marginTop: 4 }}>
+  //       <CircularProgress />
+  //     </Box>
+  //   );
+  // }
+  //
+  // if (error) {
+  //   return (
+  //     <Typography color="error" variant="body1">
+  //       {error}
+  //     </Typography>
+  //   );
+  // }
 
   return (
      <motion.div {...loadingTransition}>
