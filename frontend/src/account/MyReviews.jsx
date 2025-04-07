@@ -71,24 +71,51 @@ function MyReviews() {
         My Reviews
       </Typography>
        {reviews.map((review) => (
-        <Card key={review.id} sx={{ mb: 2 }}>
+        <Card key={review.review_id} sx={{ mb: 2 }}>
           <CardContent>
             {/* If your serializer has "school_name": */}
             <Typography variant="h6">
               {review.school_name ?? "Untitled School"}
             </Typography>
 
-            {/* The main review text/content */}
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              {review.content ?? "No review text"}
+            {/* Sport */}
+            <Typography variant="subtitle1" sx={{ color: "gray" }}>
+              Sport: {review.sport || "N/A"}
             </Typography>
 
-            {/* Example: rating (if your Review model has it) */}
-            {typeof review.rating === "number" && (
-              <Typography variant="subtitle2" sx={{ mt: 1 }}>
-                Rating: {review.rating}/5
-              </Typography>
-            )}
+            {/* The main review text/content */}
+            <Typography variant="body1" sx={{ mt: 1 }}>
+              {review.review_message ?? "No review text"}
+            </Typography>
+
+            {/* Example: Head Coach Name + rating */}
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Head Coach: {review.head_coach_name || "Unknown"}
+              {" • "}
+              Rating: {review.head_coach}/5
+            </Typography>
+
+            <Typography variant="body2">
+              Assistant Coaches: {review.assistant_coaches}/5
+            </Typography>
+            <Typography variant="body2">
+              Team Culture: {review.team_culture}/5
+            </Typography>
+            <Typography variant="body2">
+              Campus Life: {review.campus_life}/5
+            </Typography>
+            <Typography variant="body2">
+              Athletic Facilities: {review.athletic_facilities}/5
+            </Typography>
+            <Typography variant="body2">
+              Athletic Department: {review.athletic_department}/5
+            </Typography>
+            <Typography variant="body2">
+              Player Development: {review.player_development}/5
+            </Typography>
+            <Typography variant="body2">
+              NIL Opportunity: {review.nil_opportunity}/5
+            </Typography>
 
             {/* Example: creation date (if your Review model has created_at) */}
             {review.created_at && (
