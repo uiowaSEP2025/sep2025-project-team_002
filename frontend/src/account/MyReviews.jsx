@@ -77,7 +77,7 @@ function MyReviews() {
     exit: { x: "-100%" },
   };
 
-  // Menu items
+  // Menu items (the same for desktop/mobile)
   const menuItems = [
     {
       text: "Return to Dashboard",
@@ -94,11 +94,12 @@ function MyReviews() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-           ...(user.transfer_type && user.transfer_type !== "graduate"
+        ...(user.transfer_type && user.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
-          icon: <CheckCircleIcon fontSize="medium" />
+          icon: < CheckCircleIcon fontSize="medium" />,
+                  id: "completed-pref-form"
         }]
       : []
     ),
