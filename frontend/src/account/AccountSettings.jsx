@@ -331,220 +331,218 @@ function AccountSettings() {
   ];
 
   return (
-    <UserProvider>
-      <SidebarWrapper menuItems={menuItems} title="My Account">
-        {/* MAIN CONTENT: Account Settings Form */}
-        <Grid
-          item
-          xs={12}
-          md={isMobile ? 12 : 9}
-          sx={{
-            p: 4,
-            mt: isMobile ? 6 : 0
-          }}
+    <SidebarWrapper menuItems={menuItems} title="My Account">
+      {/* MAIN CONTENT: Account Settings Form */}
+      <Grid
+        item
+        xs={12}
+        md={isMobile ? 12 : 9}
+        sx={{
+          p: 4,
+          mt: isMobile ? 6 : 0
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}
         >
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}
-          >
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, fontSize: "2rem" }}>
-              Account Settings
+          <Typography variant="h4" gutterBottom sx={{ fontWeight: 700, fontSize: "2rem" }}>
+            Account Settings
+          </Typography>
+
+          {message && (
+            <Typography
+              variant="body1"
+              color="error"
+              sx={{ mb: 2, fontSize: "1.2rem" }}
+            >
+              {message}
             </Typography>
-
-            {message && (
-              <Typography
-                variant="body1"
-                color="error"
-                sx={{ mb: 2, fontSize: "1.2rem" }}
-              >
-                {message}
-              </Typography>
-            )}
-            <div style={{ textAlign: "center" }}>
-            <h2>Choose Your Profile Picture</h2>
-            {profilePic && profilePic.trim() ? (
-              <img
-                src={profilePic}
-                alt="Selected Profile"
-                onError={(e) => {
-                  e.target.onerror = null; // Prevent infinite loop
-                  e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
-                }}
-                style={{
-                  width: "150px",
-                  height: "150px",
-                  borderRadius: "50%",
-                  border: "3px solid #007bff",
-                  objectFit: "cover",
-                  marginBottom: "10px"
-                }}
-              />
-            ) : (
-              <AccountCircleIcon
-                sx={{
-                  fontSize: "150px",
-                  color: "gray",
-                  borderRadius: "50%",
-                  backgroundColor: "#f0f0f0",
-                  padding: "10px"
-                }}
-              />
-            )}
-            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-              {profilePictures.map((pic, index) => (
-                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
-                  <img
-                    src={`/assets/profile-pictures/${pic}`}
-                    alt={`Profile ${index + 1}`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                      cursor: "pointer",
-                      border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
-                    }}
-                  />
-                </IconButton>
-              ))}
-            </div>
+          )}
+          <div style={{ textAlign: "center" }}>
+          <h2>Choose Your Profile Picture</h2>
+          {profilePic && profilePic.trim() ? (
+            <img
+              src={profilePic}
+              alt="Selected Profile"
+              onError={(e) => {
+                e.target.onerror = null; // Prevent infinite loop
+                e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
+              }}
+              style={{
+                width: "150px",
+                height: "150px",
+                borderRadius: "50%",
+                border: "3px solid #007bff",
+                objectFit: "cover",
+                marginBottom: "10px"
+              }}
+            />
+          ) : (
+            <AccountCircleIcon
+              sx={{
+                fontSize: "150px",
+                color: "gray",
+                borderRadius: "50%",
+                backgroundColor: "#f0f0f0",
+                padding: "10px"
+              }}
+            />
+          )}
+          <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+            {profilePictures.map((pic, index) => (
+              <IconButton key={index} onClick={() => updateProfilePic(pic)}>
+                <img
+                  src={`/assets/profile-pictures/${pic}`}
+                  alt={`Profile ${index + 1}`}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
+                  }}
+                />
+              </IconButton>
+            ))}
           </div>
-            <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
-              <TextField
-                fullWidth
-                margin="normal"
-                label="First Name"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                InputProps={{ sx: { borderRadius: "40px" } }}
-                required
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Last Name"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                InputProps={{ sx: { borderRadius: "40px" } }}
-                required
-              />
-              {/* Real-time email validation */}
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                InputProps={{ sx: { borderRadius: "40px" } }}
-                required
-                type="email"
-                error={emailIsInvalid}
-                helperText={emailIsInvalid ? "Invalid email address" : ""}
-              />
-
-              {/* Transfer Type (radio) */}
-              {/*<FormControl component="fieldset" sx={{ mt: 2 }}>*/}
-              {/*  <FormLabel component="legend">Transfer Type</FormLabel>*/}
-              {/*  <RadioGroup*/}
-              {/*    row*/}
-              {/*    name="transfer_type"*/}
-              {/*    value={formData.transfer_type}*/}
-              {/*    onChange={handleChange}*/}
-              {/*  >*/}
-              {/*    <FormControlLabel*/}
-              {/*      value="transfer_in"*/}
-              {/*      control={<Radio />}*/}
-              {/*      label="Transfer In"*/}
-              {/*    />*/}
-              {/*    <FormControlLabel*/}
-              {/*      value="transfer_out"*/}
-              {/*      control={<Radio />}*/}
-              {/*      label="Transfer Out"*/}
-              {/*    />*/}
-              {/*  </RadioGroup>*/}
-              {/*</FormControl>*/}
-
-              {/* SAVE CHANGES BUTTON */}
-              <Button
-                type="submit"
-                variant="contained"
-                fullWidth
-                sx={{ mt: 3, borderRadius: "40px" }}
-                component={motion.button}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Save Changes
-              </Button>
-            </Box>
-
-            {/* CHANGE PASSWORD BUTTON */}
-            <Button
-              variant="outlined"
+        </div>
+          <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
+            <TextField
               fullWidth
-              sx={{ mt: 2, borderRadius: "40px" }}
+              margin="normal"
+              label="First Name"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleChange}
+              InputProps={{ sx: { borderRadius: "40px" } }}
+              required
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Last Name"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleChange}
+              InputProps={{ sx: { borderRadius: "40px" } }}
+              required
+            />
+            {/* Real-time email validation */}
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              InputProps={{ sx: { borderRadius: "40px" } }}
+              required
+              type="email"
+              error={emailIsInvalid}
+              helperText={emailIsInvalid ? "Invalid email address" : ""}
+            />
+
+            {/* Transfer Type (radio) */}
+            {/*<FormControl component="fieldset" sx={{ mt: 2 }}>*/}
+            {/*  <FormLabel component="legend">Transfer Type</FormLabel>*/}
+            {/*  <RadioGroup*/}
+            {/*    row*/}
+            {/*    name="transfer_type"*/}
+            {/*    value={formData.transfer_type}*/}
+            {/*    onChange={handleChange}*/}
+            {/*  >*/}
+            {/*    <FormControlLabel*/}
+            {/*      value="transfer_in"*/}
+            {/*      control={<Radio />}*/}
+            {/*      label="Transfer In"*/}
+            {/*    />*/}
+            {/*    <FormControlLabel*/}
+            {/*      value="transfer_out"*/}
+            {/*      control={<Radio />}*/}
+            {/*      label="Transfer Out"*/}
+            {/*    />*/}
+            {/*  </RadioGroup>*/}
+            {/*</FormControl>*/}
+
+            {/* SAVE CHANGES BUTTON */}
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{ mt: 3, borderRadius: "40px" }}
               component={motion.button}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleOpenPasswordDialog}
             >
-              Change Password
+              Save Changes
             </Button>
-          </motion.div>
-        </Grid>
+          </Box>
 
-        {/* DIALOG FOR CHANGING PASSWORD */}
-        <Dialog
-          open={passwordDialogOpen}
-          onClose={handleClosePasswordDialog}
-          fullWidth
-          maxWidth="sm"
-          PaperProps={{
-            sx: {
-              borderRadius: "16px",
-              p: 2,
-              backgroundColor: "#fefefe"
-            }
-          }}
-        >
-          <DialogTitle
-            sx={{
-              textAlign: "center",
-              fontWeight: 600,
-              fontSize: "1.5rem"
-            }}
+          {/* CHANGE PASSWORD BUTTON */}
+          <Button
+            variant="outlined"
+            fullWidth
+            sx={{ mt: 2, borderRadius: "40px" }}
+            component={motion.button}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleOpenPasswordDialog}
           >
             Change Password
-          </DialogTitle>
+          </Button>
+        </motion.div>
+      </Grid>
 
-          <Divider variant="middle" />
+      {/* DIALOG FOR CHANGING PASSWORD */}
+      <Dialog
+        open={passwordDialogOpen}
+        onClose={handleClosePasswordDialog}
+        fullWidth
+        maxWidth="sm"
+        PaperProps={{
+          sx: {
+            borderRadius: "16px",
+            p: 2,
+            backgroundColor: "#fefefe"
+          }
+        }}
+      >
+        <DialogTitle
+          sx={{
+            textAlign: "center",
+            fontWeight: 600,
+            fontSize: "1.5rem"
+          }}
+        >
+          Change Password
+        </DialogTitle>
 
-          <DialogContent>
-            {/* Error message if any */}
-            {passwordError && (
-              <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
-                {passwordError}
-              </Typography>
-            )}
-            <PasswordForm onSubmit={handleChangePassword} includeCurrentPassword={true} />
-          </DialogContent>
-          <DialogActions sx={{ justifyContent: "center", mb: 1 }}>
-            <Button
-              variant="outlined"
-              sx={{ borderRadius: "40px", width: "140px" }}
-              onClick={handleClosePasswordDialog}
-            >
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </SidebarWrapper>
-    </UserProvider>
+        <Divider variant="middle" />
+
+        <DialogContent>
+          {/* Error message if any */}
+          {passwordError && (
+            <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+              {passwordError}
+            </Typography>
+          )}
+          <PasswordForm onSubmit={handleChangePassword} includeCurrentPassword={true} />
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: "center", mb: 1 }}>
+          <Button
+            variant="outlined"
+            sx={{ borderRadius: "40px", width: "140px" }}
+            onClick={handleClosePasswordDialog}
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </SidebarWrapper>
   );
 }
 

@@ -135,6 +135,35 @@ function Account() {
     }
   ];
 
+  const handleSendVerification = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/send-school-verification/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message || "Verification email sent!");
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to send verification email.");
+      }
+    } catch (error) {
+      console.error("Error sending verification:", error);
+      alert("Something went wrong. Please try again later.");
+    }
+  };
+
   return (
     <SidebarWrapper menuItems={menuItems} title="My Account">
       {/* Main content area */}
