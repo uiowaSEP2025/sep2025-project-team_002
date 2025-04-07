@@ -6,4 +6,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reviews
         fields = "__all__"  # Includes all fields
-        extra_kwargs = {"review_id": {"read_only": True}, "user": {"read_only": True}}
+        extra_kwargs = {
+            "review_id": {"read_only": True},
+            "user": {"read_only": True},
+            # "school": {"read_only": True},
+        }

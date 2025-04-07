@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, CircularProgress, Card, CardContent } from "@mui/material";
-
-// src/reviews/api.js (an example utility file)
+import {
+  Box,
+  Typography,
+  CircularProgress,
+  Card,
+  CardContent
+} from "@mui/material";
 import API_BASE_URL from "../utils/config";
 
 export async function fetchUserReviews() {
@@ -66,14 +70,32 @@ function MyReviews() {
       <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
         My Reviews
       </Typography>
-      {reviews.map((review) => (
+       {reviews.map((review) => (
         <Card key={review.id} sx={{ mb: 2 }}>
           <CardContent>
-            <Typography variant="h6">{review.school_name ?? "Untitled School"}</Typography>
-            <Typography variant="body1" sx={{ mt: 1 }}>
-              {review.content}
+            {/* If your serializer has "school_name": */}
+            <Typography variant="h6">
+              {review.school_name ?? "Untitled School"}
             </Typography>
-            {/* any other fields, rating, date, etc. */}
+
+            {/* The main review text/content */}
+            <Typography variant="body1" sx={{ mt: 1 }}>
+              {review.content ?? "No review text"}
+            </Typography>
+
+            {/* Example: rating (if your Review model has it) */}
+            {typeof review.rating === "number" && (
+              <Typography variant="subtitle2" sx={{ mt: 1 }}>
+                Rating: {review.rating}/5
+              </Typography>
+            )}
+
+            {/* Example: creation date (if your Review model has created_at) */}
+            {review.created_at && (
+              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                {new Date(review.created_at).toLocaleDateString()}
+              </Typography>
+            )}
           </CardContent>
         </Card>
       ))}
