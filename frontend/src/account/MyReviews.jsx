@@ -151,6 +151,14 @@ function MyReviews() {
     loadReviews();
   }, []);
 
+  // Smooth loading transition with fade-in effect
+  const loadingTransition = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.5 },
+  };
+
   if (loading) {
     return (
       <Box sx={{ textAlign: "center", marginTop: 4 }}>
@@ -168,34 +176,35 @@ function MyReviews() {
   }
 
   return (
-    <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-      {/* Desktop side menu */}
-      {!isMobile && (
-        <Grid item xs={12} md={3} sx={{ p: 0 }}>
-          <motion.div
-            variants={menuVariants}
-            animate={menuOpen ? "open" : "closed"}
-            initial="open"
-            style={{
-              backgroundColor: "#1a1a1a",
-              color: "white",
-              height: "100vh",
-              padding: 16,
-              boxSizing: "border-box",
-              overflow: "hidden",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: menuOpen ? "space-between" : "center", mb: 2 }}>
-              {menuOpen && <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: 600 }}>My Account</Typography>}
-              <IconButton onClick={() => setMenuOpen(!menuOpen)} sx={{ color: "white" }}>
-                <ArrowBackIcon sx={{ transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }} />
-              </IconButton>
-            </Box>
-            <Divider sx={{ bgcolor: "grey.600", mb: 2 }} />
-            {renderMenuList()}
-          </motion.div>
-        </Grid>
-      )}
+     <motion.div {...loadingTransition}>
+      <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+        {/* Desktop side menu */}
+        {!isMobile && (
+          <Grid item xs={12} md={3} sx={{ p: 0 }}>
+            <motion.div
+              variants={menuVariants}
+              animate={menuOpen ? "open" : "closed"}
+              initial="open"
+              style={{
+                backgroundColor: "#1a1a1a",
+                color: "white",
+                height: "100vh",
+                padding: 16,
+                boxSizing: "border-box",
+                overflow: "hidden",
+              }}
+            >
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: menuOpen ? "space-between" : "center", mb: 2 }}>
+                {menuOpen && <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: 600 }}>My Account</Typography>}
+                <IconButton onClick={() => setMenuOpen(!menuOpen)} sx={{ color: "white" }}>
+                  <ArrowBackIcon sx={{ transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.3s" }} />
+                </IconButton>
+              </Box>
+              <Divider sx={{ bgcolor: "grey.600", mb: 2 }} />
+              {renderMenuList()}
+            </motion.div>
+          </Grid>
+        )}
 
       {/* Mobile hamburger */}
       {isMobile && (
@@ -305,6 +314,7 @@ function MyReviews() {
         </motion.div>
       </Grid>
     </Grid>
+   </motion.div>
   );
 }
 
