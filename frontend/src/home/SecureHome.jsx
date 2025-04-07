@@ -11,8 +11,14 @@ import {
   Card,
   CardContent,
   Stack,
-  Grid as MuiGrid,
-  TextField
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Select,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -24,7 +30,24 @@ function SecureHome() {
   const open = Boolean(anchorEl);
   const [schools, setSchools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-    // User info state
+
+  // Filter state
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [filters, setFilters] = useState({
+    coach: "",
+    head_coach: "",
+    assistant_coaches: "",
+    team_culture: "",
+    campus_life: "",
+    athletic_facilities: "",
+    athletic_department: "",
+    player_development: "",
+    nil_opportunity: "",
+  });
+  const [filteredSchools, setFilteredSchools] = useState([]);
+  const [filterApplied, setFilterApplied] = useState(false);
+
+  // User info state
   const [user, setUser] = useState({
     first_name: "",
     last_name: "",
@@ -34,169 +57,178 @@ function SecureHome() {
   });
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    navigate("/login");
-    return;
-  }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-  // Fetch User Info
-  const fetchUserInfo = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/user/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          email: data.email || "",
-          transfer_type: data.transfer_type || "",
-          profile_picture: data.profile_picture || "",
-
+    // Fetch User Info
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/users/user/`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
-      } else {
-        const errorData = await response.json();
-        // setMessage(errorData.detail || errorData.error || "Unknown Error");
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser({
+            first_name: data.first_name || "",
+            last_name: data.last_name || "",
+            email: data.email || "",
+            transfer_type: data.transfer_type || "",
+            profile_picture: data.profile_picture || "",
+          });
+        }
+      } catch (error) {
+        console.error("Account page error:", error);
       }
-    } catch (error) {
-      console.error("Account page error:", error);
-      // setMessage("Network error: " + error.message);
-    }
-  };
+    };
 
-  // Fetch Schools
-  const fetchSchools = async () => {
-    try {
-      console.log("Fetching schools from:", `${API_BASE_URL}/api/schools/`);
-      const response = await fetch(`${API_BASE_URL}/api/schools/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
+    // Fetch Schools
+    const fetchSchools = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/schools/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setSchools(data);
+      } catch (error) {
+        console.error("Error fetching schools:", error);
+        setSchools([]);
       }
+    };
 
-      const data = await response.json();
-      console.log("Schools data:", data);
-      setSchools(data);
-    } catch (error) {
-      console.error("Error fetching schools:", error);
-      setSchools([]);
-    }
-  };
+    fetchUserInfo();
+    fetchSchools();
+  }, [navigate]);
 
-  // Call both functions in parallel
-  fetchUserInfo();
-  fetchSchools();
-}, [navigate]);
-
-  // Handle opening the dropdown menu
+  // Account menu handlers
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
-  // Handle closing the dropdown menu
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
-  // Logout handler: clear token and redirect to login page
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
   };
-
-    // Navigate to review form
-    const handleGoToReviewForm = () => {
-      navigate("/review-form");
-    };
-
-    // Navigate to review form
-    const handleGoToPreferenceForm = () => {
-      navigate("/preference-form");
-    };
-
-  // Account info handler: redirect to account info page (update route as needed)
   const handleAccountInfo = () => {
     navigate("/account");
   };
 
+  // Navigation handlers for review & preference forms
+  const handleGoToReviewForm = () => {
+    navigate("/review-form");
+  };
+  const handleGoToPreferenceForm = () => {
+    navigate("/preference-form");
+  };
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
   };
 
-  // useEffect(() => {
-  //   // Fetch schools data when component mounts
-  //   fetchSchools();
-  // }, []);
-  //
-  // const fetchSchools = async () => {
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     console.log('Fetching schools from:', `${API_BASE_URL}/api/schools/`);
-  //
-  //     const response = await fetch(`${API_BASE_URL}/api/schools/`, {
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`,
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //       },
-  //     });
-  //
-  //     console.log('Response status:', response.status);
-  //
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-  //
-  //     const data = await response.json();
-  //     console.log('Schools data:', data);
-  //     setSchools(data);
-  //   } catch (error) {
-  //     console.error('Error fetching schools:', error);
-  //     console.error('Error details:', error.message);
-  //     setSchools([]);
-  //   }
-  // };
+  // Filter dialog handlers
+  const openFilterDialog = () => {
+    setFilterDialogOpen(true);
+  };
+  const closeFilterDialog = () => {
+    setFilterDialogOpen(false);
+  };
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters({ ...filters, [name]: value });
+  };
+  const applyFilters = async () => {
+    const token = localStorage.getItem("token");
+    const queryParams = new URLSearchParams();
+    if (filters.coach) queryParams.append("coach", filters.coach);
+    // Append rating filters if provided
+    [
+      "head_coach",
+      "assistant_coaches",
+      "team_culture",
+      "campus_life",
+      "athletic_facilities",
+      "athletic_department",
+      "player_development",
+      "nil_opportunity",
+    ].forEach((field) => {
+      if (filters[field]) {
+        queryParams.append(field, filters[field]);
+      }
+    });
 
-  const filteredSchools = schools.filter((school) => 
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/filter/?${queryParams.toString()}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setFilteredSchools(data);
+        setFilterApplied(true);
+      } else {
+        console.error("Error applying filters");
+      }
+    } catch (error) {
+      console.error("Error applying filters:", error);
+    }
+    closeFilterDialog();
+  };
+  const clearFilters = () => {
+    setFilters({
+      coach: "",
+      head_coach: "",
+      assistant_coaches: "",
+      team_culture: "",
+      campus_life: "",
+      athletic_facilities: "",
+      athletic_department: "",
+      player_development: "",
+      nil_opportunity: "",
+    });
+    setFilterApplied(false);
+    setFilteredSchools([]);
+    closeFilterDialog();
+  };
+
+  // Determine which schools to display: filtered if applied, else all
+  const schoolsToDisplay = filterApplied ? filteredSchools : schools;
+  // Apply search filter on top
+  const filteredBySearch = schoolsToDisplay.filter((school) =>
     school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <Box id="secure-home" sx={{ position: "relative", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-      {/* Top Right Circular Icon */}
+      {/* Top Right Account Icon */}
       <Box sx={{ position: "fixed", top: 16, right: 16, zIndex: 1000 }}>
-        <IconButton
-            id={"account-icon"}
-          onClick={handleMenuOpen}
-          size="large"
-          sx={{ bgcolor: "#fff", borderRadius: "50%" }}
-        >
+        <IconButton id={"account-icon"} onClick={handleMenuOpen} size="large" sx={{ bgcolor: "#fff", borderRadius: "50%" }}>
           {user.profile_picture ? (
             <img
               src={`/assets/profile-pictures/${user.profile_picture}`}
               alt="Profile"
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: "50%",
-                objectFit: "cover"
-              }}
+              style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover" }}
             />
           ) : (
-          <AccountCircleIcon fontSize="large" />
-              )}
+            <AccountCircleIcon fontSize="large" />
+          )}
         </IconButton>
         <Menu
           anchorEl={anchorEl}
@@ -205,27 +237,19 @@ function SecureHome() {
           anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           transformOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <MenuItem id="account-info" onClick={() => { handleAccountInfo(); handleMenuClose(); }}>
-            Account Info
-          </MenuItem>
-          <MenuItem onClick={() => { handleLogout(); handleMenuClose(); }}>
-            Logout
-          </MenuItem>
+          <MenuItem id="account-info" onClick={() => { handleAccountInfo(); handleMenuClose(); }}>Account Info</MenuItem>
+          <MenuItem onClick={() => { handleLogout(); handleMenuClose(); }}>Logout</MenuItem>
         </Menu>
       </Box>
 
       <Grid container justifyContent="center" sx={{ pt: 4, pb: 4 }}>
         <Grid item xs={12} md={10}>
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, textAlign: "center" }}>
               Schools and Sports
             </Typography>
 
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 4, gap: 2 }}>
               <TextField
                 label="Search Schools"
                 variant="outlined"
@@ -234,60 +258,50 @@ function SecureHome() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
+              <Button variant="contained" color="primary" onClick={openFilterDialog}>
+                Filters
+              </Button>
+              {filterApplied && (
+                <Button variant="outlined" color="secondary" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+              )}
             </Box>
 
             {user.transfer_type !== "high_school" && (
-            <Box sx={{ textAlign: "center", mb: 4 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleGoToReviewForm}
-              >
-                Submit a Review
-              </Button>
-            </Box> )}
+              <Box sx={{ textAlign: "center", mb: 4 }}>
+                <Button variant="contained" color="primary" onClick={handleGoToReviewForm}>
+                  Submit a Review
+                </Button>
+              </Box>
+            )}
 
             {user.transfer_type !== "graduate" && (
-            <Box sx={{ textAlign: "center", mb: 4 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleGoToPreferenceForm}
-              >
-                Submit your Preferences
-              </Button>
-            </Box> )}
+              <Box sx={{ textAlign: "center", mb: 4 }}>
+                <Button variant="contained" color="primary" onClick={handleGoToPreferenceForm}>
+                  Submit your Preferences
+                </Button>
+              </Box>
+            )}
 
             <Stack spacing={2} sx={{ px: 2 }}>
-              {filteredSchools.length > 0 ? (
-                filteredSchools.map((school) => (
-                  <Card 
+              {filteredBySearch.length > 0 ? (
+                filteredBySearch.map((school) => (
+                  <Card
                     key={school.id}
                     id={`school-${school.id}`}
-                    sx={{ 
-                      width: '100%',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        backgroundColor: '#f5f5f5'
-                      }
-                    }}
+                    sx={{ width: "100%", cursor: "pointer", "&:hover": { backgroundColor: "#f5f5f5" } }}
                     onClick={() => handleSchoolClick(school.id)}
                   >
                     <CardContent>
-                      <Box sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        gap: 2,
-                        flexWrap: 'wrap'
-                      }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
                         <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
                           {school.school_name}
                         </Typography>
                         <Typography variant="body2">
-                          {school.available_sports && school.available_sports.length > 0 
-                            ? school.available_sports.join(' • ')
-                            : 'No sports listed'
-                          }
+                          {school.available_sports && school.available_sports.length > 0
+                            ? school.available_sports.join(" • ")
+                            : "No sports listed"}
                         </Typography>
                       </Box>
                     </CardContent>
@@ -302,6 +316,198 @@ function SecureHome() {
           </motion.div>
         </Grid>
       </Grid>
+
+      {/* Filter Dialog */}
+      <Dialog open={filterDialogOpen} onClose={closeFilterDialog} fullWidth maxWidth="sm">
+        <DialogTitle>Apply Filters</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+            <TextField
+              label="Coach Name"
+              name="coach"
+              value={filters.coach}
+              onChange={handleFilterChange}
+              fullWidth
+            />
+            <FormControl fullWidth>
+              <InputLabel htmlFor="head_coach-select" id="head_coach-label">
+                Head Coach Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="head_coach-label"
+                id="head_coach-select"
+                label="Head Coach Rating"
+                name="head_coach"
+                value={filters.head_coach}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="assistant_coaches-select" id="assistant_coaches-label">
+                Assistant Coaches Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="assistant_coaches-label"
+                id="assistant_coaches-select"
+                label="Assistant Coaches Rating"
+                name="assistant_coaches"
+                value={filters.assistant_coaches}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="team_culture-select" id="team_culture-label">
+                Team Culture Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="team_culture-label"
+                id="team_culture-select"
+                label="Team Culture Rating"
+                name="team_culture"
+                value={filters.team_culture}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="campus_life-select" id="campus_life-label">
+                Campus Life Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="campus_life-label"
+                id="campus_life-select"
+                label="Campus Life Rating"
+                name="campus_life"
+                value={filters.campus_life}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="athletic_facilities-select" id="athletic_facilities-label">
+                Athletic Facilities Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="athletic_facilities-label"
+                id="athletic_facilities-select"
+                label="Athletic Facilities Rating"
+                name="athletic_facilities"
+                value={filters.athletic_facilities}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="athletic_department-select" id="athletic_department-label">
+                Athletic Department Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="athletic_department-label"
+                id="athletic_department-select"
+                label="Athletic Department Rating"
+                name="athletic_department"
+                value={filters.athletic_department}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="player_development-select" id="player_development-label">
+                Player Development Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="player_development-label"
+                id="player_development-select"
+                label="Player Development Rating"
+                name="player_development"
+                value={filters.player_development}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel htmlFor="nil_opportunity-select" id="nil_opportunity-label">
+                NIL Opportunity Rating
+              </InputLabel>
+              <Select
+                native
+                labelId="nil_opportunity-label"
+                id="nil_opportunity-select"
+                label="NIL Opportunity Rating"
+                name="nil_opportunity"
+                value={filters.nil_opportunity}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                {[...Array(10)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={clearFilters} color="secondary">
+            Clear
+          </Button>
+          <Button onClick={applyFilters} color="primary" variant="contained">
+            Apply
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
