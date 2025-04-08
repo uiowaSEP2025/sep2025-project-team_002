@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -55,6 +55,18 @@ function SecureHome() {
     transfer_type: "",
     profile_picture: "",
   });
+
+const displayedSchools = useMemo(() => {
+  const baseList = filterApplied ? filteredSchools : schools;
+
+  const searched = baseList.filter((school) =>
+    school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return searched.sort((a, b) =>
+    a.school_name.localeCompare(b.school_name)
+  );
+}, [schools, filteredSchools, filterApplied, searchQuery]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -285,8 +297,8 @@ function SecureHome() {
             )}
 
             <Stack spacing={2} sx={{ px: 2 }}>
-              {filteredBySearch.length > 0 ? (
-                filteredBySearch.map((school) => (
+              {displayedSchools.length > 0 ? (
+                displayedSchools.map((school) => (
                   <Card
                     key={school.id}
                     id={`school-${school.id}`}

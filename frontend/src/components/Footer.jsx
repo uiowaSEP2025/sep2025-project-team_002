@@ -105,7 +105,7 @@ function Footer() {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: '10px 20px',
+          padding: '5px',
           zIndex: 9999,
           fontSize: '16px'
         }}

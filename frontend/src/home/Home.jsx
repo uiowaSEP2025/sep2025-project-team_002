@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Stack,
@@ -47,6 +47,18 @@ function Home() {
       fetchSchools();
     }
   }, [navigate]);
+
+const displayedSchools = useMemo(() => {
+  const baseList = filterApplied ? filteredSchools : schools;
+
+  const searched = baseList.filter((school) =>
+    school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return searched.sort((a, b) =>
+    a.school_name.localeCompare(b.school_name)
+  );
+}, [schools, filteredSchools, filterApplied, searchQuery]);
 
   const fetchSchools = async () => {
     try {
@@ -177,8 +189,8 @@ function Home() {
       </div>
       {/* Schools List */}
       <Stack spacing={2} sx={{ px: 2, pb: 4, textAlign: "center" }}>
-        {filteredBySearch.length > 0 ? (
-          filteredBySearch.map((school) => (
+        {displayedSchools.length > 0 ? (
+          displayedSchools.map((school) => (
             <Card
               key={school.id}
               id={`school-${school.id}`}
