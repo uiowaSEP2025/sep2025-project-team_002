@@ -1,24 +1,28 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import RequireAuth from "../../RequireAuth";
+import { TestRequireAuth } from "../../RequireAuth";
 
 // Dummy protected content
 function ProtectedPage() {
   return <div>Protected Content</div>;
 }
 
+
+
 // Utility to render with routing
-function renderWithRoute(initialPath = "/secure") {
+function renderWithRoute(initialPath = "/secure", isLoggedIn = true) {
+  const mockFetchUser = vi.fn();
+
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route
           path="/secure"
           element={
-            <RequireAuth>
+            <TestRequireAuth isLoggedIn={isLoggedIn} fetchUser={mockFetchUser}>
               <ProtectedPage />
-            </RequireAuth>
+            </TestRequireAuth>
           }
         />
         <Route path="/login" element={<div>Login Page</div>} />
@@ -26,6 +30,8 @@ function renderWithRoute(initialPath = "/secure") {
     </MemoryRouter>
   );
 }
+
+
 
 describe("RequireAuth", () => {
   beforeEach(() => {
@@ -39,15 +45,12 @@ describe("RequireAuth", () => {
 
   it("renders children when token is present", () => {
     localStorage.setItem("token", "valid_token");
-
-    renderWithRoute();
-
+    renderWithRoute("/secure", true);
     expect(screen.getByText(/protected content/i)).toBeInTheDocument();
   });
 
   it("redirects to login when token is missing", async() => {
-    renderWithRoute();
-
+    renderWithRoute("/secure", false);
     expect(await screen.findByText(/login page/i)).toBeInTheDocument();
     expect(screen.queryByText(/protected content/i)).not.toBeInTheDocument();
   });
