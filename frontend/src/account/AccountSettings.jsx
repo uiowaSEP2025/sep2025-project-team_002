@@ -41,7 +41,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
 import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
-import {UserProvider, useUser} from "../context/UserContext.jsx"
+import {useUser} from "../context/UserContext.jsx"
 import SidebarWrapper from "../components/SidebarWrapper";
 
 // Import your config base URL
@@ -52,11 +52,7 @@ import PasswordForm from "./PasswordForm.jsx";
 
 function AccountSettings() {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery("(max-width: 768px)");
-  const { user, updateProfilePic, profilePic, loading } = useUser();
-
-  // Desktop collapsible menu
-  const [menuOpen, setMenuOpen] = useState(true);
+  const { user, updateProfilePic, profilePic, loading, fetchUser } = useUser();
 
   // Main user form data (editable)
   const [formData, setFormData] = useState({
@@ -66,12 +62,8 @@ function AccountSettings() {
     transfer_type: ""
   });
 
-  // Mobile overlay menu
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   // For success/error messages
   const [message, setMessage] = useState("");
-
 
   // For profile picture updates (specifically)
   const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
@@ -132,6 +124,7 @@ function AccountSettings() {
 
       if (response.ok) {
         setMessage("Account info updated successfully");
+        fetchUser();
       } else {
         let errorText = "Unknown error";
 

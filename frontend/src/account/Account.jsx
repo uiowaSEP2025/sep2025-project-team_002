@@ -33,17 +33,8 @@ import {UserProvider, useUser} from "../context/UserContext.jsx"
 function Account() {
   const navigate = useNavigate();
 
-  // Media query to detect if we're on mobile (<= 768px)
-  const isMobile = useMediaQuery("(max-width: 768px)");
-
-  // Desktop collapsible menu state
-  const [menuOpen, setMenuOpen] = useState(true);
-
-  // Mobile overlay menu state
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   // For any error or status messages
-  const [message, setMessage] = useState("");
+  const [message] = useState("");
 
   const { user, loading } = useUser();
 
