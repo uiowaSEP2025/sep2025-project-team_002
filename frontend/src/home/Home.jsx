@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import { Stack, Card, CardContent, Box, Typography, TextField, Pagination } from "@mui/material";
 import API_BASE_URL from "../utils/config";
 
 function Home() {
   const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const pageFromURL = parseInt(queryParams.get("page")) || 1;
+  const searchFromURL = queryParams.get("search") || "";
+
   const schoolsPerPage = 10;
+
+  const [searchQuery, setSearchQuery] = useState(searchFromURL);
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchFromURL);
+  const [currentPage, setCurrentPage] = useState(pageFromURL);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -19,10 +27,39 @@ function Home() {
     }
   }, []);
 
-  // Reset to first page whenever search input changes
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery]);
+    const params = new URLSearchParams(location.search);
+    const newPage = parseInt(params.get("page")) || 1;
+    const newSearch = params.get("search") || "";
+    setCurrentPage(newPage);
+    setSearchQuery(newSearch);
+    setPrevSearchQuery(newSearch);
+  }, [location.search]);
+
+  useEffect(() => {
+    if (searchQuery !== prevSearchQuery) {
+      // Whenever searchQuery changes, update the URL and reset the page to 1
+      const params = new URLSearchParams(location.search);
+      params.set("page", "1");
+      if (searchQuery.trim() !== "") {
+        params.set("search", searchQuery);
+      } else {
+        params.delete("search");
+      }
+      navigate({search: params.toString()}, {replace: false});
+    }
+  }, [searchQuery, navigate, location.search]);
+
+  const handlePageChange = (event, newPage) => {
+    const params = new URLSearchParams(location.search);
+    params.set("page", newPage.toString());
+    if (searchQuery.trim() !== "") {
+      params.set("search", searchQuery);
+    } else {
+      params.delete("search");
+    }
+    navigate({ search: params.toString() }, { replace: false });
+  };
 
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
@@ -110,7 +147,7 @@ function Home() {
               <Pagination
                 count={Math.ceil(filteredSchools.length / schoolsPerPage)}
                 page={currentPage}
-                onChange={(event, value) => setCurrentPage(value)}
+                onChange={handlePageChange}
                 color="primary"
                 siblingCount={1}
                 boundaryCount={1}
@@ -150,6 +187,14 @@ function Home() {
                   const maxPage = Math.ceil(filteredSchools.length / schoolsPerPage);
                   if (!isNaN(value) && value >= 1 && value <= maxPage) {
                     setCurrentPage(value);
+                    const params = new URLSearchParams(location.search);
+                    params.set("page", value.toString());
+                    if (searchQuery.trim() !== "") {
+                      params.set("search", searchQuery);
+                    } else {
+                      params.delete("search");
+                    }
+                    navigate({ search: params.toString() }, { replace: false });
                   }
                 }}
                 inputProps={{

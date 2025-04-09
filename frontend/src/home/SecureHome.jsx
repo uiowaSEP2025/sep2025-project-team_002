@@ -112,7 +112,7 @@ function SecureHome() {
     fetchSchools();
   }, [navigate]);
 
-   // Sync state with URL when location changes (handles back/forward navigation)
+  // Sync state with URL when location changes (handles back/forward navigation)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const newPage = parseInt(params.get("page")) || 1;
