@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Grid,
@@ -24,7 +24,8 @@ function SecureHome() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [schools, setSchools] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
 
   const schoolsPerPage = 10;
 
@@ -36,9 +37,6 @@ function SecureHome() {
   const query = useQuery();
   const initialPage = parseInt(query.get("page")) || 1;
   const [currentPage, setCurrentPage] = useState(initialPage);
-  const initialSearchQuery = searchParams.get("search") || "";
-  const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
-  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
 
   // User info state
   const [user, setUser] = useState({
@@ -141,19 +139,10 @@ function SecureHome() {
   }, [searchQuery, prevSearchQuery, navigate]);
 
   useEffect(() => {
-    const params = {};
-    if (searchQuery) params.search = searchQuery;
-    if (currentPage) params.page = currentPage;
-    setSearchParams(params);
-  }, [currentPage, searchQuery, setSearchParams]);
-
-  // 当 URL 发生变化时，同步更新页面状态（防止浏览器的返回/前进）
-  useEffect(() => {
-    const pageFromURL = parseInt(searchParams.get("page"), 10) || 1;
-    const searchFromURL = searchParams.get("search") || "";
-    if (pageFromURL !== currentPage) setCurrentPage(pageFromURL);
-    if (searchFromURL !== searchQuery) setSearchQuery(searchFromURL);
-  }, [searchParams]);
+    if (searchQuery === "" && currentPage !== 1) {
+      setCurrentPage(1);
+    }
+  }, [searchQuery, currentPage]);
 
   // Handle opening the dropdown menu
   const handleMenuOpen = (event) => {
