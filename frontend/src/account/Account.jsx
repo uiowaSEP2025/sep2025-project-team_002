@@ -450,6 +450,7 @@ function Account() {
               {user.email && (
                 <Box
                     id="account-verification-box"
+                    data-testid="account-verification-box"
                     sx={{
                     mt: 3,
                     p: 2,
