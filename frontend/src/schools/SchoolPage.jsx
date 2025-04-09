@@ -61,7 +61,7 @@ function SchoolPage() {
   const [school, setSchool] = useState(null);
   const [selectedSport, setSelectedSport] = useState(null);
   const isAuthenticated = !!localStorage.getItem('token');
-    const [user, setUser] = useState({
+  const [user, setUser] = useState({
     first_name: "",
     last_name: "",
     email: "",
@@ -107,40 +107,38 @@ function SchoolPage() {
   }, [id]);
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) return;  // No user logged in
+    const token = localStorage.getItem("token");
+    if (!token) return;  // No user logged in
 
-  // Fetch User Info
-  const fetchUserInfo = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/user/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          email: data.email || "",
-          transfer_type: data.transfer_type || "",
+    // Fetch User Info
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/users/user/`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
-      } else {
-        console.error("Error fetching user data");
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser({
+            first_name: data.first_name || "",
+            last_name: data.last_name || "",
+            email: data.email || "",
+            transfer_type: data.transfer_type || "",
+          });
+        } else {
+          console.error("Error fetching user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        Bugsnag.notify(error);
       }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      Bugsnag.notify(error);
-    }
-  };
+    };
 
-  fetchUserInfo();
-}, []);
-
-
+    fetchUserInfo();
+  }, []);
 
   if (!school) return <div>Loading...</div>;
 
@@ -205,42 +203,56 @@ function SchoolPage() {
               {selectedSport} Program
             </Typography>
             
-            {/* Category Averages */}
-            <Card id="category-averages-card" sx={{ mb: 3 }}>
-              <CardContent>
-                <Typography id="category-averages-title" variant="h6" gutterBottom>
-                  Average Ratings by Category
-                </Typography>
-                <Grid container spacing={2}>
-                  {[
-                    ['head_coach', 'Head Coach'],
-                    ['assistant_coaches', 'Assistant Coaches'],
-                    ['team_culture', 'Team Culture'],
-                    ['campus_life', 'Campus Life'],
-                    ['athletic_facilities', 'Athletic Facilities'],
-                    ['athletic_department', 'Athletic Department'],
-                    ['player_development', 'Player Development'],
-                    ['nil_opportunity', 'NIL Opportunity']
-                  ].map(([field, label]) => (
-                    <Grid item xs={6} sm={3} key={field}>
-                      <Typography id={`average-${field}-label`} variant="subtitle2">
-                        {label}
-                      </Typography>
-                      <Rating
-                        id={`average-${field}-rating`}
-                        value={categoryAverages[field]}
-                        readOnly
-                        precision={0.1}
-                        max={10}
-                      />
-                      <Typography id={`average-${field}-score`} variant="caption">
-                        {categoryAverages[field].toFixed(1)}/10
-                      </Typography>
-                    </Grid>
-                  ))}
-                </Grid>
-              </CardContent>
-            </Card>
+            {/* Conditionally render Review Summary */}
+            {sportReviews.length > 0 && (
+              <Card id="summary-card" sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography id="summary-title" variant="h6" gutterBottom>
+                    Program Summary
+                  </Typography>
+                  <ReviewSummary schoolId={id} sport={selectedSport} />
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Conditionally render Category Averages */}
+            {sportReviews.length > 0 && (
+              <Card id="category-averages-card" sx={{ mb: 3 }}>
+                <CardContent>
+                  <Typography id="category-averages-title" variant="h6" gutterBottom>
+                    Average Ratings by Category
+                  </Typography>
+                  <Grid container spacing={2}>
+                    {[
+                      ['head_coach', 'Head Coach'],
+                      ['assistant_coaches', 'Assistant Coaches'],
+                      ['team_culture', 'Team Culture'],
+                      ['campus_life', 'Campus Life'],
+                      ['athletic_facilities', 'Athletic Facilities'],
+                      ['athletic_department', 'Athletic Department'],
+                      ['player_development', 'Player Development'],
+                      ['nil_opportunity', 'NIL Opportunity']
+                    ].map(([field, label]) => (
+                      <Grid item xs={6} sm={3} key={field}>
+                        <Typography id={`average-${field}-label`} variant="subtitle2">
+                          {label}
+                        </Typography>
+                        <Rating
+                          id={`average-${field}-rating`}
+                          value={categoryAverages[field]}
+                          readOnly
+                          precision={0.1}
+                          max={10}
+                        />
+                        <Typography id={`average-${field}-score`} variant="caption">
+                          {categoryAverages[field].toFixed(1)}/10
+                        </Typography>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Reviews Section */}
             <Card id="reviews-section">
