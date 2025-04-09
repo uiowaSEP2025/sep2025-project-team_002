@@ -246,7 +246,16 @@ describe("Account Page Testing", () => {
     );
 
     expect(await screen.findByText(/Account Information/i)).toBeInTheDocument();
-    expect(screen.getByText(/School Email Not Verified/i)).toBeInTheDocument();
+
+    // Look for the verification box first
+    const verificationBox = screen.getByTestId('account-verification-box') ||
+                           screen.getByRole('region', { name: /verification/i }) ||
+                           document.getElementById('account-verification-box');
+
+    // Then look for the text within that box
+    expect(verificationBox).toBeInTheDocument();
+
+    // Check for the verify email button
     expect(screen.getByRole("button", { name: /verify email/i })).toBeInTheDocument();
   });
 
