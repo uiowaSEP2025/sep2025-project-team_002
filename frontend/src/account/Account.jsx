@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import {
   Grid,
   Typography,
@@ -126,7 +126,7 @@ function Account() {
     ),
     {
       text: "My Reviews",
-      action: () => navigate ("/my-reviews"),
+      action: () => navigate ("/account/my-reviews"),
       icon: <RateReviewIcon fontSize ="medium" />
     },
     {
@@ -552,6 +552,7 @@ function Account() {
               Loading account information...
             </Typography>
           )}
+          <Outlet />
         </motion.div>
       </Grid>
     </Grid>

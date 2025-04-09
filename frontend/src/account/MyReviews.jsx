@@ -199,22 +199,22 @@ function MyReviews() {
     exit: { x: "-100%" },
   };
 
-  useEffect(() => {
-    console.log("Fetching reviews...");
-    const loadReviews = async () => {
-      try {
-        const data = await fetchUserReviews();
-        console.log("Data received in loadReviews:", data);  // Log the data received from fetchUserReviews
-        setReviews(data); // Update the state with fetched reviews
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-        // console.log("Reviews loaded:", reviews); // Log when reviews are loaded
-      }
-    };
-    loadReviews();
-  }, []);
+  // useEffect(() => {
+  //   console.log("Fetching reviews...");
+  //   const loadReviews = async () => {
+  //     try {
+  //       const data = await fetchUserReviews();
+  //       console.log("Data received in loadReviews:", data);  // Log the data received from fetchUserReviews
+  //       setReviews(data); // Update the state with fetched reviews
+  //     } catch (err) {
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //       // console.log("Reviews loaded:", reviews); // Log when reviews are loaded
+  //     }
+  //   };
+  //   loadReviews();
+  // }, []);
 
   // Smooth loading transition with fade-in effect
   const loadingTransition = {
@@ -232,21 +232,21 @@ function MyReviews() {
   console.log("Loading State:", loading);
   console.log("Reviews:", reviews);
 
-  // if (loading) {
-  //   return (
-  //     <Box sx={{ textAlign: "center", marginTop: 4 }}>
-  //       <CircularProgress />
-  //     </Box>
-  //   );
-  // }
-  //
-  // if (error) {
-  //   return (
-  //     <Typography color="error" variant="body1">
-  //       {error}
-  //     </Typography>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: "center", marginTop: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Typography color="error" variant="body1">
+        {error}
+      </Typography>
+    );
+  }
 
   return (
      <motion.div {...loadingTransition}>
