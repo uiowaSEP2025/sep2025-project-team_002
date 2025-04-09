@@ -313,7 +313,7 @@ function AccountSettings() {
     ),
     {
       text: "My Reviews",
-      action: () => navigate ("/my-reviews"),
+      action: () => navigate ("/account/my-reviews"),
       icon: <RateReviewIcon fontSize ="medium" />
     },
     {

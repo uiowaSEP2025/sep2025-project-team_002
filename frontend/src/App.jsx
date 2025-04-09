@@ -53,7 +53,7 @@ function App() {
                   <Route path="/account" element={<Account />} />
                   <Route path="/account/settings" element={<AccountSettings />} />
                   <Route path="/user-preferences" element ={<UserPreferences />} />
-                  <Route path="/my-reviews" element={<MyReviews />} />
+                  <Route path="/account/my-reviews" element={<MyReviews />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/verify-school-email" element={<VerifySchoolEmail />} />
