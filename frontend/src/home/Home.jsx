@@ -83,15 +83,20 @@ function Home() {
     }
   }, [searchQuery, navigate, location.search]);
 
-  const handlePageChange = (event, newPage) => {
+  const updatePageInURL = (page) => {
     const params = new URLSearchParams(location.search);
-    params.set("page", newPage.toString());
+    params.set("page", page.toString());
     if (searchQuery.trim() !== "") {
       params.set("search", searchQuery);
     } else {
       params.delete("search");
     }
     navigate({ search: params.toString() }, { replace: false });
+  };
+
+  // Handle page change function - THIS WAS MISSING
+  const handlePageChange = (event, newPage) => {
+    updatePageInURL(newPage);
   };
 
   const handleSchoolClick = (schoolId) => {
@@ -110,10 +115,6 @@ function Home() {
       console.error("Error fetching schools:", error);
       setSchools([]);
     }
-  };
-
-  const handleSchoolClick = (schoolId) => {
-    navigate(`/school/${schoolId}`);
   };
 
   // Filter dialog handlers
@@ -154,6 +155,8 @@ function Home() {
         const data = await response.json();
         setFilteredSchools(data);
         setFilterApplied(true);
+        setCurrentPage(1);
+        updatePageInURL(1);
       } else {
         console.error("Error applying filters");
       }
@@ -262,71 +265,71 @@ function Home() {
           </Typography>
         )}
       </Stack>
-      {filteredSchools.length > schoolsPerPage && (
-          <Box sx={{ position: "relative", mt: 3, mb: 9 }}>
-            <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <Pagination
-                count={Math.ceil(filteredSchools.length / schoolsPerPage)}
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-                siblingCount={1}
-                boundaryCount={1}
-                showFirstButton
-                showLastButton
-                sx={{
-                  "& .MuiPaginationItem-root": {
-                    fontSize: "1.1rem",
-                    fontWeight: 500,
-                  },
-                }}
-              />
-            </Box>
-
-            <Box
+      {filteredBySearch.length > schoolsPerPage && (
+        <Box sx={{ position: "relative", mt: 3, mb: 9 }}>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Pagination
+              count={Math.ceil(filteredBySearch.length / schoolsPerPage)}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              siblingCount={1}
+              boundaryCount={1}
+              showFirstButton
+              showLastButton
               sx={{
-                position: "absolute",
-                top: "50%",
-                transform: "translateY(-50%)",
-                left: "50%",
-                ml: "180px",
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
+                "& .MuiPaginationItem-root": {
+                  fontSize: "1.1rem",
+                  fontWeight: 500,
+                },
               }}
-            >
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                Jump to:
-              </Typography>
-              <TextField
-                size="small"
-                type="number"
-                variant="outlined"
-                value={currentPage}
-                onChange={(e) => {
-                  const value = parseInt(e.target.value);
-                  const maxPage = Math.ceil(filteredSchools.length / schoolsPerPage);
-                  if (!isNaN(value) && value >= 1 && value <= maxPage) {
-                    setCurrentPage(value);
-                    const params = new URLSearchParams(location.search);
-                    params.set("page", value.toString());
-                    if (searchQuery.trim() !== "") {
-                      params.set("search", searchQuery);
-                    } else {
-                      params.delete("search");
-                    }
-                    navigate({ search: params.toString() }, { replace: false });
-                  }
-                }}
-                inputProps={{
-                  min: 1,
-                  max: Math.ceil(filteredSchools.length / schoolsPerPage),
-                  style: { width: 60, textAlign: "center" }
-                }}
-              />
-            </Box>
+            />
           </Box>
-        )}
+
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              transform: "translateY(-50%)",
+              left: "50%",
+              ml: "180px",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              Jump to:
+            </Typography>
+            <TextField
+              size="small"
+              type="number"
+              variant="outlined"
+              value={currentPage}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                const maxPage = Math.ceil(filteredBySearch.length / schoolsPerPage);
+                if (!isNaN(value) && value >= 1 && value <= maxPage) {
+                  setCurrentPage(value);
+                  const params = new URLSearchParams(location.search);
+                  params.set("page", value.toString());
+                  if (searchQuery.trim() !== "") {
+                    params.set("search", searchQuery);
+                  } else {
+                    params.delete("search");
+                  }
+                  navigate({ search: params.toString() }, { replace: false });
+                }
+              }}
+              inputProps={{
+                min: 1,
+                max: Math.ceil(filteredBySearch.length / schoolsPerPage),
+                style: { width: 60, textAlign: "center" }
+              }}
+            />
+          </Box>
+        </Box>
+      )}
 
       {/* Filter Dialog */}
       <Dialog open={filterDialogOpen} onClose={closeFilterDialog} fullWidth maxWidth="sm">

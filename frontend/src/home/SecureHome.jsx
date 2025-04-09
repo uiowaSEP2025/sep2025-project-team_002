@@ -152,17 +152,20 @@ function SecureHome() {
     }
   }, [searchQuery, prevSearchQuery, navigate, location.search]);
 
-  // Handle page change function - THIS WAS MISSING
-  const handlePageChange = (event, newPage) => {
+  const updatePageInURL = (page) => {
     const params = new URLSearchParams(location.search);
-    params.set("page", newPage.toString());
+    params.set("page", page.toString());
     if (searchQuery.trim() !== "") {
       params.set("search", searchQuery);
     } else {
       params.delete("search");
     }
-    // Use navigate to update URL and create history entry
     navigate({ search: params.toString() }, { replace: false });
+  };
+
+  // Handle page change function - THIS WAS MISSING
+  const handlePageChange = (event, newPage) => {
+    updatePageInURL(newPage);
   };
 
   // Handle opening the dropdown menu
@@ -233,6 +236,8 @@ function SecureHome() {
         const data = await response.json();
         setFilteredSchools(data);
         setFilterApplied(true);
+        setCurrentPage(1);
+        updatePageInURL(1);
       } else {
         console.error("Error applying filters");
       }
@@ -367,11 +372,11 @@ function SecureHome() {
               )}
             </Stack>
 
-            {filteredSchools.length > schoolsPerPage && (
+            {filteredBySearch.length > schoolsPerPage && (
               <Box sx={{ position: "relative", mt: 5, mb: 5 }}>
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <Pagination
-                    count={Math.ceil(filteredSchools.length / schoolsPerPage)}
+                    count={Math.ceil(filteredBySearch.length / schoolsPerPage)}
                     page={currentPage}
                     onChange={handlePageChange}
                     color="primary"
@@ -397,7 +402,7 @@ function SecureHome() {
                     ml: "180px",
                     display: "flex",
                     alignItems: "center",
-                    gap: 1,
+                    gap: 3,
                   }}
                 >
                   <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -410,7 +415,7 @@ function SecureHome() {
                     value={currentPage}
                     onChange={(e) => {
                       const value = parseInt(e.target.value);
-                      const maxPage = Math.ceil(filteredSchools.length / schoolsPerPage);
+                      const maxPage = Math.ceil(filteredBySearch.length / schoolsPerPage);
                       if (!isNaN(value) && value >= 1 && value <= maxPage) {
                         setCurrentPage(value);
                         const params = new URLSearchParams(location.search);
@@ -425,7 +430,7 @@ function SecureHome() {
                     }}
                     inputProps={{
                       min: 1,
-                      max: Math.ceil(filteredSchools.length / schoolsPerPage),
+                      max: Math.ceil(filteredBySearch.length / schoolsPerPage),
                       style: { width: 60, textAlign: "center" }
                     }}
                   />
