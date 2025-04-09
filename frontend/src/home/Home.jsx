@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom"
-import { Stack, Card, CardContent, Box, Typography, TextField } from "@mui/material";
+import { Stack, Card, CardContent, Box, Typography, TextField, Pagination } from "@mui/material";
 import API_BASE_URL from "../utils/config";
 
 function Home() {
   const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const schoolsPerPage = 10;
 
-   useEffect(() => {
+  useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       navigate("/secure-home");
@@ -16,6 +18,11 @@ function Home() {
       fetchSchools();
     }
   }, []);
+
+  // Reset to first page whenever search input changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
@@ -36,6 +43,9 @@ function Home() {
   };
 
   const filteredSchools = schools.filter((school) => school.school_name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const indexOfLastSchool = currentPage * schoolsPerPage;
+  const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
+  const currentSchools = filteredSchools.slice(indexOfFirstSchool, indexOfLastSchool);
 
   return (
     <div>
@@ -67,8 +77,8 @@ function Home() {
 
         {/* Schools List */}
         <Stack spacing={2} sx={{ px: 2, pb: 4, textAlign: "center" }}>
-            {filteredSchools.length > 0 ? (
-                filteredSchools.map((school) => (
+            {currentSchools.length > 0 ? (
+                currentSchools.map((school) => (
                     <Card
                         key={school.id}
                         id={`school-${school.id}`}
@@ -93,6 +103,17 @@ function Home() {
                 <Typography variant="h6" sx={{ mt: 3 }}>No results found</Typography>
             )}
         </Stack>
+
+        {filteredSchools.length > schoolsPerPage && (
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
+            <Pagination
+              count={Math.ceil(filteredSchools.length / schoolsPerPage)}
+              page={currentPage}
+              onChange={(event, value) => setCurrentPage(value)}
+              color="primary"
+            />
+          </Box>
+        )}
     </div>
   );
 }

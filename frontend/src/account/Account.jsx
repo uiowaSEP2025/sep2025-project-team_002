@@ -42,62 +42,20 @@ function Account() {
   // Mobile overlay menu state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // User info state
-  const [user, setUser] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    transfer_type: "",
-    is_school_verified: false,
-    profile_picture: "",
-  });
-
   // For any error or status messages
   const [message, setMessage] = useState("");
 
-  // Fetch user info on mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+  const { user, loading } = useUser();
 
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/users/user/`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser({
-            first_name: data.first_name || "",
-            last_name: data.last_name || "",
-            email: data.email || "",
-            transfer_type: data.transfer_type || "",
-            is_school_verified: data.is_school_verified || false,
-            profile_picture: data.profile_picture || "",
-          });
-        } else {
-          const errorData = await response.json();
-          setMessage(errorData.detail || errorData.error || "Unknown Error");
-        }
-      } catch (error) {
-        console.error("Account page error:", error);
-
-        if (error.message.includes("Failed to fetch")) {
-          setMessage("Cannot connect to the server. Please check your network.");
-        } else {
-          setMessage("Network error: " + error.message);
-        }
-      }
-    };
-    fetchUserInfo();
-  }, [navigate]);
+  if (loading) {
+    return (
+      <SidebarWrapper title="My Account" menuItems={[]}>
+        <Typography variant="h6" sx={{ m: 4 }}>
+          Loading...
+        </Typography>
+      </SidebarWrapper>
+    );
+  }
 
   // Menu items (the same for desktop/mobile)
   const menuItems = [
@@ -116,7 +74,7 @@ function Account() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-        ...(user.transfer_type && user.transfer_type !== "graduate"
+        ...(user?.transfer_type && user.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
@@ -167,15 +125,7 @@ function Account() {
   return (
     <SidebarWrapper menuItems={menuItems} title="My Account">
       {/* Main content area */}
-      <Grid
-        item
-        xs={12}
-        md={isMobile ? 12 : 9}
-        sx={{
-          p: 4,
-          mt: isMobile ? 6 : 0 // NEW: add top margin on mobile so overlay button doesn't overlap
-        }}
-      >
+      <Box>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -365,7 +315,7 @@ function Account() {
             </Typography>
           )}
         </motion.div>
-      </Grid>
+      </Box>
     </SidebarWrapper>
   );
 }

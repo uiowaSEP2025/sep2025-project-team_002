@@ -53,17 +53,17 @@ import PasswordForm from "./PasswordForm.jsx";
 function AccountSettings() {
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const { user, updateProfilePic, profilePic, loading } = useUser();
 
   // Desktop collapsible menu
   const [menuOpen, setMenuOpen] = useState(true);
 
-  const [user, setUser] = useState({
+  // Main user form data (editable)
+  const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
-    transfer_type: "",
-    is_school_verified: false,
-    profile_picture: "",
+    transfer_type: ""
   });
 
   // Mobile overlay menu
@@ -74,20 +74,18 @@ function AccountSettings() {
 
 
   // For profile picture updates (specifically)
-  const { profilePic, updateProfilePic } = useUser();
-  console.log("Current profile picture:", profilePic); // Debug log
-
   const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
 
-
-
-  // Main user form data (editable)
-  const [formData, setFormData] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    transfer_type: ""
-  });
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        transfer_type: user.transfer_type || ""
+      });
+    }
+  }, [user]);
 
   // Real-time email validation:
   const emailIsInvalid =
@@ -96,75 +94,7 @@ function AccountSettings() {
 
   // Dialog state for changing password
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
-
-  // Current password, new password, and confirm new password
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState(""); // for dialog errors
-
-  // Show/hide toggles for each password field in the dialog
-  const [showCurrentPass, setShowCurrentPass] = useState(false);
-  const [showNewPass, setShowNewPass] = useState(false);
-  const [showConfirmNewPass, setShowConfirmNewPass] = useState(false);
-
-  // For real-time matching check
-  const newPasswordsMatch =
-    confirmNewPassword.length > 0 && newPassword === confirmNewPassword;
-
-  // Fetch user info on mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/users/user/`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          setUser({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          email: data.email || "",
-          transfer_type: data.transfer_type || "",
-          is_school_verified: data.is_school_verified || false,
-          profile_picture: data.profile_picture || ""
-        });
-
-
-          setFormData({
-            first_name: data.first_name || "",
-            last_name: data.last_name || "",
-            email: data.email || "",
-            transfer_type: data.transfer_type || ""
-          });
-        } else {
-          const errorData = await response.json();
-          setMessage(errorData.detail || errorData.error || "Failed to fetch user info.");
-        }
-      } catch (error) {
-        console.error("AccountSettings error:", error);
-
-        if (error.message.includes("Failed to fetch")) {
-          setMessage("Unable to reach server. Check your connection.");
-        } else {
-          setMessage("Network error: " + error.message);
-        }
-      }
-    };
-
-    fetchUserInfo();
-  }, [navigate]);
 
   // Handle text/radio changes in the main form
   const handleChange = (e) => {
@@ -241,12 +171,6 @@ function AccountSettings() {
   const handleClosePasswordDialog = () => {
     setPasswordDialogOpen(false);
     setPasswordError("");
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmNewPassword("");
-    setShowCurrentPass(false);
-    setShowNewPass(false);
-    setShowConfirmNewPass(false);
   };
 
   // Handle the "change password" action inside the dialog
@@ -312,7 +236,7 @@ function AccountSettings() {
     //   action: () => navigate("/school"),
     //   icon: <SchoolIcon fontSize="medium" />
     // },
-           ...(user.transfer_type && user.transfer_type !== "graduate"
+           ...(user?.transfer_type && user.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
@@ -333,15 +257,7 @@ function AccountSettings() {
   return (
     <SidebarWrapper menuItems={menuItems} title="My Account">
       {/* MAIN CONTENT: Account Settings Form */}
-      <Grid
-        item
-        xs={12}
-        md={isMobile ? 12 : 9}
-        sx={{
-          p: 4,
-          mt: isMobile ? 6 : 0
-        }}
-      >
+      <Box>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -495,7 +411,7 @@ function AccountSettings() {
             Change Password
           </Button>
         </motion.div>
-      </Grid>
+      </Box>
 
       {/* DIALOG FOR CHANGING PASSWORD */}
       <Dialog
