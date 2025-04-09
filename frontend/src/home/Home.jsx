@@ -105,13 +105,60 @@ function Home() {
         </Stack>
 
         {filteredSchools.length > schoolsPerPage && (
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-            <Pagination
-              count={Math.ceil(filteredSchools.length / schoolsPerPage)}
-              page={currentPage}
-              onChange={(event, value) => setCurrentPage(value)}
-              color="primary"
-            />
+          <Box sx={{ position: "relative", mt: 3, mb: 9 }}>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Pagination
+                count={Math.ceil(filteredSchools.length / schoolsPerPage)}
+                page={currentPage}
+                onChange={(event, value) => setCurrentPage(value)}
+                color="primary"
+                siblingCount={1}
+                boundaryCount={1}
+                showFirstButton
+                showLastButton
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    fontSize: "1.1rem",
+                    fontWeight: 500,
+                  },
+                }}
+              />
+            </Box>
+
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                transform: "translateY(-50%)",
+                left: "50%",
+                ml: "180px",
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                Jump to:
+              </Typography>
+              <TextField
+                size="small"
+                type="number"
+                variant="outlined"
+                value={currentPage}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  const maxPage = Math.ceil(filteredSchools.length / schoolsPerPage);
+                  if (!isNaN(value) && value >= 1 && value <= maxPage) {
+                    setCurrentPage(value);
+                  }
+                }}
+                inputProps={{
+                  min: 1,
+                  max: Math.ceil(filteredSchools.length / schoolsPerPage),
+                  style: { width: 60, textAlign: "center" }
+                }}
+              />
+            </Box>
           </Box>
         )}
     </div>
