@@ -1,17 +1,20 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import API_BASE_URL from "../utils/config";
 
-
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-    // Function to fetch the user data from the backend
+  // Function to fetch the user data from the backend
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setIsLoggedIn(false);
+      setUser(null);
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE_URL}/users/user/`, {
@@ -27,11 +30,23 @@ export const UserProvider = ({ children }) => {
         setIsLoggedIn(true);
       }
       else {
-        setIsLoggedIn(false);
+        // If we get a 401 Unauthorized, the token is invalid or expired
+        if (response.status === 401) {
+          logout();
+        } else {
+          setIsLoggedIn(false);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
     }
+  };
+
+  // Function to handle logout
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    setIsLoggedIn(false);
   };
 
 
@@ -71,7 +86,7 @@ export const UserProvider = ({ children }) => {
   }, [isLoggedIn]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser }}>
+    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser, isLoggedIn, logout }}>
       {children}
     </UserContext.Provider>
   );
