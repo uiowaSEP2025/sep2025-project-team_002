@@ -4,14 +4,22 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SecureHome from '../../home/SecureHome.jsx';
+import { UserContext } from '../../context/UserContext';
 
-// Mock the authentication state
-const mockAuthState = {
-  isAuthenticated: true,
+// Mock user context value
+const mockUserContextValue = {
   user: {
-    username: 'testuser',
-    email: 'test@example.com'
-  }
+    first_name: 'Test',
+    last_name: 'User',
+    email: 'test@example.com',
+    transfer_type: 'transfer',
+    profile_picture: ''
+  },
+  isLoggedIn: true,
+  logout: vi.fn(),
+  fetchUser: vi.fn(),
+  updateProfilePic: vi.fn(),
+  profilePic: '/assets/profile-pictures/pic1.png'
 };
 
 // Mock the API response for schools
@@ -28,7 +36,7 @@ const mockSchools = [
 describe('SecureHome Component', () => {
   beforeEach(() => {
     console.log("Running SecureHome test suite");
-    
+
     // Mock localStorage
     const mockLocalStorage = {
       getItem: vi.fn(() => 'fake-token'),
@@ -36,9 +44,9 @@ describe('SecureHome Component', () => {
       clear: vi.fn()
     };
     global.localStorage = mockLocalStorage;
-    
+
     // Mock fetch with a proper Response object
-    global.fetch = vi.fn(() => 
+    global.fetch = vi.fn(() =>
       Promise.resolve(new Response(JSON.stringify(mockSchools), {
         status: 200,
         headers: new Headers({
@@ -51,7 +59,9 @@ describe('SecureHome Component', () => {
   it('renders schools list', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -64,7 +74,9 @@ describe('SecureHome Component', () => {
   it('displays sports for each school', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -104,7 +116,9 @@ it('shows submit review button when transfer_type is not "high_school"', async (
 
   render(
     <BrowserRouter>
-      <SecureHome />
+      <UserContext.Provider value={{...mockUserContextValue, user: {...mockUserContextValue.user, transfer_type: 'transfer'}}}>
+        <SecureHome />
+      </UserContext.Provider>
     </BrowserRouter>
   );
 
@@ -149,7 +163,9 @@ it('does not show submit review button when transfer_type is "high_school"', asy
 
   render(
     <BrowserRouter>
-      <SecureHome />
+      <UserContext.Provider value={{...mockUserContextValue, user: {...mockUserContextValue.user, transfer_type: 'high_school'}}}>
+        <SecureHome />
+      </UserContext.Provider>
     </BrowserRouter>
   );
 
@@ -232,7 +248,9 @@ describe('SecureHome Filter Feature', () => {
   it('opens filter dialog and applies filter', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
