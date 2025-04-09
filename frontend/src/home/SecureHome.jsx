@@ -26,14 +26,14 @@ function SecureHome() {
   const open = Boolean(anchorEl);
   const [schools, setSchools] = useState([]);
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [prevSearchQuery, setPrevSearchQuery] = useState("");
-
   const schoolsPerPage = 10;
 
-  const query = new URLSearchParams(location.search);
-  const pageFromURL = parseInt(query.get("page")) || 1;
-  // Use URL page parameter as the source of truth
+  const queryParams = new URLSearchParams(location.search);
+  const pageFromURL = parseInt(queryParams.get("page")) || 1;
+  const searchFromURL = queryParams.get("search") || "";
+
+  const [searchQuery, setSearchQuery] = useState(searchFromURL);
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchFromURL);
   const [currentPage, setCurrentPage] = useState(pageFromURL);
 
   // User info state
@@ -116,7 +116,10 @@ function SecureHome() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const newPage = parseInt(params.get("page")) || 1;
+    const newSearch = params.get("search") || "";
     setCurrentPage(newPage);
+    setSearchQuery(newSearch);
+    setPrevSearchQuery(newSearch);
   }, [location.search]);
 
   // Reset to page 1 when search query changes
@@ -125,6 +128,11 @@ function SecureHome() {
       setPrevSearchQuery(searchQuery);
       const params = new URLSearchParams(location.search);
       params.set("page", "1");
+      if (searchQuery.trim() !== "") {
+        params.set("search", searchQuery);
+      } else {
+        params.delete("search");
+      }
       navigate({ search: params.toString() }, { replace: false });
     }
   }, [searchQuery, prevSearchQuery, navigate, location.search]);
@@ -133,6 +141,11 @@ function SecureHome() {
   const handlePageChange = (event, newPage) => {
     const params = new URLSearchParams(location.search);
     params.set("page", newPage.toString());
+    if (searchQuery.trim() !== "") {
+      params.set("search", searchQuery);
+    } else {
+      params.delete("search");
+    }
     // Use navigate to update URL and create history entry
     navigate({ search: params.toString() }, { replace: false });
   };
@@ -352,6 +365,14 @@ function SecureHome() {
                       const maxPage = Math.ceil(filteredSchools.length / schoolsPerPage);
                       if (!isNaN(value) && value >= 1 && value <= maxPage) {
                         setCurrentPage(value);
+                        const params = new URLSearchParams(location.search);
+                        params.set("page", value.toString());
+                        if (searchQuery.trim() !== "") {
+                          params.set("search", searchQuery);
+                        } else {
+                          params.delete("search");
+                        }
+                        navigate({ search: params.toString() }, { replace: false });
                       }
                     }}
                     inputProps={{
