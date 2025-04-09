@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
 import {
   Box,
   Grid,
@@ -47,48 +48,17 @@ function SecureHome() {
   const [filteredSchools, setFilteredSchools] = useState([]);
   const [filterApplied, setFilterApplied] = useState(false);
 
-  // User info state
-  const [user, setUser] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    transfer_type: "",
-    profile_picture: "",
-  });
+  // Get user from context
+  const { user, isLoggedIn, logout } = useUser();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
+    if (!token || !isLoggedIn) {
       navigate("/login");
       return;
     }
 
-    // Fetch User Info
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/users/user/`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser({
-            first_name: data.first_name || "",
-            last_name: data.last_name || "",
-            email: data.email || "",
-            transfer_type: data.transfer_type || "",
-            profile_picture: data.profile_picture || "",
-          });
-        }
-      } catch (error) {
-        console.error("Account page error:", error);
-      }
-    };
-
-    // Fetch Schools
+    // Fetch Schools function
     const fetchSchools = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/schools/`, {
@@ -99,21 +69,25 @@ function SecureHome() {
           },
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (response.ok) {
+          const data = await response.json();
+          setSchools(data);
+        } else if (response.status === 401) {
+          // Token expired
+          logout();
+          navigate("/login");
+        } else {
+          console.error(`HTTP error! status: ${response.status}`);
+          setSchools([]);
         }
-
-        const data = await response.json();
-        setSchools(data);
       } catch (error) {
         console.error("Error fetching schools:", error);
         setSchools([]);
       }
     };
 
-    fetchUserInfo();
     fetchSchools();
-  }, [navigate]);
+  }, [navigate, isLoggedIn, logout]);
 
   // Account menu handlers
   const handleMenuOpen = (event) => {
@@ -123,7 +97,7 @@ function SecureHome() {
     setAnchorEl(null);
   };
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    logout();
     navigate("/");
   };
   const handleAccountInfo = () => {
@@ -153,7 +127,14 @@ function SecureHome() {
     setFilters({ ...filters, [name]: value });
   };
   const applyFilters = async () => {
+    closeFilterDialog();
+
     const token = localStorage.getItem("token");
+    if (!token || !isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
     const queryParams = new URLSearchParams();
     if (filters.coach) queryParams.append("coach", filters.coach);
     // Append rating filters if provided
@@ -183,13 +164,16 @@ function SecureHome() {
         const data = await response.json();
         setFilteredSchools(data);
         setFilterApplied(true);
+      } else if (response.status === 401) {
+        // Token expired
+        logout();
+        navigate("/login");
       } else {
         console.error("Error applying filters");
       }
     } catch (error) {
       console.error("Error applying filters:", error);
     }
-    closeFilterDialog();
   };
   const clearFilters = () => {
     setFilters({
