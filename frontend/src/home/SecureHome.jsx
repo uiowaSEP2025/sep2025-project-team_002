@@ -21,22 +21,20 @@ import API_BASE_URL from "../utils/config";
 
 function SecureHome() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [schools, setSchools] = useState([]);
+
   const [searchQuery, setSearchQuery] = useState("");
-  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery);
+  const [prevSearchQuery, setPrevSearchQuery] = useState("");
 
   const schoolsPerPage = 10;
 
-
-  function useQuery() {
-    return new URLSearchParams(useLocation().search);
-  }
-
-  const query = useQuery();
-  const initialPage = parseInt(query.get("page")) || 1;
-  const [currentPage, setCurrentPage] = useState(initialPage);
+  const query = new URLSearchParams(location.search);
+  const pageFromURL = parseInt(query.get("page")) || 1;
+  // Use URL page parameter as the source of truth
+  const [currentPage, setCurrentPage] = useState(pageFromURL);
 
   // User info state
   const [user, setUser] = useState({
@@ -114,35 +112,30 @@ function SecureHome() {
     fetchSchools();
   }, [navigate]);
 
+   // Sync state with URL when location changes (handles back/forward navigation)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    params.set("page", currentPage);
-    navigate({ search: params.toString() });
-  }, [currentPage]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const pageFromURL = parseInt(params.get("page"), 10) || 1;
-    if (pageFromURL !== currentPage) {
-      setCurrentPage(pageFromURL);
-    }
+    const newPage = parseInt(params.get("page")) || 1;
+    setCurrentPage(newPage);
   }, [location.search]);
 
+  // Reset to page 1 when search query changes
   useEffect(() => {
     if (searchQuery !== prevSearchQuery) {
-      setCurrentPage(1);
-      const params = new URLSearchParams(location.search);
-      params.set("page", 1);
-      navigate({ search: params.toString() });
       setPrevSearchQuery(searchQuery);
+      const params = new URLSearchParams(location.search);
+      params.set("page", "1");
+      navigate({ search: params.toString() }, { replace: false });
     }
-  }, [searchQuery, prevSearchQuery, navigate]);
+  }, [searchQuery, prevSearchQuery, navigate, location.search]);
 
-  useEffect(() => {
-    if (searchQuery === "" && currentPage !== 1) {
-      setCurrentPage(1);
-    }
-  }, [searchQuery, currentPage]);
+  // Handle page change function - THIS WAS MISSING
+  const handlePageChange = (event, newPage) => {
+    const params = new URLSearchParams(location.search);
+    params.set("page", newPage.toString());
+    // Use navigate to update URL and create history entry
+    navigate({ search: params.toString() }, { replace: false });
+  };
 
   // Handle opening the dropdown menu
   const handleMenuOpen = (event) => {
@@ -178,40 +171,6 @@ function SecureHome() {
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
   };
-
-  // useEffect(() => {
-  //   // Fetch schools data when component mounts
-  //   fetchSchools();
-  // }, []);
-  //
-  // const fetchSchools = async () => {
-  //   try {
-  //     const token = localStorage.getItem('token');
-  //     console.log('Fetching schools from:', `${API_BASE_URL}/api/schools/`);
-  //
-  //     const response = await fetch(`${API_BASE_URL}/api/schools/`, {
-  //       headers: {
-  //         'Authorization': `Bearer ${token}`,
-  //         'Content-Type': 'application/json',
-  //         'Accept': 'application/json',
-  //       },
-  //     });
-  //
-  //     console.log('Response status:', response.status);
-  //
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-  //
-  //     const data = await response.json();
-  //     console.log('Schools data:', data);
-  //     setSchools(data);
-  //   } catch (error) {
-  //     console.error('Error fetching schools:', error);
-  //     console.error('Error details:', error.message);
-  //     setSchools([]);
-  //   }
-  // };
 
   const filteredSchools = schools.filter((school) => 
     school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -353,7 +312,7 @@ function SecureHome() {
                   <Pagination
                     count={Math.ceil(filteredSchools.length / schoolsPerPage)}
                     page={currentPage}
-                    onChange={(event, value) => setCurrentPage(value)}
+                    onChange={handlePageChange}
                     color="primary"
                     siblingCount={1}
                     boundaryCount={1}
