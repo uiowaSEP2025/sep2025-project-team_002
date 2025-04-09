@@ -194,10 +194,17 @@ def filter_schools(request):
 @permission_classes([IsAuthenticated])
 def get_recommended_schools(request):
     try:
+        current_user = request.user
+        
+        # Check if user is a graduated athlete
+        if hasattr(current_user, 'transfer_type') and current_user.transfer_type == "graduate":
+            logger.info(f"User {current_user.id} is a graduated athlete, not showing recommendations")
+            return Response([])  # Return empty list for graduated athletes
+            
         # Get user's preferences
-        user_preferences = Preferences.objects.filter(user=request.user).first()
+        user_preferences = Preferences.objects.filter(user=current_user).first()
         if not user_preferences:
-            logger.info(f"No preferences found for user {request.user.id}. Returning top schools.")
+            logger.info(f"No preferences found for user {current_user.id}. Returning top schools.")
             # Return top schools with default ratings if no preferences
             top_schools = Schools.objects.all()[:5]
             result = []
@@ -229,26 +236,26 @@ def get_recommended_schools(request):
             return Response(result)
 
         # Log for debugging
-        logger.info(f"Found preferences for user {request.user.id}, sport: {user_preferences.sport}")
+        logger.info(f"Found preferences for user {current_user.id}, sport: {user_preferences.sport}")
         sport = user_preferences.sport
         
-        # Check if there are any reviews for this sport
-        sport_reviews = Reviews.objects.filter(sport=sport)
+        # Check if there are any reviews for this sport from other users
+        sport_reviews = Reviews.objects.filter(sport=sport).exclude(user=current_user)
         if not sport_reviews.exists():
-            logger.info(f"No reviews found for {sport}")
-            return Response([])  # Return empty list if no reviews for this sport
+            logger.info(f"No reviews from other users found for {sport}")
+            return Response([])  # Return empty list if no reviews for this sport from others
             
-        # Get schools that have reviews for this sport
+        # Get schools that have reviews for this sport from other users
         school_ids_with_reviews = sport_reviews.values_list('school_id', flat=True).distinct()
-        logger.info(f"Found {len(school_ids_with_reviews)} schools with reviews for {sport}")
+        logger.info(f"Found {len(school_ids_with_reviews)} schools with reviews for {sport} from others")
         
         if not school_ids_with_reviews:
-            logger.info(f"No schools have reviews for {sport}")
-            return Response([])  # Return empty list if no schools have reviews
+            logger.info(f"No schools have reviews for {sport} from other users")
+            return Response([])  # Return empty list if no schools have reviews from others
         
         # Get all schools
         schools = Schools.objects.filter(id__in=school_ids_with_reviews)
-        logger.info(f"Total schools with reviews to check: {schools.count()}")
+        logger.info(f"Total schools with reviews from others to check: {schools.count()}")
         
         recommended_schools = []
 
@@ -266,14 +273,14 @@ def get_recommended_schools(request):
                 logger.info(f"School {school.school_name} does not offer {sport}, skipping")
                 continue
                 
-            # Get reviews for this school and the user's preferred sport
-            reviews = Reviews.objects.filter(school=school, sport=sport)
+            # Get reviews for this school and the user's preferred sport, excluding the user's own reviews
+            reviews = Reviews.objects.filter(school=school, sport=sport).exclude(user=current_user)
             
             if not reviews:
-                logger.info(f"No reviews for {school.school_name} with sport {sport}")
-                continue  # Skip schools without reviews for this sport
+                logger.info(f"No reviews from other users for {school.school_name} with sport {sport}")
+                continue  # Skip schools where only the current user left reviews
             
-            logger.info(f"Found {reviews.count()} reviews for {school.school_name} - {sport}")
+            logger.info(f"Found {reviews.count()} reviews from others for {school.school_name} - {sport}")
 
             # Calculate average ratings
             avg_ratings = {
@@ -313,8 +320,6 @@ def get_recommended_schools(request):
         recommended_schools.sort(key=lambda x: x['similarity_score'], reverse=True)
         result = recommended_schools[:5] if recommended_schools else []
         
-        # We no longer fall back to default recommendations if there are no matches
-        # Just return whatever we found, even if it's less than 5 or empty
         logger.info(f"Returning {len(result)} recommendations")
         return Response(result)
 
