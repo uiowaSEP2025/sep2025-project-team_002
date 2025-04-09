@@ -116,6 +116,7 @@ function SecureHome() {
     // Fetch Recommended Schools
     const fetchRecommendedSchools = async () => {
       try {
+        console.log("Fetching recommendations from:", `${API_BASE_URL}/api/recommendations/`);
         const response = await fetch(`${API_BASE_URL}/api/recommendations/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -123,14 +124,19 @@ function SecureHome() {
           },
         });
 
+        console.log("Recommendations API response status:", response.status);
+        
         if (response.ok) {
           const data = await response.json();
-          if (data.length > 0) {
-            setRecommendedSchools(data);
-            setShowRecommendations(true);
-          }
+          console.log("Recommended schools data:", data); // Debug log
+          setRecommendedSchools(data);
+          setShowRecommendations(data.length > 0);
         } else if (response.status === 404) {
-          // No preferences found, don't show recommendations
+          console.log("No preferences found"); // Debug log
+          setShowRecommendations(false);
+        } else {
+          const errorText = await response.text();
+          console.log("Error response:", response.status, errorText); // Debug log
           setShowRecommendations(false);
         }
       } catch (error) {
@@ -278,74 +284,121 @@ function SecureHome() {
               Schools and Sports
             </Typography>
 
-            {/* Recommended Schools Section */}
-            {showRecommendations && recommendedSchools.length > 0 && (
-              <Box sx={{ mb: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
-                  Recommended Schools
-                </Typography>
-                <Grid container spacing={2}>
-                  {recommendedSchools.map((rec, index) => (
-                    <Grid item xs={12} sm={6} md={4} key={index}>
-                      <Card 
-                        sx={{ 
-                          height: '100%',
-                          cursor: 'pointer',
-                          '&:hover': {
-                            transform: 'scale(1.02)',
-                            transition: 'transform 0.2s ease-in-out'
-                          }
-                        }}
-                        onClick={() => handleSchoolClick(rec.school.id)}
-                      >
-                        <CardContent>
-                          <Typography variant="h6" gutterBottom>
-                            {rec.school.school_name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {rec.school.location}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            Similarity Score: {rec.similarity_score}/10
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Average Ratings:
-                          </Typography>
-                          <Box sx={{ mt: 1 }}>
-                            {Object.entries(rec.average_ratings).map(([key, value]) => (
-                              value !== null && (
-                                <Typography key={key} variant="body2" color="text.secondary">
-                                  {key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}: {value.toFixed(1)}
-                                </Typography>
-                              )
-                            ))}
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-            )}
-
+            {/* Search and Filters Section */}
             <Box sx={{ display: "flex", justifyContent: "center", mb: 4, gap: 2 }}>
               <TextField
+                id="school-search"
                 label="Search Schools"
                 variant="outlined"
-                fullWidth
-                sx={{ width: "90%", maxWidth: 600 }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ width: { xs: "100%", sm: "400px" }, borderRadius: "20px" }}
+                InputProps={{
+                  sx: { borderRadius: "40px" }
+                }}
               />
-              <Button variant="contained" color="primary" onClick={openFilterDialog}>
-                Filters
+              <Button 
+                id={"filter-button"}
+                variant="contained" 
+                onClick={openFilterDialog} 
+                sx={{ 
+                  borderRadius: "30px",
+                  minWidth: "120px", 
+                  height: "56px" 
+                }}
+              >
+                FILTERS
               </Button>
-              {filterApplied && (
-                <Button variant="outlined" color="secondary" onClick={clearFilters}>
-                  Clear Filters
-                </Button>
-              )}
             </Box>
+
+            {/* Recommended Schools Section */}
+            {recommendedSchools.length > 0 ? (
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
+                  Recommended Schools Based on Your Preferences
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary' }}>
+                  These schools match your preferences and have received positive reviews from other athletes.
+                </Typography>
+                <Stack spacing={2} sx={{ px: 2 }}>
+                  {recommendedSchools.map((rec, index) => (
+                    <Card
+                      key={index}
+                      sx={{ 
+                        width: "100%", 
+                        cursor: "pointer", 
+                        transition: "all 0.2s ease-in-out",
+                        "&:hover": { 
+                          backgroundColor: "#f0f7ff",
+                          transform: "translateY(-2px)",
+                          boxShadow: 2
+                        } 
+                      }}
+                      onClick={() => handleSchoolClick(rec.school.id)}
+                    >
+                      <CardContent>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>
+                          <Box>
+                            <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                              {rec.school.school_name}
+                            </Typography>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
+                              <Typography variant="body2" color="text.secondary">
+                                {rec.school.location}
+                              </Typography>
+                              {rec.sport && (
+                                <Typography 
+                                  variant="body2" 
+                                  sx={{ 
+                                    color: "#1976d2", 
+                                    fontWeight: 600,
+                                    bgcolor: "rgba(25, 118, 210, 0.08)",
+                                    px: 1,
+                                    py: 0.5,
+                                    borderRadius: 1,
+                                    display: "inline-flex"
+                                  }}
+                                >
+                                  {rec.sport}
+                                </Typography>
+                              )}
+                            </Box>
+                          </Box>
+                          <Box sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            p: 1,
+                            backgroundColor: '#e3f2fd',
+                            borderRadius: 1
+                          }}>
+                            <Typography variant="body2" sx={{ fontWeight: 600, color: '#1976d2' }}>
+                              Match Score: {rec.similarity_score}/10
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              </Box>
+            ) : (
+              <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                <Typography variant="h6" sx={{ mb: 1 }}>
+                  Getting Your Recommendations
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                  We are working on finding the best schools for you based on your preferences.
+                </Typography>
+                <Button 
+                  variant="contained" 
+                  color="primary"
+                  onClick={handleGoToPreferenceForm}
+                  sx={{ mt: 1 }}
+                >
+                  Update Preferences
+                </Button>
+              </Box>
+            )}
 
             {user.transfer_type !== "high_school" && (
               <Box sx={{ textAlign: "center", mb: 4 }}>

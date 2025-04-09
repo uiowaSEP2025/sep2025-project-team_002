@@ -185,29 +185,96 @@ def get_recommended_schools(request):
         # Get user's preferences
         user_preferences = Preferences.objects.filter(user=request.user).first()
         if not user_preferences:
-            return Response({"message": "No preferences found. Please submit your preferences first."}, 
-                          status=status.HTTP_404_NOT_FOUND)
+            logger.info(f"No preferences found for user {request.user.id}. Returning top schools.")
+            # Return top schools with default ratings if no preferences
+            top_schools = Schools.objects.all()[:5]
+            result = []
+            for school in top_schools:
+                # Determine default sport based on what the school offers
+                sport = "Men's Basketball"
+                if school.mbb:
+                    sport = "Men's Basketball"
+                elif school.wbb:
+                    sport = "Women's Basketball"
+                elif school.fb:
+                    sport = "Football"
+                
+                result.append({
+                    'school': SchoolSerializer(school).data,
+                    'similarity_score': 5.0,  # Medium match
+                    'sport': sport,
+                    'average_ratings': {
+                        'head_coach': 5,
+                        'assistant_coaches': 5,
+                        'team_culture': 5,
+                        'campus_life': 5,
+                        'athletic_facilities': 5,
+                        'athletic_department': 5,
+                        'player_development': 5,
+                        'nil_opportunity': 5
+                    }
+                })
+            return Response(result)
 
-        # Get all schools with reviews for the user's preferred sport
+        # Log for debugging
+        logger.info(f"Found preferences for user {request.user.id}, sport: {user_preferences.sport}")
+        sport = user_preferences.sport
+        
+        # Get all schools
         schools = Schools.objects.all()
+        logger.info(f"Total schools to check: {schools.count()}")
+        
         recommended_schools = []
 
         for school in schools:
-            # Get all reviews for this school and sport
-            reviews = Reviews.objects.filter(school=school, sport=user_preferences.sport)
-            if not reviews:
+            # Check if this school offers the user's preferred sport
+            has_sport = False
+            if sport == "Men's Basketball" and school.mbb:
+                has_sport = True
+            elif sport == "Women's Basketball" and school.wbb:
+                has_sport = True
+            elif sport == "Football" and school.fb:
+                has_sport = True
+            
+            if not has_sport:
+                logger.info(f"School {school.school_name} does not offer {sport}, skipping")
                 continue
+                
+            # Get reviews for this school and the user's preferred sport
+            reviews = Reviews.objects.filter(school=school, sport=sport)
+            
+            if not reviews:
+                logger.info(f"No reviews for {school.school_name} with sport {sport}")
+                # Add with default match score since the school has the sport
+                recommended_schools.append({
+                    'school': SchoolSerializer(school).data,
+                    'similarity_score': 7.0,  # Good default match since sport is available
+                    'sport': sport,
+                    'average_ratings': {
+                        'head_coach': 5,
+                        'assistant_coaches': 5,
+                        'team_culture': 5,
+                        'campus_life': 5,
+                        'athletic_facilities': 5,
+                        'athletic_department': 5,
+                        'player_development': 5,
+                        'nil_opportunity': 5
+                    }
+                })
+                continue
+
+            logger.info(f"Found {reviews.count()} reviews for {school.school_name} - {sport}")
 
             # Calculate average ratings
             avg_ratings = {
-                'head_coach': reviews.aggregate(avg=models.Avg('head_coach'))['avg'],
-                'assistant_coaches': reviews.aggregate(avg=models.Avg('assistant_coaches'))['avg'],
-                'team_culture': reviews.aggregate(avg=models.Avg('team_culture'))['avg'],
-                'campus_life': reviews.aggregate(avg=models.Avg('campus_life'))['avg'],
-                'athletic_facilities': reviews.aggregate(avg=models.Avg('athletic_facilities'))['avg'],
-                'athletic_department': reviews.aggregate(avg=models.Avg('athletic_department'))['avg'],
-                'player_development': reviews.aggregate(avg=models.Avg('player_development'))['avg'],
-                'nil_opportunity': reviews.aggregate(avg=models.Avg('nil_opportunity'))['avg']
+                'head_coach': reviews.aggregate(avg=models.Avg('head_coach'))['avg'] or 5,
+                'assistant_coaches': reviews.aggregate(avg=models.Avg('assistant_coaches'))['avg'] or 5,
+                'team_culture': reviews.aggregate(avg=models.Avg('team_culture'))['avg'] or 5,
+                'campus_life': reviews.aggregate(avg=models.Avg('campus_life'))['avg'] or 5,
+                'athletic_facilities': reviews.aggregate(avg=models.Avg('athletic_facilities'))['avg'] or 5,
+                'athletic_department': reviews.aggregate(avg=models.Avg('athletic_department'))['avg'] or 5,
+                'player_development': reviews.aggregate(avg=models.Avg('player_development'))['avg'] or 5,
+                'nil_opportunity': reviews.aggregate(avg=models.Avg('nil_opportunity'))['avg'] or 5
             }
 
             # Calculate similarity score (weighted average of rating differences)
@@ -220,16 +287,86 @@ def get_recommended_schools(request):
                     total_weight += 1
 
             if total_weight > 0:
-                similarity_score = 10 - (similarity_score / total_weight)  # Convert to 0-10 scale
+                # Convert to 0-10 scale, higher is better
+                similarity_score = 10 - min(10, (similarity_score / total_weight))
+                
+                # Add this school to recommendations
                 recommended_schools.append({
                     'school': SchoolSerializer(school).data,
                     'similarity_score': round(similarity_score, 2),
-                    'average_ratings': avg_ratings
+                    'average_ratings': avg_ratings,
+                    'sport': sport
                 })
+                logger.info(f"Added {school.school_name} for {sport} with score {similarity_score}")
 
-        # Sort by similarity score and return top 5
+        # If no specific matches, look for any schools with the sport
+        if not recommended_schools:
+            logger.info(f"No matches found. Looking for any schools with {sport}")
+            for school in schools:
+                has_sport = False
+                if sport == "Men's Basketball" and school.mbb:
+                    has_sport = True
+                elif sport == "Women's Basketball" and school.wbb:
+                    has_sport = True
+                elif sport == "Football" and school.fb:
+                    has_sport = True
+                
+                if has_sport:
+                    recommended_schools.append({
+                        'school': SchoolSerializer(school).data,
+                        'similarity_score': 6.0,  # Default good match
+                        'sport': sport,
+                        'average_ratings': {
+                            'head_coach': 5,
+                            'assistant_coaches': 5,
+                            'team_culture': 5,
+                            'campus_life': 5,
+                            'athletic_facilities': 5,
+                            'athletic_department': 5,
+                            'player_development': 5,
+                            'nil_opportunity': 5
+                        }
+                    })
+                    if len(recommended_schools) >= 5:
+                        break
+
+        # Sort by similarity score and return top schools
         recommended_schools.sort(key=lambda x: x['similarity_score'], reverse=True)
-        return Response(recommended_schools[:5])
+        result = recommended_schools[:5] if recommended_schools else []
+        
+        # If we still have no recommendations, return top 5 schools
+        if not result:
+            logger.info(f"No recommendations matched. Returning top 5 schools.")
+            top_schools = Schools.objects.all()[:5]
+            for school in top_schools:
+                # Determine default sport based on what the school offers
+                default_sport = "Men's Basketball"
+                if school.mbb:
+                    default_sport = "Men's Basketball"
+                elif school.wbb:
+                    default_sport = "Women's Basketball"
+                elif school.fb:
+                    default_sport = "Football"
+                
+                result.append({
+                    'school': SchoolSerializer(school).data,
+                    'similarity_score': 5.0,  # Medium match
+                    'sport': default_sport,
+                    'average_ratings': {
+                        'head_coach': 5,
+                        'assistant_coaches': 5,
+                        'team_culture': 5,
+                        'campus_life': 5,
+                        'athletic_facilities': 5,
+                        'athletic_department': 5,
+                        'player_development': 5,
+                        'nil_opportunity': 5
+                    }
+                })
+        
+        logger.info(f"Returning {len(result)} recommendations")
+        return Response(result)
 
     except Exception as e:
+        logger.error(f"Error in get_recommended_schools: {str(e)}", exc_info=True)
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
