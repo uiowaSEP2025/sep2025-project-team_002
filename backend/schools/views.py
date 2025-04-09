@@ -204,37 +204,10 @@ def get_recommended_schools(request):
         # Get user's preferences
         user_preferences = Preferences.objects.filter(user=current_user).first()
         if not user_preferences:
-            logger.info(f"No preferences found for user {current_user.id}. Returning top schools.")
-            # Return top schools with default ratings if no preferences
-            top_schools = Schools.objects.all()[:5]
-            result = []
-            for school in top_schools:
-                # Determine default sport based on what the school offers
-                sport = "Men's Basketball"
-                if school.mbb:
-                    sport = "Men's Basketball"
-                elif school.wbb:
-                    sport = "Women's Basketball"
-                elif school.fb:
-                    sport = "Football"
-                
-                result.append({
-                    'school': SchoolSerializer(school).data,
-                    'similarity_score': 5.0,  # Medium match
-                    'sport': sport,
-                    'average_ratings': {
-                        'head_coach': 5,
-                        'assistant_coaches': 5,
-                        'team_culture': 5,
-                        'campus_life': 5,
-                        'athletic_facilities': 5,
-                        'athletic_department': 5,
-                        'player_development': 5,
-                        'nil_opportunity': 5
-                    }
-                })
-            return Response(result)
-
+            logger.info(f"No preferences found for user {current_user.id}.")
+            # Return a specific response indicating no preferences
+            return Response({"no_preferences": True})
+        
         # Log for debugging
         logger.info(f"Found preferences for user {current_user.id}, sport: {user_preferences.sport}")
         sport = user_preferences.sport
@@ -294,18 +267,29 @@ def get_recommended_schools(request):
                 'nil_opportunity': reviews.aggregate(avg=models.Avg('nil_opportunity'))['avg'] or 5
             }
 
-            # Calculate similarity score (weighted average of rating differences)
+            # Calculate similarity score (weighted by user's preference values)
             similarity_score = 0
             total_weight = 0
             for field in avg_ratings:
                 if avg_ratings[field] is not None:
                     user_pref = getattr(user_preferences, field)
-                    similarity_score += abs(user_pref - avg_ratings[field])
-                    total_weight += 1
+                    # The weight is proportional to the user's preference value
+                    weight = user_pref if user_pref > 0 else 1  # Avoid zero weights
+                    
+                    # Calculate weighted difference (higher preference = higher impact)
+                    rating_diff = abs(user_pref - avg_ratings[field])
+                    weighted_diff = rating_diff * weight
+                    
+                    similarity_score += weighted_diff
+                    total_weight += weight
 
             if total_weight > 0:
                 # Convert to 0-10 scale, higher is better
-                similarity_score = 10 - min(10, (similarity_score / total_weight))
+                # Normalize by the total weight to get a weighted average difference
+                avg_weighted_diff = similarity_score / total_weight
+                
+                # Convert to a similarity score (10 = perfect match, 0 = worst match)
+                similarity_score = 10 - min(10, avg_weighted_diff)
                 
                 # Add this school to recommendations
                 recommended_schools.append({
