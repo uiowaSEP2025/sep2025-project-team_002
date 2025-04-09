@@ -239,6 +239,7 @@ const PreferenceForm = () => {
 
           <Box component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: 4, borderRadius: 2, boxShadow: 3 }}>
            <TextField
+               id="sport-select"
               select
               fullWidth
               label="Sport *"
