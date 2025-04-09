@@ -232,13 +232,28 @@ def get_recommended_schools(request):
         logger.info(f"Found preferences for user {request.user.id}, sport: {user_preferences.sport}")
         sport = user_preferences.sport
         
-        # Get all schools
-        schools = Schools.objects.all()
-        logger.info(f"Total schools to check: {schools.count()}")
+        # Check if there are any reviews for this sport
+        sport_reviews = Reviews.objects.filter(sport=sport)
+        if not sport_reviews.exists():
+            logger.info(f"No reviews found for {sport}")
+            return Response([])  # Return empty list if no reviews for this sport
+            
+        # Get schools that have reviews for this sport
+        school_ids_with_reviews = sport_reviews.values_list('school_id', flat=True).distinct()
+        logger.info(f"Found {len(school_ids_with_reviews)} schools with reviews for {sport}")
         
-        # Check if there are any schools that offer this sport
-        schools_with_sport = []
+        if not school_ids_with_reviews:
+            logger.info(f"No schools have reviews for {sport}")
+            return Response([])  # Return empty list if no schools have reviews
+        
+        # Get all schools
+        schools = Schools.objects.filter(id__in=school_ids_with_reviews)
+        logger.info(f"Total schools with reviews to check: {schools.count()}")
+        
+        recommended_schools = []
+
         for school in schools:
+            # Check if this school offers the user's preferred sport
             has_sport = False
             if sport == "Men's Basketball" and school.mbb:
                 has_sport = True
@@ -247,46 +262,17 @@ def get_recommended_schools(request):
             elif sport == "Football" and school.fb:
                 has_sport = True
             
-            if has_sport:
-                schools_with_sport.append(school)
-        
-        # If no schools offer this sport, return empty list
-        if not schools_with_sport:
-            logger.info(f"No schools found offering {sport}")
-            return Response([])
-            
-        # Count total reviews for this sport
-        total_reviews = Reviews.objects.filter(sport=sport).count()
-        if total_reviews == 0:
-            logger.info(f"No reviews found for {sport}")
-            return Response([])  # Return empty list if no reviews for this sport
-        
-        recommended_schools = []
-
-        for school in schools_with_sport:
+            if not has_sport:
+                logger.info(f"School {school.school_name} does not offer {sport}, skipping")
+                continue
+                
             # Get reviews for this school and the user's preferred sport
             reviews = Reviews.objects.filter(school=school, sport=sport)
             
             if not reviews:
                 logger.info(f"No reviews for {school.school_name} with sport {sport}")
-                # Add with default match score since the school has the sport
-                recommended_schools.append({
-                    'school': SchoolSerializer(school).data,
-                    'similarity_score': 7.0,  # Good default match since sport is available
-                    'sport': sport,
-                    'average_ratings': {
-                        'head_coach': 5,
-                        'assistant_coaches': 5,
-                        'team_culture': 5,
-                        'campus_life': 5,
-                        'athletic_facilities': 5,
-                        'athletic_department': 5,
-                        'player_development': 5,
-                        'nil_opportunity': 5
-                    }
-                })
-                continue
-
+                continue  # Skip schools without reviews for this sport
+            
             logger.info(f"Found {reviews.count()} reviews for {school.school_name} - {sport}")
 
             # Calculate average ratings
@@ -327,36 +313,8 @@ def get_recommended_schools(request):
         recommended_schools.sort(key=lambda x: x['similarity_score'], reverse=True)
         result = recommended_schools[:5] if recommended_schools else []
         
-        # If we still have no recommendations, return top 5 schools
-        if not result:
-            logger.info(f"No recommendations matched. Returning top 5 schools.")
-            top_schools = Schools.objects.all()[:5]
-            for school in top_schools:
-                # Determine default sport based on what the school offers
-                default_sport = "Men's Basketball"
-                if school.mbb:
-                    default_sport = "Men's Basketball"
-                elif school.wbb:
-                    default_sport = "Women's Basketball"
-                elif school.fb:
-                    default_sport = "Football"
-                
-                result.append({
-                    'school': SchoolSerializer(school).data,
-                    'similarity_score': 5.0,  # Medium match
-                    'sport': default_sport,
-                    'average_ratings': {
-                        'head_coach': 5,
-                        'assistant_coaches': 5,
-                        'team_culture': 5,
-                        'campus_life': 5,
-                        'athletic_facilities': 5,
-                        'athletic_department': 5,
-                        'player_development': 5,
-                        'nil_opportunity': 5
-                    }
-                })
-        
+        # We no longer fall back to default recommendations if there are no matches
+        # Just return whatever we found, even if it's less than 5 or empty
         logger.info(f"Returning {len(result)} recommendations")
         return Response(result)
 
