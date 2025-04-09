@@ -38,6 +38,7 @@ function Home() {
 
   useEffect(() => {
     if (searchQuery !== prevSearchQuery) {
+      setPrevSearchQuery(searchQuery);
       // Whenever searchQuery changes, update the URL and reset the page to 1
       const params = new URLSearchParams(location.search);
       params.set("page", "1");
