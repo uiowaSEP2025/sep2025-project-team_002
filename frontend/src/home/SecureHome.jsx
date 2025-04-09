@@ -37,6 +37,7 @@ function SecureHome() {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
     coach: "",
+    sport: "",
     head_coach: "",
     assistant_coaches: "",
     team_culture: "",
@@ -128,15 +129,21 @@ function SecureHome() {
         
         if (response.ok) {
           const data = await response.json();
-          console.log("Recommended schools data:", data); // Debug log
+          console.log("Recommended schools data:", data);
           setRecommendedSchools(data);
+          
+          // Just set the filter value but don't apply it
+          if (data.length > 0 && data[0].sport) {
+            setFilters(prev => ({ ...prev, sport: data[0].sport }));
+          }
+          
           setShowRecommendations(data.length > 0);
         } else if (response.status === 404) {
-          console.log("No preferences found"); // Debug log
+          console.log("No preferences found");
           setShowRecommendations(false);
         } else {
           const errorText = await response.text();
-          console.log("Error response:", response.status, errorText); // Debug log
+          console.log("Error response:", response.status, errorText);
           setShowRecommendations(false);
         }
       } catch (error) {
@@ -191,12 +198,14 @@ function SecureHome() {
     const token = localStorage.getItem("token");
     const queryParams = new URLSearchParams();
     if (filters.coach) queryParams.append("coach", filters.coach);
+    if (filters.sport) queryParams.append("sport", filters.sport);
+    
     // Append rating filters if provided
     [
       "head_coach",
       "assistant_coaches",
       "team_culture",
-      "campus_life",
+      "campus_life", 
       "athletic_facilities",
       "athletic_department",
       "player_development",
@@ -216,7 +225,17 @@ function SecureHome() {
       });
       if (response.ok) {
         const data = await response.json();
-        setFilteredSchools(data);
+        // Filter schools client-side by the sport from preferences
+        let filteredData = data;
+        if (filters.sport) {
+          filteredData = data.filter(school => {
+            if (filters.sport === "Men's Basketball" && school.mbb) return true;
+            if (filters.sport === "Women's Basketball" && school.wbb) return true;
+            if (filters.sport === "Football" && school.fb) return true;
+            return false;
+          });
+        }
+        setFilteredSchools(filteredData);
         setFilterApplied(true);
       } else {
         console.error("Error applying filters");
@@ -227,8 +246,11 @@ function SecureHome() {
     closeFilterDialog();
   };
   const clearFilters = () => {
+    const sportFromPreferences = recommendedSchools.length > 0 ? recommendedSchools[0].sport : "";
+    
     setFilters({
       coach: "",
+      sport: sportFromPreferences, // Keep this for the dialog display only
       head_coach: "",
       assistant_coaches: "",
       team_culture: "",
@@ -238,7 +260,7 @@ function SecureHome() {
       player_development: "",
       nil_opportunity: "",
     });
-    setFilterApplied(false);
+    setFilterApplied(false);  // This is key - it resets to show all schools
     setFilteredSchools([]);
     closeFilterDialog();
   };
@@ -384,18 +406,27 @@ function SecureHome() {
             ) : (
               <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
                 <Typography variant="h6" sx={{ mb: 1 }}>
-                  Getting Your Recommendations
+                  No Recommendations Available
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                  We are working on finding the best schools for you based on your preferences.
+                  We don't have any reviews yet for your preferred sport ({filters.sport || "selected sport"}).
+                  Check back later as our community grows!
                 </Typography>
                 <Button 
                   variant="contained" 
                   color="primary"
                   onClick={handleGoToPreferenceForm}
-                  sx={{ mt: 1 }}
+                  sx={{ mt: 1, mr: 2 }}
                 >
                   Update Preferences
+                </Button>
+                <Button 
+                  variant="outlined" 
+                  color="primary"
+                  onClick={handleGoToReviewForm}
+                  sx={{ mt: 1 }}
+                >
+                  Submit a Review
                 </Button>
               </Box>
             )}
@@ -461,6 +492,25 @@ function SecureHome() {
               onChange={handleFilterChange}
               fullWidth
             />
+            <FormControl fullWidth>
+              <InputLabel htmlFor="sport-select" id="sport-label">
+                Sport
+              </InputLabel>
+              <Select
+                native
+                labelId="sport-label"
+                id="sport-select"
+                label="Sport"
+                name="sport"
+                value={filters.sport}
+                onChange={handleFilterChange}
+              >
+                <option value=""> </option>
+                <option value="Men's Basketball">Men's Basketball</option>
+                <option value="Women's Basketball">Women's Basketball</option>
+                <option value="Football">Football</option>
+              </Select>
+            </FormControl>
             <FormControl fullWidth>
               <InputLabel htmlFor="head_coach-select" id="head_coach-label">
                 Head Coach Rating

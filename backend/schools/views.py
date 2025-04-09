@@ -133,6 +133,7 @@ def get_review_summary(request, school_id):
 def filter_schools(request):
     school_name = request.query_params.get("school_name", "")
     coach = request.query_params.get("coach", "")
+    sport = request.query_params.get("sport", "")
 
     # Prepare rating filters
     rating_fields = [
@@ -154,10 +155,12 @@ def filter_schools(request):
             except ValueError:
                 pass
 
-    # Filter reviews based on coach and rating filters
+    # Filter reviews based on coach, sport, and rating filters
     reviews_query = Reviews.objects.all()
     if coach:
         reviews_query = reviews_query.filter(head_coach_name__icontains=coach)
+    if sport:
+        reviews_query = reviews_query.filter(sport=sport)
     for field, rating in rating_filters.items():
         reviews_query = reviews_query.filter(**{field: rating})
 
@@ -170,9 +173,18 @@ def filter_schools(request):
     if school_name:
         schools_query = schools_query.filter(school_name__icontains=school_name)
 
-    # If coach or ratings filters are applied, intersect with schools from reviews
-    if coach or rating_filters:
+    # If coach or sport or ratings filters are applied, intersect with schools from reviews
+    if coach or sport or rating_filters:
         schools_query = schools_query.filter(id__in=school_ids_from_reviews)
+        
+    # Additional filter for sport field at the school level
+    if sport:
+        if sport == "Men's Basketball":
+            schools_query = schools_query.filter(mbb=True)
+        elif sport == "Women's Basketball":
+            schools_query = schools_query.filter(wbb=True)
+        elif sport == "Football":
+            schools_query = schools_query.filter(fb=True)
 
     serializer = SchoolSerializer(schools_query, many=True)
     return Response(serializer.data)
@@ -224,10 +236,9 @@ def get_recommended_schools(request):
         schools = Schools.objects.all()
         logger.info(f"Total schools to check: {schools.count()}")
         
-        recommended_schools = []
-
+        # Check if there are any schools that offer this sport
+        schools_with_sport = []
         for school in schools:
-            # Check if this school offers the user's preferred sport
             has_sport = False
             if sport == "Men's Basketball" and school.mbb:
                 has_sport = True
@@ -236,10 +247,23 @@ def get_recommended_schools(request):
             elif sport == "Football" and school.fb:
                 has_sport = True
             
-            if not has_sport:
-                logger.info(f"School {school.school_name} does not offer {sport}, skipping")
-                continue
-                
+            if has_sport:
+                schools_with_sport.append(school)
+        
+        # If no schools offer this sport, return empty list
+        if not schools_with_sport:
+            logger.info(f"No schools found offering {sport}")
+            return Response([])
+            
+        # Count total reviews for this sport
+        total_reviews = Reviews.objects.filter(sport=sport).count()
+        if total_reviews == 0:
+            logger.info(f"No reviews found for {sport}")
+            return Response([])  # Return empty list if no reviews for this sport
+        
+        recommended_schools = []
+
+        for school in schools_with_sport:
             # Get reviews for this school and the user's preferred sport
             reviews = Reviews.objects.filter(school=school, sport=sport)
             
@@ -298,37 +322,6 @@ def get_recommended_schools(request):
                     'sport': sport
                 })
                 logger.info(f"Added {school.school_name} for {sport} with score {similarity_score}")
-
-        # If no specific matches, look for any schools with the sport
-        if not recommended_schools:
-            logger.info(f"No matches found. Looking for any schools with {sport}")
-            for school in schools:
-                has_sport = False
-                if sport == "Men's Basketball" and school.mbb:
-                    has_sport = True
-                elif sport == "Women's Basketball" and school.wbb:
-                    has_sport = True
-                elif sport == "Football" and school.fb:
-                    has_sport = True
-                
-                if has_sport:
-                    recommended_schools.append({
-                        'school': SchoolSerializer(school).data,
-                        'similarity_score': 6.0,  # Default good match
-                        'sport': sport,
-                        'average_ratings': {
-                            'head_coach': 5,
-                            'assistant_coaches': 5,
-                            'team_culture': 5,
-                            'campus_life': 5,
-                            'athletic_facilities': 5,
-                            'athletic_department': 5,
-                            'player_development': 5,
-                            'nil_opportunity': 5
-                        }
-                    })
-                    if len(recommended_schools) >= 5:
-                        break
 
         # Sort by similarity score and return top schools
         recommended_schools.sort(key=lambda x: x['similarity_score'], reverse=True)
