@@ -18,6 +18,43 @@ import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
 
+// Function to calculate the average rating for a set of reviews
+const calculateAverageRating = (reviews) => {
+  const ratingFields = [
+    'head_coach', 'assistant_coaches', 'team_culture', 'campus_life',
+    'athletic_facilities', 'athletic_department', 'player_development', 'nil_opportunity'
+  ];
+  let totalSum = 0;
+  let totalCount = 0;
+
+  reviews.forEach(review => {
+    ratingFields.forEach(field => {
+      if (review[field] != null) { // Check if the rating exists
+        totalSum += review[field];
+        totalCount++;
+      }
+    });
+  });
+
+  return totalCount > 0 ? totalSum / totalCount : 0; // Return average or 0 if no ratings
+};
+
+// Function to calculate the average rating for each category
+const calculateCategoryAverages = (reviews) => {
+  const ratingFields = [
+    'head_coach', 'assistant_coaches', 'team_culture', 'campus_life',
+    'athletic_facilities', 'athletic_department', 'player_development', 'nil_opportunity'
+  ];
+  const averages = {};
+
+  ratingFields.forEach(field => {
+    const total = reviews.reduce((sum, review) => sum + (review[field] || 0), 0);
+    averages[field] = reviews.length > 0 ? total / reviews.length : 0;
+  });
+
+  return averages;
+};
+
 function SchoolPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -112,6 +149,12 @@ function SchoolPage() {
   if (school.wbb) availableSports.push("Women's Basketball");
   if (school.fb) availableSports.push("Football");
 
+  // Filter reviews for the currently selected sport
+  const sportReviews = school.reviews?.filter(review => review.sport === selectedSport) || [];
+
+  // Calculate the average rating for each category
+  const categoryAverages = calculateCategoryAverages(sportReviews);
+
   const handleWriteReview = (sport) => {
     navigate(`/reviews/new?school=${id}&sport=${encodeURIComponent(sport)}`);
   };
@@ -162,13 +205,40 @@ function SchoolPage() {
               {selectedSport} Program
             </Typography>
             
-            {/* Reviews Summary */}
-            <Card id="summary-card" sx={{ mb: 3 }}>
+            {/* Category Averages */}
+            <Card id="category-averages-card" sx={{ mb: 3 }}>
               <CardContent>
-                <Typography id="summary-title" variant="h6" gutterBottom>
-                  Program Summary
+                <Typography id="category-averages-title" variant="h6" gutterBottom>
+                  Average Ratings by Category
                 </Typography>
-                <ReviewSummary schoolId={id} sport={selectedSport} />
+                <Grid container spacing={2}>
+                  {[
+                    ['head_coach', 'Head Coach'],
+                    ['assistant_coaches', 'Assistant Coaches'],
+                    ['team_culture', 'Team Culture'],
+                    ['campus_life', 'Campus Life'],
+                    ['athletic_facilities', 'Athletic Facilities'],
+                    ['athletic_department', 'Athletic Department'],
+                    ['player_development', 'Player Development'],
+                    ['nil_opportunity', 'NIL Opportunity']
+                  ].map(([field, label]) => (
+                    <Grid item xs={6} sm={3} key={field}>
+                      <Typography id={`average-${field}-label`} variant="subtitle2">
+                        {label}
+                      </Typography>
+                      <Rating
+                        id={`average-${field}-rating`}
+                        value={categoryAverages[field]}
+                        readOnly
+                        precision={0.1}
+                        max={10}
+                      />
+                      <Typography id={`average-${field}-score`} variant="caption">
+                        {categoryAverages[field].toFixed(1)}/10
+                      </Typography>
+                    </Grid>
+                  ))}
+                </Grid>
               </CardContent>
             </Card>
 
@@ -197,10 +267,9 @@ function SchoolPage() {
                   )}
                 </Box>
                 
-                {/* Filter reviews by sport */}
-                {school.reviews
-                  .filter(review => review.sport === selectedSport)
-                  .map((review) => (
+                {/* Display reviews or message if none */}
+                {sportReviews.length > 0 ? (
+                  sportReviews.map((review) => (
                     <Card 
                       id={`review-${review.review_id}`}
                       key={review.review_id} 
@@ -242,7 +311,12 @@ function SchoolPage() {
                         </Grid>
                       </CardContent>
                     </Card>
-                  ))}
+                  ))
+                ) : (
+                  <Typography id="no-reviews-message" sx={{ textAlign: 'center', mt: 3 }}>
+                    No reviews available for {selectedSport} yet.
+                  </Typography>
+                )}
               </CardContent>
             </Card>
           </Box>
