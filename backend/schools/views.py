@@ -8,6 +8,8 @@ from reviews.models import Reviews
 from openai import OpenAI
 from django.conf import settings
 import logging
+from django.db import models
+from preferences.models import Preferences
 
 logger = logging.getLogger(__name__)
 
@@ -174,3 +176,60 @@ def filter_schools(request):
 
     serializer = SchoolSerializer(schools_query, many=True)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_recommended_schools(request):
+    try:
+        # Get user's preferences
+        user_preferences = Preferences.objects.filter(user=request.user).first()
+        if not user_preferences:
+            return Response({"message": "No preferences found. Please submit your preferences first."}, 
+                          status=status.HTTP_404_NOT_FOUND)
+
+        # Get all schools with reviews for the user's preferred sport
+        schools = Schools.objects.all()
+        recommended_schools = []
+
+        for school in schools:
+            # Get all reviews for this school and sport
+            reviews = Reviews.objects.filter(school=school, sport=user_preferences.sport)
+            if not reviews:
+                continue
+
+            # Calculate average ratings
+            avg_ratings = {
+                'head_coach': reviews.aggregate(avg=models.Avg('head_coach'))['avg'],
+                'assistant_coaches': reviews.aggregate(avg=models.Avg('assistant_coaches'))['avg'],
+                'team_culture': reviews.aggregate(avg=models.Avg('team_culture'))['avg'],
+                'campus_life': reviews.aggregate(avg=models.Avg('campus_life'))['avg'],
+                'athletic_facilities': reviews.aggregate(avg=models.Avg('athletic_facilities'))['avg'],
+                'athletic_department': reviews.aggregate(avg=models.Avg('athletic_department'))['avg'],
+                'player_development': reviews.aggregate(avg=models.Avg('player_development'))['avg'],
+                'nil_opportunity': reviews.aggregate(avg=models.Avg('nil_opportunity'))['avg']
+            }
+
+            # Calculate similarity score (weighted average of rating differences)
+            similarity_score = 0
+            total_weight = 0
+            for field in avg_ratings:
+                if avg_ratings[field] is not None:
+                    user_pref = getattr(user_preferences, field)
+                    similarity_score += abs(user_pref - avg_ratings[field])
+                    total_weight += 1
+
+            if total_weight > 0:
+                similarity_score = 10 - (similarity_score / total_weight)  # Convert to 0-10 scale
+                recommended_schools.append({
+                    'school': SchoolSerializer(school).data,
+                    'similarity_score': round(similarity_score, 2),
+                    'average_ratings': avg_ratings
+                })
+
+        # Sort by similarity score and return top 5
+        recommended_schools.sort(key=lambda x: x['similarity_score'], reverse=True)
+        return Response(recommended_schools[:5])
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

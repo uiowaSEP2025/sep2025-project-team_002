@@ -30,6 +30,8 @@ function SecureHome() {
   const open = Boolean(anchorEl);
   const [schools, setSchools] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [recommendedSchools, setRecommendedSchools] = useState([]);
+  const [showRecommendations, setShowRecommendations] = useState(false);
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -111,8 +113,35 @@ function SecureHome() {
       }
     };
 
+    // Fetch Recommended Schools
+    const fetchRecommendedSchools = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/recommendations/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            setRecommendedSchools(data);
+            setShowRecommendations(true);
+          }
+        } else if (response.status === 404) {
+          // No preferences found, don't show recommendations
+          setShowRecommendations(false);
+        }
+      } catch (error) {
+        console.error("Error fetching recommendations:", error);
+        setShowRecommendations(false);
+      }
+    };
+
     fetchUserInfo();
     fetchSchools();
+    fetchRecommendedSchools();
   }, [navigate]);
 
   // Account menu handlers
@@ -248,6 +277,56 @@ function SecureHome() {
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, textAlign: "center" }}>
               Schools and Sports
             </Typography>
+
+            {/* Recommended Schools Section */}
+            {showRecommendations && recommendedSchools.length > 0 && (
+              <Box sx={{ mb: 4 }}>
+                <Typography variant="h5" sx={{ fontWeight: 600, mb: 2 }}>
+                  Recommended Schools
+                </Typography>
+                <Grid container spacing={2}>
+                  {recommendedSchools.map((rec, index) => (
+                    <Grid item xs={12} sm={6} md={4} key={index}>
+                      <Card 
+                        sx={{ 
+                          height: '100%',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            transform: 'scale(1.02)',
+                            transition: 'transform 0.2s ease-in-out'
+                          }
+                        }}
+                        onClick={() => handleSchoolClick(rec.school.id)}
+                      >
+                        <CardContent>
+                          <Typography variant="h6" gutterBottom>
+                            {rec.school.school_name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" gutterBottom>
+                            {rec.school.location}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary" gutterBottom>
+                            Similarity Score: {rec.similarity_score}/10
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Average Ratings:
+                          </Typography>
+                          <Box sx={{ mt: 1 }}>
+                            {Object.entries(rec.average_ratings).map(([key, value]) => (
+                              value !== null && (
+                                <Typography key={key} variant="body2" color="text.secondary">
+                                  {key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}: {value.toFixed(1)}
+                                </Typography>
+                              )
+                            ))}
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            )}
 
             <Box sx={{ display: "flex", justifyContent: "center", mb: 4, gap: 2 }}>
               <TextField
