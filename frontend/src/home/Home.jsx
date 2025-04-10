@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom"
 import {
   Stack,
   Card,
@@ -7,6 +7,7 @@ import {
   Box,
   Typography,
   TextField,
+  Pagination,
   Button,
   Dialog,
   DialogTitle,
@@ -21,7 +22,17 @@ import API_BASE_URL from "../utils/config";
 function Home() {
   const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const pageFromURL = parseInt(queryParams.get("page")) || 1;
+  const searchFromURL = queryParams.get("search") || "";
+
+  const schoolsPerPage = 10;
+
+  const [searchQuery, setSearchQuery] = useState(searchFromURL);
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchFromURL);
+  const [currentPage, setCurrentPage] = useState(pageFromURL);
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -48,17 +59,49 @@ function Home() {
     }
   }, [navigate]);
 
-const displayedSchools = useMemo(() => {
-  const baseList = filterApplied ? filteredSchools : schools;
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const newPage = parseInt(params.get("page")) || 1;
+    const newSearch = params.get("search") || "";
+    setCurrentPage(newPage);
+    setSearchQuery(newSearch);
+    setPrevSearchQuery(newSearch);
+  }, [location.search]);
 
-  const searched = baseList.filter((school) =>
-    school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    if (searchQuery !== prevSearchQuery) {
+      setPrevSearchQuery(searchQuery);
+      // Whenever searchQuery changes, update the URL and reset the page to 1
+      const params = new URLSearchParams(location.search);
+      params.set("page", "1");
+      if (searchQuery.trim() !== "") {
+        params.set("search", searchQuery);
+      } else {
+        params.delete("search");
+      }
+      navigate({search: params.toString()}, {replace: false});
+    }
+  }, [searchQuery, navigate, location.search]);
 
-  return searched.sort((a, b) =>
-    a.school_name.localeCompare(b.school_name)
-  );
-}, [schools, filteredSchools, filterApplied, searchQuery]);
+  const updatePageInURL = (page) => {
+    const params = new URLSearchParams(location.search);
+    params.set("page", page.toString());
+    if (searchQuery.trim() !== "") {
+      params.set("search", searchQuery);
+    } else {
+      params.delete("search");
+    }
+    navigate({ search: params.toString() }, { replace: false });
+  };
+
+  // Handle page change function - THIS WAS MISSING
+  const handlePageChange = (event, newPage) => {
+    updatePageInURL(newPage);
+  };
+
+  const handleSchoolClick = (schoolId) => {
+    navigate(`/school/${schoolId}`);
+  };
 
   const fetchSchools = async () => {
     try {
@@ -72,10 +115,6 @@ const displayedSchools = useMemo(() => {
       console.error("Error fetching schools:", error);
       setSchools([]);
     }
-  };
-
-  const handleSchoolClick = (schoolId) => {
-    navigate(`/school/${schoolId}`);
   };
 
   // Filter dialog handlers
@@ -116,6 +155,8 @@ const displayedSchools = useMemo(() => {
         const data = await response.json();
         setFilteredSchools(data);
         setFilterApplied(true);
+        setCurrentPage(1);
+        updatePageInURL(1);
       } else {
         console.error("Error applying filters");
       }
@@ -147,6 +188,14 @@ const displayedSchools = useMemo(() => {
   const filteredBySearch = schoolsToDisplay.filter((school) =>
     school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+    // Sort alphabetically
+  const sortedFilteredSchools = [...filteredBySearch].sort((a, b) =>
+    a.school_name.localeCompare(b.school_name)
+  );
+  const indexOfLastSchool = currentPage * schoolsPerPage;
+  const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
+  const currentSchools = sortedFilteredSchools.slice(indexOfFirstSchool, indexOfLastSchool);
 
   return (
     <div>
@@ -189,8 +238,8 @@ const displayedSchools = useMemo(() => {
       </div>
       {/* Schools List */}
       <Stack spacing={2} sx={{ px: 2, pb: 4, textAlign: "center" }}>
-        {displayedSchools.length > 0 ? (
-          displayedSchools.map((school) => (
+        {currentSchools.length > 0 ? (
+          currentSchools.map((school) => (
             <Card
               key={school.id}
               id={`school-${school.id}`}
@@ -221,6 +270,72 @@ const displayedSchools = useMemo(() => {
           </Typography>
         )}
       </Stack>
+      {filteredBySearch.length > schoolsPerPage && (
+        <Box sx={{ position: "relative", mt: 3, mb: 9 }}>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Pagination
+              count={Math.ceil(filteredBySearch.length / schoolsPerPage)}
+              page={currentPage}
+              onChange={handlePageChange}
+              color="primary"
+              siblingCount={1}
+              boundaryCount={1}
+              showFirstButton
+              showLastButton
+              sx={{
+                "& .MuiPaginationItem-root": {
+                  fontSize: "1.1rem",
+                  fontWeight: 500,
+                },
+              }}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              transform: "translateY(-50%)",
+              left: "50%",
+              ml: "180px",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+            }}
+          >
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              Jump to:
+            </Typography>
+            <TextField
+              size="small"
+              type="number"
+              variant="outlined"
+              value={currentPage}
+              onChange={(e) => {
+                const value = parseInt(e.target.value);
+                const maxPage = Math.ceil(filteredBySearch.length / schoolsPerPage);
+                if (!isNaN(value) && value >= 1 && value <= maxPage) {
+                  setCurrentPage(value);
+                  const params = new URLSearchParams(location.search);
+                  params.set("page", value.toString());
+                  if (searchQuery.trim() !== "") {
+                    params.set("search", searchQuery);
+                  } else {
+                    params.delete("search");
+                  }
+                  navigate({ search: params.toString() }, { replace: false });
+                }
+              }}
+              inputProps={{
+                min: 1,
+                max: Math.ceil(filteredBySearch.length / schoolsPerPage),
+                style: { width: 60, textAlign: "center" }
+              }}
+            />
+          </Box>
+        </Box>
+      )}
+
       {/* Filter Dialog */}
       <Dialog open={filterDialogOpen} onClose={closeFilterDialog} fullWidth maxWidth="sm">
         <DialogTitle>Apply Filters</DialogTitle>
