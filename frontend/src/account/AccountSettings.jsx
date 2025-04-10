@@ -41,7 +41,8 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
 import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
-import {UserProvider, useUser} from "../context/UserContext.jsx"
+import {useUser} from "../context/UserContext.jsx"
+import SidebarWrapper from "../components/SidebarWrapper";
 
 // Import your config base URL
 import API_BASE_URL from "../utils/config.js";
@@ -51,34 +52,7 @@ import PasswordForm from "./PasswordForm.jsx";
 
 function AccountSettings() {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery("(max-width: 768px)");
-
-  // Desktop collapsible menu
-  const [menuOpen, setMenuOpen] = useState(true);
-
-  const [user, setUser] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    transfer_type: "",
-    is_school_verified: false,
-    profile_picture: "",
-  });
-
-  // Mobile overlay menu
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // For success/error messages
-  const [message, setMessage] = useState("");
-
-
-  // For profile picture updates (specifically)
-  const { profilePic, updateProfilePic } = useUser();
-  console.log("Current profile picture:", profilePic); // Debug log
-
-  const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
-
-
+  const { user, updateProfilePic, profilePic, loading, fetchUser } = useUser();
 
   // Main user form data (editable)
   const [formData, setFormData] = useState({
@@ -88,6 +62,23 @@ function AccountSettings() {
     transfer_type: ""
   });
 
+  // For success/error messages
+  const [message, setMessage] = useState("");
+
+  // For profile picture updates (specifically)
+  const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        first_name: user.first_name || "",
+        last_name: user.last_name || "",
+        email: user.email || "",
+        transfer_type: user.transfer_type || ""
+      });
+    }
+  }, [user]);
+
   // Real-time email validation:
   const emailIsInvalid =
     formData.email.length > 0 &&
@@ -95,75 +86,7 @@ function AccountSettings() {
 
   // Dialog state for changing password
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
-
-  // Current password, new password, and confirm new password
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState(""); // for dialog errors
-
-  // Show/hide toggles for each password field in the dialog
-  const [showCurrentPass, setShowCurrentPass] = useState(false);
-  const [showNewPass, setShowNewPass] = useState(false);
-  const [showConfirmNewPass, setShowConfirmNewPass] = useState(false);
-
-  // For real-time matching check
-  const newPasswordsMatch =
-    confirmNewPassword.length > 0 && newPassword === confirmNewPassword;
-
-  // Fetch user info on mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/users/user/`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          setUser({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          email: data.email || "",
-          transfer_type: data.transfer_type || "",
-          is_school_verified: data.is_school_verified || false,
-          profile_picture: data.profile_picture || ""
-        });
-
-
-          setFormData({
-            first_name: data.first_name || "",
-            last_name: data.last_name || "",
-            email: data.email || "",
-            transfer_type: data.transfer_type || ""
-          });
-        } else {
-          const errorData = await response.json();
-          setMessage(errorData.detail || errorData.error || "Failed to fetch user info.");
-        }
-      } catch (error) {
-        console.error("AccountSettings error:", error);
-
-        if (error.message.includes("Failed to fetch")) {
-          setMessage("Unable to reach server. Check your connection.");
-        } else {
-          setMessage("Network error: " + error.message);
-        }
-      }
-    };
-
-    fetchUserInfo();
-  }, [navigate]);
 
   // Handle text/radio changes in the main form
   const handleChange = (e) => {
@@ -201,6 +124,7 @@ function AccountSettings() {
 
       if (response.ok) {
         setMessage("Account info updated successfully");
+        fetchUser();
       } else {
         let errorText = "Unknown error";
 
@@ -240,12 +164,6 @@ function AccountSettings() {
   const handleClosePasswordDialog = () => {
     setPasswordDialogOpen(false);
     setPasswordError("");
-    setCurrentPassword("");
-    setNewPassword("");
-    setConfirmNewPassword("");
-    setShowCurrentPass(false);
-    setShowNewPass(false);
-    setShowConfirmNewPass(false);
   };
 
   // Handle the "change password" action inside the dialog
@@ -311,7 +229,7 @@ function AccountSettings() {
     //   action: () => navigate("/school"),
     //   icon: <SchoolIcon fontSize="medium" />
     // },
-           ...(user.transfer_type && user.transfer_type !== "graduate"
+           ...(user?.transfer_type && user.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
@@ -329,358 +247,171 @@ function AccountSettings() {
     }
   ];
 
-  // Render menu items
-  const renderMenuList = () =>
-    menuItems.map((item, index) => (
-      <ListItem key={index} disablePadding>
-        <ListItemButton
-          onClick={() => {
-            item.action();
-            // If on mobile, close the overlay after navigating
-            if (isMobile) setMobileMenuOpen(false);
-          }}
-          sx={{ borderRadius: "20px", mb: 1, pl: 2 }}
-        >
-          {item.icon}
-          {/* Desktop: only show text if side menu is expanded */}
-          {!isMobile && menuOpen && (
-            <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
-          )}
-          {/* Mobile: always show text in overlay */}
-          {isMobile && (
-            <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
-          )}
-        </ListItemButton>
-      </ListItem>
-    ));
-
-  // Collapsible side menu (desktop)
-  const menuVariants = {
-    open: { width: 240, transition: { duration: 0.3 } },
-    closed: { width: 72, transition: { duration: 0.3 } }
-  };
-
-  // Mobile overlay slide-in/out
-  const overlayVariants = {
-    hidden: { x: "-100%" },
-    visible: { x: 0 },
-    exit: { x: "-100%" }
-  };
-
   return (
-    <>
-      <UserProvider>
-      {/* MAIN GRID LAYOUT */}
-      <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-        {/* DESKTOP / LARGE TABLET: Collapsible Side Menu */}
-        {!isMobile && (
-          <Grid item xs={12} md={3} sx={{ p: 0 }}>
-            <motion.div
-              variants={menuVariants}
-              animate={menuOpen ? "open" : "closed"}
-              initial="open"
-              style={{
-                backgroundColor: "#1a1a1a",
-                color: "white",
-                height: "100vh",
-                padding: 16,
-                boxSizing: "border-box",
-                overflow: "hidden"
-              }}
-            >
-              {/* Top bar with title & arrow */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: menuOpen ? "space-between" : "center",
-                  mb: 2
-                }}
-              >
-                {menuOpen && (
-                  <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: 600 }}>
-                    My Account
-                  </Typography>
-                )}
-                <IconButton onClick={() => setMenuOpen(!menuOpen)} sx={{ color: "white" }}>
-                  <ArrowBackIcon
-                    sx={{
-                      transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)",
-                      transition: "transform 0.3s"
-                    }}
-                  />
-                </IconButton>
-              </Box>
-              <Divider sx={{ bgcolor: "grey.600", mb: 2 }} />
-              <List>{renderMenuList()}</List>
-            </motion.div>
-          </Grid>
-        )}
-
-        {/* MOBILE: Hamburger icon in top-left corner */}
-        {isMobile && (
-          <Box
-            sx={{
-              position: "fixed",
-              top: 16,
-              left: 16,
-              zIndex: 3000
-            }}
-          >
-            <IconButton
-              onClick={() => setMobileMenuOpen(true)}
-              sx={{
-                bgcolor: "#1a1a1a",
-                color: "white",
-                "&:hover": { backgroundColor: "#333" }
-              }}
-            >
-              <MenuIcon fontSize="large" />
-            </IconButton>
-          </Box>
-        )}
-
-        {/* MOBILE OVERLAY MENU */}
-        <AnimatePresence>
-          {isMobile && mobileMenuOpen && (
-            <motion.div
-              key="mobile-menu"
-              variants={overlayVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              transition={{ duration: 0.3 }}
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
-                backgroundColor: "#1a1a1a",
-                zIndex: 4000,
-                display: "flex",
-                color: "white",
-                flexDirection: "column"
-              }}
-            >
-              {/* Sticky header */}
-              <Box
-                sx={{
-                  position: "sticky",
-                  top: 0,
-                  backgroundColor: "#1a1a1a",
-                  zIndex: 4500,
-                  p: 2
-                }}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{ fontSize: "1.5rem", fontWeight: 600, color: "#fff" }}
-                  >
-                    My Account
-                  </Typography>
-                  <IconButton
-                    onClick={() => setMobileMenuOpen(false)}
-                    sx={{ color: "white" }}
-                  >
-                    <ArrowBackIcon />
-                  </IconButton>
-                </Box>
-                <Divider sx={{ bgcolor: "grey.600", mt: 2 }} />
-              </Box>
-              {/* Scrollable menu list */}
-              <Box
-                sx={{
-                  flex: 1,
-                  overflowY: "auto",
-                  p: 2
-                }}
-              >
-                <List>{renderMenuList()}</List>
-              </Box>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* MAIN CONTENT: Account Settings Form */}
-        <Grid
-          item
-          xs={12}
-          md={isMobile ? 12 : 9}
-          sx={{
-            p: 4,
-            mt: isMobile ? 6 : 0
-          }}
+    <SidebarWrapper menuItems={menuItems} title="My Account">
+      {/* MAIN CONTENT: Account Settings Form */}
+      <Box>
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}
         >
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}
-          >
-            <Typography id="account-settings-title" variant="h4" gutterBottom sx={{ fontWeight: 700, fontSize: "2rem" }}>
-              Account Settings
+          <Typography id="account-settings-title" variant="h4" gutterBottom sx={{ fontWeight: 700, fontSize: "2rem" }}>
+            Account Settings
+          </Typography>
+
+          {message && (
+            <Typography
+              variant="body1"
+              id="settings-error"
+              color="error"
+              sx={{ mb: 2, fontSize: "1.2rem" }}
+            >
+              {message}
             </Typography>
-
-            {message && (
-              <Typography
-                variant="body1"
-                id="settings-error"
-                color="error"
-                sx={{ mb: 2, fontSize: "1.2rem" }}
-              >
-                {message}
-              </Typography>
-            )}
-            <div style={{ textAlign: "center" }}>
-            <h2 id="profile-pic-label">Choose Your Profile Picture</h2>
-            {profilePic && profilePic.trim() ? (
-              <img
-                src={profilePic}
-                id="selected-profile-pic"
-                alt="Selected Profile"
-                onError={(e) => {
-                  e.target.onerror = null; // Prevent infinite loop
-                  e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
-                }}
-                style={{
-                  width: "150px",
-                  height: "150px",
-                  borderRadius: "50%",
-                  border: "3px solid #007bff",
-                  objectFit: "cover",
-                  marginBottom: "10px"
-                }}
-              />
-            ) : (
-              <AccountCircleIcon
-                sx={{
-                  fontSize: "150px",
-                  color: "gray",
-                  borderRadius: "50%",
-                  backgroundColor: "#f0f0f0",
-                  padding: "10px"
-                }}
-              />
-            )}
-            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-              {profilePictures.map((pic, index) => (
-                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
-                  <img
-                    src={`/assets/profile-pictures/${pic}`}
-                    alt={`Profile ${index + 1}`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "50%",
-                      objectFit: "cover",
-                      cursor: "pointer",
-                      border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
-                    }}
-                  />
-                </IconButton>
-              ))}
-            </div>
+          )}
+          <div style={{ textAlign: "center" }}>
+          <h2 id="profile-pic-label">Choose Your Profile Picture</h2>
+          {profilePic && profilePic.trim() ? (
+            <img
+              src={profilePic}
+              id="selected-profile-pic"
+              alt="Selected Profile"
+              onError={(e) => {
+                e.target.onerror = null; // Prevent infinite loop
+                e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
+              }}
+              style={{
+                width: "150px",
+                height: "150px",
+                borderRadius: "50%",
+                border: "3px solid #007bff",
+                objectFit: "cover",
+                marginBottom: "10px"
+              }}
+            />
+          ) : (
+            <AccountCircleIcon
+              sx={{
+                fontSize: "150px",
+                color: "gray",
+                borderRadius: "50%",
+                backgroundColor: "#f0f0f0",
+                padding: "10px"
+              }}
+            />
+          )}
+          <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+            {profilePictures.map((pic, index) => (
+              <IconButton key={index} onClick={() => updateProfilePic(pic)}>
+                <img
+                  src={`/assets/profile-pictures/${pic}`}
+                  alt={`Profile ${index + 1}`}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                    cursor: "pointer",
+                    border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
+                  }}
+                />
+              </IconButton>
+            ))}
           </div>
-            <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
-              <TextField
-                fullWidth
-                id="settings-first-name"
-                margin="normal"
-                label="First Name"
-                name="first_name"
-                value={formData.first_name}
-                onChange={handleChange}
-                InputProps={{ sx: { borderRadius: "40px" } }}
-                required
-              />
-              <TextField
-                fullWidth
-                id="settings-last-name"
-                margin="normal"
-                label="Last Name"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                InputProps={{ sx: { borderRadius: "40px" } }}
-                required
-              />
-              {/* Real-time email validation */}
-              <TextField
-                fullWidth
-                id="settings-email"
-                margin="normal"
-                label="Email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                InputProps={{ sx: { borderRadius: "40px" } }}
-                required
-                type="email"
-                error={emailIsInvalid}
-                helperText={emailIsInvalid ? "Invalid email address" : ""}
-              />
-
-              {/* Transfer Type (radio) */}
-              {/*<FormControl component="fieldset" sx={{ mt: 2 }}>*/}
-              {/*  <FormLabel component="legend">Transfer Type</FormLabel>*/}
-              {/*  <RadioGroup*/}
-              {/*    row*/}
-              {/*    name="transfer_type"*/}
-              {/*    value={formData.transfer_type}*/}
-              {/*    onChange={handleChange}*/}
-              {/*  >*/}
-              {/*    <FormControlLabel*/}
-              {/*      value="transfer_in"*/}
-              {/*      control={<Radio />}*/}
-              {/*      label="Transfer In"*/}
-              {/*    />*/}
-              {/*    <FormControlLabel*/}
-              {/*      value="transfer_out"*/}
-              {/*      control={<Radio />}*/}
-              {/*      label="Transfer Out"*/}
-              {/*    />*/}
-              {/*  </RadioGroup>*/}
-              {/*</FormControl>*/}
-
-              {/* SAVE CHANGES BUTTON */}
-              <Button
-                type="submit"
-                id="save-changes-button"
-                variant="contained"
-                fullWidth
-                sx={{ mt: 3, borderRadius: "40px" }}
-                component={motion.button}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Save Changes
-              </Button>
-            </Box>
-
-            {/* CHANGE PASSWORD BUTTON */}
-            <Button
-              variant="outlined"
-              id="change-password-button"
+        </div>
+          <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
+            <TextField
               fullWidth
-              sx={{ mt: 2, borderRadius: "40px" }}
+              id="settings-first-name"
+              margin="normal"
+              label="First Name"
+              name="first_name"
+              value={formData.first_name}
+              onChange={handleChange}
+              InputProps={{ sx: { borderRadius: "40px" } }}
+              required
+            />
+            <TextField
+              fullWidth
+              id="settings-last-name"
+              margin="normal"
+              label="Last Name"
+              name="last_name"
+              value={formData.last_name}
+              onChange={handleChange}
+              InputProps={{ sx: { borderRadius: "40px" } }}
+              required
+            />
+            {/* Real-time email validation */}
+            <TextField
+              fullWidth
+              id="settings-email"
+              margin="normal"
+              label="Email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              InputProps={{ sx: { borderRadius: "40px" } }}
+              required
+              type="email"
+              error={emailIsInvalid}
+              helperText={emailIsInvalid ? "Invalid email address" : ""}
+            />
+
+            {/* Transfer Type (radio) */}
+            {/*<FormControl component="fieldset" sx={{ mt: 2 }}>*/}
+            {/*  <FormLabel component="legend">Transfer Type</FormLabel>*/}
+            {/*  <RadioGroup*/}
+            {/*    row*/}
+            {/*    name="transfer_type"*/}
+            {/*    value={formData.transfer_type}*/}
+            {/*    onChange={handleChange}*/}
+            {/*  >*/}
+            {/*    <FormControlLabel*/}
+            {/*      value="transfer_in"*/}
+            {/*      control={<Radio />}*/}
+            {/*      label="Transfer In"*/}
+            {/*    />*/}
+            {/*    <FormControlLabel*/}
+            {/*      value="transfer_out"*/}
+            {/*      control={<Radio />}*/}
+            {/*      label="Transfer Out"*/}
+            {/*    />*/}
+            {/*  </RadioGroup>*/}
+            {/*</FormControl>*/}
+
+            {/* SAVE CHANGES BUTTON */}
+            <Button
+              type="submit"
+              id="save-changes-button"
+              variant="contained"
+              fullWidth
+              sx={{ mt: 3, borderRadius: "40px" }}
               component={motion.button}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleOpenPasswordDialog}
             >
-              Change Password
+              Save Changes
             </Button>
-          </motion.div>
-        </Grid>
-      </Grid>
+          </Box>
+
+          {/* CHANGE PASSWORD BUTTON */}
+          <Button
+            variant="outlined"
+            id="change-password-button"
+            fullWidth
+            sx={{ mt: 2, borderRadius: "40px" }}
+            component={motion.button}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleOpenPasswordDialog}
+          >
+            Change Password
+          </Button>
+        </motion.div>
+      </Box>
 
       {/* DIALOG FOR CHANGING PASSWORD */}
       <Dialog
@@ -729,9 +460,7 @@ function AccountSettings() {
           </Button>
         </DialogActions>
       </Dialog>
-      </UserProvider>
-    </>
-
+    </SidebarWrapper>
   );
 }
 
