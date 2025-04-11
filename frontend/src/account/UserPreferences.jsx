@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 import { Box, Typography, CircularProgress, Button,
 Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions} from "@mui/material";
 import API_BASE_URL from "../utils/config.js";
+import { useUser } from "../context/UserContext.jsx";
 
 function UserPreferences() {
   const navigate = useNavigate();
   const [preferences, setPreferences] = useState(null);
   const [error, setError] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+
+  // Get user context for logout functionality
+  const { logout } = useUser();
 
 
   useEffect(() => {
@@ -24,6 +28,12 @@ function UserPreferences() {
         });
 
         if (!response.ok) {
+            if (response.status === 401) {
+              // Token expired or invalid
+              logout();
+              navigate("/login");
+              return;
+            }
             throw new Error("Failed to fetch preferences.");
         }
 
@@ -39,7 +49,7 @@ function UserPreferences() {
     };
 
     fetchPreferences();
-  }, [navigate]);
+  }, [navigate, logout]);
 
   if (error) return <Typography color="error" align="center" sx={{ mt: 4 }}>{error}</Typography>;
 
