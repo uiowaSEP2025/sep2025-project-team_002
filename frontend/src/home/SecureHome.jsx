@@ -42,8 +42,10 @@ function SecureHome() {
   const [searchQuery, setSearchQuery] = useState(searchFromURL);
   const [prevSearchQuery, setPrevSearchQuery] = useState(searchFromURL);
   const [currentPage, setCurrentPage] = useState(pageFromURL);
+
   const [recommendedSchools, setRecommendedSchools] = useState([]);
   const [showRecommendations, setShowRecommendations] = useState(false);
+
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);

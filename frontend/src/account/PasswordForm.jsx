@@ -7,6 +7,7 @@ import {
   InputAdornment,
   IconButton,
   Tooltip,
+  Box,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -128,9 +129,19 @@ function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
         </Typography>
       )}
 
-      <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}>
-        Submit
-      </Button>
+      <Box sx={{ display: "flex", justifyContent: "center", width: "100%", mt: 3 }}>
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
+            borderRadius: "40px",
+            width: "140px",
+            margin: "0 auto",
+          }}
+        >
+          Submit
+        </Button>
+      </Box>
     </form>
   );
 }

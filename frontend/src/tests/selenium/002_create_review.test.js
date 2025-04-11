@@ -71,8 +71,11 @@ describe("Create Review Test", function () {
       }
 
       // Verify that the user is on the secure home page
-      let school1Button = await driver.wait(until.elementLocated(By.id("school-1")), 10000);
-      await school1Button.click();
+      // Wait for the first school element to appear
+      // Wait for the first school Card element to appear
+      const firstSchoolCard = await driver.wait(until.elementLocated(By.xpath("(//div[contains(@class, 'MuiCard-root')])[1]")), 10000);
+      // Click on the first school Card
+      await firstSchoolCard.click();
 
       const reviewButton = await driver.wait(until.elementLocated(By.id("write-review-button")), 15000);
       await driver.wait(until.elementIsVisible(reviewButton), 5000);
