@@ -9,7 +9,7 @@ function ReviewSummary({ schoolId, sport }) {
     useEffect(() => {
         const fetchSummary = async () => {
             const token = localStorage.getItem('token');
-            
+
             try {
                 // Use public route if no token, otherwise use protected route
                 const endpoint = token
@@ -27,7 +27,7 @@ function ReviewSummary({ schoolId, sport }) {
 
                 const response = await fetch(endpoint, { headers });
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     setSummary(data.summary);
                 } else {
@@ -53,10 +53,10 @@ function ReviewSummary({ schoolId, sport }) {
 
     return (
         <div className="review-summary">
-            <h3>{sport} Program Reviews Summary</h3>
+            <h3 className="rating-display">{sport} Program Reviews Summary</h3>
             <p>{summary}</p>
         </div>
     );
 }
 
-export default ReviewSummary; 
+export default ReviewSummary;
