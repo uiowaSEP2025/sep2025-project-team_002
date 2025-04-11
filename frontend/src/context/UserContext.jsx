@@ -5,7 +5,8 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Initialize isLoggedIn based on token presence
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
 
   // Function to fetch the user data from the backend
   const fetchUser = async () => {
@@ -32,7 +33,12 @@ export const UserProvider = ({ children }) => {
       else {
         // If we get a 401 Unauthorized, the token is invalid or expired
         if (response.status === 401) {
-          logout();
+          // Don't call logout() directly to avoid infinite loops
+          // Just clear the token and state
+          localStorage.removeItem("token");
+          setUser(null);
+          setIsLoggedIn(false);
+          // Don't navigate here - let the RequireAuth component handle navigation
         } else {
           setIsLoggedIn(false);
         }
@@ -82,8 +88,11 @@ export const UserProvider = ({ children }) => {
     : "/assets/profile-pictures/pic1.png"; // Default image
 
   useEffect(() => {
-    fetchUser()
-  }, [isLoggedIn]);
+    // Fetch user data on mount if token exists
+    if (localStorage.getItem("token")) {
+      fetchUser();
+    }
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser, isLoggedIn, logout }}>
