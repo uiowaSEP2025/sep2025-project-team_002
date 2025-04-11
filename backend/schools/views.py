@@ -157,7 +157,8 @@ def filter_schools(request):
     if coach:
         reviews_query = reviews_query.filter(head_coach_name__icontains=coach)
     for field, rating in rating_filters.items():
-        reviews_query = reviews_query.filter(**{field: rating})
+        # Use greater than or equal to for ratings instead of exact match
+        reviews_query = reviews_query.filter(**{f"{field}__gte": rating})
 
     school_ids_from_reviews = reviews_query.values_list(
         "school_id", flat=True
