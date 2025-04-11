@@ -20,7 +20,12 @@ function mockSuccessfulFetch(data) {
 
 vi.mock("../../context/UserContext", () => {
   return {
-    useUser: vi.fn(),
+    useUser: vi.fn(() => ({
+      profilePic: "",
+      updateProfilePic: vi.fn(),
+      logout: vi.fn(),
+      user: { first_name: "Test", last_name: "User" }
+    })),
     UserProvider: ({ children }) => <div>{children}</div>,
   };
 });
