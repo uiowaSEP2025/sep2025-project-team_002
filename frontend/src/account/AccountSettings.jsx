@@ -72,8 +72,8 @@ function AccountSettings() {
   const [message, setMessage] = useState("");
 
 
-  // For profile picture updates (specifically)
-  const { profilePic, updateProfilePic } = useUser();
+  // For profile picture updates and logout functionality
+  const { profilePic, updateProfilePic, logout } = useUser();
   console.log("Current profile picture:", profilePic); // Debug log
 
   const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
@@ -147,6 +147,10 @@ function AccountSettings() {
             email: data.email || "",
             transfer_type: data.transfer_type || ""
           });
+        } else if (response.status === 401) {
+          // Token expired or invalid
+          logout();
+          navigate("/login");
         } else {
           const errorData = await response.json();
           setMessage(errorData.detail || errorData.error || "Failed to fetch user info.");
@@ -163,7 +167,7 @@ function AccountSettings() {
     };
 
     fetchUserInfo();
-  }, [navigate]);
+  }, [navigate, logout]);
 
   // Handle text/radio changes in the main form
   const handleChange = (e) => {
@@ -201,6 +205,10 @@ function AccountSettings() {
 
       if (response.ok) {
         setMessage("Account info updated successfully");
+      } else if (response.status === 401) {
+        // Token expired or invalid
+        logout();
+        navigate("/login");
       } else {
         let errorText = "Unknown error";
 
@@ -274,6 +282,10 @@ function AccountSettings() {
         // Successfully changed password
         handleClosePasswordDialog();
         setMessage(data.message);
+      } else if (response.status === 401) {
+        // Token expired or invalid
+        logout();
+        navigate("/login");
       } else {
         const errorData = await response.json();
         setPasswordError(errorData.detail || errorData.error || "Could not change password");
@@ -288,6 +300,7 @@ function AccountSettings() {
       }
     }
   };
+
 
   // Menu items
   const menuItems = [
@@ -322,7 +335,7 @@ function AccountSettings() {
     {
       text: "Logout",
       action: () => {
-        localStorage.removeItem("token");
+        logout();
         navigate("/login");
       },
       icon: <LogoutIcon fontSize="medium" />
