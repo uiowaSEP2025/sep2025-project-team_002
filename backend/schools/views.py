@@ -270,27 +270,25 @@ def get_recommended_schools(request):
             # Calculate similarity score (weighted by user's preference values)
             similarity_score = 0
             total_weight = 0
+            baseline = 5  # Neutral baseline for ratings
+
             for field in avg_ratings:
                 if avg_ratings[field] is not None:
                     user_pref = getattr(user_preferences, field)
-                    # The weight is proportional to the user's preference value
+                    # Use preference as weight
                     weight = user_pref if user_pref > 0 else 1  # Avoid zero weights
+
+                    # Calculate contribution based on preference weight
+                    contribution = weight * (avg_ratings[field] - baseline)
                     
-                    # Calculate weighted difference (higher preference = higher impact)
-                    rating_diff = abs(user_pref - avg_ratings[field])
-                    weighted_diff = rating_diff * weight
-                    
-                    similarity_score += weighted_diff
+                    similarity_score += contribution
                     total_weight += weight
 
             if total_weight > 0:
-                # Convert to 0-10 scale, higher is better
-                # Normalize by the total weight to get a weighted average difference
-                avg_weighted_diff = similarity_score / total_weight
-                
-                # Convert to a similarity score (10 = perfect match, 0 = worst match)
-                similarity_score = 10 - min(10, avg_weighted_diff)
-                
+                # Normalize to 0-10 scale
+                similarity_score = (similarity_score / total_weight) + baseline
+                similarity_score = max(0, min(10, similarity_score))  # Ensure score is within bounds
+
                 # Add this school to recommendations
                 recommended_schools.append({
                     'school': SchoolSerializer(school).data,
