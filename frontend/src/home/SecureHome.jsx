@@ -336,8 +336,10 @@ function SecureHome() {
     closeFilterDialog();
   };
 
-  // Determine which schools to display: filtered if applied, else all
-  const schoolsToDisplay = filterApplied ? filteredSchools : schools;
+  const schoolsToDisplay = Array.isArray(filterApplied ? filteredSchools : schools) 
+    ? (filterApplied ? filteredSchools : schools)
+    : [];
+
   // Apply search filter on top
   const filteredBySearch = schoolsToDisplay.filter((school) =>
     school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -437,25 +439,33 @@ function SecureHome() {
                           <CardContent>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>
                               <Box>
-                                <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
-                                  {rec.school.school_name}
+                                <Typography 
+                                  variant="h6" 
+                                  sx={{ my: 0, fontWeight: 700 }}
+                                  data-testid={`recommended-school-name-${rec.school?.id || 'unknown'}`}
+                                >
+                                  {rec.school?.school_name || 'Unknown School'}
                                 </Typography>
                                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
-                                  <Typography variant="body2" color="text.secondary">
-                                    {rec.school.location}
+                                  <Typography 
+                                    variant="body2" 
+                                    color="text.secondary"
+                                    data-testid={`recommended-school-location-${rec.school?.id || 'unknown'}`}
+                                  >
+                                    {rec.school?.location || 'Unknown Location'}
                                   </Typography>
                                   {rec.sport && (
                                     <Typography 
                                       variant="body2" 
                                       sx={{ 
-                                        color: "#1976d2", 
-                                        fontWeight: 600,
-                                        bgcolor: "rgba(25, 118, 210, 0.08)",
+                                        backgroundColor: "#e3f2fd",
+                                        color: "#1976d2",
                                         px: 1,
-                                        py: 0.5,
+                                        py: 0.25,
                                         borderRadius: 1,
-                                        display: "inline-flex"
+                                        fontSize: "0.75rem"
                                       }}
+                                      data-testid={`recommended-sport-name-${rec.school?.id || 'unknown'}`}
                                     >
                                       {rec.sport}
                                     </Typography>
@@ -567,13 +577,19 @@ function SecureHome() {
                   >
                     <CardContent>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                        <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                        <Typography 
+                          variant="h6" 
+                          sx={{ my: 0, fontWeight: 700 }}
+                          data-testid={`school-list-name-${school.id || 'unknown'}`}
+                        >
                           {school.school_name}
                         </Typography>
-                        <Typography variant="body2">
-                          {school.available_sports && school.available_sports.length > 0
-                            ? school.available_sports.join(" • ")
-                            : "No sports listed"}
+                        <Typography 
+                          variant="body2" 
+                          color="text.secondary"
+                          data-testid={`school-list-sports-${school.id || 'unknown'}`}
+                        >
+                          {school.available_sports.join(' • ')}
                         </Typography>
                       </Box>
                     </CardContent>
