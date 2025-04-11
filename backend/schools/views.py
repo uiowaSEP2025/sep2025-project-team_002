@@ -176,7 +176,7 @@ def filter_schools(request):
     # If coach or sport or ratings filters are applied, intersect with schools from reviews
     if coach or sport or rating_filters:
         schools_query = schools_query.filter(id__in=school_ids_from_reviews)
-        
+
     # Additional filter for sport field at the school level
     if sport:
         if sport == "Men's Basketball":
@@ -195,41 +195,58 @@ def filter_schools(request):
 def get_recommended_schools(request):
     try:
         current_user = request.user
-        
+
         # Check if user is a graduated athlete
-        if hasattr(current_user, 'transfer_type') and current_user.transfer_type == "graduate":
-            logger.info(f"User {current_user.id} is a graduated athlete, not showing recommendations")
+        if (
+            hasattr(current_user, "transfer_type")
+            and current_user.transfer_type == "graduate"
+        ):
+            logger.info(
+                f"User {current_user.id} is a graduated athlete, not showing recommendations"
+            )
             return Response([])  # Return empty list for graduated athletes
-            
+
         # Get user's preferences
         user_preferences = Preferences.objects.filter(user=current_user).first()
         if not user_preferences:
             logger.info(f"No preferences found for user {current_user.id}.")
             # Return a specific response indicating no preferences
             return Response({"no_preferences": True})
-        
+
         # Log for debugging
-        logger.info(f"Found preferences for user {current_user.id}, sport: {user_preferences.sport}")
+        logger.info(
+            f"Found preferences for user {current_user.id}, sport: {user_preferences.sport}"
+        )
         sport = user_preferences.sport
-        
+
         # Check if there are any reviews for this sport from other users
         sport_reviews = Reviews.objects.filter(sport=sport).exclude(user=current_user)
         if not sport_reviews.exists():
             logger.info(f"No reviews from other users found for {sport}")
-            return Response([])  # Return empty list if no reviews for this sport from others
-            
+            return Response(
+                []
+            )  # Return empty list if no reviews for this sport from others
+
         # Get schools that have reviews for this sport from other users
-        school_ids_with_reviews = sport_reviews.values_list('school_id', flat=True).distinct()
-        logger.info(f"Found {len(school_ids_with_reviews)} schools with reviews for {sport} from others")
-        
+        school_ids_with_reviews = sport_reviews.values_list(
+            "school_id", flat=True
+        ).distinct()
+        logger.info(
+            f"Found {len(school_ids_with_reviews)} schools with reviews for {sport} from others"
+        )
+
         if not school_ids_with_reviews:
             logger.info(f"No schools have reviews for {sport} from other users")
-            return Response([])  # Return empty list if no schools have reviews from others
-        
+            return Response(
+                []
+            )  # Return empty list if no schools have reviews from others
+
         # Get all schools
         schools = Schools.objects.filter(id__in=school_ids_with_reviews)
-        logger.info(f"Total schools with reviews from others to check: {schools.count()}")
-        
+        logger.info(
+            f"Total schools with reviews from others to check: {schools.count()}"
+        )
+
         recommended_schools = []
 
         for school in schools:
@@ -241,30 +258,56 @@ def get_recommended_schools(request):
                 has_sport = True
             elif sport == "Football" and school.fb:
                 has_sport = True
-            
+
             if not has_sport:
-                logger.info(f"School {school.school_name} does not offer {sport}, skipping")
+                logger.info(
+                    f"School {school.school_name} does not offer {sport}, skipping"
+                )
                 continue
-                
+
             # Get reviews for this school and the user's preferred sport, excluding the user's own reviews
-            reviews = Reviews.objects.filter(school=school, sport=sport).exclude(user=current_user)
-            
+            reviews = Reviews.objects.filter(school=school, sport=sport).exclude(
+                user=current_user
+            )
+
             if not reviews:
-                logger.info(f"No reviews from other users for {school.school_name} with sport {sport}")
+                logger.info(
+                    f"No reviews from other users for {school.school_name} with sport {sport}"
+                )
                 continue  # Skip schools where only the current user left reviews
-            
-            logger.info(f"Found {reviews.count()} reviews from others for {school.school_name} - {sport}")
+
+            logger.info(
+                f"Found {reviews.count()} reviews from others for {school.school_name} - {sport}"
+            )
 
             # Calculate average ratings
             avg_ratings = {
-                'head_coach': reviews.aggregate(avg=models.Avg('head_coach'))['avg'] or 5,
-                'assistant_coaches': reviews.aggregate(avg=models.Avg('assistant_coaches'))['avg'] or 5,
-                'team_culture': reviews.aggregate(avg=models.Avg('team_culture'))['avg'] or 5,
-                'campus_life': reviews.aggregate(avg=models.Avg('campus_life'))['avg'] or 5,
-                'athletic_facilities': reviews.aggregate(avg=models.Avg('athletic_facilities'))['avg'] or 5,
-                'athletic_department': reviews.aggregate(avg=models.Avg('athletic_department'))['avg'] or 5,
-                'player_development': reviews.aggregate(avg=models.Avg('player_development'))['avg'] or 5,
-                'nil_opportunity': reviews.aggregate(avg=models.Avg('nil_opportunity'))['avg'] or 5
+                "head_coach": reviews.aggregate(avg=models.Avg("head_coach"))["avg"]
+                or 5,
+                "assistant_coaches": reviews.aggregate(
+                    avg=models.Avg("assistant_coaches")
+                )["avg"]
+                or 5,
+                "team_culture": reviews.aggregate(avg=models.Avg("team_culture"))["avg"]
+                or 5,
+                "campus_life": reviews.aggregate(avg=models.Avg("campus_life"))["avg"]
+                or 5,
+                "athletic_facilities": reviews.aggregate(
+                    avg=models.Avg("athletic_facilities")
+                )["avg"]
+                or 5,
+                "athletic_department": reviews.aggregate(
+                    avg=models.Avg("athletic_department")
+                )["avg"]
+                or 5,
+                "player_development": reviews.aggregate(
+                    avg=models.Avg("player_development")
+                )["avg"]
+                or 5,
+                "nil_opportunity": reviews.aggregate(avg=models.Avg("nil_opportunity"))[
+                    "avg"
+                ]
+                or 5,
             }
 
             # Calculate similarity score (weighted by user's preference values)
@@ -280,28 +323,34 @@ def get_recommended_schools(request):
 
                     # Calculate contribution based on preference weight
                     contribution = weight * (avg_ratings[field] - baseline)
-                    
+
                     similarity_score += contribution
                     total_weight += weight
 
             if total_weight > 0:
                 # Normalize to 0-10 scale
                 similarity_score = (similarity_score / total_weight) + baseline
-                similarity_score = max(0, min(10, similarity_score))  # Ensure score is within bounds
+                similarity_score = max(
+                    0, min(10, similarity_score)
+                )  # Ensure score is within bounds
 
                 # Add this school to recommendations
-                recommended_schools.append({
-                    'school': SchoolSerializer(school).data,
-                    'similarity_score': round(similarity_score, 2),
-                    'average_ratings': avg_ratings,
-                    'sport': sport
-                })
-                logger.info(f"Added {school.school_name} for {sport} with score {similarity_score}")
+                recommended_schools.append(
+                    {
+                        "school": SchoolSerializer(school).data,
+                        "similarity_score": round(similarity_score, 2),
+                        "average_ratings": avg_ratings,
+                        "sport": sport,
+                    }
+                )
+                logger.info(
+                    f"Added {school.school_name} for {sport} with score {similarity_score}"
+                )
 
         # Sort by similarity score and return top schools
-        recommended_schools.sort(key=lambda x: x['similarity_score'], reverse=True)
+        recommended_schools.sort(key=lambda x: x["similarity_score"], reverse=True)
         result = recommended_schools[:5] if recommended_schools else []
-        
+
         logger.info(f"Returning {len(result)} recommendations")
         return Response(result)
 
