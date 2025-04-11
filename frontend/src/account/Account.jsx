@@ -54,6 +54,9 @@ function Account() {
   // For any error or status messages
   const [message, setMessage] = useState("");
 
+  // Get user context for logout functionality
+  const { logout } = useUser();
+
   // Fetch user info on mount
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -81,6 +84,10 @@ function Account() {
             is_school_verified: data.is_school_verified || false,
             profile_picture: data.profile_picture || "",
           });
+        } else if (response.status === 401) {
+          // Token expired or invalid
+          logout();
+          navigate("/login");
         } else {
           const errorData = await response.json();
           setMessage(errorData.detail || errorData.error || "Unknown Error");
@@ -96,7 +103,7 @@ function Account() {
       }
     };
     fetchUserInfo();
-  }, [navigate]);
+  }, [navigate, logout]);
 
   // Menu items (the same for desktop/mobile)
   const menuItems = [
@@ -127,7 +134,7 @@ function Account() {
     {
       text: "Logout",
       action: () => {
-        localStorage.removeItem("token");
+        logout();
         navigate("/login");
       },
       icon: <LogoutIcon fontSize="medium" />
