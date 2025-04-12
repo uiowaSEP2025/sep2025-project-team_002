@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   Grid,
   Typography,
   Box,
-  CircularProgress,
   Card,
   CardContent,
   useMediaQuery
 } from "@mui/material";
 import { motion } from "framer-motion";
+import SidebarWrapper from "../components/SidebarWrapper.jsx";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -17,23 +17,15 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import RateReviewIcon from "@mui/icons-material/RateReview"
 import API_BASE_URL from "../utils/config";
-import SidebarWrapper from "../components/SidebarWrapper";
-
 
 console.log("MyReviews Component Mounted");
 
-
-
-
 function MyReviews() {
   const navigate = useNavigate();
-  const location = useLocation();
   const isMobile = useMediaQuery("(max-width: 768px)");
-
-  const [reviews, setReviews] = (location.state?.reviews || []);
-  const [loading, setLoading] = useState(reviews && reviews.length === 0); // Check if reviews exist and are empty
-  const [error, setError] = useState("");
-console.log("RRReviews received in MyReviews:", reviews);
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [setError] = useState("");
 
   const [user, setUser] = useState({
     first_name: "",
@@ -43,36 +35,6 @@ console.log("RRReviews received in MyReviews:", reviews);
     is_school_verified: false,
     profile_picture: "",
   });
-
-useEffect(() => {
-    if (!reviews.length) {
-      setLoading(true);
-      const fetchReviews = async () => {
-        const token = localStorage.getItem("token");
-        try {
-          const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (!response.ok) {
-            throw new Error("Failed to fetch reviews");
-          }
-          const data = await response.json();
-          setReviews(data); // Set reviews if not passed via location.state
-        } catch (error) {
-          setError("Failed to load reviews");
-          console.error(error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      fetchReviews(); // Fetch reviews if not passed via state
-    } else {
-      setLoading(false); // Stop loading if reviews are already available
-    }
-  }, [reviews]); // Only fetch reviews if they aren't passed
 
     // Menu items (the same for desktop/mobile)
   const menuItems = [
@@ -102,7 +64,7 @@ useEffect(() => {
     ),
     {
       text: "My Reviews",
-      action: () => navigate ("/account/my-reviews"),
+      action: () => navigate ("/my-reviews"),
       icon: <RateReviewIcon fontSize ="medium" />
     },
     {
@@ -115,6 +77,70 @@ useEffect(() => {
     }
   ];
 
+  // Fetch user reviews asynchronously
+    const fetchUserReviews = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user reviews");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching user reviews:", error);
+      return [];
+    }
+    };
+
+    useEffect(() => {
+    const loadUserData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      try {
+        // Fetch user info
+        const userResponse = await fetch(`${API_BASE_URL}/users/user/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const userData = await userResponse.json();
+        setUser(userData);  // Set user info state
+
+        // Fetch reviews after user info is loaded
+        const reviewsData = await fetchUserReviews();
+        setReviews(reviewsData);  // Set reviews state
+      } catch (error) {
+        setError("Failed to load data");
+        console.error(error);
+      } finally {
+        setLoading(false);  // Hide loading spinner after data is loaded
+      }
+    };
+    loadUserData();
+  }, [navigate]);
+
+  useEffect(() => {
+    console.log("Fetching reviews...");
+    const loadReviews = async () => {
+      try {
+        const data = await fetchUserReviews();
+        console.log("Data received in loadReviews:", data);  // Log the data received from fetchUserReviews
+        setReviews(data); // Update the state with fetched reviews
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+        // console.log("Reviews loaded:", reviews); // Log when reviews are loaded
+      }
+    };
+    loadReviews();
+  }, []);
+
   // Smooth loading transition with fade-in effect
   const loadingTransition = {
     initial: { opacity: 0 },
@@ -126,25 +152,8 @@ useEffect(() => {
     // Debugging: Log the current loading and reviews states
   console.log("Loading State:", loading);
   console.log("Reviews:", reviews);
-
-  if (loading) {
-    return (
-      <Box sx={{ textAlign: "center", marginTop: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Typography color="error" variant="body1">
-        {error}
-      </Typography>
-    );
-  }
-
    return (
-    <SidebarWrapper title="My Reviews" menuItems={menuItems}>
+    <SidebarWrapper title="My Account" menuItems={menuItems}>
       <motion.div {...loadingTransition}>
         <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
           <Grid item xs={12} md={isMobile ? 12 : 9} sx={{ p: 4, mt: isMobile ? 6 : 0 }}>
