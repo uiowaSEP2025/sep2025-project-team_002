@@ -29,6 +29,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import API_BASE_URL from "../utils/config.js";
+import {useUser} from "../context/UserContext.jsx";
 
 function Account() {
   const navigate = useNavigate();

@@ -26,6 +26,8 @@ import {
   InputAdornment
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import RateReviewIcon from '@mui/icons-material/RateReview';
+
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";
@@ -237,6 +239,11 @@ function AccountSettings() {
         }]
       : []
     ),
+      {
+      text: "My Reviews",
+      action: () => navigate ("/account/my-reviews"),
+      icon: <RateReviewIcon fontSize ="medium" />
+    },
     {
       text: "Logout",
       action: () => {

@@ -10,6 +10,7 @@ import RequireAuth from "./RequireAuth.jsx";
 import API_BASE_URL from "./utils/config.js";
 import Account from "./account/Account.jsx";
 import AccountSettings from "./account/AccountSettings.jsx";
+import MyReviews from "./account/MyReviews.jsx"
 import ForgotPassword from './account/ForgotPassword.jsx';
 import ResetPassword from './account/ResetPassword.jsx';
 import ReviewForm from './review/ReviewForm.jsx';
@@ -19,7 +20,6 @@ import Footer from './components/Footer.jsx';
 import AboutUs from './components/AboutUs.jsx'
 import SchoolPage from "./schools/SchoolPage";
 import UserPreferences from "./account/UserPreferences.jsx"
-import MyReviews from "./account/MyReviews.jsx"
 
 function App() {
   const [message, setMessage] = useState("Loading...");
