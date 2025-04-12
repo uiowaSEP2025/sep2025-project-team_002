@@ -44,7 +44,7 @@ describe("Filter Feature Test", function () {
 
       // Click the Filters button
       const filtersButton = await driver.findElement(
-        By.xpath("//button[normalize-space()='Filters']")
+        By.id("filter-button")
       );
       await filtersButton.click();
 
