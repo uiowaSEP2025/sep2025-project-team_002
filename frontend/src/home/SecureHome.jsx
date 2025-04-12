@@ -51,7 +51,6 @@ function SecureHome() {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
     coach: "",
-    sport: "",
     head_coach: "",
     assistant_coaches: "",
     team_culture: "",
@@ -196,7 +195,7 @@ function SecureHome() {
             
             if (data.length > 0 && data[0].sport) {
               console.log("Setting sport filter to:", data[0].sport);
-              setFilters(prev => ({ ...prev, sport: data[0].sport }));
+              setFilters(prev => ({ ...prev }));
             }
             
             setShowRecommendations(data.length > 0);
@@ -299,28 +298,28 @@ function SecureHome() {
     setFilters({ ...filters, [name]: value });
   };
   const applyFilters = async () => {
-    const token = localStorage.getItem("token");
-    const queryParams = new URLSearchParams();
-    if (filters.coach) queryParams.append("coach", filters.coach);
-    if (filters.sport) queryParams.append("sport", filters.sport);
-    
-    // Append rating filters if provided
-    [
-      "head_coach",
-      "assistant_coaches",
-      "team_culture",
-      "campus_life", 
-      "athletic_facilities",
-      "athletic_department",
-      "player_development",
-      "nil_opportunity",
-    ].forEach((field) => {
-      if (filters[field]) {
-        queryParams.append(field, filters[field]);
-      }
-    });
-
+    setFilterDialogOpen(false);
+    setLoading(true);
     try {
+      const queryParams = new URLSearchParams();
+      if (filters.coach) queryParams.append("coach", filters.coach);
+      if (filters.head_coach) queryParams.append("head_coach", filters.head_coach);
+      // Append rating filters if provided
+      [
+        "assistant_coaches",
+        "team_culture",
+        "campus_life", 
+        "athletic_facilities",
+        "athletic_department",
+        "player_development",
+        "nil_opportunity",
+      ].forEach((field) => {
+        if (filters[field]) {
+          queryParams.append(field, filters[field]);
+        }
+      });
+
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/api/filter/?${queryParams.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -331,14 +330,6 @@ function SecureHome() {
         const data = await response.json();
         // Filter schools client-side by the sport from preferences
         let filteredData = data;
-        if (filters.sport) {
-          filteredData = data.filter(school => {
-            if (filters.sport === "Men's Basketball" && school.mbb) return true;
-            if (filters.sport === "Women's Basketball" && school.wbb) return true;
-            if (filters.sport === "Football" && school.fb) return true;
-            return false;
-          });
-        }
         setFilteredSchools(filteredData);
         setFilterApplied(true);
         setCurrentPage(1);
@@ -349,14 +340,10 @@ function SecureHome() {
     } catch (error) {
       console.error("Error applying filters:", error);
     }
-    closeFilterDialog();
   };
   const clearFilters = () => {
-    const sportFromPreferences = recommendedSchools.length > 0 ? recommendedSchools[0].sport : "";
-    
     setFilters({
       coach: "",
-      sport: sportFromPreferences, // Keep this for the dialog display only
       head_coach: "",
       assistant_coaches: "",
       team_culture: "",
@@ -530,7 +517,7 @@ function SecureHome() {
                       No Recommendations Available
                     </Typography>
                     <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                      We don't have any reviews yet for your preferred sport ({filters.sport || "selected sport"}).
+                      We don't have any reviews yet for your preferred sport.
                       Check back later as our community grows!
                     </Typography>
                     <Button 
@@ -710,54 +697,31 @@ function SecureHome() {
       <Dialog open={filterDialogOpen} onClose={closeFilterDialog} fullWidth maxWidth="sm">
         <DialogTitle>Apply Filters</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
-              label="Coach Name"
-              name="coach"
-              value={filters.coach}
-              onChange={handleFilterChange}
+              select
               fullWidth
-            />
-            <FormControl fullWidth>
-              <InputLabel htmlFor="sport-select" id="sport-label">
-                Sport
-              </InputLabel>
-              <Select
-                native
-                labelId="sport-label"
-                id="sport-select"
-                label="Sport"
-                name="sport"
-                value={filters.sport}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                <option value="Men's Basketball">Men's Basketball</option>
-                <option value="Women's Basketball">Women's Basketball</option>
-                <option value="Football">Football</option>
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="head_coach-select" id="head_coach-label">
-                Head Coach Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="head_coach-label"
-                id="head_coach-select"
-                label="Head Coach Rating"
-                name="head_coach"
-                value={filters.head_coach}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
+              label="Coach"
+              value={filters.coach}
+              onChange={(e) => setFilters({ ...filters, coach: e.target.value })}
+            >
+              <MenuItem value="">All Coaches</MenuItem>
+              <MenuItem value="head">Head Coach</MenuItem>
+              <MenuItem value="assistant">Assistant Coach</MenuItem>
+            </TextField>
+            <TextField
+              select
+              fullWidth
+              label="Head Coach Rating"
+              value={filters.head_coach}
+              onChange={(e) => setFilters({ ...filters, head_coach: e.target.value })}
+            >
+              {[...Array(10)].map((_, i) => (
+                <MenuItem key={i + 1} value={i + 1}>
+                  {i + 1}
+                </MenuItem>
+              ))}
+            </TextField>
             <FormControl fullWidth>
               <InputLabel htmlFor="assistant_coaches-select" id="assistant_coaches-label">
                 Assistant Coaches Rating
