@@ -285,6 +285,13 @@ def get_recommended_schools(request):
             f"Found {len(school_ids_with_reviews)} schools with reviews for {sport_code}"
         )
 
+        # Get schools that the current user has already reviewed for this sport
+        user_reviewed_schools = Reviews.objects.filter(
+            user=current_user,
+            sport=sport_code
+        ).values_list('school_id', flat=True)
+        logger.info(f"User has already reviewed {len(user_reviewed_schools)} schools for {sport_code}")
+
         # Debug: Print school IDs and names
         schools_with_reviews = Schools.objects.filter(id__in=school_ids_with_reviews)
         logger.info("Schools with reviews:")
@@ -295,10 +302,14 @@ def get_recommended_schools(request):
             logger.info(f"No schools have reviews for {sport_code}")
             return Response([])
 
-        # Get all schools
-        schools = Schools.objects.filter(id__in=school_ids_with_reviews)
+        # Get all schools, excluding those the user has already reviewed
+        schools = Schools.objects.filter(
+            id__in=school_ids_with_reviews
+        ).exclude(
+            id__in=user_reviewed_schools
+        )
         logger.info(
-            f"Total schools with reviews to check: {schools.count()}"
+            f"Total schools with reviews to check (excluding user's reviews): {schools.count()}"
         )
 
         recommended_schools = []
