@@ -49,6 +49,7 @@ function SecureHome() {
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [filters, setFilters] = useState({
     coach: "",
     head_coach: "",
@@ -326,11 +327,10 @@ function SecureHome() {
           "Content-Type": "application/json",
         },
       });
+
       if (response.ok) {
         const data = await response.json();
-        // Filter schools client-side by the sport from preferences
-        let filteredData = data;
-        setFilteredSchools(filteredData);
+        setFilteredSchools(data);
         setFilterApplied(true);
         setCurrentPage(1);
         updatePageInURL(1);
@@ -339,6 +339,8 @@ function SecureHome() {
       }
     } catch (error) {
       console.error("Error applying filters:", error);
+    } finally {
+      setLoading(false);
     }
   };
   const clearFilters = () => {
@@ -712,6 +714,7 @@ function SecureHome() {
             <TextField
               select
               fullWidth
+              id="head_coach-rating-select"
               label="Head Coach Rating"
               value={filters.head_coach}
               onChange={(e) => setFilters({ ...filters, head_coach: e.target.value })}
@@ -875,7 +878,7 @@ function SecureHome() {
           <Button onClick={clearFilters} color="secondary">
             Clear
           </Button>
-          <Button onClick={applyFilters} color="primary" variant="contained">
+          <Button id="apply-filters-button" onClick={applyFilters} color="primary" variant="contained">
             Apply
           </Button>
         </DialogActions>

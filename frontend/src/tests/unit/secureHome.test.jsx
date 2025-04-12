@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act, within } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SecureHome from '../../home/SecureHome.jsx';
@@ -272,7 +272,9 @@ describe('SecureHome Filter Feature', () => {
 
     // Change the Head Coach Rating dropdown to 8
     const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
-    fireEvent.change(headCoachSelect, { target: { value: '8' }});
+    fireEvent.mouseDown(headCoachSelect);
+    const option = within(screen.getByRole('listbox')).getByText('8');
+    fireEvent.click(option);
 
     // Click the Apply button by using its role and exact name "Apply"
     const applyButton = screen.getByRole('button', { name: /^Apply$/i });
