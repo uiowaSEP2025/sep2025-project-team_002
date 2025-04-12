@@ -104,10 +104,12 @@ function Footer() {
           color: '#fff',
           display: 'flex',
           justifyContent: 'center',
+          flexWrap: 'wrap',
           alignItems: 'center',
           padding: '5px',
           zIndex: 9999,
-          fontSize: '16px'
+          textAlign: 'center',
+          fontSize: '14px'
         }}
       >
         <span>© 2025 Athletic Insider</span>

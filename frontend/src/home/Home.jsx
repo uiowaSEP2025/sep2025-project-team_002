@@ -16,6 +16,8 @@ import {
   Select,
   InputLabel,
   FormControl,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import API_BASE_URL from "../utils/config";
 
@@ -27,6 +29,9 @@ function Home() {
   const queryParams = new URLSearchParams(location.search);
   const pageFromURL = parseInt(queryParams.get("page")) || 1;
   const searchFromURL = queryParams.get("search") || "";
+
+    const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const schoolsPerPage = 10;
 
@@ -290,7 +295,7 @@ function Home() {
               }}
             />
           </Box>
-
+ {!isSmallScreen && (
           <Box
             sx={{
               position: "absolute",
@@ -332,7 +337,7 @@ function Home() {
                 style: { width: 60, textAlign: "center" }
               }}
             />
-          </Box>
+          </Box> )}
         </Box>
       )}
 

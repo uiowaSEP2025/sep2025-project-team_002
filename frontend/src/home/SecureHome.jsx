@@ -21,6 +21,8 @@ import {
   Select,
   InputLabel,
   FormControl,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -32,6 +34,10 @@ function SecureHome() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [schools, setSchools] = useState([]);
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
 
   const schoolsPerPage = 10;
 
@@ -284,6 +290,7 @@ function SecureHome() {
   return (
     <Box id="secure-home" sx={{ position: "relative", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
       {/* Top Right Account Icon */}
+      {!isSmallScreen && (
       <Box sx={{ position: "fixed", top: 16, right: 16, zIndex: 1000 }}>
         <IconButton id={"account-icon"} onClick={handleMenuOpen} size="large" sx={{ bgcolor: "#fff", borderRadius: "50%" }}>
           {user.profile_picture ? (
@@ -306,11 +313,38 @@ function SecureHome() {
           <MenuItem id="account-info" onClick={() => { handleAccountInfo(); handleMenuClose(); }}>Account Info</MenuItem>
           <MenuItem onClick={() => { handleLogout(); handleMenuClose(); }}>Logout</MenuItem>
         </Menu>
-      </Box>
+      </Box> )}
 
       <Grid container justifyContent="center" sx={{ pt: 4, pb: 4 }}>
         <Grid item xs={12} md={10}>
           <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+
+            {isSmallScreen && (
+                <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+                  <IconButton id={"account-icon-mobile"} onClick={handleMenuOpen} size="large" sx={{ bgcolor: "#fff", borderRadius: "50%" }}>
+                    {user.profile_picture ? (
+                      <img
+                        src={`/assets/profile-pictures/${user.profile_picture}`}
+                        alt="Profile"
+                        style={{ width: 48, height: 48, borderRadius: "50%", objectFit: "cover" }}
+                      />
+                    ) : (
+                      <AccountCircleIcon fontSize="large" />
+                    )}
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleMenuClose}
+                    anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+                    transformOrigin={{ vertical: "top", horizontal: "center" }}
+                  >
+                    <MenuItem onClick={() => { handleAccountInfo(); handleMenuClose(); }}>Account Info</MenuItem>
+                    <MenuItem onClick={() => { handleLogout(); handleMenuClose(); }}>Logout</MenuItem>
+                  </Menu>
+                </Box>
+              )}
+
             <Typography variant="h3" sx={{ fontWeight: 700, mb: 2, textAlign: "center" }}>
               Schools and Sports
             </Typography>
@@ -400,7 +434,7 @@ function SecureHome() {
                     }}
                   />
                 </Box>
-
+              {!isSmallScreen && (
                 <Box
                   sx={{
                     position: "absolute",
@@ -442,7 +476,7 @@ function SecureHome() {
                       style: { width: 60, textAlign: "center" }
                     }}
                   />
-                </Box>
+                </Box> )}
               </Box>
             )}
           </motion.div>
