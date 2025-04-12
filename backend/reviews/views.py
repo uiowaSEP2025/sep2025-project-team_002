@@ -1,11 +1,11 @@
 from rest_framework import generics, permissions
 from .models import Reviews
-from .serializers import ReviewSerializer
+from .serializers import ReviewsSerializer
 
 
 class CreateReviewView(generics.CreateAPIView):
     queryset = Reviews.objects.all()
-    serializer_class = ReviewSerializer
+    serializer_class = ReviewsSerializer
     permission_classes = [permissions.IsAuthenticated]  # Require JWT authentication
 
     def perform_create(self, serializer):
@@ -19,7 +19,7 @@ class CreateReviewView(generics.CreateAPIView):
 
 
 class UserReviewsView(generics.ListAPIView):
-    serializer_class = ReviewSerializer
+    serializer_class = ReviewsSerializer
     permission_classes = [permissions.IsAuthenticated]  # Require JWT authentication
 
     def get_queryset(self):

@@ -195,56 +195,110 @@ def filter_schools(request):
 def get_recommended_schools(request):
     try:
         current_user = request.user
+        logger.info("=== RECOMMENDATIONS DEBUG START ===")
+        logger.info(f"User ID: {current_user.id}")
 
-        # Check if user is a graduated athlete
-        if (
-            hasattr(current_user, "transfer_type")
-            and current_user.transfer_type == "graduate"
-        ):
-            logger.info(
-                f"User {current_user.id} is a graduated athlete, not showing recommendations"
-            )
-            return Response([])  # Return empty list for graduated athletes
+        # Debug: Check all preferences in the system
+        all_preferences = Preferences.objects.all()
+        logger.info(f"\nAll preferences in system:")
+        for pref in all_preferences:
+            logger.info(f"User {pref.user.id} - Sport: {pref.sport}")
+
+        # Debug: Check all reviews in the system
+        all_reviews = Reviews.objects.all()
+        logger.info(f"\nAll reviews in system:")
+        for review in all_reviews:
+            logger.info(f"Review by User {review.user.id} - School: {review.school.school_name}, Sport: {review.sport}")
+
+        # Debug: Check all schools and their sports
+        all_schools = Schools.objects.all()
+        logger.info(f"\nAll schools and their sports:")
+        for school in all_schools:
+            sports = []
+            if school.mbb:
+                sports.append("mbb")
+            if school.wbb:
+                sports.append("wbb")
+            if school.fb:
+                sports.append("fb")
+            logger.info(f"School {school.school_name} - Sports: {', '.join(sports)}")
 
         # Get user's preferences
         user_preferences = Preferences.objects.filter(user=current_user).first()
         if not user_preferences:
             logger.info(f"No preferences found for user {current_user.id}.")
-            # Return a specific response indicating no preferences
             return Response({"no_preferences": True})
 
-        # Log for debugging
-        logger.info(
-            f"Found preferences for user {current_user.id}, sport: {user_preferences.sport}"
-        )
+        # Log user's preferences
+        logger.info(f"\nUser preferences:")
+        logger.info(f"Sport: {user_preferences.sport}")
+        logger.info(f"Head Coach: {user_preferences.head_coach}")
+        logger.info(f"Assistant Coaches: {user_preferences.assistant_coaches}")
+        logger.info(f"Team Culture: {user_preferences.team_culture}")
+        logger.info(f"Campus Life: {user_preferences.campus_life}")
+        logger.info(f"Athletic Facilities: {user_preferences.athletic_facilities}")
+        logger.info(f"Athletic Department: {user_preferences.athletic_department}")
+        logger.info(f"Player Development: {user_preferences.player_development}")
+        logger.info(f"NIL Opportunity: {user_preferences.nil_opportunity}")
+
         sport = user_preferences.sport
+        logger.info(f"\nProcessing recommendations for sport: {sport}")
 
-        # Check if there are any reviews for this sport from other users
-        sport_reviews = Reviews.objects.filter(sport=sport).exclude(user=current_user)
+        # Convert display names to codes and handle both formats
+        display_to_code = {
+            "Men's Basketball": "mbb",
+            "Women's Basketball": "wbb",
+            "Football": "fb"
+        }
+        code_to_display = {
+            "mbb": "Men's Basketball",
+            "wbb": "Women's Basketball",
+            "fb": "Football"
+        }
+        
+        # Handle both cases - if it's a display name, convert to code, if it's a code, keep as is
+        sport_code = display_to_code.get(sport, sport)
+        if sport_code not in ["mbb", "wbb", "fb"]:
+            # If it's not a valid code after conversion, try reverse lookup
+            for code, display in code_to_display.items():
+                if sport == display:
+                    sport_code = code
+                    break
+        
+        logger.info(f"Converted sport '{sport}' to code '{sport_code}'")
+
+        # Get all reviews for this sport (including current user's reviews)
+        sport_reviews = Reviews.objects.filter(sport=sport_code)
+        logger.info(f"\nAll reviews for sport {sport_code}:")
+        for review in sport_reviews:
+            logger.info(f"Review by User {review.user.id} for {review.school.school_name}")
+
         if not sport_reviews.exists():
-            logger.info(f"No reviews from other users found for {sport}")
-            return Response(
-                []
-            )  # Return empty list if no reviews for this sport from others
+            logger.info(f"No reviews found for {sport_code}")
+            return Response([])
 
-        # Get schools that have reviews for this sport from other users
+        # Get schools that have reviews for this sport
         school_ids_with_reviews = sport_reviews.values_list(
             "school_id", flat=True
         ).distinct()
         logger.info(
-            f"Found {len(school_ids_with_reviews)} schools with reviews for {sport} from others"
+            f"Found {len(school_ids_with_reviews)} schools with reviews for {sport_code}"
         )
 
+        # Debug: Print school IDs and names
+        schools_with_reviews = Schools.objects.filter(id__in=school_ids_with_reviews)
+        logger.info("Schools with reviews:")
+        for school in schools_with_reviews:
+            logger.info(f"- ID: {school.id}, Name: {school.school_name}")
+
         if not school_ids_with_reviews:
-            logger.info(f"No schools have reviews for {sport} from other users")
-            return Response(
-                []
-            )  # Return empty list if no schools have reviews from others
+            logger.info(f"No schools have reviews for {sport_code}")
+            return Response([])
 
         # Get all schools
         schools = Schools.objects.filter(id__in=school_ids_with_reviews)
         logger.info(
-            f"Total schools with reviews from others to check: {schools.count()}"
+            f"Total schools with reviews to check: {schools.count()}"
         )
 
         recommended_schools = []
@@ -252,33 +306,31 @@ def get_recommended_schools(request):
         for school in schools:
             # Check if this school offers the user's preferred sport
             has_sport = False
-            if sport == "Men's Basketball" and school.mbb:
+            if sport_code == "mbb" and school.mbb:
                 has_sport = True
-            elif sport == "Women's Basketball" and school.wbb:
+                logger.info(f"School {school.school_name} offers Men's Basketball")
+            elif sport_code == "wbb" and school.wbb:
                 has_sport = True
-            elif sport == "Football" and school.fb:
+                logger.info(f"School {school.school_name} offers Women's Basketball")
+            elif sport_code == "fb" and school.fb:
                 has_sport = True
+                logger.info(f"School {school.school_name} offers Football")
 
             if not has_sport:
                 logger.info(
-                    f"School {school.school_name} does not offer {sport}, skipping"
+                    f"School {school.school_name} does not offer {sport_code}, skipping"
                 )
                 continue
 
-            # Get reviews for this school and the user's preferred sport, excluding the user's own reviews
-            reviews = Reviews.objects.filter(school=school, sport=sport).exclude(
-                user=current_user
-            )
+            # Get all reviews for this school and sport
+            reviews = Reviews.objects.filter(school=school, sport=sport_code)
+            logger.info(f"Found {reviews.count()} reviews for {school.school_name} - {sport_code}")
 
             if not reviews:
                 logger.info(
-                    f"No reviews from other users for {school.school_name} with sport {sport}"
+                    f"No reviews for {school.school_name} with sport {sport_code}"
                 )
-                continue  # Skip schools where only the current user left reviews
-
-            logger.info(
-                f"Found {reviews.count()} reviews from others for {school.school_name} - {sport}"
-            )
+                continue
 
             # Calculate average ratings
             avg_ratings = {
@@ -340,11 +392,11 @@ def get_recommended_schools(request):
                         "school": SchoolSerializer(school).data,
                         "similarity_score": round(similarity_score, 2),
                         "average_ratings": avg_ratings,
-                        "sport": sport,
+                        "sport": code_to_display.get(sport_code, sport_code),
                     }
                 )
                 logger.info(
-                    f"Added {school.school_name} for {sport} with score {similarity_score}"
+                    f"Added {school.school_name} for {sport_code} with score {similarity_score}"
                 )
 
         # Sort by similarity score and return top schools

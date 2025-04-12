@@ -134,7 +134,9 @@ function SecureHome() {
     // Fetch Recommended Schools
     const fetchRecommendedSchools = async () => {
       try {
-        console.log("Fetching recommendations from:", `${API_BASE_URL}/api/recommendations/`);
+        console.log("=== RECOMMENDATIONS DEBUG START ===");
+        console.log("Current user token:", token ? "Present" : "Missing");
+        
         const response = await fetch(`${API_BASE_URL}/api/recommendations/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -142,13 +144,48 @@ function SecureHome() {
           },
         });
 
-        console.log("Recommendations API response status:", response.status);
+        console.log("Response status:", response.status);
+        console.log("Response headers:", Object.fromEntries(response.headers.entries()));
         
         if (response.ok) {
           const data = await response.json();
-          console.log("Recommended schools data:", data);
+          console.log("=== RECOMMENDATIONS DATA ===");
+          console.log("Raw data:", JSON.stringify(data, null, 2));
           
-          // Check if the response contains a specific message indicating no preferences
+          if (Array.isArray(data)) {
+            console.log(`Found ${data.length} recommended schools`);
+            data.forEach((rec, index) => {
+              console.log(`\nSchool ${index + 1}: ${rec.school?.school_name}`);
+              console.log(`Sport: ${rec.sport}`);
+              console.log(`Similarity Score: ${rec.similarity_score}`);
+              console.log("Average Ratings:", rec.average_ratings);
+              
+              if (rec.school?.reviews) {
+                console.log(`Reviews for ${rec.school.school_name}:`);
+                rec.school.reviews.forEach((review, reviewIndex) => {
+                  console.log(`\nReview ${reviewIndex + 1}:`);
+                  console.log(`Sport: ${review.sport}`);
+                  console.log(`Head Coach: ${review.head_coach_name}`);
+                  console.log(`Message: ${review.review_message}`);
+                  console.log("Ratings:", {
+                    head_coach: review.head_coach,
+                    assistant_coaches: review.assistant_coaches,
+                    team_culture: review.team_culture,
+                    campus_life: review.campus_life,
+                    athletic_facilities: review.athletic_facilities,
+                    athletic_department: review.athletic_department,
+                    player_development: review.player_development,
+                    nil_opportunity: review.nil_opportunity
+                  });
+                });
+              }
+              console.log("-----------------------------------");
+            });
+          } else if (data.hasOwnProperty('no_preferences')) {
+            console.log("User has no preferences set");
+          }
+          console.log("=== END RECOMMENDATIONS DATA ===");
+          
           if (data.hasOwnProperty('no_preferences') && data.no_preferences === true) {
             setHasPreferences(false);
             setRecommendedSchools([]);
@@ -158,23 +195,21 @@ function SecureHome() {
             setRecommendedSchools(data);
             
             if (data.length > 0 && data[0].sport) {
+              console.log("Setting sport filter to:", data[0].sport);
               setFilters(prev => ({ ...prev, sport: data[0].sport }));
             }
             
             setShowRecommendations(data.length > 0);
           }
-        } else if (response.status === 404) {
-          console.log("No preferences found");
-          setHasPreferences(false);
-          setShowRecommendations(false);
         } else {
           const errorText = await response.text();
-          console.log("Error response:", response.status, errorText);
+          console.error("Error response:", response.status, errorText);
           setHasPreferences(false);
           setShowRecommendations(false);
         }
+        console.log("=== RECOMMENDATIONS DEBUG END ===");
       } catch (error) {
-        console.error("Error fetching recommendations:", error);
+        console.error("Error in fetchRecommendedSchools:", error);
         setHasPreferences(false);
         setShowRecommendations(false);
       }
