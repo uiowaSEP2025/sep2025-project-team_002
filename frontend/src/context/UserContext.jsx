@@ -7,6 +7,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
     // Function to fetch the user data from the backend
   const fetchUser = async () => {
@@ -31,10 +32,10 @@ export const UserProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
+    } finally {
+      setLoading(false);
     }
   };
-
-
 
   // Function to update user profile picture in state and backend
   const updateProfilePic = async (newPic) => {
@@ -68,10 +69,10 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     fetchUser()
-  }, [isLoggedIn]);
+  }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser }}>
+    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser, isLoggedIn, loading }}>
       {children}
     </UserContext.Provider>
   );

@@ -17,6 +17,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
+import SidebarWrapper from "../components/SidebarWrapper";
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";    // Hamburger icon
@@ -32,71 +33,20 @@ import API_BASE_URL from "../utils/config.js";
 function Account() {
   const navigate = useNavigate();
 
-  // Media query to detect if we're on mobile (<= 768px)
-  const isMobile = useMediaQuery("(max-width: 768px)");
-
-  // Desktop collapsible menu state
-  const [menuOpen, setMenuOpen] = useState(true);
-
-  // Mobile overlay menu state
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // User info state
-  const [user, setUser] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    transfer_type: "",
-    is_school_verified: false,
-    profile_picture: "",
-  });
-
   // For any error or status messages
-  const [message, setMessage] = useState("");
+  const [message] = useState("");
 
-  // Fetch user info on mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
+  const { user, loading } = useUser();
 
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/users/user/`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser({
-            first_name: data.first_name || "",
-            last_name: data.last_name || "",
-            email: data.email || "",
-            transfer_type: data.transfer_type || "",
-            is_school_verified: data.is_school_verified || false,
-            profile_picture: data.profile_picture || "",
-          });
-        } else {
-          const errorData = await response.json();
-          setMessage(errorData.detail || errorData.error || "Unknown Error");
-        }
-      } catch (error) {
-        console.error("Account page error:", error);
-
-        if (error.message.includes("Failed to fetch")) {
-          setMessage("Cannot connect to the server. Please check your network.");
-        } else {
-          setMessage("Network error: " + error.message);
-        }
-      }
-    };
-    fetchUserInfo();
-  }, [navigate]);
+  if (loading) {
+    return (
+      <SidebarWrapper title="My Account" menuItems={[]}>
+        <Typography variant="h6" sx={{ m: 4 }}>
+          Loading...
+        </Typography>
+      </SidebarWrapper>
+    );
+  }
 
   // Menu items (the same for desktop/mobile)
   const menuItems = [
@@ -115,7 +65,7 @@ function Account() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-        ...(user.transfer_type && user.transfer_type !== "graduate"
+        ...(user?.transfer_type && user.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
@@ -138,41 +88,6 @@ function Account() {
       icon: <LogoutIcon fontSize="medium" />
     }
   ];
-
-  const renderMenuList = () =>
-    menuItems.map((item, index) => (
-      <ListItem key={index} disablePadding>
-        <ListItemButton
-          onClick={() => {
-            item.action();
-            if (isMobile) setMobileMenuOpen(false);
-          }}
-          sx={{ borderRadius: "20px", mb: 1, pl: 2 }}
-        >
-          {item.icon}
-          {/* Desktop: only show text when side menu is expanded */}
-          {!isMobile && menuOpen && (
-            <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
-          )}
-          {/* Mobile: always show text */}
-          {isMobile && (
-            <ListItemText primary={item.text} sx={{ ml: 2, fontSize: "1.2rem" }} />
-          )}
-        </ListItemButton>
-      </ListItem>
-    ));
-
-  // Animation variants
-  const menuVariants = {
-    open: { width: 240, transition: { duration: 0.3 } },
-    closed: { width: 72, transition: { duration: 0.3 } }
-  };
-
-  const overlayVariants = {
-    hidden: { x: "-100%" },
-    visible: { x: 0 },
-    exit: { x: "-100%" }
-  };
 
   const handleSendVerification = async () => {
     const token = localStorage.getItem("token");
@@ -204,156 +119,9 @@ function Account() {
   };
 
   return (
-    <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-      {/* Desktop side menu */}
-      {!isMobile && (
-        <Grid item xs={12} md={3} sx={{ p: 0 }}>
-          <motion.div
-            variants={menuVariants}
-            animate={menuOpen ? "open" : "closed"}
-            initial="open"
-            style={{
-              backgroundColor: "#1a1a1a",
-              color: "white",
-              height: "100vh",
-              padding: 16,
-              boxSizing: "border-box",
-              overflow: "hidden"
-            }}
-          >
-            {/* Top bar with title & arrow */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: menuOpen ? "space-between" : "center",
-                mb: 2
-              }}
-            >
-              {menuOpen && (
-                <Typography variant="h6" sx={{ fontSize: "1.5rem", fontWeight: 600 }}>
-                  My Account
-                </Typography>
-              )}
-              <IconButton onClick={() => setMenuOpen(!menuOpen)} sx={{ color: "white" }}>
-                <ArrowBackIcon
-                  sx={{
-                    transform: menuOpen ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "transform 0.3s"
-                  }}
-                />
-              </IconButton>
-            </Box>
-
-            <Divider sx={{ bgcolor: "grey.600", mb: 2 }} />
-
-            <List>{renderMenuList()}</List>
-          </motion.div>
-        </Grid>
-      )}
-
-      {/* Mobile hamburger */}
-      {isMobile && (
-        <Box
-          sx={{
-            position: "fixed",
-            top: 16,
-            left: 16,
-            zIndex: 3000
-          }}
-        >
-          <IconButton
-            onClick={() => setMobileMenuOpen(true)}
-            sx={{
-              bgcolor: "#1a1a1a",
-              color: "white",
-              "&:hover": { backgroundColor: "#333" }
-            }}
-          >
-            <MenuIcon fontSize="large" />
-          </IconButton>
-        </Box>
-      )}
-
-      {/* Mobile overlay */}
-      <AnimatePresence>
-        {isMobile && mobileMenuOpen && (
-          <motion.div
-            key="mobile-menu"
-            variants={overlayVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            transition={{ duration: 0.3 }}
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              backgroundColor: "#1a1a1a",
-              zIndex: 4000,
-              display: "flex",
-              color: "white",
-              flexDirection: "column"
-            }}
-          >
-            {/* Overlay header */}
-            <Box
-              sx={{
-                position: "sticky",
-                top: 0,
-                backgroundColor: "#1a1a1a",
-                zIndex: 4500,
-                p: 2
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center"
-                }}
-              >
-                <Typography
-                  variant="h6"
-                  sx={{ fontSize: "1.5rem", fontWeight: 600, color: "#fff" }}
-                >
-                  My Account
-                </Typography>
-                <IconButton
-                  onClick={() => setMobileMenuOpen(false)}
-                  sx={{ color: "white" }}
-                >
-                  <ArrowBackIcon />
-                </IconButton>
-              </Box>
-              <Divider sx={{ bgcolor: "grey.600", mt: 2 }} />
-            </Box>
-
-            <Box
-              sx={{
-                flex: 1,
-                overflowY: "auto",
-                p: 2
-              }}
-            >
-              <List>{renderMenuList()}</List>
-            </Box>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
+    <SidebarWrapper menuItems={menuItems} title="My Account">
       {/* Main content area */}
-      <Grid
-        item
-        xs={12}
-        md={isMobile ? 12 : 9}
-        sx={{
-          p: 4,
-          mt: isMobile ? 6 : 0 // NEW: add top margin on mobile so overlay button doesn't overlap
-        }}
-      >
+      <Box>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -554,8 +322,8 @@ function Account() {
           )}
           <Outlet />
         </motion.div>
-      </Grid>
-    </Grid>
+      </Box>
+    </SidebarWrapper>
   );
 }
 
