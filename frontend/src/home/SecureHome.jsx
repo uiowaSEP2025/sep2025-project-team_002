@@ -27,6 +27,7 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import API_BASE_URL from "../utils/config";
 
 function SecureHome() {
+  const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -42,6 +43,25 @@ function SecureHome() {
   const [searchQuery, setSearchQuery] = useState(searchFromURL);
   const [prevSearchQuery, setPrevSearchQuery] = useState(searchFromURL);
   const [currentPage, setCurrentPage] = useState(pageFromURL);
+
+  // Fetching user reviews
+  const fetchUserReviews = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user reviews");
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching user reviews:", error);
+      return [];
+    }
+  };
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -179,9 +199,25 @@ function SecureHome() {
     localStorage.removeItem("token");
     navigate("/");
   };
-  const handleAccountInfo = () => {
-    navigate("/account");
-  };
+  const handleAccountInfo = async () => {
+  try {
+    // Fetch the user reviews before navigating to the account page
+    const reviews = await fetchUserReviews(); // Fetch reviews
+
+    // Log reviews to ensure they are fetched
+    console.log("Reviews fetched in SecureHome:", reviews);
+
+    // Update the reviews state (optional, only if you need to store them in SecureHome)
+    setReviews(reviews);
+
+    // Navigate to the account page and pass reviews via state
+    navigate("/account", { state: { reviews } }); // Pass reviews to MyReviews via location.state
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    // Handle error (show message, etc.)
+  }
+};
+
 
   // Navigation handlers for review & preference forms
   const handleGoToReviewForm = () => {

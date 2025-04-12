@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Grid,
   Typography,
@@ -7,18 +7,9 @@ import {
   CircularProgress,
   Card,
   CardContent,
-  IconButton,
-  Divider,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Button,
   useMediaQuery
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion";
-import MenuIcon from "@mui/icons-material/Menu";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { motion } from "framer-motion";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -36,13 +27,13 @@ console.log("MyReviews Component Mounted");
 
 function MyReviews() {
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const [menuOpen, setMenuOpen] = useState(true);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = (location.state?.reviews || []);
+  const [loading, setLoading] = useState(reviews && reviews.length === 0); // Check if reviews exist and are empty
   const [error, setError] = useState("");
+console.log("RRReviews received in MyReviews:", reviews);
 
   const [user, setUser] = useState({
     first_name: "",
@@ -53,34 +44,35 @@ function MyReviews() {
     profile_picture: "",
   });
 
-  //   // Fetch user info on mount
-  // useEffect(() => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) {
-  //     navigate("/login");
-  //     return;
-  //   }
-  //
-  //   const fetchUserReviews = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       console.log("Fetching user reviews...");
-  //       const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
-  //       if (!response.ok) {
-  //         throw new Error("Failed to fetch user reviews");
-  //       }
-  //       return await response.json();
-  //     } catch (error) {
-  //       console.error("Error fetching user reviews:", error);
-  //       return [];
-  //     }
-  //   };
-  //   fetchUserReviews();
-  // }, [navigate]);
+useEffect(() => {
+    if (!reviews.length) {
+      setLoading(true);
+      const fetchReviews = async () => {
+        const token = localStorage.getItem("token");
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error("Failed to fetch reviews");
+          }
+          const data = await response.json();
+          setReviews(data); // Set reviews if not passed via location.state
+        } catch (error) {
+          setError("Failed to load reviews");
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchReviews(); // Fetch reviews if not passed via state
+    } else {
+      setLoading(false); // Stop loading if reviews are already available
+    }
+  }, [reviews]); // Only fetch reviews if they aren't passed
 
     // Menu items (the same for desktop/mobile)
   const menuItems = [
@@ -123,82 +115,6 @@ function MyReviews() {
     }
   ];
 
-  // Fetch user reviews asynchronously
-  const fetchUserReviews = async () => {
-    const token = localStorage.getItem("token");
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch user reviews");
-        }
-        return await response.json();
-      } catch (error) {
-        console.error("Error fetching user reviews:", error);
-        return [];
-    }
-  };
-
-  useEffect(() => {
-    const loadUserData = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-      try {
-        // Fetch user info
-        const userResponse = await fetch(`${API_BASE_URL}/users/user/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const userData = await userResponse.json();
-        setUser(userData);  // Set user info state
-
-        // Fetch reviews after user info is loaded
-        const reviewsData = await fetchUserReviews();
-        setReviews(reviewsData);  // Set reviews state
-      } catch (error) {
-        setError("Failed to load data");
-        console.error(error);
-      } finally {
-        setLoading(false);  // Hide loading spinner after data is loaded
-      }
-    };
-    loadUserData();
-  }, [navigate]);
-
-  // Animation variants
-  const menuVariants = {
-    open: { width: 240, transition: { duration: 0.3 } },
-    closed: { width: 72, transition: { duration: 0.3 } },
-  };
-
-  const overlayVariants = {
-    hidden: { x: "-100%" },
-    visible: { x: 0 },
-    exit: { x: "-100%" },
-  };
-
-  // useEffect(() => {
-  //   console.log("Fetching reviews...");
-  //   const loadReviews = async () => {
-  //     try {
-  //       const data = await fetchUserReviews();
-  //       console.log("Data received in loadReviews:", data);  // Log the data received from fetchUserReviews
-  //       setReviews(data); // Update the state with fetched reviews
-  //     } catch (err) {
-  //       setError(err.message);
-  //     } finally {
-  //       setLoading(false);
-  //       // console.log("Reviews loaded:", reviews); // Log when reviews are loaded
-  //     }
-  //   };
-  //   loadReviews();
-  // }, []);
-
   // Smooth loading transition with fade-in effect
   const loadingTransition = {
     initial: { opacity: 0 },
@@ -206,10 +122,6 @@ function MyReviews() {
     exit: { opacity: 0 },
     transition: { duration: 0.5 },
   };
-
-
-
-
 
     // Debugging: Log the current loading and reviews states
   console.log("Loading State:", loading);
