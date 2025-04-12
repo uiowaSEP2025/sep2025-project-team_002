@@ -146,7 +146,9 @@ class TestFilterSchools:
         assert "Alpha School" in returned_school_names
         assert "Beta School" not in returned_school_names
 
-    def test_filter_by_rating_greater_than_or_equal(self, api_client, create_school, create_review):
+    def test_filter_by_rating_greater_than_or_equal(
+        self, api_client, create_school, create_review
+    ):
         """
         Test that filtering by rating returns schools with ratings greater than or equal to the specified value.
         """
@@ -167,10 +169,12 @@ class TestFilterSchools:
 
         # Should include schools with ratings >= 7
         assert "School Low" not in returned_school_names  # Rating 5 < 7
-        assert "School Medium" in returned_school_names   # Rating 7 >= 7
-        assert "School High" in returned_school_names     # Rating 9 >= 7
+        assert "School Medium" in returned_school_names  # Rating 7 >= 7
+        assert "School High" in returned_school_names  # Rating 9 >= 7
 
-    def test_filter_by_multiple_ratings_greater_than_or_equal(self, api_client, create_school, create_review):
+    def test_filter_by_multiple_ratings_greater_than_or_equal(
+        self, api_client, create_school, create_review
+    ):
         """
         Test that filtering by multiple ratings returns schools that meet all criteria.
         """
@@ -179,25 +183,30 @@ class TestFilterSchools:
         school3 = create_school("School C", fb=True)
 
         # Create reviews with different combinations of ratings
-        create_review(school1, "Coach X", "Football", {
-            "head_coach": 6,
-            "team_culture": 8,
-            "athletic_facilities": 5
-        })
-        create_review(school2, "Coach Y", "Football", {
-            "head_coach": 8,
-            "team_culture": 7,
-            "athletic_facilities": 9
-        })
-        create_review(school3, "Coach Z", "Football", {
-            "head_coach": 9,
-            "team_culture": 6,
-            "athletic_facilities": 8
-        })
+        create_review(
+            school1,
+            "Coach X",
+            "Football",
+            {"head_coach": 6, "team_culture": 8, "athletic_facilities": 5},
+        )
+        create_review(
+            school2,
+            "Coach Y",
+            "Football",
+            {"head_coach": 8, "team_culture": 7, "athletic_facilities": 9},
+        )
+        create_review(
+            school3,
+            "Coach Z",
+            "Football",
+            {"head_coach": 9, "team_culture": 6, "athletic_facilities": 8},
+        )
 
         # Filter by multiple criteria
         url = reverse("filter-schools")
-        response = api_client.get(url + "?head_coach=7&team_culture=7&athletic_facilities=7")
+        response = api_client.get(
+            url + "?head_coach=7&team_culture=7&athletic_facilities=7"
+        )
         assert response.status_code == status.HTTP_200_OK
         returned_school_names = [school["school_name"] for school in response.data]
 
@@ -205,6 +214,8 @@ class TestFilterSchools:
         # School B: head_coach(8) >= 7, team_culture(7) >= 7, athletic_facilities(9) >= 7
         # School C: head_coach(9) >= 7, team_culture(6) < 7, athletic_facilities(8) >= 7
 
-        assert "School A" not in returned_school_names  # Fails head_coach and athletic_facilities criteria
-        assert "School B" in returned_school_names      # Meets all criteria
+        assert (
+            "School A" not in returned_school_names
+        )  # Fails head_coach and athletic_facilities criteria
+        assert "School B" in returned_school_names  # Meets all criteria
         assert "School C" not in returned_school_names  # Fails team_culture criteria

@@ -64,14 +64,8 @@ describe("Filter Feature Test", function () {
       // Wait a bit for the page to refresh the list
       await driver.sleep(2000);
 
-      // Check the new school count (if no schools, the page might display "No results found")
+      // Check the new school count
       let newCount = await getSchoolCount();
-      let noResults;
-      try {
-        noResults = await driver.findElement(By.xpath("//*[contains(text(),'No results found')]"));
-      } catch {
-        noResults = null;
-      }
       console.log("New school count:", newCount);
       // The filter might not change the count if all schools meet the criteria
       // Just check that the filter was applied (we don't need to assert anything specific)
