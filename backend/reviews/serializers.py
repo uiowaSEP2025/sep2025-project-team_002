@@ -13,7 +13,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "Men's Basketball": "mbb",  # Handle both apostrophe types
             "Women's Basketball": "wbb",
             "Women's Basketball": "wbb",  # Handle both apostrophe types
-            "Football": "fb"
+            "Football": "fb",
         }
         logger.info(f"ReviewsSerializer.validate_sport: Converting '{value}' to code")
         code = sport_mapping.get(value, value)
@@ -26,11 +26,13 @@ class ReviewsSerializer(serializers.ModelSerializer):
         display_mapping = {
             "mbb": "Men's Basketball",
             "wbb": "Women's Basketball",
-            "fb": "Football"
+            "fb": "Football",
         }
-        original_sport = data['sport']
-        data['sport'] = display_mapping.get(data['sport'], data['sport'])
-        logger.info(f"ReviewsSerializer.to_representation: Converting sport from '{original_sport}' to '{data['sport']}'")
+        original_sport = data["sport"]
+        data["sport"] = display_mapping.get(data["sport"], data["sport"])
+        logger.info(
+            f"ReviewsSerializer.to_representation: Converting sport from '{original_sport}' to '{data['sport']}'"
+        )
         return data
 
     class Meta:

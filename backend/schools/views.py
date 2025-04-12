@@ -208,7 +208,9 @@ def get_recommended_schools(request):
         all_reviews = Reviews.objects.all()
         logger.info(f"\nAll reviews in system:")
         for review in all_reviews:
-            logger.info(f"Review by User {review.user.id} - School: {review.school.school_name}, Sport: {review.sport}")
+            logger.info(
+                f"Review by User {review.user.id} - School: {review.school.school_name}, Sport: {review.sport}"
+            )
 
         # Debug: Check all schools and their sports
         all_schools = Schools.objects.all()
@@ -248,14 +250,14 @@ def get_recommended_schools(request):
         display_to_code = {
             "Men's Basketball": "mbb",
             "Women's Basketball": "wbb",
-            "Football": "fb"
+            "Football": "fb",
         }
         code_to_display = {
             "mbb": "Men's Basketball",
             "wbb": "Women's Basketball",
-            "fb": "Football"
+            "fb": "Football",
         }
-        
+
         # Handle both cases - if it's a display name, convert to code, if it's a code, keep as is
         sport_code = display_to_code.get(sport, sport)
         if sport_code not in ["mbb", "wbb", "fb"]:
@@ -264,14 +266,16 @@ def get_recommended_schools(request):
                 if sport == display:
                     sport_code = code
                     break
-        
+
         logger.info(f"Converted sport '{sport}' to code '{sport_code}'")
 
         # Get all reviews for this sport (including current user's reviews)
         sport_reviews = Reviews.objects.filter(sport=sport_code)
         logger.info(f"\nAll reviews for sport {sport_code}:")
         for review in sport_reviews:
-            logger.info(f"Review by User {review.user.id} for {review.school.school_name}")
+            logger.info(
+                f"Review by User {review.user.id} for {review.school.school_name}"
+            )
 
         if not sport_reviews.exists():
             logger.info(f"No reviews found for {sport_code}")
@@ -287,10 +291,11 @@ def get_recommended_schools(request):
 
         # Get schools that the current user has already reviewed for this sport
         user_reviewed_schools = Reviews.objects.filter(
-            user=current_user,
-            sport=sport_code
-        ).values_list('school_id', flat=True)
-        logger.info(f"User has already reviewed {len(user_reviewed_schools)} schools for {sport_code}")
+            user=current_user, sport=sport_code
+        ).values_list("school_id", flat=True)
+        logger.info(
+            f"User has already reviewed {len(user_reviewed_schools)} schools for {sport_code}"
+        )
 
         # Debug: Print school IDs and names
         schools_with_reviews = Schools.objects.filter(id__in=school_ids_with_reviews)
@@ -303,9 +308,7 @@ def get_recommended_schools(request):
             return Response([])
 
         # Get all schools, excluding those the user has already reviewed
-        schools = Schools.objects.filter(
-            id__in=school_ids_with_reviews
-        ).exclude(
+        schools = Schools.objects.filter(id__in=school_ids_with_reviews).exclude(
             id__in=user_reviewed_schools
         )
         logger.info(
@@ -335,7 +338,9 @@ def get_recommended_schools(request):
 
             # Get all reviews for this school and sport
             reviews = Reviews.objects.filter(school=school, sport=sport_code)
-            logger.info(f"Found {reviews.count()} reviews for {school.school_name} - {sport_code}")
+            logger.info(
+                f"Found {reviews.count()} reviews for {school.school_name} - {sport_code}"
+            )
 
             if not reviews:
                 logger.info(
