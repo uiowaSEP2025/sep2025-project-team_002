@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { expect, vi } from "vitest";
+import { expect, vi, beforeEach, afterEach, describe, it } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import UserPreferences from "../../account/UserPreferences.jsx";
 import API_BASE_URL from "../../utils/config.js";

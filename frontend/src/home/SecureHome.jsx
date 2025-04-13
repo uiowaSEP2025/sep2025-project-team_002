@@ -393,6 +393,11 @@ function SecureHome() {
               >
                 Filter
               </Button>
+              {filterApplied && (
+                <Button variant="outlined" color="secondary" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+              )}
             </Box>
 
             {/* Recommendations Section - Only shown for non-graduate users */}
