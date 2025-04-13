@@ -18,6 +18,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"
 import RateReviewIcon from "@mui/icons-material/RateReview"
 import API_BASE_URL from "../utils/config";
+import {useUser} from "../context/UserContext.jsx";
 
 console.log("MyReviews Component Mounted");
 
@@ -44,14 +45,7 @@ function MyReviews() {
   };
 
 
-  const [user, setUser] = useState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    transfer_type: "",
-    is_school_verified: false,
-    profile_picture: "",
-  });
+  const { user, fetchUser } = useUser();
 
     // Menu items (the same for desktop/mobile)
   const menuItems = [
@@ -70,7 +64,7 @@ function MyReviews() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-        ...(user.transfer_type !== "graduate"
+        ...(user?.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
@@ -80,7 +74,7 @@ function MyReviews() {
       : []
     ),
     // Conditionally block "My Reviews" tab for high school transfer type
-    ...(user.transfer_type !== "high_school"
+    ...(user?.transfer_type !== "high_school"
     ? [{
         text: "My Reviews",
         action: () => null,
@@ -126,12 +120,7 @@ function MyReviews() {
       }
       try {
         // Fetch user info
-        const userResponse = await fetch(`${API_BASE_URL}/users/user/`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const userData = await userResponse.json();
-        setUser(userData);  // Set user info state
-
+        await fetchUser(); // Set user info state
         // Fetch reviews after user info is loaded
         const reviewsData = await fetchUserReviews();
         setReviews(reviewsData);  // Set reviews state
