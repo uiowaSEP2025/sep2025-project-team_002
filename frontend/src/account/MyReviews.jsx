@@ -155,8 +155,8 @@ function MyReviews() {
    return (
     <SidebarWrapper title="My Account" menuItems={menuItems}>
       <motion.div {...loadingTransition}>
-        <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
-          <Grid item xs={12} md={isMobile ? 12 : 9} sx={{ p: 4, mt: isMobile ? 6 : 0 }}>
+        <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", display: "flex", flexDirection: "column", }}>
+          <Grid item xs={12} md={isMobile ? 12 : 9} sx={{ p: 4, mt: isMobile ? 6 : 0, flexGrow: 1, }}>
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}

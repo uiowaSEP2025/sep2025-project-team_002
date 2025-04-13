@@ -62,7 +62,7 @@ const SidebarWrapper = ({ title = "My Account", menuItems = [], children }) => {
     <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
       {/* DESKTOP / LARGE TABLET: Collapsible Side Menu */}
       {!isMobile && (
-        <Grid item xs={12} md={3} sx={{ p: 0 }}>
+        <Grid item xs={12} md={3} sx={{ p: 0, height: "100vh", display: "flex", flexDirection: "column", }}>
           <motion.div
             variants={menuVariants}
             animate={menuOpen ? "open" : "closed"}
@@ -70,7 +70,7 @@ const SidebarWrapper = ({ title = "My Account", menuItems = [], children }) => {
             style={{
               backgroundColor: "#1a1a1a",
               color: "white",
-              height: "100vh",
+                position: "absolute", top: 0, bottom: "-100px", left: 0,
               padding: 16,
               boxSizing: "border-box",
               overflow: "hidden"
