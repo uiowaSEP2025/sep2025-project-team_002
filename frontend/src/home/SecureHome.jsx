@@ -400,6 +400,11 @@ function SecureHome() {
               >
                 FILTERS
               </Button>
+              {filterApplied && (
+                <Button variant="outlined" color="secondary" onClick={clearFilters}>
+                  Clear Filters
+                </Button>
+              )}
             </Box>
 
 

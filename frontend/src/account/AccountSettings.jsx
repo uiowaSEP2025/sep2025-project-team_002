@@ -26,6 +26,8 @@ import {
   InputAdornment
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import RateReviewIcon from '@mui/icons-material/RateReview';
+
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";
@@ -235,6 +237,15 @@ function AccountSettings() {
           action: () => navigate("/user-preferences/"),
           icon: <CheckCircleIcon fontSize="medium" />
         }]
+      : []
+    ),
+    // Conditionally block "My Reviews" tab for high school transfer type
+    ...(user?.transfer_type && user.transfer_type !== "high_school"
+    ? [{
+        text: "My Reviews",
+        action: () => navigate("/account/my-reviews"),
+        icon: <RateReviewIcon fontSize="medium" />
+      }]
       : []
     ),
     {
