@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Schools
 from reviews.models import Reviews
-from reviews.serializers import ReviewSerializer
+from reviews.serializers import ReviewsSerializer
 
 
 class SchoolSerializer(serializers.ModelSerializer):
@@ -34,4 +34,4 @@ class SchoolSerializer(serializers.ModelSerializer):
 
     def get_reviews(self, obj):
         reviews = Reviews.objects.filter(school=obj.id)
-        return ReviewSerializer(reviews, many=True).data
+        return ReviewsSerializer(reviews, many=True).data

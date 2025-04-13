@@ -233,7 +233,7 @@ const PreferenceForm = () => {
               <Typography variant="subtitle2" sx={{ fontWeight: 200, mb: 4 }}>
               <strong>NOTE:</strong> A rating of 10 indicates that this factor is extremely important in your decision,
                   while a 1 means it has little to no impact on your choice.
-                  If a factor doesn’t matter to you at all, select 0.
+                  If a factor doesn't matter to you at all, select 0.
             </Typography>
           </motion.div>
 
@@ -250,7 +250,7 @@ const PreferenceForm = () => {
               error={!preference.sport && isSubmitted}
               helperText={!preference.sport && isSubmitted ? "This field is required" : ""}
             >
-              {["Football", "Men’s Basketball", "Women’s Basketball"].map((sport, index) => (
+              {["Football", "Men's Basketball", "Women's Basketball"].map((sport, index) => (
                 <MenuItem key={index} value={sport}>
                   {sport}
                 </MenuItem>

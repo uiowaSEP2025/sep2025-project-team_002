@@ -4,6 +4,7 @@ import { render, screen, waitFor, fireEvent, within } from '@testing-library/rea
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import Home from '../../home/Home.jsx';
+import { act } from 'react';
 
 describe('App Component', () => {
   beforeEach(() => {
@@ -127,7 +128,7 @@ describe('Home Filter Feature', () => {
 
     // Change the Head Coach Rating dropdown to 9
     const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
-    fireEvent.change(headCoachSelect, { target: { value: '9' }});
+    fireEvent.change(headCoachSelect, { target: { value: '9' } });
 
     // Click the Apply button using getByRole with exact match
     const applyButton = screen.getByRole('button', { name: /^Apply$/i });
