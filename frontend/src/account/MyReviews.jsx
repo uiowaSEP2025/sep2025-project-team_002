@@ -30,7 +30,7 @@ function MyReviews() {
 
   // Pagination Settings
   const [currentPage, setCurrentPage] = useState(1);
-  const reviewsPerPage = 5;
+  const reviewsPerPage = 3;
   const [totalPages, setTotalPages] = useState(1);  // Total number of pages
 
   // Calculate the reviews to display on the current page
@@ -219,7 +219,13 @@ function MyReviews() {
           </Grid>
         </Grid>
       </motion.div>
-      {/* Pagination */}
+    <Grid item xs={12} sx={{
+      display: "flex",
+      position: 'relative',
+      justifyContent: "center",
+      top: '-20px', // Adjust this value to place the pagination where you want
+      left: '-90px', // Centering it with the review boxes
+      }}>
       <Pagination
         count={totalPages}
         page={currentPage}
@@ -227,9 +233,9 @@ function MyReviews() {
         color="primary"
         showFirstButton
         showLastButton
-        sx={{ mt: 3 }}  // Add margin to space out pagination
       />
-    </SidebarWrapper>
+    </Grid>
+  </SidebarWrapper>
   );
 }
 

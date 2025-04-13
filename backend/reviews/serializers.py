@@ -6,7 +6,8 @@ logger = logging.getLogger(__name__)
 
 
 class ReviewsSerializer(serializers.ModelSerializer):
-    school_name = serializers.ReadOnlyField(source='school.school_name')
+    school_name = serializers.ReadOnlyField(source="school.school_name")
+
     def validate_sport(self, value):
         # Convert display names to database codes
         sport_mapping = {
