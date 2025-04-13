@@ -2,8 +2,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { expect, vi, describe, it } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import MyReviews from "../../account/MyReviews.jsx"; // Import your component
-import { UserProvider } from "../../context/UserContext"; // Adjust path as needed
-
+import { UserProvider } from "../../context/UserContext.jsx";
 import API_BASE_URL from "../../utils/config.js";
 
 // Mock the navigate function
@@ -86,11 +85,11 @@ afterEach(() => {
 describe("MyReviews Component", () => {
    it("renders reviews correctly when data is available", async () => {
     render(
-      <BrowserRouter>
-    <UserProvider>
-      <MyReviews />
-    </UserProvider>
-  </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <MyReviews />
+        </BrowserRouter>
+      </UserProvider>
     );
 
 
@@ -115,11 +114,11 @@ describe("MyReviews Component", () => {
     global.fetch = vi.fn(() => Promise.resolve({ ok: true, json: () => Promise.resolve([]) }));
 
     render(
-      <BrowserRouter>
-    <UserProvider>
-      <MyReviews />
-    </UserProvider>
-  </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <MyReviews />
+        </BrowserRouter>
+      </UserProvider>
     );
 
     await waitFor(() => {
@@ -129,11 +128,11 @@ describe("MyReviews Component", () => {
 
   it("correctly handles pagination", async () => {
     render(
-      <BrowserRouter>
-    <UserProvider>
-      <MyReviews />
-    </UserProvider>
-  </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <MyReviews />
+        </BrowserRouter>
+      </UserProvider>
     );
 
     // Verify the correct number of reviews is displayed per page
@@ -151,14 +150,32 @@ describe("MyReviews Component", () => {
     localStorage.removeItem("token");
 
     render(
-      <BrowserRouter>
-    <UserProvider>
-      <MyReviews />
-    </UserProvider>
-  </BrowserRouter>
+      <UserProvider>
+        <BrowserRouter>
+          <MyReviews />
+        </BrowserRouter>
+      </UserProvider>
     );
 
     expect(navigateMock).toHaveBeenCalledWith("/login");
+  });
+
+  it("handles errors correctly", async () => {
+    // Mock the fetch to simulate a failed response
+    global.fetch = vi.fn().mockRejectedValue(new Error("Failed to load data"));
+
+    render(
+    <UserProvider>
+      <BrowserRouter>
+        <MyReviews />
+      </BrowserRouter>
+    </UserProvider>
+    );
+
+    // Wait for the error message to appear
+    await waitFor(() => {
+      expect(screen.getByText("Failed to load data")).toBeInTheDocument();  // Adjust based on the error UI
+    });
   });
 
 });

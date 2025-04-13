@@ -95,21 +95,16 @@ function MyReviews() {
   // Fetch user reviews asynchronously
   const fetchUserReviews = async () => {
     const token = localStorage.getItem("token");
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (!response.ok) {
-        throw new Error("Failed to fetch user reviews");
-      }
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching user reviews:", error);
-      return [];
+    const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to fetch user reviews");
     }
-    };
+    return await response.json();
+  };
 
   useEffect(() => {
     const loadUserData = async () => {
