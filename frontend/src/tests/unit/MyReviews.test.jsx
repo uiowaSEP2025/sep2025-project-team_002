@@ -81,8 +81,18 @@ describe("MyReviews Component", () => {
   });
 
     await waitFor(() => {
-      expect(screen.getByText(/Test School 1/)).toBeInTheDocument();
-      expect(screen.getByText(/Basketball/)).toBeInTheDocument();
+      // Use queryAllByText or getAllByText for matching text in multiple elements
+      const schoolElements = screen.getAllByText(/Test School 1/);
+      const sportElements = screen.getAllByText(/Basketball/);
+
+      // Check if "Test School 1" appears at least once in the DOM
+      expect(schoolElements.length).toBeGreaterThan(0);
+      expect(sportElements.length).toBeGreaterThan(0);
+    });
+
+    await waitFor(() => {
+      // expect(screen.getByText(/Test School 1/)).toBeInTheDocument();
+      // expect(screen.getByText(/Basketball/)).toBeInTheDocument();
       expect(screen.getByText("Head Coach • Coach A: 9/10")).toBeInTheDocument();
       expect(screen.getByText("Assistant Coaches: 8/10")).toBeInTheDocument();
     });
