@@ -145,23 +145,6 @@ function MyReviews() {
     loadUserData();
   }, [navigate]);
 
-  useEffect(() => {
-    console.log("Fetching reviews...");
-    const loadReviews = async () => {
-      try {
-        const data = await fetchUserReviews();
-        console.log("Data received in loadReviews:", data);  // Log the data received from fetchUserReviews
-        setReviews(data); // Update the state with fetched reviews
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-        // console.log("Reviews loaded:", reviews); // Log when reviews are loaded
-      }
-    };
-    loadReviews();
-  }, []);
-
   // Smooth loading transition with fade-in effect
   const loadingTransition = {
     initial: { opacity: 0 },
