@@ -70,7 +70,7 @@ function MyReviews() {
       action: () => navigate("/account/settings"),
       icon: <SettingsIcon fontSize="medium" />
     },
-        ...(user.transfer_type && user.transfer_type !== "graduate"
+        ...(user.transfer_type !== "graduate"
       ? [{
           text: "Completed Preference Form",
           action: () => navigate("/user-preferences/"),
@@ -79,11 +79,11 @@ function MyReviews() {
         }]
       : []
     ),
-    // Conditionally add "My Reviews" tab for high school transfer type
-    ...(user.transfer_type === "high_school"
+    // Conditionally block "My Reviews" tab for high school transfer type
+    ...(user.transfer_type !== "high_school"
     ? [{
         text: "My Reviews",
-        action: () => navigate("/my-reviews"),
+        action: () => null,
         icon: <RateReviewIcon fontSize="medium" />
       }]
       : []

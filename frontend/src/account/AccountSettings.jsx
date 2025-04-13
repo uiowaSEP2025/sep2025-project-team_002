@@ -239,11 +239,11 @@ function AccountSettings() {
         }]
       : []
     ),
-    // Conditionally add "My Reviews" tab for high school transfer type
-    ...(user.transfer_type === "high_school"
+    // Conditionally block "My Reviews" tab for high school transfer type
+    ...(user.transfer_type !== "high_school"
     ? [{
         text: "My Reviews",
-        action: () => navigate("/my-reviews"),
+        action: () => navigate("/account/my-reviews"),
         icon: <RateReviewIcon fontSize="medium" />
       }]
       : []
