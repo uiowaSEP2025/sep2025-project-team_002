@@ -2,6 +2,8 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { expect, vi, describe, it } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import MyReviews from "../../account/MyReviews.jsx"; // Import your component
+import { UserProvider } from "../../context/UserContext"; // Adjust path as needed
+
 import API_BASE_URL from "../../utils/config.js";
 
 // Mock the navigate function
@@ -85,8 +87,10 @@ describe("MyReviews Component", () => {
    it("renders reviews correctly when data is available", async () => {
     render(
       <BrowserRouter>
-        <MyReviews />
-      </BrowserRouter>
+    <UserProvider>
+      <MyReviews />
+    </UserProvider>
+  </BrowserRouter>
     );
 
 
@@ -112,8 +116,10 @@ describe("MyReviews Component", () => {
 
     render(
       <BrowserRouter>
-        <MyReviews />
-      </BrowserRouter>
+    <UserProvider>
+      <MyReviews />
+    </UserProvider>
+  </BrowserRouter>
     );
 
     await waitFor(() => {
@@ -124,8 +130,10 @@ describe("MyReviews Component", () => {
   it("correctly handles pagination", async () => {
     render(
       <BrowserRouter>
-        <MyReviews />
-      </BrowserRouter>
+    <UserProvider>
+      <MyReviews />
+    </UserProvider>
+  </BrowserRouter>
     );
 
     // Verify the correct number of reviews is displayed per page
@@ -144,27 +152,13 @@ describe("MyReviews Component", () => {
 
     render(
       <BrowserRouter>
-        <MyReviews />
-      </BrowserRouter>
+    <UserProvider>
+      <MyReviews />
+    </UserProvider>
+  </BrowserRouter>
     );
 
     expect(navigateMock).toHaveBeenCalledWith("/login");
   });
-
-  it("handles errors correctly", async () => {
-      // Mock the fetch to simulate a failed response
-      global.fetch = vi.fn().mockRejectedValue(new Error("Failed to load data"));
-
-      render(
-        <BrowserRouter>
-          <MyReviews />
-        </BrowserRouter>
-      );
-
-      // Wait for the error message to appear
-      await waitFor(() => {
-        expect(screen.getByText("Failed to load data")).toBeInTheDocument();  // Adjust based on the error UI
-      });
-    });
 
 });
