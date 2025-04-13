@@ -28,10 +28,10 @@ function MyReviews() {
   const [loading, setLoading] = useState(true);
   const [setError] = useState("");
 
-  // Setting Pagination
+  // Pagination Settings
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);  // Total number of pages
 
   // Calculate the reviews to display on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
@@ -99,7 +99,7 @@ function MyReviews() {
   ];
 
   // Fetch user reviews asynchronously
-    const fetchUserReviews = async () => {
+  const fetchUserReviews = async () => {
     const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${API_BASE_URL}/api/reviews/user-reviews/`, {
@@ -117,7 +117,7 @@ function MyReviews() {
     }
     };
 
-    useEffect(() => {
+  useEffect(() => {
     const loadUserData = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -157,6 +157,7 @@ function MyReviews() {
   useEffect(() => {
     setTotalPages(Math.ceil(reviews.length / reviewsPerPage));
   }, [reviews]);
+
    return (
     <SidebarWrapper title="My Account" menuItems={menuItems}>
       <motion.div {...loadingTransition}>
@@ -180,7 +181,7 @@ function MyReviews() {
                 <Typography sx={{ mt: 2 }}>No reviews found.</Typography>
               ) : (
                 <Box sx={{ mt: 3 }}>
-                  {reviews.map((review) => (
+                  {currentReviews.map((review) => (
                     <Card key={review.review_id} sx={{ mb: 2 }}>
                       <CardContent>
                         <Typography variant="h6">{review.school_name || "Untitled School"}</Typography>
