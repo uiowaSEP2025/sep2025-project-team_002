@@ -7,6 +7,7 @@ from .views import (
     get_schools,
     get_review_summary,
     filter_schools,
+    get_recommended_schools,
 )
 
 urlpatterns = [
@@ -34,4 +35,5 @@ urlpatterns = [
         name="review-summary",
     ),
     path("filter/", filter_schools, name="filter-schools"),
+    path("recommendations/", get_recommended_schools, name="recommended-schools"),
 ]

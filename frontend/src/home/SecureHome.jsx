@@ -7,6 +7,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  CircularProgress,
   Button,
   Card,
   CardContent,
@@ -49,8 +50,16 @@ function SecureHome() {
   const [prevSearchQuery, setPrevSearchQuery] = useState(searchFromURL);
   const [currentPage, setCurrentPage] = useState(pageFromURL);
 
+  const [recommendedSchools, setRecommendedSchools] = useState([]);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+
+    // Add a new state to track if the user has submitted preferences
+  const [hasPreferences, setHasPreferences] = useState(null);
+
+
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     coach: "",
     head_coach: "",
@@ -73,6 +82,8 @@ function SecureHome() {
     transfer_type: "",
     profile_picture: "",
   });
+
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -129,8 +140,45 @@ function SecureHome() {
       }
     };
 
+    // Fetch Recommended Schools
+    const fetchRecommendedSchools = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/recommendations/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.hasOwnProperty('no_preferences') && data.no_preferences === true) {
+            setHasPreferences(false);
+            setRecommendedSchools([]);
+            setShowRecommendations(false);
+          } else {
+            setHasPreferences(true);
+            setRecommendedSchools(data);
+            if (data.length > 0 && data[0].sport) {
+              setFilters(prev => ({ ...prev }));
+            }
+            setShowRecommendations(data.length > 0);
+          }
+        } else {
+          const errorText = await response.text();
+          console.error("Error response:", response.status, errorText);
+          setHasPreferences(false);
+          setShowRecommendations(false);
+        }
+      } catch (error) {
+        console.error("Error in fetchRecommendedSchools:", error);
+        setHasPreferences(false);
+        setShowRecommendations(false);
+      }
+    };
+    // Fetch data for user, schools, and recommendations
     fetchUserInfo();
     fetchSchools();
+    fetchRecommendedSchools();
   }, [navigate]);
 
   // Sync state with URL when location changes (handles back/forward navigation)
@@ -212,32 +260,35 @@ function SecureHome() {
     setFilters({ ...filters, [name]: value });
   };
   const applyFilters = async () => {
-    const token = localStorage.getItem("token");
-    const queryParams = new URLSearchParams();
-    if (filters.coach) queryParams.append("coach", filters.coach);
-    // Append rating filters if provided
-    [
-      "head_coach",
-      "assistant_coaches",
-      "team_culture",
-      "campus_life",
-      "athletic_facilities",
-      "athletic_department",
-      "player_development",
-      "nil_opportunity",
-    ].forEach((field) => {
-      if (filters[field]) {
-        queryParams.append(field, filters[field]);
-      }
-    });
-
+    setFilterDialogOpen(false);
+    setLoading(true);
     try {
+      const queryParams = new URLSearchParams();
+      if (filters.coach) queryParams.append("coach", filters.coach);
+      if (filters.head_coach) queryParams.append("head_coach", filters.head_coach);
+      // Append rating filters if provided
+      [
+        "assistant_coaches",
+        "team_culture",
+        "campus_life",
+        "athletic_facilities",
+        "athletic_department",
+        "player_development",
+        "nil_opportunity",
+      ].forEach((field) => {
+        if (filters[field]) {
+          queryParams.append(field, filters[field]);
+        }
+      });
+
+      const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/api/filter/?${queryParams.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
+
       if (response.ok) {
         const data = await response.json();
         setFilteredSchools(data);
@@ -249,6 +300,8 @@ function SecureHome() {
       }
     } catch (error) {
       console.error("Error applying filters:", error);
+    } finally {
+      setLoading(false);
     }
     closeFilterDialog();
   };
@@ -264,13 +317,14 @@ function SecureHome() {
       player_development: "",
       nil_opportunity: "",
     });
-    setFilterApplied(false);
+    setFilterApplied(false);  // This is key - it resets to show all schools
     setFilteredSchools([]);
     closeFilterDialog();
   };
 
-  // Determine which schools to display: filtered if applied, else all
-  const schoolsToDisplay = filterApplied ? filteredSchools : schools;
+  const schoolsToDisplay = Array.isArray(filterApplied ? filteredSchools : schools)
+    ? (filterApplied ? filteredSchools : schools)
+    : [];
 
   // Apply search filter on top
   const filteredBySearch = schoolsToDisplay
@@ -286,6 +340,20 @@ function SecureHome() {
   const indexOfLastSchool = currentPage * schoolsPerPage;
   const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
   const currentSchools = sortedFilteredSchools.slice(indexOfFirstSchool, indexOfLastSchool);
+
+   useEffect(() => {
+    if (hasPreferences !== null) {
+      setLoading(false);  // Set loading to false after preferences are fetched
+    }
+  }, [hasPreferences]);
+
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: "center", marginTop: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <Box id="secure-home" sx={{ position: "relative", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
@@ -349,24 +417,180 @@ function SecureHome() {
               Schools and Sports
             </Typography>
 
+            {/* Search and Filters Section */}
             <Box sx={{ display: "flex", justifyContent: "center", mb: 4, gap: 2 }}>
               <TextField
+                id="school-search"
                 label="Search Schools"
                 variant="outlined"
-                fullWidth
-                sx={{ width: "90%", maxWidth: 600 }}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                sx={{ width: { xs: "100%", sm: "400px" }, borderRadius: "20px" }}
+                InputProps={{
+                  sx: { borderRadius: "40px" }
+                }}
               />
-              <Button variant="contained" color="primary" onClick={openFilterDialog}>
-                Filters
+              <Button
+                id={"filter-button"}
+                variant="contained"
+                onClick={openFilterDialog}
+                sx={{
+                  borderRadius: "30px",
+                  minWidth: "120px",
+                  height: "56px"
+                }}
+              >
+                FILTERS
               </Button>
-              {filterApplied && (
-                <Button variant="outlined" color="secondary" onClick={clearFilters}>
-                  Clear Filters
-                </Button>
-              )}
             </Box>
+
+
+
+            {/* Recommendations Section - Only shown for non-graduate users */}
+            {user.transfer_type !== "graduate" ? (
+              hasPreferences ? (
+                recommendedSchools && recommendedSchools.length > 0 ? (
+                  <Box sx={{ mb: 4 }}>
+                    <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
+                      Recommended Schools Based on Your Preferences
+                    </Typography>
+                    <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary' }}>
+                      These schools match your preferences and have received positive reviews from other athletes.
+                    </Typography>
+                    <Stack spacing={2} sx={{ px: 2 }}>
+                      {recommendedSchools.map((rec, index) => (
+                        <Card
+                          key={index}
+                          sx={{
+                            width: "100%",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease-in-out",
+                            "&:hover": {
+                              backgroundColor: "#f0f7ff",
+                              transform: "translateY(-2px)",
+                              boxShadow: 2
+                            }
+                          }}
+                          onClick={() => handleSchoolClick(rec.school.id)}
+                        >
+                          <CardContent>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>
+                              <Box>
+                                <Typography
+                                  variant="h6"
+                                  sx={{ my: 0, fontWeight: 700 }}
+                                  data-testid={`recommended-school-name-${rec.school?.id || 'unknown'}`}
+                                >
+                                  {rec.school?.school_name || 'Unknown School'}
+                                </Typography>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    data-testid={`recommended-school-location-${rec.school?.id || 'unknown'}`}
+                                  >
+                                    {rec.school?.location || 'Unknown Location'}
+                                  </Typography>
+                                  {rec.sport && (
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
+                                        backgroundColor: "#e3f2fd",
+                                        color: "#1976d2",
+                                        px: 1,
+                                        py: 0.25,
+                                        borderRadius: 1,
+                                        fontSize: "0.75rem"
+                                      }}
+                                      data-testid={`recommended-sport-name-${rec.school?.id || 'unknown'}`}
+                                    >
+                                      {rec.sport}
+                                    </Typography>
+                                  )}
+                                </Box>
+                              </Box>
+                              <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                p: 1,
+                                backgroundColor: '#e3f2fd',
+                                borderRadius: 1
+                              }}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1976d2' }}>
+                                  Match Score: {rec.similarity_score}/10
+                                </Typography>
+                              </Box>
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </Stack>
+                  </Box>
+                ) : (
+                  <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                    <Typography variant="h6" sx={{ mb: 1 }}>
+                      No Recommendations Available
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                      We don't have any reviews yet for your preferred sport.
+                      Check back later as our community grows!
+                    </Typography>
+                    {user.transfer_type !== "graduate" && !hasPreferences && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleGoToPreferenceForm}
+                      sx={{ mt: 1, mr: 2 }}
+                    >
+                      {filters.sport ? "Update Preferences" : "Set Your Preferences"}
+                    </Button>
+                  )}
+                    {filters.sport && (
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={handleGoToReviewForm}
+                        sx={{ mt: 1 }}
+                      >
+                        Submit a Review
+                      </Button>
+                    )}
+                  </Box>
+                )
+              ) : (
+                <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                  <Typography variant="h6" sx={{ mb: 1 }}>
+                    {filters.sport ? "No Recommendations Available" : "Fill Out Your Preferences"}
+                  </Typography>
+                  <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                    {filters.sport
+                      ? `We don't have any reviews yet for your preferred sport (${filters.sport}). Check back later as our community grows!`
+                      : "Please fill out your preferences to see personalized school recommendations based on what matters most to you."}
+                  </Typography>
+
+                  {user.transfer_type !== "graduate" && !hasPreferences && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleGoToPreferenceForm}
+                      sx={{ mt: 1, mr: 2 }}
+                    >
+                      {filters.sport ? "Update Preferences" : "Set Your Preferences"}
+                    </Button>
+                  )}
+                  {filters.sport && (
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={handleGoToReviewForm}
+                      sx={{ mt: 1 }}
+                    >
+                      Submit a Review
+                    </Button>
+                  )}
+                </Box>
+              )
+            ) : null}
 
             {user.transfer_type !== "high_school" && (
               <Box sx={{ textAlign: "center", mb: 4 }}>
@@ -376,13 +600,13 @@ function SecureHome() {
               </Box>
             )}
 
-            {user.transfer_type !== "graduate" && (
-              <Box sx={{ textAlign: "center", mb: 4 }}>
-                <Button variant="contained" color="primary" onClick={handleGoToPreferenceForm}>
-                  Submit your Preferences
-                </Button>
-              </Box>
-            )}
+            {/*{user.transfer_type !== "graduate" && (*/}
+            {/*  <Box sx={{ textAlign: "center", mb: 4 }}>*/}
+            {/*    <Button variant="contained" color="primary" onClick={handleGoToPreferenceForm}>*/}
+            {/*      Submit your Preferences*/}
+            {/*    </Button>*/}
+            {/*  </Box>*/}
+            {/*)}*/}
 
             <Stack spacing={2} sx={{ px: 2 }}>
               {currentSchools.length > 0 ? (
@@ -395,13 +619,19 @@ function SecureHome() {
                   >
                     <CardContent>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                        <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                        <Typography
+                          variant="h6"
+                          sx={{ my: 0, fontWeight: 700 }}
+                          data-testid={`school-list-name-${school.id || 'unknown'}`}
+                        >
                           {school.school_name}
                         </Typography>
-                        <Typography variant="body2">
-                          {school.available_sports && school.available_sports.length > 0
-                            ? school.available_sports.join(" • ")
-                            : "No sports listed"}
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          data-testid={`school-list-sports-${school.id || 'unknown'}`}
+                        >
+                          {school.available_sports.join(' • ')}
                         </Typography>
                       </Box>
                     </CardContent>
@@ -487,35 +717,32 @@ function SecureHome() {
       <Dialog open={filterDialogOpen} onClose={closeFilterDialog} fullWidth maxWidth="sm">
         <DialogTitle>Apply Filters</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
-              label="Coach Name"
-              name="coach"
-              value={filters.coach}
-              onChange={handleFilterChange}
+              select
               fullWidth
-            />
-            <FormControl fullWidth>
-              <InputLabel htmlFor="head_coach-select" id="head_coach-label">
-                Head Coach Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="head_coach-label"
-                id="head_coach-select"
-                label="Head Coach Rating"
-                name="head_coach"
-                value={filters.head_coach}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
+              label="Coach"
+              value={filters.coach}
+              onChange={(e) => setFilters({ ...filters, coach: e.target.value })}
+            >
+              <MenuItem value="">All Coaches</MenuItem>
+              <MenuItem value="head">Head Coach</MenuItem>
+              <MenuItem value="assistant">Assistant Coach</MenuItem>
+            </TextField>
+            <TextField
+              select
+              fullWidth
+              id="head_coach-rating-select"
+              label="Head Coach Rating"
+              value={filters.head_coach}
+              onChange={(e) => setFilters({ ...filters, head_coach: e.target.value })}
+            >
+              {[...Array(10)].map((_, i) => (
+                <MenuItem key={i + 1} value={i + 1}>
+                  {i + 1}
+                </MenuItem>
+              ))}
+            </TextField>
             <FormControl fullWidth>
               <InputLabel htmlFor="assistant_coaches-select" id="assistant_coaches-label">
                 Assistant Coaches Rating
@@ -669,7 +896,7 @@ function SecureHome() {
           <Button onClick={clearFilters} color="secondary">
             Clear
           </Button>
-          <Button onClick={applyFilters} color="primary" variant="contained">
+          <Button id="apply-filters-button" onClick={applyFilters} color="primary" variant="contained">
             Apply
           </Button>
         </DialogActions>

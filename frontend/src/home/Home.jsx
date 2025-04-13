@@ -527,7 +527,7 @@ function Home() {
           <Button onClick={clearFilters} color="secondary">
             Clear
           </Button>
-          <Button onClick={applyFilters} color="primary" variant="contained">
+          <Button id="apply-filters-button" onClick={applyFilters} color="primary" variant="contained">
             Apply
           </Button>
         </DialogActions>

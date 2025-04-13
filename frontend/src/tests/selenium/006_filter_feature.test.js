@@ -43,42 +43,33 @@ describe("Filter Feature Test", function () {
       console.log("Initial school count:", initialCount);
 
       // Click the Filters button
-      const filtersButton = await driver.findElement(
-        By.xpath("//button[normalize-space()='Filters']")
-      );
+      const filtersButton = await driver.findElement(By.id("filter-button"));
       await filtersButton.click();
 
-      // Wait for the filter dialog to open (check for dialog title "Apply Filters")
-      await driver.wait(
-        until.elementLocated(By.xpath("//*[contains(text(),'Apply Filters')]")),
-        10000
-      );
+      // Wait for the filter dialog to open
+      await driver.wait(until.elementLocated(By.css('[role="dialog"]')), 10000);
 
-      // Find the Head Coach Rating dropdown by its id (set to "head_coach-select")
-      const headCoachSelect = await driver.findElement(By.id("head_coach-select"));
-      // Set its value to "8"
-      await headCoachSelect.sendKeys("8");
+      // Find and click the Head Coach Rating dropdown
+      const headCoachSelect = await driver.findElement(By.id("head_coach-rating-select"));
+      await headCoachSelect.click();
 
-      // Find and click the Apply button (using its exact text "Apply")
-      const applyButton = await driver.findElement(
-        By.xpath("//button[normalize-space()='Apply']")
-      );
+      // Wait for the dropdown options to appear and select rating 8
+      const ratingOption = await driver.wait(until.elementLocated(By.xpath("//li[contains(text(), '8')]")), 10000);
+      await ratingOption.click();
+
+      // Click the Apply button
+      const applyButton = await driver.findElement(By.id("apply-filters-button"));
       await applyButton.click();
 
-      // Wait a bit for the page to refresh the list
-      await driver.sleep(2000);
+      // Wait for the filtered results
+      await driver.wait(async () => {
+        const newCount = await getSchoolCount();
+        return newCount !== initialCount;
+      }, 10000);
 
-      // Check the new school count (if no schools, the page might display "No results found")
-      let newCount = await getSchoolCount();
-      let noResults;
-      try {
-        noResults = await driver.findElement(By.xpath("//*[contains(text(),'No results found')]"));
-      } catch {
-        noResults = null;
-      }
+      const newCount = await getSchoolCount();
       console.log("New school count:", newCount);
-      // Expect that either "No results found" is displayed or that the count has changed
-      expect(noResults || newCount).to.not.equal(initialCount);
+      expect(newCount).to.not.equal(initialCount);
     });
   });
 
