@@ -240,7 +240,7 @@ function AccountSettings() {
       : []
     ),
     // Conditionally block "My Reviews" tab for high school transfer type
-    ...(user.transfer_type !== "high_school"
+    ...(user?.transfer_type && user.transfer_type !== "high_school"
     ? [{
         text: "My Reviews",
         action: () => navigate("/account/my-reviews"),

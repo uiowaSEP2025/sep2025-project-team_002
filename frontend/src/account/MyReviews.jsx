@@ -158,19 +158,23 @@ function MyReviews() {
     setTotalPages(Math.ceil(reviews.length / reviewsPerPage));
   }, [reviews]);
    return (
-    <SidebarWrapper title="My Account" menuItems={menuItems}>
-      <motion.div {...loadingTransition}>
-        <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", display: "flex", flexDirection: "column", }}>
-          <Grid item xs={12} md={isMobile ? 12 : 9} sx={{ p: 4, mt: isMobile ? 6 : 0, flexGrow: 1, }}>
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              style={{
-                maxWidth: "600px",
-                margin: "0 auto",
-                textAlign: "left",
-              }}
+  <SidebarWrapper title="My Account" menuItems={menuItems}>
+    <motion.div {...loadingTransition}>
+      <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", display: "flex", flexDirection: "column" }}>
+        {/* Main content area */}
+        <Grid item xs={12} md={isMobile ? 12 : 9} sx={{ p: 4, mt: isMobile ? 6 : 0, flexGrow: 1 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            style={{
+              maxWidth: "600px",
+              margin: "0 auto",
+              textAlign: "left",
+              position: "absolute",
+              top: 0,
+              bottom: "-2000px",  // This will move the bottom of the element down by 2000px
+            }}
             >
               <Typography variant="h4" sx={{ fontWeight: 700, fontSize: "2rem" }}>
                 My Reviews
