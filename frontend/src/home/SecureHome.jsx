@@ -7,6 +7,7 @@ import {
   IconButton,
   Menu,
   MenuItem,
+  CircularProgress,
   Button,
   Card,
   CardContent,
@@ -46,10 +47,13 @@ function SecureHome() {
   const [recommendedSchools, setRecommendedSchools] = useState([]);
   const [showRecommendations, setShowRecommendations] = useState(false);
 
+    // Add a new state to track if the user has submitted preferences
+  const [hasPreferences, setHasPreferences] = useState(null);
+
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     coach: "",
     head_coach: "",
@@ -73,8 +77,7 @@ function SecureHome() {
     profile_picture: "",
   });
 
-  // Add a new state to track if the user has submitted preferences
-  const [hasPreferences, setHasPreferences] = useState(false);
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -134,58 +137,14 @@ function SecureHome() {
     // Fetch Recommended Schools
     const fetchRecommendedSchools = async () => {
       try {
-        console.log("=== RECOMMENDATIONS DEBUG START ===");
-        console.log("Current user token:", token ? "Present" : "Missing");
-        
         const response = await fetch(`${API_BASE_URL}/api/recommendations/`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
-
-        console.log("Response status:", response.status);
-        console.log("Response headers:", Object.fromEntries(response.headers.entries()));
-        
         if (response.ok) {
           const data = await response.json();
-          console.log("=== RECOMMENDATIONS DATA ===");
-          console.log("Raw data:", JSON.stringify(data, null, 2));
-          
-          if (Array.isArray(data)) {
-            console.log(`Found ${data.length} recommended schools`);
-            data.forEach((rec, index) => {
-              console.log(`\nSchool ${index + 1}: ${rec.school?.school_name}`);
-              console.log(`Sport: ${rec.sport}`);
-              console.log(`Similarity Score: ${rec.similarity_score}`);
-              console.log("Average Ratings:", rec.average_ratings);
-              
-              if (rec.school?.reviews) {
-                console.log(`Reviews for ${rec.school.school_name}:`);
-                rec.school.reviews.forEach((review, reviewIndex) => {
-                  console.log(`\nReview ${reviewIndex + 1}:`);
-                  console.log(`Sport: ${review.sport}`);
-                  console.log(`Head Coach: ${review.head_coach_name}`);
-                  console.log(`Message: ${review.review_message}`);
-                  console.log("Ratings:", {
-                    head_coach: review.head_coach,
-                    assistant_coaches: review.assistant_coaches,
-                    team_culture: review.team_culture,
-                    campus_life: review.campus_life,
-                    athletic_facilities: review.athletic_facilities,
-                    athletic_department: review.athletic_department,
-                    player_development: review.player_development,
-                    nil_opportunity: review.nil_opportunity
-                  });
-                });
-              }
-              console.log("-----------------------------------");
-            });
-          } else if (data.hasOwnProperty('no_preferences')) {
-            console.log("User has no preferences set");
-          }
-          console.log("=== END RECOMMENDATIONS DATA ===");
-          
           if (data.hasOwnProperty('no_preferences') && data.no_preferences === true) {
             setHasPreferences(false);
             setRecommendedSchools([]);
@@ -193,12 +152,9 @@ function SecureHome() {
           } else {
             setHasPreferences(true);
             setRecommendedSchools(data);
-            
             if (data.length > 0 && data[0].sport) {
-              console.log("Setting sport filter to:", data[0].sport);
               setFilters(prev => ({ ...prev }));
             }
-            
             setShowRecommendations(data.length > 0);
           }
         } else {
@@ -207,14 +163,13 @@ function SecureHome() {
           setHasPreferences(false);
           setShowRecommendations(false);
         }
-        console.log("=== RECOMMENDATIONS DEBUG END ===");
       } catch (error) {
         console.error("Error in fetchRecommendedSchools:", error);
         setHasPreferences(false);
         setShowRecommendations(false);
       }
     };
-
+    // Fetch data for user, schools, and recommendations
     fetchUserInfo();
     fetchSchools();
     fetchRecommendedSchools();
@@ -372,6 +327,20 @@ function SecureHome() {
   const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
   const currentSchools = filteredBySearch.slice(indexOfFirstSchool, indexOfLastSchool);
 
+   useEffect(() => {
+    if (hasPreferences !== null) {
+      setLoading(false);  // Set loading to false after preferences are fetched
+    }
+  }, [hasPreferences]);
+
+  if (loading) {
+    return (
+      <Box sx={{ textAlign: "center", marginTop: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Box id="secure-home" sx={{ position: "relative", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
       {/* Top Right Account Icon */}
@@ -433,6 +402,8 @@ function SecureHome() {
               </Button>
             </Box>
 
+
+
             {/* Recommendations Section - Only shown for non-graduate users */}
             {user.transfer_type !== "graduate" ? (
               hasPreferences ? (
@@ -448,40 +419,40 @@ function SecureHome() {
                       {recommendedSchools.map((rec, index) => (
                         <Card
                           key={index}
-                          sx={{ 
-                            width: "100%", 
-                            cursor: "pointer", 
+                          sx={{
+                            width: "100%",
+                            cursor: "pointer",
                             transition: "all 0.2s ease-in-out",
-                            "&:hover": { 
+                            "&:hover": {
                               backgroundColor: "#f0f7ff",
                               transform: "translateY(-2px)",
                               boxShadow: 2
-                            } 
+                            }
                           }}
                           onClick={() => handleSchoolClick(rec.school.id)}
                         >
                           <CardContent>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>
                               <Box>
-                                <Typography 
-                                  variant="h6" 
+                                <Typography
+                                  variant="h6"
                                   sx={{ my: 0, fontWeight: 700 }}
                                   data-testid={`recommended-school-name-${rec.school?.id || 'unknown'}`}
                                 >
                                   {rec.school?.school_name || 'Unknown School'}
                                 </Typography>
                                 <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
-                                  <Typography 
-                                    variant="body2" 
+                                  <Typography
+                                    variant="body2"
                                     color="text.secondary"
                                     data-testid={`recommended-school-location-${rec.school?.id || 'unknown'}`}
                                   >
                                     {rec.school?.location || 'Unknown Location'}
                                   </Typography>
                                   {rec.sport && (
-                                    <Typography 
-                                      variant="body2" 
-                                      sx={{ 
+                                    <Typography
+                                      variant="body2"
+                                      sx={{
                                         backgroundColor: "#e3f2fd",
                                         color: "#1976d2",
                                         px: 1,
@@ -496,9 +467,9 @@ function SecureHome() {
                                   )}
                                 </Box>
                               </Box>
-                              <Box sx={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
+                              <Box sx={{
+                                display: 'flex',
+                                alignItems: 'center',
                                 p: 1,
                                 backgroundColor: '#e3f2fd',
                                 borderRadius: 1
@@ -522,17 +493,19 @@ function SecureHome() {
                       We don't have any reviews yet for your preferred sport.
                       Check back later as our community grows!
                     </Typography>
-                    <Button 
-                      variant="contained" 
+                    {user.transfer_type !== "graduate" && !hasPreferences && (
+                    <Button
+                      variant="contained"
                       color="primary"
                       onClick={handleGoToPreferenceForm}
                       sx={{ mt: 1, mr: 2 }}
                     >
                       {filters.sport ? "Update Preferences" : "Set Your Preferences"}
                     </Button>
+                  )}
                     {filters.sport && (
-                      <Button 
-                        variant="outlined" 
+                      <Button
+                        variant="outlined"
                         color="primary"
                         onClick={handleGoToReviewForm}
                         sx={{ mt: 1 }}
@@ -548,21 +521,24 @@ function SecureHome() {
                     {filters.sport ? "No Recommendations Available" : "Fill Out Your Preferences"}
                   </Typography>
                   <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                    {filters.sport 
+                    {filters.sport
                       ? `We don't have any reviews yet for your preferred sport (${filters.sport}). Check back later as our community grows!`
                       : "Please fill out your preferences to see personalized school recommendations based on what matters most to you."}
                   </Typography>
-                  <Button 
-                    variant="contained" 
-                    color="primary"
-                    onClick={handleGoToPreferenceForm}
-                    sx={{ mt: 1, mr: 2 }}
-                  >
-                    {filters.sport ? "Update Preferences" : "Set Your Preferences"}
-                  </Button>
+
+                  {user.transfer_type !== "graduate" && !hasPreferences && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleGoToPreferenceForm}
+                      sx={{ mt: 1, mr: 2 }}
+                    >
+                      {filters.sport ? "Update Preferences" : "Set Your Preferences"}
+                    </Button>
+                  )}
                   {filters.sport && (
-                    <Button 
-                      variant="outlined" 
+                    <Button
+                      variant="outlined"
                       color="primary"
                       onClick={handleGoToReviewForm}
                       sx={{ mt: 1 }}
@@ -582,13 +558,13 @@ function SecureHome() {
               </Box>
             )}
 
-            {user.transfer_type !== "graduate" && (
-              <Box sx={{ textAlign: "center", mb: 4 }}>
-                <Button variant="contained" color="primary" onClick={handleGoToPreferenceForm}>
-                  Submit your Preferences
-                </Button>
-              </Box>
-            )}
+            {/*{user.transfer_type !== "graduate" && (*/}
+            {/*  <Box sx={{ textAlign: "center", mb: 4 }}>*/}
+            {/*    <Button variant="contained" color="primary" onClick={handleGoToPreferenceForm}>*/}
+            {/*      Submit your Preferences*/}
+            {/*    </Button>*/}
+            {/*  </Box>*/}
+            {/*)}*/}
 
             <Stack spacing={2} sx={{ px: 2 }}>
               {currentSchools.length > 0 ? (
