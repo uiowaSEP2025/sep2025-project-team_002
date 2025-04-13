@@ -182,21 +182,21 @@ function MyReviews() {
                         <Typography variant="subtitle1" sx={{ color: "gray" }}>
                           Sport: {review.sport || "N/A"}
                         </Typography>
-                        <Typography variant="body1" sx={{ mt: 1 }}>
+                        <Typography variant="body2" sx={{ mt: 1 }}>
                           {review.review_message || "No review text"}
                         </Typography>
 
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                          Head Coach: {review.head_coach_name || "Unknown"} • Rating: {review.head_coach}/5
+                        <Typography variant="body1" sx={{ mt: 1 }}>
+                          Head Coach • {review.head_coach_name || "Unknown"}: {review.head_coach}/10
                         </Typography>
 
-                        <Typography variant="body2">Assistant Coaches: {review.assistant_coaches}/5</Typography>
-                        <Typography variant="body2">Team Culture: {review.team_culture}/5</Typography>
-                        <Typography variant="body2">Campus Life: {review.campus_life}/5</Typography>
-                        <Typography variant="body2">Athletic Facilities: {review.athletic_facilities}/5</Typography>
-                        <Typography variant="body2">Athletic Department: {review.athletic_department}/5</Typography>
-                        <Typography variant="body2">Player Development: {review.player_development}/5</Typography>
-                        <Typography variant="body2">NIL Opportunity: {review.nil_opportunity}/5</Typography>
+                        <Typography variant="body1" sx ={{ mt: 1 }}>Assistant Coaches: {review.assistant_coaches}/10</Typography>
+                        <Typography variant="body1" sx ={{ mt: 1 }}>Team Culture: {review.team_culture}/10</Typography>
+                        <Typography variant="body1" sx ={{ mt: 1 }}>Campus Life: {review.campus_life}/10</Typography>
+                        <Typography variant="body1" sx ={{ mt: 1 }}>Athletic Facilities: {review.athletic_facilities}/10</Typography>
+                        <Typography variant="body1" sx ={{ mt: 1 }}>Athletic Department: {review.athletic_department}/10</Typography>
+                        <Typography variant="body1" sx ={{ mt: 1 }}>Player Development: {review.player_development}/10</Typography>
+                        <Typography variant="body1" sx ={{ mt: 1 }}>NIL Opportunity: {review.nil_opportunity}/10</Typography>
 
                         {/* Created date */}
                         {review.created_at && (
