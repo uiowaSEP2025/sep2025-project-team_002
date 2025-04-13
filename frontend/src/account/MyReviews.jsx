@@ -6,6 +6,7 @@ import {
   Box,
   Card,
   CardContent,
+  Pagination,
   useMediaQuery
 } from "@mui/material";
 import { motion } from "framer-motion";
@@ -26,6 +27,22 @@ function MyReviews() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [setError] = useState("");
+
+  // Setting Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 5;
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Calculate the reviews to display on the current page
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+
+  // Handle page change
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
 
   const [user, setUser] = useState({
     first_name: "",
@@ -62,11 +79,15 @@ function MyReviews() {
         }]
       : []
     ),
-    {
-      text: "My Reviews",
-      action: () => navigate ("/my-reviews"),
-      icon: <RateReviewIcon fontSize ="medium" />
-    },
+    // Conditionally add "My Reviews" tab for high school transfer type
+    ...(user.transfer_type === "high_school"
+    ? [{
+        text: "My Reviews",
+        action: () => navigate("/my-reviews"),
+        icon: <RateReviewIcon fontSize="medium" />
+      }]
+      : []
+    ),
     {
       text: "Logout",
       action: () => {
@@ -149,9 +170,10 @@ function MyReviews() {
     transition: { duration: 0.5 },
   };
 
-    // Debugging: Log the current loading and reviews states
-  console.log("Loading State:", loading);
-  console.log("Reviews:", reviews);
+  // Set the total number of pages
+  useEffect(() => {
+    setTotalPages(Math.ceil(reviews.length / reviewsPerPage));
+  }, [reviews]);
    return (
     <SidebarWrapper title="My Account" menuItems={menuItems}>
       <motion.div {...loadingTransition}>
@@ -213,6 +235,16 @@ function MyReviews() {
           </Grid>
         </Grid>
       </motion.div>
+      {/* Pagination */}
+      <Pagination
+        count={totalPages}
+        page={currentPage}
+        onChange={handlePageChange}
+        color="primary"
+        showFirstButton
+        showLastButton
+        sx={{ mt: 3 }}  // Add margin to space out pagination
+      />
     </SidebarWrapper>
   );
 }

@@ -239,11 +239,15 @@ function AccountSettings() {
         }]
       : []
     ),
-      {
-      text: "My Reviews",
-      action: () => navigate ("/account/my-reviews"),
-      icon: <RateReviewIcon fontSize ="medium" />
-    },
+    // Conditionally add "My Reviews" tab for high school transfer type
+    ...(user.transfer_type === "high_school"
+    ? [{
+        text: "My Reviews",
+        action: () => navigate("/my-reviews"),
+        icon: <RateReviewIcon fontSize="medium" />
+      }]
+      : []
+    ),
     {
       text: "Logout",
       action: () => {
