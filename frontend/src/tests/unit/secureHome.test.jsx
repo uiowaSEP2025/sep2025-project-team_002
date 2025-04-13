@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, act, within } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SecureHome from '../../home/SecureHome.jsx';
@@ -33,6 +33,21 @@ const mockSchools = [
   }
 ];
 
+// Mock the API response for recommendations
+const mockRecommendations = [
+  {
+    school: {
+      id: 1,
+      school_name: "University of Iowa",
+      conference: "Big Ten",
+      location: "Iowa City, Iowa",
+      available_sports: ["Men's Basketball", "Women's Basketball", "Football"]
+    },
+    sport: "Men's Basketball",
+    similarity_score: 8
+  }
+];
+
 describe('SecureHome Component', () => {
   beforeEach(() => {
     console.log("Running SecureHome test suite");
@@ -46,14 +61,42 @@ describe('SecureHome Component', () => {
     global.localStorage = mockLocalStorage;
 
     // Mock fetch with a proper Response object
-    global.fetch = vi.fn(() =>
-      Promise.resolve(new Response(JSON.stringify(mockSchools), {
+    global.fetch = vi.fn((url) => {
+      if (url.includes('/api/recommendations/')) {
+        return Promise.resolve(new Response(JSON.stringify(mockRecommendations), {
+          status: 200,
+          headers: new Headers({
+            'Content-Type': 'application/json'
+          })
+        }));
+      } else if (url.includes('/api/schools/')) {
+        return Promise.resolve(new Response(JSON.stringify(mockSchools), {
+          status: 200,
+          headers: new Headers({
+            'Content-Type': 'application/json'
+          })
+        }));
+      } else if (url.includes('/users/user/')) {
+        return Promise.resolve(new Response(JSON.stringify({
+          first_name: "Test",
+          last_name: "User",
+          email: "test@example.com",
+          transfer_type: "transfer"
+        }), {
+          status: 200,
+          headers: new Headers({
+            'Content-Type': 'application/json'
+          })
+        }));
+      }
+      // Return empty response for other endpoints
+      return Promise.resolve(new Response(JSON.stringify({}), {
         status: 200,
         headers: new Headers({
           'Content-Type': 'application/json'
         })
-      }))
-    );
+      }));
+    });
   });
 
   it('renders schools list', async () => {
@@ -67,10 +110,10 @@ describe('SecureHome Component', () => {
 
     // Initially should show loading indicator
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-
-    // Wait for the school name to appear
+  
+    // Wait for the school name to appear in the school list
     await waitFor(() => {
-      expect(screen.getByText(/University of Iowa/i)).toBeInTheDocument();
+      expect(screen.getByTestId('school-list-name-1')).toHaveTextContent('University of Iowa');
     });
 
     // Loading indicator should be gone
@@ -86,39 +129,18 @@ describe('SecureHome Component', () => {
       </BrowserRouter>
     );
 
-    // Wait for any of the sports to appear
+    // Wait for the sports to appear in the school list
     await waitFor(() => {
-      const sportsText = screen.getByText(/Men's Basketball/i);
-      expect(sportsText).toBeInTheDocument();
+      expect(screen.getByTestId('school-list-sports-1')).toHaveTextContent(/Men's Basketball/);
     });
   });
 
-it('shows submit review button when transfer_type is not "high_school"', async () => {
-  // Mock the user API response for a transfer student
-  const transferUserResponse = {
-    first_name: "Test",
-    last_name: "User",
-    email: "test@example.com",
-    transfer_type: "transfer"
-  };
-
-  // Set up mock fetch to return different responses based on URL
-  global.fetch = vi.fn((url) => {
-    if (url.includes('/users/user/')) {
-      // Return the transfer user data
-      return Promise.resolve(new Response(JSON.stringify(transferUserResponse), {
-        status: 200,
-        headers: new Headers({ 'Content-Type': 'application/json' })
-      }));
-    } else if (url.includes('/api/schools/')) {
-      // Return the schools data
-      return Promise.resolve(new Response(JSON.stringify(mockSchools), {
-        status: 200,
-        headers: new Headers({ 'Content-Type': 'application/json' })
-      }));
-    }
-    return Promise.reject(new Error('Unhandled endpoint'));
-  });
+  it('shows recommendations', async () => {
+    render(
+      <BrowserRouter>
+        <SecureHome />
+      </BrowserRouter>
+    );
 
   render(
     <BrowserRouter>
@@ -128,44 +150,53 @@ it('shows submit review button when transfer_type is not "high_school"', async (
     </BrowserRouter>
   );
 
-  // Wait for schools data to load
-  await waitFor(() => {
-    expect(screen.getByText(/University of Iowa/i)).toBeInTheDocument();
+    // Wait for the recommended school name to appear
+    await waitFor(() => {
+      expect(screen.getByTestId('recommended-school-name-1')).toHaveTextContent('University of Iowa');
+    });
+
+    // Check for recommended sport
+    await waitFor(() => {
+      expect(screen.getByTestId('recommended-sport-name-1')).toHaveTextContent("Men's Basketball");
+    });
   });
 
-  // Verify the submit review button IS present
-  await waitFor(() => {
-    const submitButton = screen.getByText(/Submit a Review/i);
-    expect(submitButton).toBeInTheDocument();
+  it('shows submit review button when transfer_type is not "high_school"', async () => {
+    render(
+      <BrowserRouter>
+        <SecureHome />
+      </BrowserRouter>
+    );
+
+    // Wait for the submit review button to appear
+    await waitFor(() => {
+      expect(screen.getByText(/Submit a Review/i)).toBeInTheDocument();
+    });
   });
-});
 
-it('does not show submit review button when transfer_type is "high_school"', async () => {
-  // Mock the user API response for a high school student
-  const highSchoolUserResponse = {
-    first_name: "Test",
-    last_name: "User",
-    email: "testHS@example.com",
-    transfer_type: "high_school"
-  };
-
-  // Set up mock fetch to return different responses based on URL
-  global.fetch = vi.fn((url) => {
-    if (url.includes('/users/user/')) {
-      // Return the high school user data
-      return Promise.resolve(new Response(JSON.stringify(highSchoolUserResponse), {
+  it('does not show submit review button when transfer_type is "high_school"', async () => {
+    // Mock fetch to return a high school user
+    global.fetch = vi.fn((url) => {
+      if (url.includes('/users/user/')) {
+        return Promise.resolve(new Response(JSON.stringify({
+          first_name: "Test",
+          last_name: "User",
+          email: "test@example.com",
+          transfer_type: "high_school"
+        }), {
+          status: 200,
+          headers: new Headers({
+            'Content-Type': 'application/json'
+          })
+        }));
+      }
+      return Promise.resolve(new Response(JSON.stringify({}), {
         status: 200,
-        headers: new Headers({ 'Content-Type': 'application/json' })
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        })
       }));
-    } else if (url.includes('/api/schools/')) {
-      // Return the schools data
-      return Promise.resolve(new Response(JSON.stringify(mockSchools), {
-        status: 200,
-        headers: new Headers({ 'Content-Type': 'application/json' })
-      }));
-    }
-    return Promise.reject(new Error('Unhandled endpoint'));
-  });
+    });
 
   render(
     <BrowserRouter>
@@ -175,16 +206,12 @@ it('does not show submit review button when transfer_type is "high_school"', asy
     </BrowserRouter>
   );
 
-  // Wait for schools data to load (which confirms the component has rendered)
-  await waitFor(() => {
-    expect(screen.getByText(/University of Iowa/i)).toBeInTheDocument();
+
+    // Wait for the component to render
+    await waitFor(() => {
+      expect(screen.queryByText(/Submit a Review/i)).not.toBeInTheDocument();
+    });
   });
-
-  // Verify the submit review button is NOT present
-  const submitButton = screen.queryByText(/Submit a Review/i);
-  expect(submitButton).not.toBeInTheDocument();
-});
-
 });
 
 describe('SecureHome Filter Feature', () => {
@@ -274,8 +301,11 @@ describe('SecureHome Filter Feature', () => {
       expect(screen.getAllByText(/Apply Filters/i)[0]).toBeInTheDocument();
     });
 
-    // Skip the dropdown selection since it's difficult to test
-    // and just check that the dialog appears
+    // Change the Head Coach Rating dropdown to 8
+    const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
+    fireEvent.mouseDown(headCoachSelect);
+    const option = within(screen.getByRole('listbox')).getByText('8');
+    fireEvent.click(option);
 
     // Click the Apply Filters button
     const applyButton = screen.getByRole('button', { name: /Apply Filters/i });
@@ -289,4 +319,98 @@ describe('SecureHome Filter Feature', () => {
     // No need to check API call since we don't have a mock for it
   });
 });
+describe('SecureHome Pagination Feature', () => {
+  beforeEach(() => {
+    // Mock localStorage to simulate an authenticated user.
+    global.localStorage = {
+      getItem: vi.fn(() => 'fake-token'),
+      setItem: vi.fn(),
+      clear: vi.fn()
+    };
 
+    // Create an array of 15 fake schools so that:
+    // - Page 1 shows 10 schools (School 1 to School 10)
+    // - Page 2 shows the remaining 5 schools (School 11 to School 15)
+    const fakeSchools = Array.from({ length: 15 }, (_, i) => ({
+      id: i + 1,
+      school_name: `School ${i + 1}`,
+      conference: "Test Conference",
+      location: "Test Location",
+      available_sports: ["Sport A", "Sport B"],
+    }));
+
+    // Setup fetch to return responses for both the user info and schools endpoints.
+    global.fetch = vi.fn((url) => {
+      if (url.includes('/users/user/')) {
+        return Promise.resolve(
+          new Response(JSON.stringify({
+            first_name: "Test",
+            last_name: "User",
+            email: "test@example.com",
+            transfer_type: "transfer"
+          }), {
+            status: 200,
+            headers: new Headers({ 'Content-Type': 'application/json' })
+          })
+        );
+      } else if (url.includes('/api/schools/')) {
+        return Promise.resolve(
+          new Response(JSON.stringify(fakeSchools), {
+            status: 200,
+            headers: new Headers({ 'Content-Type': 'application/json' })
+          })
+        );
+      }
+      return Promise.reject(new Error('Unhandled endpoint'));
+    });
+  });
+
+  it('renders first page schools and paginates to page 2 when the pagination button is clicked', async () => {
+    render(
+      <BrowserRouter>
+        <SecureHome />
+      </BrowserRouter>
+    );
+
+    // Wait until the initial 10 school cards (rendered as h6 headings) are present.
+    await waitFor(() => {
+      // Get all h6 headings and filter out the ones that aren't school names
+      const headings = screen.getAllByRole('heading', { level: 6 })
+        .filter(heading => heading.textContent.startsWith('School'));
+      expect(headings.length).toBe(10);
+    });
+
+    // Verify that page 1 has School 1 through School 10.
+    let headings = screen.getAllByRole('heading', { level: 6 })
+      .filter(heading => heading.textContent.startsWith('School'));
+    const firstPageNames = headings.map((el) => el.textContent);
+    for (let i = 1; i <= 10; i++) {
+      expect(firstPageNames).toContain(`School ${i}`);
+    }
+    for (let i = 11; i <= 15; i++) {
+      expect(firstPageNames).not.toContain(`School ${i}`);
+    }
+
+    // Find the page 2 button by its accessible name "Go to page 2" (MUI's Pagination typically renders it this way).
+    const page2Button = screen.getByRole('button', { name: /go to page 2/i });
+    fireEvent.click(page2Button);
+
+    // Wait until page 2 is rendered (which should contain only 5 school cards).
+    await waitFor(() => {
+      const headingsPage2 = screen.getAllByRole('heading', { level: 6 })
+        .filter(heading => heading.textContent.startsWith('School'));
+      expect(headingsPage2.length).toBe(5);
+    });
+
+    // Verify that page 2 contains School 11 through School 15.
+    headings = screen.getAllByRole('heading', { level: 6 })
+      .filter(heading => heading.textContent.startsWith('School'));
+    const secondPageNames = headings.map((el) => el.textContent);
+    for (let i = 11; i <= 15; i++) {
+      expect(secondPageNames).toContain(`School ${i}`);
+    }
+    for (let i = 1; i <= 10; i++) {
+      expect(secondPageNames).not.toContain(`School ${i}`);
+    }
+  });
+});

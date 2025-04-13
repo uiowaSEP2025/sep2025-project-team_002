@@ -7,6 +7,7 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   // Initialize isLoggedIn based on token presence
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [loading, setLoading] = useState(true);
 
   // Function to fetch the user data from the backend
   const fetchUser = async () => {
@@ -45,17 +46,16 @@ export const UserProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
+    } finally {
+      setLoading(false);
     }
   };
-
   // Function to handle logout
   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
     setIsLoggedIn(false);
   };
-
-
 
   // Function to update user profile picture in state and backend
   const updateProfilePic = async (newPic) => {
@@ -93,9 +93,9 @@ export const UserProvider = ({ children }) => {
       fetchUser();
     }
   }, []);
-
+  
   return (
-    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser, isLoggedIn, logout }}>
+    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser, isLoggedIn, loading, logout }}>
       {children}
     </UserContext.Provider>
   );
