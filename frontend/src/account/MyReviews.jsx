@@ -26,7 +26,7 @@ function MyReviews() {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [setError] = useState("");
+  const [error, setError] = useState("");
 
   // Pagination Settings
   const [currentPage, setCurrentPage] = useState(1);
@@ -176,6 +176,13 @@ function MyReviews() {
               <Typography variant="h4" sx={{ fontWeight: 700, fontSize: "2rem" }}>
                 My Reviews
               </Typography>
+
+              {/* Display error message if there is an error */}
+              {error && (
+                <Typography sx={{ color: "red", mt: 2 }}>
+                  {error}
+                </Typography>
+              )}
 
               {reviews.length === 0 ? (
                 <Typography sx={{ mt: 2 }}>No reviews found.</Typography>
