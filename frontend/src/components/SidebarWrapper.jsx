@@ -19,6 +19,8 @@ const SidebarWrapper = ({ title = "My Account", menuItems = [], children }) => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const [menuOpen, setMenuOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [reviews, setReviews] = useState([]);
+
 
   // Render menu items
   const renderMenuList = () =>
@@ -73,7 +75,8 @@ const SidebarWrapper = ({ title = "My Account", menuItems = [], children }) => {
                height: "100vh",
                padding: 16,
                boxSizing: "border-box",
-               overflow: "hidden"
+               overflow: "hidden",
+               position: "fixed",
              }}
           >
             {/* Top bar with title & arrow */}
