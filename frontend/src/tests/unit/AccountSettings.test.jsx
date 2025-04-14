@@ -373,10 +373,27 @@ describe("AccountSettings Page", () => {
 
   // Test 16: Clicking "Logout" clears the token and navigates to the login page.
   it("logs out and navigates to login page on clicking Logout", async () => {
+    localStorage.setItem("token", "valid_token");
+
+    useUser.mockReturnValue({
+      user: {
+        first_name: "Test",
+        last_name: "User",
+        email: "test@example.com",
+        transfer_type: "transfer_in",
+      },
+      logout: vi.fn(() => localStorage.removeItem("token")),
+      updateProfilePic: vi.fn(),
+      profilePic: "/assets/profile-pictures/pic1.png",
+      loading: false,
+      fetchUser: vi.fn(),
+    });
+
     renderWithRoutes();
 
     const logoutButton = screen.getByText(/Logout/i);
     await userEvent.click(logoutButton);
+
     expect(localStorage.getItem("token")).toBeNull();
     expect(await screen.findByTestId("login-page")).toBeInTheDocument();
   });
