@@ -96,67 +96,6 @@ function AccountSettings() {
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [passwordError, setPasswordError] = useState(""); // for dialog errors
 
-  // Password visibility is now handled in the PasswordForm component
-
-  // Password state is now handled in the PasswordForm component
-
-  // Fetch user info on mount
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/users/user/`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          // Update profile picture if available
-          if (data.profile_picture) {
-            updateProfilePic(data.profile_picture);
-          }
-
-
-          // Only set form data on initial load, not during editing
-          if (!formData.first_name && !formData.last_name && !formData.email) {
-            setFormData({
-              first_name: data.first_name || "",
-              last_name: data.last_name || "",
-              email: data.email || "",
-              transfer_type: data.transfer_type || ""
-            });
-          }
-        } else if (response.status === 401) {
-          // Token expired or invalid
-          logout();
-          navigate("/login");
-        } else {
-          const errorData = await response.json();
-          setMessage(errorData.detail || errorData.error || "Failed to fetch user info.");
-        }
-      } catch (error) {
-        console.error("AccountSettings error:", error);
-
-        if (error.message.includes("Failed to fetch")) {
-          setMessage("Unable to reach server. Check your connection.");
-        } else {
-          setMessage("Network error: " + error.message);
-        }
-      }
-    };
-
-    fetchUserInfo();
-  }, [navigate, logout]); // eslint-disable-line react-hooks/exhaustive-deps
-
   // Handle text/radio changes in the main form
   const handleChange = (e) => {
     setFormData((prev) => ({

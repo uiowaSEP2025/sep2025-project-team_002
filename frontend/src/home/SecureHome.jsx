@@ -517,6 +517,7 @@ function SecureHome() {
 
               <Button
                 id="filter-button"
+                data-testid="filter-button"
                 variant="contained"
                 color="primary"
                 onClick={openFilterDialog}
@@ -783,10 +784,10 @@ function SecureHome() {
                     >
                       <CardContent>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                          <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }}>
+                          <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }} data-testid={`school-list-name-${school.id}`}>
                             {school.school_name}
                           </Typography>
-                          <Typography variant="body2">
+                          <Typography variant="body2" data-testid={`school-list-sports-${school.id}`}>
                             {school.available_sports && school.available_sports.length > 0
                               ? school.available_sports.join(" • ")
                               : "No sports listed"}
@@ -915,13 +916,14 @@ function SecureHome() {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth>
-                  <InputLabel>Head Coach</InputLabel>
+                  <InputLabel>Head Coach Rating</InputLabel>
                   <Select
                     id="head_coach-select"
+                    data-testid="head_coach-select"
                     name="head_coach"
                     value={filters.head_coach}
                     onChange={handleFilterChange}
-                    label="Head Coach"
+                    label="Head Coach Rating"
                   >
                     <MenuItem value="">Any</MenuItem>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
