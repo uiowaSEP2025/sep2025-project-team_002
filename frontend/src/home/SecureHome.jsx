@@ -520,11 +520,30 @@ function SecureHome() {
                 variant="contained"
                 color="primary"
                 onClick={openFilterDialog}
+                sx={{
+                  borderRadius: "20px",
+                  py: 0.8,
+                  px: 2.5,
+                  textTransform: "none",
+                  fontWeight: 500,
+                  boxShadow: 1
+                }}
               >
                 Filter
               </Button>
               {filterApplied && (
-                <Button variant="outlined" color="secondary" onClick={clearFilters}>
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={clearFilters}
+                  sx={{
+                    borderRadius: "20px",
+                    py: 0.8,
+                    px: 2.5,
+                    textTransform: "none",
+                    fontWeight: 500
+                  }}
+                >
                   Clear Filters
                 </Button>
               )}
@@ -624,7 +643,16 @@ function SecureHome() {
                       variant="contained"
                       color="primary"
                       onClick={handleGoToPreferenceForm}
-                      sx={{ mt: 1, mr: 2 }}
+                      sx={{
+                        mt: 1,
+                        mr: 2,
+                        borderRadius: "20px",
+                        py: 0.8,
+                        px: 2.5,
+                        textTransform: "none",
+                        fontWeight: 500,
+                        boxShadow: 1
+                      }}
                     >
                       {filters.sport ? "Update Preferences" : "Set Your Preferences"}
                     </Button>
@@ -634,7 +662,14 @@ function SecureHome() {
                         variant="outlined"
                         color="primary"
                         onClick={handleGoToReviewForm}
-                        sx={{ mt: 1 }}
+                        sx={{
+                          mt: 1,
+                          borderRadius: "20px",
+                          py: 0.8,
+                          px: 2.5,
+                          textTransform: "none",
+                          fontWeight: 500
+                        }}
                       >
                         Submit a Review
                       </Button>
@@ -657,7 +692,16 @@ function SecureHome() {
                       variant="contained"
                       color="primary"
                       onClick={handleGoToPreferenceForm}
-                      sx={{ mt: 1, mr: 2 }}
+                      sx={{
+                        mt: 1,
+                        mr: 2,
+                        borderRadius: "20px",
+                        py: 0.8,
+                        px: 2.5,
+                        textTransform: "none",
+                        fontWeight: 500,
+                        boxShadow: 1
+                      }}
                     >
                       {filters.sport ? "Update Preferences" : "Set Your Preferences"}
                     </Button>
@@ -667,7 +711,14 @@ function SecureHome() {
                       variant="outlined"
                       color="primary"
                       onClick={handleGoToReviewForm}
-                      sx={{ mt: 1 }}
+                      sx={{
+                        mt: 1,
+                        borderRadius: "20px",
+                        py: 0.8,
+                        px: 2.5,
+                        textTransform: "none",
+                        fontWeight: 500
+                      }}
                     >
                       Submit a Review
                     </Button>
@@ -684,7 +735,15 @@ function SecureHome() {
                   variant="contained"
                   color="secondary"
                   onClick={handleGoToReviewForm}
-                  sx={{ mr: 2 }}
+                  sx={{
+                    mr: 2,
+                    borderRadius: "20px",
+                    py: 0.8,
+                    px: 2.5,
+                    textTransform: "none",
+                    fontWeight: 500,
+                    boxShadow: 1
+                  }}
                 >
                   Submit a Review
                 </Button>
@@ -694,6 +753,13 @@ function SecureHome() {
                     variant="outlined"
                     color="primary"
                     onClick={handleGoToPreferenceForm}
+                    sx={{
+                      borderRadius: "20px",
+                      py: 0.8,
+                      px: 2.5,
+                      textTransform: "none",
+                      fontWeight: 500
+                    }}
                   >
                     Fill Preference Form
                   </Button>
@@ -999,10 +1065,30 @@ function SecureHome() {
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 3 }}>
-          <Button onClick={clearFilters} color="secondary">
+          <Button
+            onClick={clearFilters}
+            color="secondary"
+            sx={{
+              borderRadius: "20px",
+              py: 0.6,
+              px: 2,
+              textTransform: "none",
+              fontWeight: 500
+            }}
+          >
             Clear All
           </Button>
-          <Button onClick={closeFilterDialog} color="primary">
+          <Button
+            onClick={closeFilterDialog}
+            color="primary"
+            sx={{
+              borderRadius: "20px",
+              py: 0.6,
+              px: 2,
+              textTransform: "none",
+              fontWeight: 500
+            }}
+          >
             Cancel
           </Button>
           <Button
@@ -1010,6 +1096,14 @@ function SecureHome() {
             onClick={applyFilters}
             variant="contained"
             color="primary"
+            sx={{
+              borderRadius: "20px",
+              py: 0.6,
+              px: 2,
+              textTransform: "none",
+              fontWeight: 500,
+              boxShadow: 1
+            }}
           >
             Apply Filters
           </Button>
