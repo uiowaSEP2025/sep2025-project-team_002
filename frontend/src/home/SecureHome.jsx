@@ -173,7 +173,7 @@ function SecureHome() {
 
         // Fetch user profile
         try {
-          const userResponse = await fetch(`${API_BASE_URL}/api/user/profile/`, {
+          const userResponse = await fetch(`${API_BASE_URL}/users/user/`, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
@@ -622,7 +622,8 @@ function SecureHome() {
                       ))}
                     </Stack>
                   </Box>
-                ) : (
+                ) :
+                    (
                   <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
                     <Typography variant="h6" sx={{ mb: 1 }}>
                       No Recommendations Available
