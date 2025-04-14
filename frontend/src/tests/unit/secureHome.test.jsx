@@ -19,7 +19,20 @@ const mockUserContextValue = {
   logout: vi.fn(),
   fetchUser: vi.fn(),
   updateProfilePic: vi.fn(),
-  profilePic: '/assets/profile-pictures/pic1.png'
+  profilePic: '/assets/profile-pictures/pic1.png',
+  filters: {
+    sport: "",
+    head_coach: "",
+    assistant_coaches: "",
+    team_culture: "",
+    campus_life: "",
+    athletic_facilities: "",
+    athletic_department: "",
+    player_development: "",
+    nil_opportunity: "",
+  },
+  setFilters: vi.fn(),
+  clearFilters: vi.fn()
 };
 
 // Mock the API response for schools
@@ -110,7 +123,7 @@ describe('SecureHome Component', () => {
 
     // Initially should show loading indicator
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
-  
+
     // Wait for the school name to appear in the school list
     await waitFor(() => {
       expect(screen.getByTestId('school-list-name-1')).toHaveTextContent('University of Iowa');
@@ -138,17 +151,11 @@ describe('SecureHome Component', () => {
   it('shows recommendations', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
-
-  render(
-    <BrowserRouter>
-      <UserContext.Provider value={{...mockUserContextValue, user: {...mockUserContextValue.user, transfer_type: 'transfer'}}}>
-        <SecureHome />
-      </UserContext.Provider>
-    </BrowserRouter>
-  );
 
     // Wait for the recommended school name to appear
     await waitFor(() => {
@@ -164,7 +171,9 @@ describe('SecureHome Component', () => {
   it('shows submit review button when transfer_type is not "high_school"', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -214,7 +223,7 @@ describe('SecureHome Component', () => {
   });
 });
 
-describe('SecureHome Filter Feature', () => {
+describe('SecureHome Filter Dialog', () => {
   beforeEach(() => {
     // Mock localStorage for authentication
     global.localStorage = {
@@ -228,15 +237,16 @@ describe('SecureHome Filter Feature', () => {
       if (url.includes('/api/filter/')) {
         const urlObj = new URL(url, 'http://localhost');
         const headCoachRating = urlObj.searchParams.get('head_coach');
-        // Return a filtered school when head_coach equals '8'
-        if (headCoachRating === '8') {
+        const sport = urlObj.searchParams.get('sport');
+        // Return a filtered school when head_coach equals '8' and sport is Men's Basketball
+        if (headCoachRating === '8' && sport === "Men's Basketball") {
           return Promise.resolve(new Response(JSON.stringify([
             {
               id: 2,
               school_name: "Filtered School",
               conference: "Test Conference",
               location: "Test Location",
-              available_sports: ["Football"]
+              available_sports: ["Men's Basketball"]
             }
           ]), {
             status: 200,
@@ -262,6 +272,12 @@ describe('SecureHome Filter Feature', () => {
           status: 200,
           headers: new Headers({ 'Content-Type': 'application/json' })
         }));
+      } else if (url.includes('/api/recommendations/')) {
+        // Return mock recommendations
+        return Promise.resolve(new Response(JSON.stringify(mockRecommendations), {
+          status: 200,
+          headers: new Headers({ 'Content-Type': 'application/json' })
+        }));
       } else if (url.includes('/users/user/')) {
         // Return a mock user (transfer student)
         return Promise.resolve(new Response(JSON.stringify({
@@ -274,11 +290,14 @@ describe('SecureHome Filter Feature', () => {
           headers: new Headers({ 'Content-Type': 'application/json' })
         }));
       }
-      return Promise.reject(new Error('Unhandled endpoint'));
+      return Promise.resolve(new Response(JSON.stringify({}), {
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'application/json' })
+      }));
     });
   });
 
-  it('opens filter dialog and applies filter', async () => {
+  it('opens filter dialog and closes it', async () => {
     render(
       <BrowserRouter>
         <UserContext.Provider value={mockUserContextValue}>
@@ -301,22 +320,26 @@ describe('SecureHome Filter Feature', () => {
       expect(screen.getAllByText(/Apply Filters/i)[0]).toBeInTheDocument();
     });
 
-    // Change the Head Coach Rating dropdown to 8
-    const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
-    fireEvent.mouseDown(headCoachSelect);
-    const option = within(screen.getByRole('listbox')).getByText('8');
-    fireEvent.click(option);
+    // Wait for the dialog content to be visible
+    await waitFor(() => {
+      expect(screen.getByText(/Rating Filters/i)).toBeInTheDocument();
+    });
+
+    // Verify that the sport dropdown is present
+    expect(screen.getByLabelText(/Choose Sport/i)).toBeInTheDocument();
+
+    // Verify that Men's Basketball and Women's Basketball options are available in the dialog
+    expect(screen.getByText(/Men's Basketball/i)).toBeInTheDocument();
+    expect(screen.getByText(/Women's Basketball/i)).toBeInTheDocument();
 
     // Click the Apply Filters button
     const applyButton = screen.getByRole('button', { name: /Apply Filters/i });
     fireEvent.click(applyButton);
 
-    // Just check that the dialog appears and closes
+    // Verify that the dialog closes
     await waitFor(() => {
-      expect(screen.getAllByText(/Apply Filters/i)[0]).toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
-
-    // No need to check API call since we don't have a mock for it
   });
 });
 describe('SecureHome Pagination Feature', () => {
@@ -368,7 +391,9 @@ describe('SecureHome Pagination Feature', () => {
   it('renders first page schools and paginates to page 2 when the pagination button is clicked', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 

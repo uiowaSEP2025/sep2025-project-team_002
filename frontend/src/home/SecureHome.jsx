@@ -303,6 +303,7 @@ function SecureHome() {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
+      if (filters.sport) queryParams.append("sport", filters.sport);
       if (filters.head_coach) queryParams.append("head_coach", filters.head_coach);
       if (filters.assistant_coaches) queryParams.append("assistant_coaches", filters.assistant_coaches);
       if (filters.team_culture) queryParams.append("team_culture", filters.team_culture);
@@ -649,6 +650,7 @@ function SecureHome() {
                       sx={{
                         textAlign: "center",
                         p: 3,
+
                         backgroundColor: "#f5f5f5",
                         borderRadius: 2
                       }}
@@ -920,14 +922,16 @@ function SecureHome() {
             <TextField
               select
               fullWidth
-              id="head_coach-rating-select"
+              id="sport-select"
               label="Choose Sport"
-              value={filters.head_coach}
-              onChange={(e) => setFilters({ ...filters, head_coach: e.target.value })}
+              name="sport"
+              value={filters.sport}
+              onChange={handleFilterChange}
             >
               <MenuItem value="">All Sports</MenuItem>
-              <MenuItem value="basketball">Basketball</MenuItem>
-              <MenuItem value="football">Football</MenuItem>
+              <MenuItem value="Men's Basketball">Men's Basketball</MenuItem>
+              <MenuItem value="Women's Basketball">Women's Basketball</MenuItem>
+              <MenuItem value="Football">Football</MenuItem>
               {/*<MenuItem value="baseball">Baseball</MenuItem>*/}
               {/*<MenuItem value="soccer">Soccer</MenuItem>*/}
               {/*<MenuItem value="volleyball">Volleyball</MenuItem>*/}
