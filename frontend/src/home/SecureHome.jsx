@@ -543,96 +543,140 @@ function SecureHome() {
             </Box>
 
             {/* Recommendations Section - Only shown for non-graduate users */}
-            {user.transfer_type !== "graduate" ? (
-              hasPreferences ? (
-                recommendedSchools && recommendedSchools.length > 0 ? (
-                  <Box sx={{ mb: 4 }}>
-                    <Typography variant="h5" sx={{ fontWeight: 600, mb: 2, color: '#1976d2' }}>
-                      Recommended Schools Based on Your Preferences
-                    </Typography>
-                    <Typography variant="body1" sx={{ mb: 3, color: 'text.secondary' }}>
-                      These schools match your preferences and have received positive reviews from other athletes.
-                    </Typography>
-                    <Stack spacing={2} sx={{ px: 2 }}>
-                      {recommendedSchools.map((rec, index) => (
-                        <Card
-                          key={index}
-                          sx={{
-                            width: "100%",
-                            cursor: "pointer",
-                            transition: "all 0.2s ease-in-out",
-                            "&:hover": {
-                              backgroundColor: "#f0f7ff",
-                              transform: "translateY(-2px)",
-                              boxShadow: 2
-                            }
-                          }}
-                          onClick={() => handleSchoolClick(rec.school.id)}
-                        >
-                          <CardContent>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>
-                              <Box>
-                                <Typography
-                                  variant="h6"
-                                  sx={{ my: 0, fontWeight: 700 }}
-                                  data-testid={`recommended-school-name-${rec.school?.id || 'unknown'}`}
-                                >
-                                  {rec.school?.school_name || 'Unknown School'}
-                                </Typography>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}>
+            {user.transfer_type !== "graduate" && (
+              <Box sx={{ mb: 4 }}>
+                {hasPreferences ? (
+                  recommendedSchools && recommendedSchools.length > 0 ? (
+                    <>
+                      <Typography
+                        variant="h5"
+                        sx={{ fontWeight: 600, mb: 2, color: "#1976d2" }}
+                      >
+                        Recommended Schools Based on Your Preferences
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ mb: 3, color: "text.secondary" }}
+                      >
+                        These schools match your preferences and have received positive reviews from other athletes.
+                      </Typography>
+                      <Stack spacing={2} sx={{ px: 2 }}>
+                        {recommendedSchools.map((rec, index) => (
+                          <Card
+                            key={index}
+                            sx={{
+                              width: "100%",
+                              cursor: "pointer",
+                              transition: "all 0.2s ease-in-out",
+                              "&:hover": {
+                                backgroundColor: "#f0f7ff",
+                                transform: "translateY(-2px)",
+                                boxShadow: 2
+                              }
+                            }}
+                            onClick={() => handleSchoolClick(rec.school.id)}
+                          >
+                            <CardContent>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 2,
+                                  flexWrap: "wrap",
+                                  justifyContent: "space-between"
+                                }}
+                              >
+                                <Box>
                                   <Typography
-                                    variant="body2"
-                                    color="text.secondary"
-                                    data-testid={`recommended-school-location-${rec.school?.id || 'unknown'}`}
+                                    variant="h6"
+                                    sx={{ my: 0, fontWeight: 700 }}
+                                    data-testid={`recommended-school-name-${rec.school?.id || "unknown"}`}
                                   >
-                                    {rec.school?.location || 'Unknown Location'}
+                                    {rec.school?.school_name || "Unknown School"}
                                   </Typography>
-                                  {rec.sport && (
+                                  <Box
+                                    sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5 }}
+                                  >
                                     <Typography
                                       variant="body2"
-                                      sx={{
-                                        backgroundColor: "#e3f2fd",
-                                        color: "#1976d2",
-                                        px: 1,
-                                        py: 0.25,
-                                        borderRadius: 1,
-                                        fontSize: "0.75rem"
-                                      }}
-                                      data-testid={`recommended-sport-name-${rec.school?.id || 'unknown'}`}
+                                      color="text.secondary"
+                                      data-testid={`recommended-school-location-${rec.school?.id || "unknown"}`}
                                     >
-                                      {rec.sport}
+                                      {rec.school?.location || "Unknown Location"}
                                     </Typography>
-                                  )}
+                                    {rec.sport && (
+                                      <Typography
+                                        variant="body2"
+                                        sx={{
+                                          backgroundColor: "#e3f2fd",
+                                          color: "#1976d2",
+                                          px: 1,
+                                          py: 0.25,
+                                          borderRadius: 1,
+                                          fontSize: "0.75rem"
+                                        }}
+                                        data-testid={`recommended-sport-name-${rec.school?.id || "unknown"}`}
+                                      >
+                                        {rec.sport}
+                                      </Typography>
+                                    )}
+                                  </Box>
+                                </Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    p: 1,
+                                    backgroundColor: "#e3f2fd",
+                                    borderRadius: 1
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 600, color: "#1976d2" }}
+                                  >
+                                    Match Score: {rec.similarity_score}/10
+                                  </Typography>
                                 </Box>
                               </Box>
-                              <Box sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                p: 1,
-                                backgroundColor: '#e3f2fd',
-                                borderRadius: 1
-                              }}>
-                                <Typography variant="body2" sx={{ fontWeight: 600, color: '#1976d2' }}>
-                                  Match Score: {rec.similarity_score}/10
-                                </Typography>
-                              </Box>
-                            </Box>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </Stack>
-                  </Box>
-                ) :
-                    (
-                  <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </Stack>
+                    </>
+                  ) : (
+                    <Box
+                      sx={{
+                        textAlign: "center",
+                        p: 3,
+                        backgroundColor: "#f5f5f5",
+                        borderRadius: 2
+                      }}
+                    >
+                      <Typography variant="h6" sx={{ mb: 1 }}>
+                        No Recommendations Available
+                      </Typography>
+                      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                        We don't have any reviews yet for your preferred sport.
+                        Check back later as our community grows!
+                      </Typography>
+                    </Box>
+                  )
+                ) : (
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                      p: 3,
+                      backgroundColor: "#f5f5f5",
+                      borderRadius: 2
+                    }}
+                  >
                     <Typography variant="h6" sx={{ mb: 1 }}>
-                      No Recommendations Available
+                      Fill Out Your Preferences
                     </Typography>
                     <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                      We don't have any reviews yet for your preferred sport.
-                      Check back later as our community grows!
+                      Please fill out your preferences to see personalized school recommendations based on what matters most to you.
                     </Typography>
-                    {user.transfer_type !== "graduate" && !hasPreferences && (
                     <Button
                       variant="contained"
                       color="primary"
@@ -648,78 +692,81 @@ function SecureHome() {
                         boxShadow: 1
                       }}
                     >
-                      {filters.sport ? "Update Preferences" : "Set Your Preferences"}
+                      Set Your Preferences
                     </Button>
-                  )}
-                    {/*{filters.sport && (*/}
-                    {/*  <Button*/}
-                    {/*    variant="outlined"*/}
-                    {/*    color="primary"*/}
-                    {/*    onClick={handleGoToReviewForm}*/}
-                    {/*    sx={{*/}
-                    {/*      mt: 1,*/}
-                    {/*      borderRadius: "20px",*/}
-                    {/*      py: 0.8,*/}
-                    {/*      px: 2.5,*/}
-                    {/*      textTransform: "none",*/}
-                    {/*      fontWeight: 500*/}
-                    {/*    }}*/}
-                    {/*  >*/}
-                    {/*    Submit a Review*/}
-                    {/*  </Button>*/}
-                    {/*)}*/}
                   </Box>
-                )
-              ) : (
-                <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>
-                  <Typography variant="h6" sx={{ mb: 1 }}>
-                    {filters.sport ? "No Recommendations Available" : "Fill Out Your Preferences"}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                    {filters.sport
-                      ? `We don't have any reviews yet for your preferred sport (${filters.sport}). Check back later as our community grows!`
-                      : "Please fill out your preferences to see personalized school recommendations based on what matters most to you."}
-                  </Typography>
+                )}
+              </Box>
+            )}
+            {/*        /!*{filters.sport && (*!/*/}
+            {/*        /!*  <Button*!/*/}
+            {/*        /!*    variant="outlined"*!/*/}
+            {/*        /!*    color="primary"*!/*/}
+            {/*        /!*    onClick={handleGoToReviewForm}*!/*/}
+            {/*        /!*    sx={{*!/*/}
+            {/*        /!*      mt: 1,*!/*/}
+            {/*        /!*      borderRadius: "20px",*!/*/}
+            {/*        /!*      py: 0.8,*!/*/}
+            {/*        /!*      px: 2.5,*!/*/}
+            {/*        /!*      textTransform: "none",*!/*/}
+            {/*        /!*      fontWeight: 500*!/*/}
+            {/*        /!*    }}*!/*/}
+            {/*        /!*  >*!/*/}
+            {/*        /!*    Submit a Review*!/*/}
+            {/*        /!*  </Button>*!/*/}
+            {/*        /!*)}*!/*/}
+            {/*      </Box>*/}
+            {/*    )*/}
+            {/*  ) : (*/}
+            {/*    <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>*/}
+            {/*      <Typography variant="h6" sx={{ mb: 1 }}>*/}
+            {/*        {filters.sport ? "No Recommendations Available" : "Fill Out Your Preferences"}*/}
+            {/*      </Typography>*/}
+            {/*      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>*/}
+            {/*        {filters.sport*/}
+            {/*          ? `We don't have any reviews yet for your preferred sport (${filters.sport}). Check back later as our community grows!`*/}
+            {/*          : "Please fill out your preferences to see personalized school recommendations based on what matters most to you."}*/}
+            {/*      </Typography>*/}
 
-                  {user.transfer_type !== "graduate" && !hasPreferences && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleGoToPreferenceForm}
-                      sx={{
-                        mt: 1,
-                        mr: 2,
-                        borderRadius: "20px",
-                        py: 0.8,
-                        px: 2.5,
-                        textTransform: "none",
-                        fontWeight: 500,
-                        boxShadow: 1
-                      }}
-                    >
-                      {filters.sport ? "Update Preferences" : "Set Your Preferences"}
-                    </Button>
-                  )}
-                  {/*{filters.sport && (*/}
-                  {/*  <Button*/}
-                  {/*    variant="outlined"*/}
-                  {/*    color="primary"*/}
-                  {/*    onClick={handleGoToReviewForm}*/}
-                  {/*    sx={{*/}
-                  {/*      mt: 1,*/}
-                  {/*      borderRadius: "20px",*/}
-                  {/*      py: 0.8,*/}
-                  {/*      px: 2.5,*/}
-                  {/*      textTransform: "none",*/}
-                  {/*      fontWeight: 500*/}
-                  {/*    }}*/}
-                  {/*  >*/}
-                  {/*    Submit a Review*/}
-                  {/*  </Button>*/}
-                  {/*)}*/}
-                </Box>
-              )
-            ) : null}
+            {/*      {user.transfer_type !== "graduate" && !hasPreferences && (*/}
+            {/*        <Button*/}
+            {/*          variant="contained"*/}
+            {/*          color="primary"*/}
+            {/*          onClick={handleGoToPreferenceForm}*/}
+            {/*          sx={{*/}
+            {/*            mt: 1,*/}
+            {/*            mr: 2,*/}
+            {/*            borderRadius: "20px",*/}
+            {/*            py: 0.8,*/}
+            {/*            px: 2.5,*/}
+            {/*            textTransform: "none",*/}
+            {/*            fontWeight: 500,*/}
+            {/*            boxShadow: 1*/}
+            {/*          }}*/}
+            {/*        >*/}
+            {/*          {filters.sport ? "Update Preferences" : "Set Your Preferences"}*/}
+            {/*        </Button>*/}
+            {/*      )}*/}
+            {/*      /!*{filters.sport && (*!/*/}
+            {/*      /!*  <Button*!/*/}
+            {/*      /!*    variant="outlined"*!/*/}
+            {/*      /!*    color="primary"*!/*/}
+            {/*      /!*    onClick={handleGoToReviewForm}*!/*/}
+            {/*      /!*    sx={{*!/*/}
+            {/*      /!*      mt: 1,*!/*/}
+            {/*      /!*      borderRadius: "20px",*!/*/}
+            {/*      /!*      py: 0.8,*!/*/}
+            {/*      /!*      px: 2.5,*!/*/}
+            {/*      /!*      textTransform: "none",*!/*/}
+            {/*      /!*      fontWeight: 500*!/*/}
+            {/*      /!*    }}*!/*/}
+            {/*      /!*  >*!/*/}
+            {/*      /!*    Submit a Review*!/*/}
+            {/*      /!*  </Button>*!/*/}
+            {/*      /!*)}*!/*/}
+            {/*    </Box>*/}
+            {/*  )*/}
+            {/*) : null}*/}
 
             {/* Show review form button for transfer students */}
             {user.transfer_type !== "high_school" && (
