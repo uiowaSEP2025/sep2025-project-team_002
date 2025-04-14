@@ -124,10 +124,11 @@ def forgot_password(request):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = token_generator.make_token(user)
 
-    """Check: work for production env?"""
-    reset_url = request.build_absolute_uri(f"/reset-password/?uid={uid}&token={token}")
+    # Build the reset URL
     if settings.DEBUG:
-        reset_url = reset_url.replace("localhost:8000", "localhost:3000")
+        reset_url = f"http://localhost:3000/reset-password/?uid={uid}&token={token}"
+    else:
+        reset_url = f"https://theathleticinsider.com/reset-password/?uid={uid}&token={token}"
 
     # Send Email
     send_mail(
@@ -199,18 +200,11 @@ def send_school_verification(request):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = school_email_token_generator.make_token(user)
 
-    # Get the base URL from the request
-    base_url = request.build_absolute_uri('/')
+    # Build the verification URL
     if settings.DEBUG:
-        # For development, replace backend port with frontend port
-        base_url = base_url.replace('localhost:8000', 'localhost:3000')
+        verify_url = f"http://localhost:3000/verify-school-email/?uid={uid}&token={token}"
     else:
-        # For production, ensure we're using the correct domain without port
-        base_url = base_url.replace('theathleticinsider.com:8000', 'theathleticinsider.com')
-        base_url = base_url.replace('http://', 'https://')  # Force HTTPS in production
-
-    # Construct the verification URL
-    verify_url = f"{base_url}verify-school-email/?uid={uid}&token={token}"
+        verify_url = f"https://theathleticinsider.com/verify-school-email/?uid={uid}&token={token}"
 
     send_mail(
         subject="Verify Your School Email",
@@ -219,7 +213,7 @@ def send_school_verification(request):
             f"Click the link below to verify your school email:\n{verify_url}\n\n"
             f"This link is valid for a limited time."
         ),
-        from_email=settings.DEFAULT_FROM_EMAIL,
+        from_email="noreply@yourapp.com",
         recipient_list=[email],
     )
 
