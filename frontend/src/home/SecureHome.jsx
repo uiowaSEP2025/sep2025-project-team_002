@@ -285,6 +285,7 @@ function SecureHome() {
   const closeFilterDialog = () => {
     setFilterDialogOpen(false);
   };
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters({ ...filters, [name]: value });
@@ -358,7 +359,7 @@ function SecureHome() {
     });
     setFilterApplied(false);  // This is key - it resets to show all schools
     setFilteredSchools([]);
-    closeFilterDialog();
+    // closeFilterDialog();
   };
 
   const schoolsToDisplay = Array.isArray(filterApplied ? filteredSchools : schools)
@@ -917,7 +918,19 @@ function SecureHome() {
       </Grid>
 
       {/* Filter Dialog */}
-      <Dialog open={filterDialogOpen} onClose={closeFilterDialog} fullWidth maxWidth="sm">
+      <Dialog
+        open={filterDialogOpen}
+        onClose={closeFilterDialog}
+        fullWidth
+        maxWidth="sm"
+        disableRestoreFocus
+        TransitionProps={{
+          onExited: () => {
+            const el = document.getElementById("school-search");
+            if (el) el.focus();
+          },
+        }}
+      >
         <DialogTitle>Apply Filters</DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
@@ -1095,12 +1108,22 @@ function SecureHome() {
                 </FormControl>
               </Grid>
             </Grid>
-
-
-
           </Box>
         </DialogContent>
         <DialogActions sx={{ p: 3 }}>
+          <Button
+            onClick={clearFilters}
+            color="secondary"
+            sx={{
+              borderRadius: "20px",
+              py: 0.6,
+              px: 2,
+              textTransform: "none",
+              fontWeight: 500
+            }}
+          >
+            Clear All
+          </Button>
           <Button
             onClick={closeFilterDialog}
             color="primary"
