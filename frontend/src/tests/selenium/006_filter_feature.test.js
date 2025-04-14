@@ -49,7 +49,7 @@ describe("Filter Feature Test", function () {
       await driver.wait(until.elementLocated(By.css('[role="dialog"]')), 10000);
 
       // Find and click the Head Coach Rating dropdown
-      const headCoachSelect = await driver.findElement(By.id("head_coach-rating-select"));
+      const headCoachSelect = await driver.findElement(By.id("head_coach-select"));
       await headCoachSelect.click();
 
       // Wait for the dropdown options to appear and select rating 8
