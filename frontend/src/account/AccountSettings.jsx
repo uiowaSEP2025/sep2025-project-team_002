@@ -446,6 +446,13 @@ function AccountSettings() {
         onClose={handleClosePasswordDialog}
         fullWidth
         maxWidth="sm"
+        disableRestoreFocus
+        TransitionProps={{
+          onExited: () => {
+            const el = document.getElementById("change-password-button");
+            if (el) el.focus();
+          },
+        }}
         PaperProps={{
           sx: {
             borderRadius: "16px",
