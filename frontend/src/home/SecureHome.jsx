@@ -1100,19 +1100,6 @@ function SecureHome() {
         </DialogContent>
         <DialogActions sx={{ p: 3 }}>
           <Button
-            onClick={clearFilters}
-            color="secondary"
-            sx={{
-              borderRadius: "20px",
-              py: 0.6,
-              px: 2,
-              textTransform: "none",
-              fontWeight: 500
-            }}
-          >
-            Clear All
-          </Button>
-          <Button
             onClick={closeFilterDialog}
             color="primary"
             sx={{
