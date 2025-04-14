@@ -314,6 +314,7 @@ function SecureHome() {
       if (filters.nil_opportunity) queryParams.append("nil_opportunity", filters.nil_opportunity);
 
       const token = localStorage.getItem("token");
+      console.log("Filter params:", queryParams.toString());
       const response = await fetch(`${API_BASE_URL}/api/filter/?${queryParams.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -323,6 +324,7 @@ function SecureHome() {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Filtered response:", data);
         setFilteredSchools(data);
         setFilterApplied(true);
         setLoading(false);
