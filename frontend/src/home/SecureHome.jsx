@@ -921,19 +921,19 @@ function SecureHome() {
               select
               fullWidth
               id="head_coach-rating-select"
-              label="Head Coach Rating"
+              label="Choose Sport"
               value={filters.head_coach}
               onChange={(e) => setFilters({ ...filters, head_coach: e.target.value })}
             >
               <MenuItem value="">All Sports</MenuItem>
               <MenuItem value="basketball">Basketball</MenuItem>
               <MenuItem value="football">Football</MenuItem>
-              <MenuItem value="baseball">Baseball</MenuItem>
-              <MenuItem value="soccer">Soccer</MenuItem>
-              <MenuItem value="volleyball">Volleyball</MenuItem>
-              <MenuItem value="tennis">Tennis</MenuItem>
-              <MenuItem value="swimming">Swimming</MenuItem>
-              <MenuItem value="track">Track & Field</MenuItem>
+              {/*<MenuItem value="baseball">Baseball</MenuItem>*/}
+              {/*<MenuItem value="soccer">Soccer</MenuItem>*/}
+              {/*<MenuItem value="volleyball">Volleyball</MenuItem>*/}
+              {/*<MenuItem value="tennis">Tennis</MenuItem>*/}
+              {/*<MenuItem value="swimming">Swimming</MenuItem>*/}
+              {/*<MenuItem value="track">Track & Field</MenuItem>*/}
             </TextField>
 
             <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 600 }}>
