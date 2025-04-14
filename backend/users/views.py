@@ -204,6 +204,8 @@ def send_school_verification(request):
     )
     if settings.DEBUG:
         verify_url = verify_url.replace("localhost:8000", "localhost:3000")
+    else:
+        verify_url = verify_url.replace("theathleticinsider.com:8000", "theathleticinsider.com")
 
     send_mail(
         subject="Verify Your School Email",
@@ -212,7 +214,7 @@ def send_school_verification(request):
             f"Click the link below to verify your school email:\n{verify_url}\n\n"
             f"This link is valid for a limited time."
         ),
-        from_email="noreply@yourapp.com",
+        from_email=settings.DEFAULT_FROM_EMAIL,
         recipient_list=[email],
     )
 
