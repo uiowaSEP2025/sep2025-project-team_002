@@ -942,6 +942,8 @@ function SecureHome() {
               name="sport"
               value={filters.sport}
               onChange={handleFilterChange}
+              variant="outlined"
+              margin="normal"
             >
               <MenuItem value="">All Sports</MenuItem>
               <MenuItem value="Men's Basketball">Men's Basketball</MenuItem>
