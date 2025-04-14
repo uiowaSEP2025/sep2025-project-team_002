@@ -124,11 +124,10 @@ def forgot_password(request):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = token_generator.make_token(user)
 
-    # Build the reset URL
+    """Check: work for production env?"""
+    reset_url = request.build_absolute_uri(f"/reset-password/?uid={uid}&token={token}")
     if settings.DEBUG:
-        reset_url = f"http://localhost:3000/reset-password/?uid={uid}&token={token}"
-    else:
-        reset_url = f"https://theathleticinsider.com/reset-password/?uid={uid}&token={token}"
+        reset_url = reset_url.replace("localhost:8000", "localhost:3000")
 
     # Send Email
     send_mail(
@@ -200,11 +199,11 @@ def send_school_verification(request):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = school_email_token_generator.make_token(user)
 
-    # Build the verification URL
+    verify_url = request.build_absolute_uri(
+        f"/verify-school-email/?uid={uid}&token={token}"
+    )
     if settings.DEBUG:
-        verify_url = f"http://localhost:3000/verify-school-email/?uid={uid}&token={token}"
-    else:
-        verify_url = f"https://theathleticinsider.com/verify-school-email/?uid={uid}&token={token}"
+        verify_url = verify_url.replace("localhost:8000", "localhost:3000")
 
     send_mail(
         subject="Verify Your School Email",
