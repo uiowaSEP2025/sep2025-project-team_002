@@ -14,6 +14,7 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
@@ -126,7 +127,7 @@ function SchoolPage() {
             first_name: data.first_name || "",
             last_name: data.last_name || "",
             email: data.email || "",
-            transfer_type: data.transfer_type || "",
+            transfer_type: data.transfer_type || ""
           });
         } else {
           console.error("Error fetching user data");
@@ -288,9 +289,19 @@ function SchoolPage() {
                       sx={{ mb: 2 }}
                     >
                       <CardContent>
-                        <Typography id={`coach-name-${review.review_id}`} variant="h6" gutterBottom>
-                          Head Coach: {review.head_coach_name}
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography id={`coach-name-${review.review_id}`} variant="h6" gutterBottom>
+                            Head Coach: {review.head_coach_name}
+                          </Typography>
+                          {review.user?.is_school_verified && (
+                            <Stack direction="row" spacing={0.5} alignItems="center">
+                              <CheckCircleIcon sx={{ color: 'green' }} fontSize="small" />
+                              <Typography variant="caption" sx={{ color: 'green', fontWeight: 500 }}>
+                                Verified User
+                              </Typography>
+                            </Stack>
+                          )}
+                        </Box>
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
                         </Typography>
