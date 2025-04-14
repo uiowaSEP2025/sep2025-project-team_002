@@ -55,7 +55,6 @@ function SecureHome() {
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
-    coach: "",
     head_coach: "",
     assistant_coaches: "",
     team_culture: "",
@@ -258,22 +257,14 @@ function SecureHome() {
     setLoading(true);
     try {
       const queryParams = new URLSearchParams();
-      if (filters.coach) queryParams.append("coach", filters.coach);
       if (filters.head_coach) queryParams.append("head_coach", filters.head_coach);
-      // Append rating filters if provided
-      [
-        "assistant_coaches",
-        "team_culture",
-        "campus_life", 
-        "athletic_facilities",
-        "athletic_department",
-        "player_development",
-        "nil_opportunity",
-      ].forEach((field) => {
-        if (filters[field]) {
-          queryParams.append(field, filters[field]);
-        }
-      });
+      if (filters.assistant_coaches) queryParams.append("assistant_coaches", filters.assistant_coaches);
+      if (filters.team_culture) queryParams.append("team_culture", filters.team_culture);
+      if (filters.campus_life) queryParams.append("campus_life", filters.campus_life);
+      if (filters.athletic_facilities) queryParams.append("athletic_facilities", filters.athletic_facilities);
+      if (filters.athletic_department) queryParams.append("athletic_department", filters.athletic_department);
+      if (filters.player_development) queryParams.append("player_development", filters.player_development);
+      if (filters.nil_opportunity) queryParams.append("nil_opportunity", filters.nil_opportunity);
 
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/api/filter/?${queryParams.toString()}`, {
@@ -300,7 +291,6 @@ function SecureHome() {
   };
   const clearFilters = () => {
     setFilters({
-      coach: "",
       head_coach: "",
       assistant_coaches: "",
       team_culture: "",
@@ -681,17 +671,6 @@ function SecureHome() {
         <DialogTitle>Apply Filters</DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <TextField
-              select
-              fullWidth
-              label="Coach"
-              value={filters.coach}
-              onChange={(e) => setFilters({ ...filters, coach: e.target.value })}
-            >
-              <MenuItem value="">All Coaches</MenuItem>
-              <MenuItem value="head">Head Coach</MenuItem>
-              <MenuItem value="assistant">Assistant Coach</MenuItem>
-            </TextField>
             <TextField
               select
               fullWidth
