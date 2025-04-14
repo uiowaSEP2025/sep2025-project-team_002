@@ -12,6 +12,7 @@ import {
   Stack,
   Grid,
   Tabs,
+  Tooltip,
   Tab,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -294,12 +295,14 @@ function SchoolPage() {
                             Head Coach: {review.head_coach_name}
                           </Typography>
                           {review.user?.is_school_verified && (
-                            <Stack direction="row" spacing={0.5} alignItems="center">
-                              <CheckCircleIcon sx={{ color: 'green' }} fontSize="small" />
-                              <Typography variant="caption" sx={{ color: 'green', fontWeight: 500 }}>
-                                Verified User
-                              </Typography>
-                            </Stack>
+                            <Tooltip title="This reviewer has verified their school email">
+                              <Stack direction="row" spacing={0.5} alignItems="center">
+                                <CheckCircleIcon sx={{ color: 'green' }} fontSize="small" />
+                                <Typography variant="caption" sx={{ color: 'green', fontWeight: 500 }}>
+                                  Verified Reviewer
+                                </Typography>
+                              </Stack>
+                            </Tooltip>
                           )}
                         </Box>
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
