@@ -37,7 +37,6 @@ function Home() {
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
-    coach: "",
     head_coach: "",
     assistant_coaches: "",
     team_culture: "",
@@ -167,7 +166,6 @@ function Home() {
   };
   const clearFilters = () => {
     setFilters({
-      coach: "",
       head_coach: "",
       assistant_coaches: "",
       team_culture: "",
@@ -336,13 +334,6 @@ function Home() {
         <DialogTitle>Apply Filters</DialogTitle>
         <DialogContent>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
-            <TextField
-              label="Coach Name"
-              name="coach"
-              value={filters.coach}
-              onChange={handleFilterChange}
-              fullWidth
-            />
             <FormControl fullWidth>
               <InputLabel htmlFor="head_coach-select" id="head_coach-label">
                 Head Coach Rating
