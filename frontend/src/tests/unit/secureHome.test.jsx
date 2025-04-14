@@ -328,9 +328,8 @@ describe('SecureHome Filter Dialog', () => {
     // Verify that the sport dropdown is present
     expect(screen.getByLabelText(/Choose Sport/i)).toBeInTheDocument();
 
-    // Verify that Men's Basketball and Women's Basketball options are available in the dialog
     expect(screen.getByText(/Men's Basketball/i)).toBeInTheDocument();
-    expect(screen.getByText(/Women's Basketball/i)).toBeInTheDocument();
+    expect(screen.getByText(/Football/i)).toBeInTheDocument();
 
     // Click the Apply Filters button
     const applyButton = screen.getByRole('button', { name: /Apply Filters/i });
