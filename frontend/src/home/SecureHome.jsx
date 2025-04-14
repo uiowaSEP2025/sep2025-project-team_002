@@ -650,23 +650,23 @@ function SecureHome() {
                       {filters.sport ? "Update Preferences" : "Set Your Preferences"}
                     </Button>
                   )}
-                    {filters.sport && (
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={handleGoToReviewForm}
-                        sx={{
-                          mt: 1,
-                          borderRadius: "20px",
-                          py: 0.8,
-                          px: 2.5,
-                          textTransform: "none",
-                          fontWeight: 500
-                        }}
-                      >
-                        Submit a Review
-                      </Button>
-                    )}
+                    {/*{filters.sport && (*/}
+                    {/*  <Button*/}
+                    {/*    variant="outlined"*/}
+                    {/*    color="primary"*/}
+                    {/*    onClick={handleGoToReviewForm}*/}
+                    {/*    sx={{*/}
+                    {/*      mt: 1,*/}
+                    {/*      borderRadius: "20px",*/}
+                    {/*      py: 0.8,*/}
+                    {/*      px: 2.5,*/}
+                    {/*      textTransform: "none",*/}
+                    {/*      fontWeight: 500*/}
+                    {/*    }}*/}
+                    {/*  >*/}
+                    {/*    Submit a Review*/}
+                    {/*  </Button>*/}
+                    {/*)}*/}
                   </Box>
                 )
               ) : (
@@ -699,29 +699,29 @@ function SecureHome() {
                       {filters.sport ? "Update Preferences" : "Set Your Preferences"}
                     </Button>
                   )}
-                  {filters.sport && (
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={handleGoToReviewForm}
-                      sx={{
-                        mt: 1,
-                        borderRadius: "20px",
-                        py: 0.8,
-                        px: 2.5,
-                        textTransform: "none",
-                        fontWeight: 500
-                      }}
-                    >
-                      Submit a Review
-                    </Button>
-                  )}
+                  {/*{filters.sport && (*/}
+                  {/*  <Button*/}
+                  {/*    variant="outlined"*/}
+                  {/*    color="primary"*/}
+                  {/*    onClick={handleGoToReviewForm}*/}
+                  {/*    sx={{*/}
+                  {/*      mt: 1,*/}
+                  {/*      borderRadius: "20px",*/}
+                  {/*      py: 0.8,*/}
+                  {/*      px: 2.5,*/}
+                  {/*      textTransform: "none",*/}
+                  {/*      fontWeight: 500*/}
+                  {/*    }}*/}
+                  {/*  >*/}
+                  {/*    Submit a Review*/}
+                  {/*  </Button>*/}
+                  {/*)}*/}
                 </Box>
               )
             ) : null}
 
             {/* Show review form button for transfer students */}
-            {user && user.transfer_type && user.transfer_type !== "high_school" && (
+            {user.transfer_type !== "high_school" && (
               <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
                 <Button
                   id="submit-review-button"
@@ -740,23 +740,23 @@ function SecureHome() {
                 >
                   Submit a Review
                 </Button>
-                {!hasPreferences && (
-                  <Button
-                    id="preference-form-button"
-                    variant="outlined"
-                    color="primary"
-                    onClick={handleGoToPreferenceForm}
-                    sx={{
-                      borderRadius: "20px",
-                      py: 0.8,
-                      px: 2.5,
-                      textTransform: "none",
-                      fontWeight: 500
-                    }}
-                  >
-                    Fill Preference Form
-                  </Button>
-                )}
+                {/*{!hasPreferences && (*/}
+                {/*  <Button*/}
+                {/*    id="preference-form-button"*/}
+                {/*    variant="outlined"*/}
+                {/*    color="primary"*/}
+                {/*    onClick={handleGoToPreferenceForm}*/}
+                {/*    sx={{*/}
+                {/*      borderRadius: "20px",*/}
+                {/*      py: 0.8,*/}
+                {/*      px: 2.5,*/}
+                {/*      textTransform: "none",*/}
+                {/*      fontWeight: 500*/}
+                {/*    }}*/}
+                {/*  >*/}
+                {/*    Fill Preference Form*/}
+                {/*  </Button>*/}
+                {/*)}*/}
               </Box>
             )}
 
