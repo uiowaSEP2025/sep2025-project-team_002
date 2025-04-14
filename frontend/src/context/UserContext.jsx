@@ -74,8 +74,6 @@ export const UserProvider = ({ children }) => {
 
       if (response.ok) {
         await fetchUser();
-        // setUser((prevUser) => ({ ...prevUser, profile_picture: newPic }));
-        // fetchUser();
       }
     } catch (error) {
       console.error("Failed to update profile picture:", error);
@@ -93,7 +91,7 @@ export const UserProvider = ({ children }) => {
       fetchUser();
     }
   }, []);
-  
+
   return (
     <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser, isLoggedIn, loading, logout }}>
       {children}

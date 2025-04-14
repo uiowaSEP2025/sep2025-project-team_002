@@ -41,9 +41,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
+import CheckIcon from "@mui/icons-material/Check";
 import { useContext } from "react";
-import { UserContext } from "../context/UserContext";
-import {useUser} from "../context/UserContext.jsx"
+import { UserContext, useUser } from "../context/UserContext"
 import SidebarWrapper from "../components/SidebarWrapper";
 
 // Import your config base URL
@@ -67,22 +67,25 @@ function AccountSettings() {
   // For success/error messages
   const [message, setMessage] = useState("");
 
-  // For profile picture updates and logout functionality
-  const { profilePic, updateProfilePic, logout } = useUser();
-  console.log("Current profile picture:", profilePic); // Debug log
+  // For logout functionality
+  const { logout } = useUser();
 
   const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
 
+  // Initialize form data only once when component mounts or when user changes
   useEffect(() => {
     if (user) {
-      setFormData({
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        email: user.email || "",
-        transfer_type: user.transfer_type || ""
-      });
+      // Only set form data if it's empty (initial load)
+      if (!formData.first_name && !formData.last_name && !formData.email) {
+        setFormData({
+          first_name: user.first_name || "",
+          last_name: user.last_name || "",
+          email: user.email || "",
+          transfer_type: user.transfer_type || ""
+        });
+      }
     }
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Real-time email validation:
   const emailIsInvalid =
@@ -93,14 +96,9 @@ function AccountSettings() {
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [passwordError, setPasswordError] = useState(""); // for dialog errors
 
-  // Show/hide toggles for each password field in the dialog
-  const [showCurrentPass, setShowCurrentPass] = useState(false);
-  const [showNewPass, setShowNewPass] = useState(false);
-  const [showConfirmNewPass, setShowConfirmNewPass] = useState(false);
+  // Password visibility is now handled in the PasswordForm component
 
-  // For real-time matching check
-  const newPasswordsMatch =
-    confirmNewPassword.length > 0 && newPassword === confirmNewPassword;
+  // Password state is now handled in the PasswordForm component
 
   // Fetch user info on mount
   useEffect(() => {
@@ -122,22 +120,21 @@ function AccountSettings() {
         if (response.ok) {
           const data = await response.json();
 
-          setUser({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          email: data.email || "",
-          transfer_type: data.transfer_type || "",
-          is_school_verified: data.is_school_verified || false,
-          profile_picture: data.profile_picture || ""
-        });
+          // Update profile picture if available
+          if (data.profile_picture) {
+            updateProfilePic(data.profile_picture);
+          }
 
 
-          setFormData({
-            first_name: data.first_name || "",
-            last_name: data.last_name || "",
-            email: data.email || "",
-            transfer_type: data.transfer_type || ""
-          });
+          // Only set form data on initial load, not during editing
+          if (!formData.first_name && !formData.last_name && !formData.email) {
+            setFormData({
+              first_name: data.first_name || "",
+              last_name: data.last_name || "",
+              email: data.email || "",
+              transfer_type: data.transfer_type || ""
+            });
+          }
         } else if (response.status === 401) {
           // Token expired or invalid
           logout();
@@ -158,7 +155,7 @@ function AccountSettings() {
     };
 
     fetchUserInfo();
-  }, [navigate, logout]);
+  }, [navigate, logout]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle text/radio changes in the main form
   const handleChange = (e) => {
@@ -362,55 +359,55 @@ function AccountSettings() {
             </Typography>
           )}
           <div style={{ textAlign: "center" }}>
-          <h2 id="profile-pic-label">Choose Your Profile Picture</h2>
-          {profilePic && profilePic.trim() ? (
-            <img
-              src={profilePic}
-              id="selected-profile-pic"
-              alt="Selected Profile"
-              onError={(e) => {
-                e.target.onerror = null; // Prevent infinite loop
-                e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
-              }}
-              style={{
-                width: "150px",
-                height: "150px",
-                borderRadius: "50%",
-                border: "3px solid #007bff",
-                objectFit: "cover",
-                marginBottom: "10px"
-              }}
-            />
-          ) : (
-            <AccountCircleIcon
-              sx={{
-                fontSize: "150px",
-                color: "gray",
-                borderRadius: "50%",
-                backgroundColor: "#f0f0f0",
-                padding: "10px"
-              }}
-            />
-          )}
-          <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-            {profilePictures.map((pic, index) => (
-              <IconButton key={index} onClick={() => updateProfilePic(pic)}>
-                <img
-                  src={`/assets/profile-pictures/${pic}`}
-                  alt={`Profile ${index + 1}`}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    cursor: "pointer",
-                    border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
-                  }}
-                />
-              </IconButton>
-            ))}
+            <h2 id="profile-pic-label">Choose Your Profile Picture</h2>
+            {profilePic && profilePic.trim() ? (
+              <img
+                src={profilePic}
+                id="selected-profile-pic"
+                alt="Selected Profile"
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
+                }}
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  borderRadius: "50%",
+                  border: "3px solid #007bff",
+                  objectFit: "cover",
+                  marginBottom: "10px"
+                }}
+              />
+            ) : (
+              <AccountCircleIcon
+                sx={{
+                  fontSize: "150px",
+                  color: "gray",
+                  borderRadius: "50%",
+                  backgroundColor: "#f0f0f0",
+                  padding: "10px"
+                }}
+              />
+            )}
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+              {profilePictures.map((pic, index) => (
+                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
+                  <img
+                    src={`/assets/profile-pictures/${pic}`}
+                    alt={`Profile ${index + 1}`}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
+                    }}
+                  />
+                </IconButton>
+              ))}
+            </div>
           </div>
-        </div>
           <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
             <TextField
               fullWidth
