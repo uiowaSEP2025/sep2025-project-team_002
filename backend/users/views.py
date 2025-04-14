@@ -199,13 +199,18 @@ def send_school_verification(request):
     uid = urlsafe_base64_encode(force_bytes(user.pk))
     token = school_email_token_generator.make_token(user)
 
-    verify_url = request.build_absolute_uri(
-        f"/verify-school-email/?uid={uid}&token={token}"
-    )
+    # Get the base URL from the request
+    base_url = request.build_absolute_uri('/')
     if settings.DEBUG:
-        verify_url = verify_url.replace("localhost:8000", "localhost:3000")
+        # For development, replace backend port with frontend port
+        base_url = base_url.replace('localhost:8000', 'localhost:3000')
     else:
-        verify_url = verify_url.replace("theathleticinsider.com:8000", "theathleticinsider.com")
+        # For production, ensure we're using the correct domain without port
+        base_url = base_url.replace('theathleticinsider.com:8000', 'theathleticinsider.com')
+        base_url = base_url.replace('http://', 'https://')  # Force HTTPS in production
+
+    # Construct the verification URL
+    verify_url = f"{base_url}verify-school-email/?uid={uid}&token={token}"
 
     send_mail(
         subject="Verify Your School Email",
