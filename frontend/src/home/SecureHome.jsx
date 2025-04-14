@@ -29,6 +29,8 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import LoginIcon from "@mui/icons-material/Login";
+import ErrorIcon from "@mui/icons-material/Error";
+import WarningIcon from "@mui/icons-material/Warning";
 import API_BASE_URL from "../utils/config";
 
 function SecureHome() {
@@ -38,7 +40,10 @@ function SecureHome() {
   const open = Boolean(anchorEl);
   const [schools, setSchools] = useState([]);
 
+  // Simple loading state
   const [loading, setLoading] = useState(true);
+  // Error state to track if data fetching failed
+  const [error, setError] = useState(null);
 
   const schoolsPerPage = 10;
 
@@ -53,9 +58,8 @@ function SecureHome() {
   const [recommendedSchools, setRecommendedSchools] = useState([]);
   const [showRecommendations, setShowRecommendations] = useState(false);
 
-    // Add a new state to track if the user has submitted preferences
+  // Add a new state to track if the user has submitted preferences
   const [hasPreferences, setHasPreferences] = useState(null);
-
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -77,69 +81,31 @@ function SecureHome() {
   // Get user from context
   const { user, logout } = useUser();
 
-
-
-  // State to track if data has been loaded at least once
-  const [dataLoaded, setDataLoaded] = useState(false);
-  // State to track if we're in a refresh scenario
-  const [isRefreshing, setIsRefreshing] = useState(false);
-  // State to track load attempts
-  const [loadAttempts, setLoadAttempts] = useState(0);
-
-  // Check if this is a page refresh by using sessionStorage
+  // Single useEffect for data fetching
   useEffect(() => {
-    const isFirstLoad = sessionStorage.getItem('secureHomeLoaded') !== 'true';
-    if (!isFirstLoad) {
-      console.log("SecureHome: This appears to be a page refresh");
-      setIsRefreshing(true);
-    } else {
-      console.log("SecureHome: This appears to be a first load");
-      sessionStorage.setItem('secureHomeLoaded', 'true');
-    }
-
-    // Clean up function
-    return () => {
-      // We don't clear the sessionStorage here to detect refreshes
-    };
-  }, []);
-
-  // This effect runs once on component mount to fetch initial data
-  useEffect(() => {
-    console.log(`SecureHome: Initial data loading effect running (attempt ${loadAttempts + 1})`);
-
-    // Set a timeout to prevent infinite loading
+    // Set a timeout to prevent infinite loading, but don't set error
     const timeoutId = setTimeout(() => {
-      console.log("SecureHome: Loading timeout triggered");
-      if (schools.length === 0) {
-        // If we still don't have schools data after timeout
-        if (loadAttempts < 2) {
-          console.log("SecureHome: No schools data after timeout, forcing reload");
-          setLoadAttempts(prev => prev + 1);
-          window.location.reload();
-        } else {
-          console.log("SecureHome: Max load attempts reached, showing UI anyway");
-          setLoading(false);
-        }
-      } else {
+      if (loading) {
+        console.log("Loading timeout triggered, showing UI anyway");
         setLoading(false);
+        // Don't set error here, just show whatever data we have
       }
-    }, 2000); // 2 second timeout
+    }, 8000); // 8 second timeout - give more time for data to load
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      console.log("SecureHome: No token found, redirecting to login");
-      navigate("/login");
-      return;
-    }
+    // Function to fetch all data
+    const fetchAllData = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
 
-    // Set a flag to ensure we don't get stuck in loading state
-    let isMounted = true;
-
-    // Fetch Schools function
-    const fetchSchools = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`${API_BASE_URL}/api/schools/`, {
+        setError(null);
+
+        // Fetch schools
+        const schoolsResponse = await fetch(`${API_BASE_URL}/api/schools/`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -147,98 +113,104 @@ function SecureHome() {
           },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log("SecureHome: Schools data loaded successfully");
-          setSchools(data);
-          setDataLoaded(true);
-          setLoading(false);
-        } else if (response.status === 401) {
-          // Token expired
+        if (schoolsResponse.status === 401) {
           logout();
           navigate("/login");
-        } else {
-          console.error(`HTTP error! status: ${response.status}`);
-          setSchools([]);
-          setLoading(false);
+          return;
         }
+
+        if (!schoolsResponse.ok) {
+          console.error(`Failed to fetch schools: ${schoolsResponse.status}`);
+          // Only set error if it's a critical failure (not 404)
+          if (schoolsResponse.status !== 404) {
+            setError(`Failed to fetch schools: ${schoolsResponse.status}`);
+          }
+          // Continue execution to try loading other data
+        }
+
+        try {
+          const schoolsData = await schoolsResponse.json();
+          setSchools(schoolsData || []);
+        } catch (jsonError) {
+          console.error("Error parsing schools JSON:", jsonError);
+          // Don't set error, just use empty array
+          setSchools([]);
+        }
+
+        // Fetch recommendations
+        try {
+          const recommendationsResponse = await fetch(`${API_BASE_URL}/api/recommendations/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (recommendationsResponse.ok) {
+            const recommendationsData = await recommendationsResponse.json();
+            if (recommendationsData.hasOwnProperty('no_preferences') && recommendationsData.no_preferences === true) {
+              setHasPreferences(false);
+              setRecommendedSchools([]);
+              setShowRecommendations(false);
+            } else {
+              setHasPreferences(true);
+              setRecommendedSchools(recommendationsData);
+              if (recommendationsData.length > 0 && recommendationsData[0].sport) {
+                setFilters(prev => ({ ...prev }));
+              }
+              setShowRecommendations(recommendationsData.length > 0);
+            }
+          } else {
+            console.log("No recommendations available");
+            setHasPreferences(false);
+            setShowRecommendations(false);
+          }
+        } catch (recError) {
+          console.error("Error fetching recommendations:", recError);
+          // Don't fail the whole page load if recommendations fail
+          setHasPreferences(false);
+          setShowRecommendations(false);
+        }
+
+        // Fetch user profile
+        try {
+          const userResponse = await fetch(`${API_BASE_URL}/api/user/profile/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            if (userData && userData.sport_preference) {
+              setFilters(prev => ({ ...prev, sport: userData.sport_preference }));
+            }
+          }
+        } catch (userError) {
+          console.error("Error fetching user profile:", userError);
+          // Don't fail the whole page load if user profile fetch fails
+        }
+
+        // All critical data loaded successfully
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching schools:", error);
-        setSchools([]);
+        console.error("Error fetching data:", error);
+        // Only set error if schools data is empty
+        if (schools.length === 0) {
+          setError("Unable to load schools data. Please try again later.");
+        }
         setLoading(false);
       }
     };
 
-    // Fetch Recommended Schools
-    const fetchRecommendedSchools = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/recommendations/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          if (data.hasOwnProperty('no_preferences') && data.no_preferences === true) {
-            setHasPreferences(false);
-            setRecommendedSchools([]);
-            setShowRecommendations(false);
-          } else {
-            setHasPreferences(true);
-            setRecommendedSchools(data);
-            if (data.length > 0 && data[0].sport) {
-              setFilters(prev => ({ ...prev }));
-            }
-            setShowRecommendations(data.length > 0);
-          }
-        } else {
-          const errorText = await response.text();
-          console.error("Error response:", response.status, errorText);
-          setHasPreferences(false);
-          setShowRecommendations(false);
-        }
-      } catch (error) {
-        console.error("Error in fetchRecommendedSchools:", error);
-        setHasPreferences(false);
-        setShowRecommendations(false);
-      }
-    };
-    // Fetch data for user, schools, and recommendations
-    const fetchUserInfo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/user/profile/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (!response.ok) {
-          throw new Error('Failed to fetch user info');
-          return;
-        }
-
-        // Parse and use the user data if needed
-        const userData = await response.json();
-        // If there's sport preference in the user data, update filters
-        if (userData && userData.sport_preference) {
-          setFilters(prev => ({ ...prev, sport: userData.sport_preference }));
-        }
-      } catch (error) {
-        console.error("Error fetching user info:", error);
-      }
-    };
-
-    fetchUserInfo();
-    fetchSchools();
-    fetchRecommendedSchools();
+    fetchAllData();
 
     // Cleanup function
     return () => {
-      isMounted = false;
       clearTimeout(timeoutId);
     };
-  }, [loadAttempts, schools.length]); // Re-run if loadAttempts changes or schools are loaded
+  }, []); // Empty dependency array - run once on mount
 
   // Sync state with URL when location changes (handles back/forward navigation)
   useEffect(() => {
@@ -406,44 +378,9 @@ function SecureHome() {
   const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
   const currentSchools = filteredBySearch.slice(indexOfFirstSchool, indexOfLastSchool);
 
-  // Ensure loading state is properly managed
-  useEffect(() => {
-    if (hasPreferences !== null || schools.length > 0) {
-      setLoading(false);  // Set loading to false after data is fetched
-    }
-  }, [hasPreferences, schools]);
+  // No additional useEffects needed - all loading logic is in the main useEffect
 
-  // Add a fallback in case loading gets stuck
-  useEffect(() => {
-    // Force loading to false after 2 seconds as a fallback
-    const timer = setTimeout(() => {
-      if (loading) {
-        console.log("SecureHome: Forcing loading state to false after timeout");
-        setLoading(false);
-      }
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }, [loading]);
-
-  // Handle page refresh - check if we have data
-  useEffect(() => {
-    // If this is a refresh and we have a user but no schools data
-    if (isRefreshing && user && schools.length === 0 && !loading && !dataLoaded) {
-      console.log("SecureHome: Detected refresh with no data, reloading data");
-      // Reload the page to force a fresh data fetch, but only if we haven't tried too many times
-      if (loadAttempts < 2) {
-        setLoadAttempts(prev => prev + 1);
-        // Use a short timeout to allow React to update state before reload
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
-      } else {
-        console.log("SecureHome: Max refresh attempts reached, showing UI anyway");
-      }
-    }
-  }, [isRefreshing, user, schools, loading, dataLoaded, loadAttempts]);
-
+  // Simple loading UI
   if (loading) {
     return (
       <Box sx={{ textAlign: "center", marginTop: 4, p: 3 }}>
@@ -458,8 +395,47 @@ function SecureHome() {
     );
   }
 
+  // Only show error UI if we have an error AND no schools data
+  if (error && schools.length === 0) {
+    return (
+      <Box sx={{ textAlign: "center", marginTop: 4, p: 3 }}>
+        <WarningIcon color="warning" sx={{ fontSize: 60 }} />
+        <Typography variant="h5" sx={{ mb: 2, mt: 2, fontWeight: 600 }}>
+          We're having trouble loading data
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 3, color: "text.secondary" }}>
+          Please try refreshing the page or check your internet connection.
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: '300px', mx: 'auto' }}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => window.location.reload()}
+            startIcon={<RefreshIcon />}
+            size="large"
+            sx={{ py: 1.5 }}
+          >
+            Refresh Page
+          </Button>
+          <Button
+            variant="text"
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              // Try fetching data again
+              window.location.reload();
+            }}
+            startIcon={<RestartAltIcon />}
+          >
+            Try Again
+          </Button>
+        </Box>
+      </Box>
+    );
+  }
+
   // Handle the case where we have no schools data but we're not loading
-  if (schools.length === 0 && !loading) {
+  if (schools.length === 0) {
     return (
       <Box sx={{ textAlign: "center", marginTop: 4, p: 3 }}>
         <Typography variant="h5" sx={{ mb: 2, fontWeight: 600 }}>
@@ -478,17 +454,6 @@ function SecureHome() {
             sx={{ py: 1.5 }}
           >
             Refresh Page
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => {
-              // Clear session storage and reload
-              sessionStorage.removeItem('secureHomeLoaded');
-              window.location.reload();
-            }}
-            startIcon={<RestartAltIcon />}
-          >
-            Reset & Reload
           </Button>
           <Button
             variant="text"
