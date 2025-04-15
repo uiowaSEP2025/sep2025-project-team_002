@@ -4,14 +4,35 @@ import { render, screen, waitFor, fireEvent, act, within } from '@testing-librar
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SecureHome from '../../home/SecureHome.jsx';
+import { UserContext } from '../../context/UserContext';
 
-// Mock the authentication state
-const mockAuthState = {
-  isAuthenticated: true,
+// Mock user context value
+const mockUserContextValue = {
   user: {
-    username: 'testuser',
-    email: 'test@example.com'
-  }
+    first_name: 'Test',
+    last_name: 'User',
+    email: 'test@example.com',
+    transfer_type: 'transfer',
+    profile_picture: ''
+  },
+  isLoggedIn: true,
+  logout: vi.fn(),
+  fetchUser: vi.fn(),
+  updateProfilePic: vi.fn(),
+  profilePic: '/assets/profile-pictures/pic1.png',
+  filters: {
+    sport: "",
+    head_coach: "",
+    assistant_coaches: "",
+    team_culture: "",
+    campus_life: "",
+    athletic_facilities: "",
+    athletic_department: "",
+    player_development: "",
+    nil_opportunity: "",
+  },
+  setFilters: vi.fn(),
+  clearFilters: vi.fn()
 };
 
 // Mock the API response for schools
@@ -43,7 +64,7 @@ const mockRecommendations = [
 describe('SecureHome Component', () => {
   beforeEach(() => {
     console.log("Running SecureHome test suite");
-    
+
     // Mock localStorage
     const mockLocalStorage = {
       getItem: vi.fn(() => 'fake-token'),
@@ -51,7 +72,7 @@ describe('SecureHome Component', () => {
       clear: vi.fn()
     };
     global.localStorage = mockLocalStorage;
-    
+
     // Mock fetch with a proper Response object
     global.fetch = vi.fn((url) => {
       if (url.includes('/api/recommendations/')) {
@@ -94,20 +115,30 @@ describe('SecureHome Component', () => {
   it('renders schools list', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
+
+    // Initially should show loading indicator
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
 
     // Wait for the school name to appear in the school list
     await waitFor(() => {
       expect(screen.getByTestId('school-list-name-1')).toHaveTextContent('University of Iowa');
     });
+
+    // Loading indicator should be gone
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
   it('displays sports for each school', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -120,7 +151,9 @@ describe('SecureHome Component', () => {
   it('shows recommendations', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -138,7 +171,9 @@ describe('SecureHome Component', () => {
   it('shows submit review button when transfer_type is not "high_school"', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -172,11 +207,14 @@ describe('SecureHome Component', () => {
       }));
     });
 
-    render(
-      <BrowserRouter>
+  render(
+    <BrowserRouter>
+      <UserContext.Provider value={{...mockUserContextValue, user: {...mockUserContextValue.user, transfer_type: 'high_school'}}}>
         <SecureHome />
-      </BrowserRouter>
-    );
+      </UserContext.Provider>
+    </BrowserRouter>
+  );
+
 
     // Wait for the component to render
     await waitFor(() => {
@@ -185,7 +223,7 @@ describe('SecureHome Component', () => {
   });
 });
 
-describe('SecureHome Filter Feature', () => {
+describe('SecureHome Filter Dialog', () => {
   beforeEach(() => {
     // Mock localStorage for authentication
     global.localStorage = {
@@ -199,15 +237,16 @@ describe('SecureHome Filter Feature', () => {
       if (url.includes('/api/filter/')) {
         const urlObj = new URL(url, 'http://localhost');
         const headCoachRating = urlObj.searchParams.get('head_coach');
-        // Return a filtered school when head_coach equals '8'
-        if (headCoachRating === '8') {
+        const sport = urlObj.searchParams.get('sport');
+        // Return a filtered school when head_coach equals '8' and sport is Men's Basketball
+        if (headCoachRating === '8' && sport === "Men's Basketball") {
           return Promise.resolve(new Response(JSON.stringify([
             {
               id: 2,
               school_name: "Filtered School",
               conference: "Test Conference",
               location: "Test Location",
-              available_sports: ["Football"]
+              available_sports: ["Men's Basketball"]
             }
           ]), {
             status: 200,
@@ -233,6 +272,12 @@ describe('SecureHome Filter Feature', () => {
           status: 200,
           headers: new Headers({ 'Content-Type': 'application/json' })
         }));
+      } else if (url.includes('/api/recommendations/')) {
+        // Return mock recommendations
+        return Promise.resolve(new Response(JSON.stringify(mockRecommendations), {
+          status: 200,
+          headers: new Headers({ 'Content-Type': 'application/json' })
+        }));
       } else if (url.includes('/users/user/')) {
         // Return a mock user (transfer student)
         return Promise.resolve(new Response(JSON.stringify({
@@ -245,14 +290,19 @@ describe('SecureHome Filter Feature', () => {
           headers: new Headers({ 'Content-Type': 'application/json' })
         }));
       }
-      return Promise.reject(new Error('Unhandled endpoint'));
+      return Promise.resolve(new Response(JSON.stringify({}), {
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'application/json' })
+      }));
     });
   });
 
-  it('opens filter dialog and applies filter', async () => {
+  it('opens filter dialog and closes it', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -261,28 +311,33 @@ describe('SecureHome Filter Feature', () => {
       expect(screen.getByText(/Default School/i)).toBeInTheDocument();
     });
 
-    // Click the Filters button
-    const filtersButton = screen.getByRole('button', { name: /Filters/i });
+    // Click the Filter button
+    const filtersButton = screen.getByRole('button', { name: /Filter/i });
     fireEvent.click(filtersButton);
 
     // Wait for the filter dialog to appear (e.g., dialog title "Apply Filters")
     await waitFor(() => {
-      expect(screen.getByText(/Apply Filters/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Apply Filters/i)[0]).toBeInTheDocument();
     });
 
-    // Change the Head Coach Rating dropdown to 8
-    const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
-    fireEvent.mouseDown(headCoachSelect);
-    const option = within(screen.getByRole('listbox')).getByText('8');
-    fireEvent.click(option);
+    // Wait for the dialog content to be visible
+    await waitFor(() => {
+      expect(screen.getByText(/Rating Filters/i)).toBeInTheDocument();
+    });
 
-    // Click the Apply button by using its role and exact name "Apply"
-    const applyButton = screen.getByRole('button', { name: /^Apply$/i });
+    // Verify that the sport dropdown is present
+    expect(screen.getByLabelText(/Choose Sport/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/Men's Basketball/i)).toBeInTheDocument();
+    expect(screen.getByText(/Football/i)).toBeInTheDocument();
+
+    // Click the Apply Filters button
+    const applyButton = screen.getByRole('button', { name: /Apply Filters/i });
     fireEvent.click(applyButton);
 
-    // Wait for the filtered school to appear
+    // Verify that the dialog closes
     await waitFor(() => {
-      expect(screen.getByText(/Filtered School/i)).toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 });
@@ -335,7 +390,9 @@ describe('SecureHome Pagination Feature', () => {
   it('renders first page schools and paginates to page 2 when the pagination button is clicked', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 

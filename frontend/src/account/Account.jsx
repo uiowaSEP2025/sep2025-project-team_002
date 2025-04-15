@@ -34,7 +34,9 @@ import {useUser} from "../context/UserContext.jsx";
 function Account() {
   const navigate = useNavigate();
 
-  // For any error or status messages
+  // Get user context for logout functionality
+  const { logout } = useUser();
+
   const [message] = useState("");
 
   const { user, loading } = useUser();
@@ -87,7 +89,7 @@ function Account() {
     {
       text: "Logout",
       action: () => {
-        localStorage.removeItem("token");
+        logout();
         navigate("/login");
       },
       icon: <LogoutIcon fontSize="medium" />
@@ -228,6 +230,7 @@ function Account() {
               {user.email && (
                 <Box
                     id="account-verification-box"
+                    data-testid="account-verification-box"
                     sx={{
                     mt: 3,
                     p: 2,
