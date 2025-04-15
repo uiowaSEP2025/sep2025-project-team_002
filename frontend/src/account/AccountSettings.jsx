@@ -26,6 +26,8 @@ import {
   InputAdornment
 } from "@mui/material";
 import { motion, AnimatePresence } from "framer-motion";
+import RateReviewIcon from '@mui/icons-material/RateReview';
+
 
 // Icons
 import MenuIcon from "@mui/icons-material/Menu";
@@ -39,9 +41,9 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
+import CheckIcon from "@mui/icons-material/Check";
 import { useContext } from "react";
-import { UserContext } from "../context/UserContext";
-import {useUser} from "../context/UserContext.jsx"
+import { UserContext, useUser } from "../context/UserContext"
 import SidebarWrapper from "../components/SidebarWrapper";
 
 // Import your config base URL
@@ -65,19 +67,25 @@ function AccountSettings() {
   // For success/error messages
   const [message, setMessage] = useState("");
 
-  // For profile picture updates (specifically)
+  // For logout functionality
+  const { logout } = useUser();
+
   const profilePictures = ["pic1.png", "pic2.png", "pic3.png", "pic4.png", "pic5.png"];
 
+  // Initialize form data only once when component mounts or when user changes
   useEffect(() => {
     if (user) {
-      setFormData({
-        first_name: user.first_name || "",
-        last_name: user.last_name || "",
-        email: user.email || "",
-        transfer_type: user.transfer_type || ""
-      });
+      // Only set form data if it's empty (initial load)
+      if (!formData.first_name && !formData.last_name && !formData.email) {
+        setFormData({
+          first_name: user.first_name || "",
+          last_name: user.last_name || "",
+          email: user.email || "",
+          transfer_type: user.transfer_type || ""
+        });
+      }
     }
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Real-time email validation:
   const emailIsInvalid =
@@ -125,6 +133,10 @@ function AccountSettings() {
       if (response.ok) {
         setMessage("Account info updated successfully");
         fetchUser();
+      } else if (response.status === 401) {
+        // Token expired or invalid
+        logout();
+        navigate("/login");
       } else {
         let errorText = "Unknown error";
 
@@ -192,6 +204,10 @@ function AccountSettings() {
         // Successfully changed password
         handleClosePasswordDialog();
         setMessage(data.message);
+      } else if (response.status === 401) {
+        // Token expired or invalid
+        logout();
+        navigate("/login");
       } else {
         const errorData = await response.json();
         setPasswordError(errorData.detail || errorData.error || "Could not change password");
@@ -206,6 +222,7 @@ function AccountSettings() {
       }
     }
   };
+
 
   // Menu items
   const menuItems = [
@@ -237,10 +254,19 @@ function AccountSettings() {
         }]
       : []
     ),
+    // Conditionally block "My Reviews" tab for high school transfer type
+    ...(user?.transfer_type && user.transfer_type !== "high_school"
+    ? [{
+        text: "My Reviews",
+        action: () => navigate("/account/my-reviews"),
+        icon: <RateReviewIcon fontSize="medium" />
+      }]
+      : []
+    ),
     {
       text: "Logout",
       action: () => {
-        localStorage.removeItem("token");
+        logout();
         navigate("/login");
       },
       icon: <LogoutIcon fontSize="medium" />
@@ -272,55 +298,55 @@ function AccountSettings() {
             </Typography>
           )}
           <div style={{ textAlign: "center" }}>
-          <h2 id="profile-pic-label">Choose Your Profile Picture</h2>
-          {profilePic && profilePic.trim() ? (
-            <img
-              src={profilePic}
-              id="selected-profile-pic"
-              alt="Selected Profile"
-              onError={(e) => {
-                e.target.onerror = null; // Prevent infinite loop
-                e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
-              }}
-              style={{
-                width: "150px",
-                height: "150px",
-                borderRadius: "50%",
-                border: "3px solid #007bff",
-                objectFit: "cover",
-                marginBottom: "10px"
-              }}
-            />
-          ) : (
-            <AccountCircleIcon
-              sx={{
-                fontSize: "150px",
-                color: "gray",
-                borderRadius: "50%",
-                backgroundColor: "#f0f0f0",
-                padding: "10px"
-              }}
-            />
-          )}
-          <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
-            {profilePictures.map((pic, index) => (
-              <IconButton key={index} onClick={() => updateProfilePic(pic)}>
-                <img
-                  src={`/assets/profile-pictures/${pic}`}
-                  alt={`Profile ${index + 1}`}
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    cursor: "pointer",
-                    border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
-                  }}
-                />
-              </IconButton>
-            ))}
+            <h2 id="profile-pic-label">Choose Your Profile Picture</h2>
+            {profilePic && profilePic.trim() ? (
+              <img
+                src={profilePic}
+                id="selected-profile-pic"
+                alt="Selected Profile"
+                onError={(e) => {
+                  e.target.onerror = null; // Prevent infinite loop
+                  e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
+                }}
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  borderRadius: "50%",
+                  border: "3px solid #007bff",
+                  objectFit: "cover",
+                  marginBottom: "10px"
+                }}
+              />
+            ) : (
+              <AccountCircleIcon
+                sx={{
+                  fontSize: "150px",
+                  color: "gray",
+                  borderRadius: "50%",
+                  backgroundColor: "#f0f0f0",
+                  padding: "10px"
+                }}
+              />
+            )}
+            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+              {profilePictures.map((pic, index) => (
+                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
+                  <img
+                    src={`/assets/profile-pictures/${pic}`}
+                    alt={`Profile ${index + 1}`}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      cursor: "pointer",
+                      border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
+                    }}
+                  />
+                </IconButton>
+              ))}
+            </div>
           </div>
-        </div>
           <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
             <TextField
               fullWidth
@@ -420,6 +446,13 @@ function AccountSettings() {
         onClose={handleClosePasswordDialog}
         fullWidth
         maxWidth="sm"
+        disableRestoreFocus
+        TransitionProps={{
+          onExited: () => {
+            const el = document.getElementById("change-password-button");
+            if (el) el.focus();
+          },
+        }}
         PaperProps={{
           sx: {
             borderRadius: "16px",

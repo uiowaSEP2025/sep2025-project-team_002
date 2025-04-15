@@ -1,9 +1,10 @@
 import React from 'react';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SchoolPage from '../../schools/SchoolPage.jsx';
+import { UserProvider } from '../../context/UserContext.jsx';
 
 // Define rating categories to test consistently
 const ratingCategories = [
@@ -34,7 +35,7 @@ const mockSchool = {
   last_review_date: null, // Added to match model
   sport_summaries: {},    // Added to match model
   sport_review_dates: {}, // Added to match model
-  
+
   // Instead of available_sports array, use the boolean fields
   reviews: [
     {
@@ -60,6 +61,21 @@ global.fetch = vi.fn(() =>
   })
 );
 
+// Mock navigate function for testing redirects
+const mockNavigate = vi.fn();
+
+// Mock logout function for testing token expiration
+const mockLogout = vi.fn();
+
+// Mock useUser hook and UserProvider
+vi.mock('../../context/UserContext.jsx', () => ({
+  useUser: () => ({
+    user: { first_name: 'Test', last_name: 'User' },
+    logout: mockLogout
+  }),
+  UserProvider: ({ children }) => children
+}));
+
 describe('SchoolPage Component', () => {
   beforeEach(() => {
     // Mock localStorage to simulate logged-in state
@@ -69,19 +85,35 @@ describe('SchoolPage Component', () => {
       clear: vi.fn()
     };
     global.localStorage = mockLocalStorage;
-    
+
     fetch.mockClear();
   });
 
-  const renderWithRouter = () => {
+  const renderWithRouter = (mockFetch = null) => {
+    // If a custom fetch mock is provided, use it
+    if (mockFetch) {
+      fetch.mockImplementation(mockFetch);
+    }
+
     return render(
       <MemoryRouter initialEntries={['/school/3']}>
-        <Routes>
-          <Route path="/school/:id" element={<SchoolPage />} />
-        </Routes>
+        <UserProvider>
+          <Routes>
+            <Route path="/school/:id" element={<SchoolPage />} />
+          </Routes>
+        </UserProvider>
       </MemoryRouter>
     );
   };
+
+  // Mock useNavigate for testing redirects
+  vi.mock('react-router-dom', async () => {
+    const actual = await vi.importActual('react-router-dom');
+    return {
+      ...actual,
+      useNavigate: () => mockNavigate
+    };
+  });
 
   it('renders school information', async () => {
     renderWithRouter();
@@ -105,13 +137,13 @@ describe('SchoolPage Component', () => {
 
   it('displays review information', async () => {
     renderWithRouter();
-    
+
     // Look for the sport in the tab specifically
     expect(await screen.findByRole('tab', { name: "Men's Basketball" })).toBeInTheDocument();
-    
+
     // Look for the coach name in a heading
     expect(await screen.findByRole('heading', { name: /John Doe/ })).toBeInTheDocument();
-    
+
     // Look for the review text in a paragraph
     expect(await screen.findByText(/Great program with excellent facilities/)).toBeInTheDocument();
   });
@@ -155,4 +187,57 @@ describe('SchoolPage Component', () => {
     const backButton = await screen.findByText(/Back to Schools/);
     expect(backButton).toBeInTheDocument();
   });
-}); 
+
+  it('handles 401 error without redirect if not implemented', async () => {
+      localStorage.setItem('token', 'expired_token');
+
+      const mockFetchWith401 = vi.fn((url) => {
+        if (url.includes('/api/schools/')) {
+          return Promise.resolve({
+            ok: false,
+            status: 401,
+            json: () => Promise.resolve({ detail: 'Token has expired' })
+          });
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+      });
+
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      renderWithRouter(mockFetchWith401);
+
+      await waitFor(() => {
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Error fetching school:',
+          expect.any(Error)
+        );
+      });
+
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('shows loading indicator while fetching data', async () => {
+      const delayedFetch = vi.fn(() =>
+        new Promise(resolve => {
+          setTimeout(() => {
+            resolve({
+              ok: true,
+              json: () => Promise.resolve(mockSchool)
+            });
+          }, 100);
+        })
+      );
+
+      renderWithRouter(delayedFetch);
+
+      // Check that the initial "Loading..." screen shows
+      expect(screen.getByText(/^Loading\.\.\.$/)).toBeInTheDocument();
+
+      // Wait for school data to load
+      await screen.findByText("University of Iowa");
+
+      // Confirm "Loading..." screen is gone (but allow other loading text to remain)
+      expect(screen.queryByText(/^Loading\.\.\.$/)).not.toBeInTheDocument();
+    });
+
+});
