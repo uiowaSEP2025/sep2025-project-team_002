@@ -155,14 +155,24 @@ def filter_schools(request):
             except ValueError:
                 pass
 
+    display_to_code = {
+        "Men's Basketball": "mbb",
+        "Women's Basketball": "wbb",
+        "Football": "fb",
+    }
+
+    # Normalize sport for review filtering
+    sport_code = display_to_code.get(sport, sport)
+
     # Filter reviews based on coach, sport, and rating filters
     reviews_query = Reviews.objects.all()
     if coach:
         reviews_query = reviews_query.filter(head_coach_name__icontains=coach)
     if sport:
-        reviews_query = reviews_query.filter(sport=sport)
+        reviews_query = reviews_query.filter(sport=sport_code)
     for field, rating in rating_filters.items():
-        reviews_query = reviews_query.filter(**{field: rating})
+        # Use greater than or equal to for ratings instead of exact match
+        reviews_query = reviews_query.filter(**{f"{field}__gte": rating})
 
     school_ids_from_reviews = reviews_query.values_list(
         "school_id", flat=True
