@@ -100,8 +100,9 @@ function Login() {
           variant="text"
           onClick={() => navigate("/")}
           startIcon={<ArrowBackIcon />}
-          sx={{ color: 'black' }}
+          sx={{ color: 'white' }}
         >
+          Back to Home
         </Button>
       </Box>
     <Grid container sx={{ minHeight: '100vh', backgroundColor: '#f5f5f5' }}>
