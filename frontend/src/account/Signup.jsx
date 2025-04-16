@@ -75,6 +75,16 @@ function Signup() {
   const passwordsMatch =
     formData.verifyPassword.length > 0 && formData.password === formData.verifyPassword;
 
+  const isSubmitDisabled = !(
+      formData.first_name &&
+      formData.last_name &&
+      formData.email &&
+      formData.password &&
+      formData.verifyPassword &&
+      formData.transferType &&
+      passwordsMatch
+  );
+
   // Submit signup
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -376,7 +386,6 @@ function Signup() {
                   <FormControlLabel value="graduate" control={<Radio id="signup-graduate" />} label="Graduated Athlete" />
                 </RadioGroup>
               </FormControl>
-
               <Button
                 id="signup-button"
                 type="submit"
@@ -386,6 +395,7 @@ function Signup() {
                 component={motion.button}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                disabled={isSubmitDisabled}
               >
                 Sign Up
               </Button>
