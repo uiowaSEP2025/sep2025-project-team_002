@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Reviews
+from users.serializers import UserSerializer
 import logging
 
 logger = logging.getLogger(__name__)
@@ -7,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 class ReviewsSerializer(serializers.ModelSerializer):
     school_name = serializers.ReadOnlyField(source="school.school_name")
+    user = UserSerializer(read_only=True)
 
     def validate_sport(self, value):
         # Convert display names to database codes
