@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
   Box, Grid,
@@ -72,7 +72,6 @@ const submitReview = async (review) => {
   }
 };
 
-
 const ReviewForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -98,6 +97,12 @@ const ReviewForm = () => {
     player_development: 0,
     nil_opportunity: 0,
   });
+
+  const sortedSchools = useMemo(() => {
+      return [...schools].sort((a, b) =>
+        a.school_name.localeCompare(b.school_name)
+      );
+    }, [schools]);
 
   const isMobile = useMediaQuery("(max-width: 600px)");
 
@@ -278,7 +283,7 @@ const ReviewForm = () => {
             error={!review.school && isSubmitted} // Highlight field if empty
             helperText={!review.school && isSubmitted ? "This field is required" : ""}
           >
-            {schools.map((school) => (
+            {sortedSchools.map((school) => (
               <MenuItem id={`school-option-${school.id}`} key={school.id} value={school.id}>
                 {school.school_name}
               </MenuItem>

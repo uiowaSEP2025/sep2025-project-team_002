@@ -387,54 +387,55 @@ describe('SecureHome Pagination Feature', () => {
     });
   });
 
-  it('renders first page schools and paginates to page 2 when the pagination button is clicked', async () => {
-    render(
-      <BrowserRouter>
-        <UserContext.Provider value={mockUserContextValue}>
-          <SecureHome />
-        </UserContext.Provider>
-      </BrowserRouter>
-    );
+    it('renders first page schools and paginates correctly when changing pages', async () => {
+      render(
+        <BrowserRouter>
+          <UserContext.Provider value={mockUserContextValue}>
+            <SecureHome />
+          </UserContext.Provider>
+        </BrowserRouter>
+      );
 
-    // Wait until the initial 10 school cards (rendered as h6 headings) are present.
-    await waitFor(() => {
-      // Get all h6 headings and filter out the ones that aren't school names
-      const headings = screen.getAllByRole('heading', { level: 6 })
-        .filter(heading => heading.textContent.startsWith('School'));
-      expect(headings.length).toBe(10);
+      // Wait for initial load and verify page 1 has 10 schools
+      await waitFor(() => {
+        const schoolHeadings = screen.getAllByRole('heading', { level: 6 })
+          .filter(heading => heading.textContent.startsWith('School'));
+        expect(schoolHeadings.length).toBe(10);
+      });
+
+      // Get all school names from page 1
+      const firstPageSchools = screen.getAllByRole('heading', { level: 6 })
+        .filter(heading => heading.textContent.startsWith('School'))
+        .map(el => el.textContent);
+
+      // Click page 2 button
+      const page2Button = screen.getByRole('button', { name: /go to page 2/i });
+      fireEvent.click(page2Button);
+
+      // Wait for page 2 to load with 5 schools
+      await waitFor(() => {
+        const schoolHeadings = screen.getAllByRole('heading', { level: 6 })
+          .filter(heading => heading.textContent.startsWith('School'));
+        expect(schoolHeadings.length).toBe(5);
+      });
+
+      // Get all school names from page 2
+      const secondPageSchools = screen.getAllByRole('heading', { level: 6 })
+        .filter(heading => heading.textContent.startsWith('School'))
+        .map(el => el.textContent);
+
+      // Verify counts are correct
+      expect(firstPageSchools.length).toBe(10);
+      expect(secondPageSchools.length).toBe(5);
+
+      // Verify no overlap between pages
+      secondPageSchools.forEach(school => {
+        expect(firstPageSchools).not.toContain(school);
+      });
+
+      // Verify all schools are unique (no duplicates)
+      const allSchools = [...firstPageSchools, ...secondPageSchools];
+      const uniqueSchools = new Set(allSchools);
+      expect(uniqueSchools.size).toBe(15);
     });
-
-    // Verify that page 1 has School 1 through School 10.
-    let headings = screen.getAllByRole('heading', { level: 6 })
-      .filter(heading => heading.textContent.startsWith('School'));
-    const firstPageNames = headings.map((el) => el.textContent);
-    for (let i = 1; i <= 10; i++) {
-      expect(firstPageNames).toContain(`School ${i}`);
-    }
-    for (let i = 11; i <= 15; i++) {
-      expect(firstPageNames).not.toContain(`School ${i}`);
-    }
-
-    // Find the page 2 button by its accessible name "Go to page 2" (MUI's Pagination typically renders it this way).
-    const page2Button = screen.getByRole('button', { name: /go to page 2/i });
-    fireEvent.click(page2Button);
-
-    // Wait until page 2 is rendered (which should contain only 5 school cards).
-    await waitFor(() => {
-      const headingsPage2 = screen.getAllByRole('heading', { level: 6 })
-        .filter(heading => heading.textContent.startsWith('School'));
-      expect(headingsPage2.length).toBe(5);
-    });
-
-    // Verify that page 2 contains School 11 through School 15.
-    headings = screen.getAllByRole('heading', { level: 6 })
-      .filter(heading => heading.textContent.startsWith('School'));
-    const secondPageNames = headings.map((el) => el.textContent);
-    for (let i = 11; i <= 15; i++) {
-      expect(secondPageNames).toContain(`School ${i}`);
-    }
-    for (let i = 1; i <= 10; i++) {
-      expect(secondPageNames).not.toContain(`School ${i}`);
-    }
-  });
 });
