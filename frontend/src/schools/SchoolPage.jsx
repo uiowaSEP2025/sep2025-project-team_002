@@ -67,7 +67,6 @@ function SchoolPage() {
         console.error('Error fetching school:', error);
       }
     };
-
     fetchSchool();
   }, [id]);
 
