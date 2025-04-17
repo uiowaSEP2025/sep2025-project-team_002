@@ -16,6 +16,8 @@ import {
   Select,
   InputLabel,
   FormControl,
+  useMediaQuery,
+  useTheme,
   MenuItem,
   Grid,
 } from "@mui/material";
@@ -29,6 +31,9 @@ function Home() {
   const queryParams = new URLSearchParams(location.search);
   const pageFromURL = parseInt(queryParams.get("page")) || 1;
   const searchFromURL = queryParams.get("search") || "";
+
+    const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const schoolsPerPage = 10;
 
@@ -197,9 +202,14 @@ function Home() {
   const filteredBySearch = schoolsToDisplay.filter((school) =>
     school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+    // Sort alphabetically
+  const sortedFilteredSchools = [...filteredBySearch].sort((a, b) =>
+    a.school_name.localeCompare(b.school_name)
+  );
   const indexOfLastSchool = currentPage * schoolsPerPage;
   const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
-  const currentSchools = filteredBySearch.slice(indexOfFirstSchool, indexOfLastSchool);
+  const currentSchools = sortedFilteredSchools.slice(indexOfFirstSchool, indexOfLastSchool);
 
   return (
     <div>
@@ -294,7 +304,7 @@ function Home() {
               }}
             />
           </Box>
-
+ {!isSmallScreen && (
           <Box
             sx={{
               position: "absolute",
@@ -336,7 +346,7 @@ function Home() {
                 style: { width: 60, textAlign: "center" }
               }}
             />
-          </Box>
+          </Box> )}
         </Box>
       )}
 
