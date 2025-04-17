@@ -104,7 +104,9 @@ class TestSchoolDetail:
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
 
-    def test_get_school_detail_with_sport_filter(self, api_client, create_school, create_review):
+    def test_get_school_detail_with_sport_filter(
+        self, api_client, create_school, create_review
+    ):
         """Test retrieving school details with sport filter"""
         school = create_school("Test University", mbb=True, wbb=True, fb=True)
 
@@ -124,7 +126,9 @@ class TestSchoolDetail:
         assert "reviews" in response.data
         assert len(response.data["reviews"]) == 3
 
-    def test_get_school_detail_with_invalid_sport_filter(self, api_client, create_school, create_review):
+    def test_get_school_detail_with_invalid_sport_filter(
+        self, api_client, create_school, create_review
+    ):
         """Test retrieving school details with invalid sport filter"""
         school = create_school("Test University", mbb=True, wbb=True, fb=True)
 

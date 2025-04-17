@@ -20,10 +20,11 @@ def create_user(django_user_model):
             "email": "test@example.com",
             "first_name": "Test",
             "last_name": "User",
-            "password": "StrongP@ss123"
+            "password": "StrongP@ss123",
         }
         defaults.update(kwargs)
         return django_user_model.objects.create_user(**defaults)
+
     return make_user
 
 
@@ -40,7 +41,7 @@ class TestCustomTokenSerializer:
         response = api_client.post(
             login_url,
             {"email": "test@example.com", "password": "StrongP@ss123"},
-            format="json"
+            format="json",
         )
 
         # Assert the response includes user data
@@ -57,14 +58,17 @@ class TestCustomTokenSerializer:
 
         # Mock the validate method to raise AuthenticationFailed
         with patch.object(
-            CustomTokenObtainPairSerializer, 'validate',
-            side_effect=AuthenticationFailed("Invalid email or password. Please try again.")
+            CustomTokenObtainPairSerializer,
+            "validate",
+            side_effect=AuthenticationFailed(
+                "Invalid email or password. Please try again."
+            ),
         ):
             login_url = reverse("login")
             response = api_client.post(
                 login_url,
                 {"email": "test@example.com", "password": "WrongPassword"},
-                format="json"
+                format="json",
             )
 
             # Assert the response indicates authentication failed
@@ -77,14 +81,15 @@ class TestCustomTokenSerializer:
 
         # Mock the validate method to raise TokenError
         with patch.object(
-            CustomTokenObtainPairSerializer, 'validate',
-            side_effect=TokenError("Invalid token or credentials.")
+            CustomTokenObtainPairSerializer,
+            "validate",
+            side_effect=TokenError("Invalid token or credentials."),
         ):
             login_url = reverse("login")
             response = api_client.post(
                 login_url,
                 {"email": "test@example.com", "password": "StrongP@ss123"},
-                format="json"
+                format="json",
             )
 
             # Assert the response indicates token error

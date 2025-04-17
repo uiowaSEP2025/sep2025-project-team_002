@@ -73,7 +73,9 @@ class TestFilterBySport:
 
         return _create_review
 
-    def test_filter_by_sport_mens_basketball(self, api_client, create_school, create_review):
+    def test_filter_by_sport_mens_basketball(
+        self, api_client, create_school, create_review
+    ):
         """Test filtering schools by Men's Basketball sport"""
         # Create schools with different sports
         school1 = create_school("MBB School", mbb=True)
@@ -94,7 +96,9 @@ class TestFilterBySport:
         assert "WBB School" not in returned_school_names
         assert "FB School" not in returned_school_names
 
-    def test_filter_by_sport_womens_basketball(self, api_client, create_school, create_review):
+    def test_filter_by_sport_womens_basketball(
+        self, api_client, create_school, create_review
+    ):
         """Test filtering schools by Women's Basketball sport"""
         # Create schools with different sports
         school1 = create_school("MBB School", mbb=True)
@@ -175,4 +179,6 @@ class TestFilterBySport:
         # The current implementation returns an empty list for invalid sports
         assert response.status_code == status.HTTP_200_OK
         returned_school_names = [school["school_name"] for school in response.data]
-        assert len(returned_school_names) == 0  # No schools are returned for invalid sport
+        assert (
+            len(returned_school_names) == 0
+        )  # No schools are returned for invalid sport

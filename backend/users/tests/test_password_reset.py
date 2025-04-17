@@ -25,6 +25,7 @@ def create_user(django_user_model):
         }
         defaults.update(kwargs)
         return django_user_model.objects.create_user(**defaults)
+
     return make_user
 
 
@@ -84,7 +85,7 @@ class TestResetPassword:
             "uid": uid,
             "token": token,
             "new_password": "NewStrongP@ss123",
-            "confirm_password": "NewStrongP@ss123"
+            "confirm_password": "NewStrongP@ss123",
         }
 
         response = api_client.post(url, data, format="json")
@@ -107,7 +108,7 @@ class TestResetPassword:
             "uid": uid,
             "token": "invalid-token",
             "new_password": "NewStrongP@ss123",
-            "confirm_password": "NewStrongP@ss123"
+            "confirm_password": "NewStrongP@ss123",
         }
 
         response = api_client.post(url, data, format="json")
@@ -123,7 +124,7 @@ class TestResetPassword:
             "uid": "invalid-uid",
             "token": "some-token",
             "new_password": "NewStrongP@ss123",
-            "confirm_password": "NewStrongP@ss123"
+            "confirm_password": "NewStrongP@ss123",
         }
 
         response = api_client.post(url, data, format="json")
@@ -144,7 +145,7 @@ class TestResetPassword:
             "uid": uid,
             "token": token,
             "new_password": "NewStrongP@ss123",
-            "confirm_password": "DifferentP@ss123"
+            "confirm_password": "DifferentP@ss123",
         }
 
         response = api_client.post(url, data, format="json")
@@ -165,7 +166,7 @@ class TestResetPassword:
             "uid": uid,
             "token": token,
             "new_password": "weak",
-            "confirm_password": "weak"
+            "confirm_password": "weak",
         }
 
         response = api_client.post(url, data, format="json")

@@ -44,7 +44,9 @@ class TestValidationFunctions:
         ]
 
         for password in valid_passwords:
-            assert is_strong_password(password) is True, f"Password {password} should be valid"
+            assert (
+                is_strong_password(password) is True
+            ), f"Password {password} should be valid"
 
     def test_is_strong_password_invalid_cases(self):
         """Test invalid passwords"""
@@ -60,7 +62,9 @@ class TestValidationFunctions:
         ]
 
         for password in invalid_passwords:
-            assert is_strong_password(password) is False, f"Password {password} should be invalid"
+            assert (
+                is_strong_password(password) is False
+            ), f"Password {password} should be invalid"
 
     def test_is_strong_password_edge_cases(self):
         """Test edge cases for password strength"""

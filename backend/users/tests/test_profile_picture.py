@@ -17,10 +17,11 @@ def create_user(django_user_model):
             "email": "test@example.com",
             "first_name": "Test",
             "last_name": "User",
-            "password": "StrongP@ss123"
+            "password": "StrongP@ss123",
         }
         defaults.update(kwargs)
         return django_user_model.objects.create_user(**defaults)
+
     return make_user
 
 
@@ -35,7 +36,7 @@ class TestProfilePictureUpdate:
         login_response = api_client.post(
             login_url,
             {"email": "test@example.com", "password": "StrongP@ss123"},
-            format="json"
+            format="json",
         )
         access_token = login_response.data["access"]
 
@@ -65,7 +66,7 @@ class TestProfilePictureUpdate:
         login_response = api_client.post(
             login_url,
             {"email": "test@example.com", "password": "StrongP@ss123"},
-            format="json"
+            format="json",
         )
         access_token = login_response.data["access"]
 
@@ -90,7 +91,7 @@ class TestProfilePictureUpdate:
         login_response = api_client.post(
             login_url,
             {"email": "test@example.com", "password": "StrongP@ss123"},
-            format="json"
+            format="json",
         )
         access_token = login_response.data["access"]
 

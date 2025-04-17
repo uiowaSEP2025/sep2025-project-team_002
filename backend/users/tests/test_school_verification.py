@@ -25,6 +25,7 @@ def create_user(django_user_model):
         }
         defaults.update(kwargs)
         return django_user_model.objects.create_user(**defaults)
+
     return make_user
 
 
@@ -39,7 +40,7 @@ class TestSchoolEmailVerification:
         login_response = api_client.post(
             login_url,
             {"email": "test@example.edu", "password": "StrongP@ss123"},
-            format="json"
+            format="json",
         )
         access_token = login_response.data["access"]
 
@@ -68,7 +69,7 @@ class TestSchoolEmailVerification:
         login_response = api_client.post(
             login_url,
             {"email": "test@example.com", "password": "StrongP@ss123"},
-            format="json"
+            format="json",
         )
         access_token = login_response.data["access"]
 
@@ -90,10 +91,7 @@ class TestSchoolEmailVerification:
         token = school_email_token_generator.make_token(user)
 
         url = reverse("verify_school_email")
-        data = {
-            "uid": uid,
-            "token": token
-        }
+        data = {"uid": uid, "token": token}
 
         response = api_client.post(url, data, format="json")
 
@@ -111,10 +109,7 @@ class TestSchoolEmailVerification:
         uid = urlsafe_base64_encode(force_bytes(user.pk))
 
         url = reverse("verify_school_email")
-        data = {
-            "uid": uid,
-            "token": "invalid-token"
-        }
+        data = {"uid": uid, "token": "invalid-token"}
 
         response = api_client.post(url, data, format="json")
 
@@ -125,10 +120,7 @@ class TestSchoolEmailVerification:
     def test_verify_school_email_invalid_uid(self, api_client):
         """Test school email verification with invalid uid"""
         url = reverse("verify_school_email")
-        data = {
-            "uid": "invalid-uid",
-            "token": "some-token"
-        }
+        data = {"uid": "invalid-uid", "token": "some-token"}
 
         response = api_client.post(url, data, format="json")
 

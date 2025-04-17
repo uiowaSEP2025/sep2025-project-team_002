@@ -18,7 +18,7 @@ class TestReportIssue:
         data = {
             "email": "test@example.com",
             "name": "Test User",
-            "description": "This is a test issue report"
+            "description": "This is a test issue report",
         }
 
         # Mock the send_mail function to avoid actually sending emails during tests
@@ -35,15 +35,14 @@ class TestReportIssue:
             assert args[0] == "New Issue Reported"  # subject
             assert "test@example.com" in args[1]  # message contains email
             assert "Test User" in args[1]  # message contains name
-            assert "This is a test issue report" in args[1]  # message contains description
+            assert (
+                "This is a test issue report" in args[1]
+            )  # message contains description
 
     def test_report_issue_missing_email(self, api_client):
         """Test issue reporting with missing email"""
         url = reverse("report_issue")
-        data = {
-            "name": "Test User",
-            "description": "This is a test issue report"
-        }
+        data = {"name": "Test User", "description": "This is a test issue report"}
 
         response = api_client.post(url, data, format="json")
 
@@ -54,10 +53,7 @@ class TestReportIssue:
     def test_report_issue_missing_description(self, api_client):
         """Test issue reporting with missing description"""
         url = reverse("report_issue")
-        data = {
-            "email": "test@example.com",
-            "name": "Test User"
-        }
+        data = {"email": "test@example.com", "name": "Test User"}
 
         response = api_client.post(url, data, format="json")
 
@@ -71,7 +67,7 @@ class TestReportIssue:
         data = {
             "email": "test@example.com",
             "name": "Test User",
-            "description": "This is a test issue report"
+            "description": "This is a test issue report",
         }
 
         # Mock send_mail to raise an exception

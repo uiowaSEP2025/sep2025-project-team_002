@@ -22,10 +22,11 @@ class TestGetSchools:
                     location=f"Test Location {i+1}",
                     mbb=True,
                     wbb=True,
-                    fb=True
+                    fb=True,
                 )
                 schools.append(school)
             return schools
+
         return _create_schools
 
     def test_get_schools_success(self, api_client, create_schools):
