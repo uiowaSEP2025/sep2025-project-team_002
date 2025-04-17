@@ -143,7 +143,7 @@ class TestCreateReviewView:
         assert response.status_code == status.HTTP_200_OK
         assert len(response.data) == 1
         assert response.data[0]["review_message"] == "Great experience!"
-        assert response.data[0]["user"] == user.id
+        assert response.data[0]["user"]["id"] == user.id
 
     def test_user_reviews_different_user(self, auth_client, create_user, create_school):
         client, user = auth_client

@@ -32,7 +32,7 @@ function Home() {
   const pageFromURL = parseInt(queryParams.get("page")) || 1;
   const searchFromURL = queryParams.get("search") || "";
 
-    const theme = useTheme();
+  const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const schoolsPerPage = 10;

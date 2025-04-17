@@ -12,8 +12,10 @@ import {
   Stack,
   Grid,
   Tabs,
+  Tooltip,
   Tab,
 } from "@mui/material";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
@@ -24,7 +26,7 @@ function SchoolPage() {
   const [school, setSchool] = useState(null);
   const [selectedSport, setSelectedSport] = useState(null);
   const isAuthenticated = !!localStorage.getItem('token');
-    const [user, setUser] = useState({
+  const [user, setUser] = useState({
     first_name: "",
     last_name: "",
     email: "",
@@ -65,43 +67,42 @@ function SchoolPage() {
         console.error('Error fetching school:', error);
       }
     };
-
     fetchSchool();
   }, [id]);
 
   useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) return;  // No user logged in
+    const token = localStorage.getItem("token");
+    if (!token) return;  // No user logged in
 
-  // Fetch User Info
-  const fetchUserInfo = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/user/`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUser({
-          first_name: data.first_name || "",
-          last_name: data.last_name || "",
-          email: data.email || "",
-          transfer_type: data.transfer_type || "",
+    // Fetch User Info
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/users/user/`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         });
-      } else {
-        console.error("Error fetching user data");
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      Bugsnag.notify(error);
-    }
-  };
 
-  fetchUserInfo();
-}, []);
+        if (response.ok) {
+          const data = await response.json();
+          setUser({
+            first_name: data.first_name || "",
+            last_name: data.last_name || "",
+            email: data.email || "",
+            transfer_type: data.transfer_type || "",
+          });
+        } else {
+          console.error("Error fetching user data");
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        Bugsnag.notify(error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
 
 
@@ -207,9 +208,21 @@ function SchoolPage() {
                       sx={{ mb: 2 }}
                     >
                       <CardContent>
-                        <Typography id={`coach-name-${review.review_id}`} variant="h6" gutterBottom>
-                          Head Coach: {review.head_coach_name}
-                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Typography id={`coach-name-${review.review_id}`} variant="h6" gutterBottom>
+                            Head Coach: {review.head_coach_name}
+                          </Typography>
+                          {review.user?.is_school_verified && (
+                            <Tooltip title="This reviewer has verified their school email">
+                              <Stack direction="row" spacing={0.5} alignItems="center">
+                                <CheckCircleIcon sx={{ color: 'green' }} fontSize="small" />
+                                <Typography variant="caption" sx={{ color: 'green', fontWeight: 500 }}>
+                                  Verified Reviewer
+                                </Typography>
+                              </Stack>
+                            </Tooltip>
+                          )}
+                        </Box>
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
                         </Typography>
