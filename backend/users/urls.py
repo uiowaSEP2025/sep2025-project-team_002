@@ -22,8 +22,8 @@ urlpatterns = [
     path("change-password/", change_password, name="change_password"),
     path("forgot-password/", forgot_password, name="forgot_password"),
     path("reset-password/", reset_password, name="reset_password"),
-    path("send-school-verification/", send_school_verification),
-    path("verify-school-email/", verify_school_email),
+    path("send-school-verification/", send_school_verification, name="send_school_verification"),
+    path("verify-school-email/", verify_school_email, name="verify_school_email"),
     path(
         "update-profile-picture/",
         UpdateProfilePictureView.as_view(),
