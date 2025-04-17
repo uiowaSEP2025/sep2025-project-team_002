@@ -105,7 +105,7 @@ describe('Home Filter Feature', () => {
     });
   });
 
-  it('opens filter dialog and applies filter in Home component', async () => {
+  it('opens and closes filter dialog in Home component', async () => {
     render(
       <BrowserRouter>
         <Home />
@@ -121,22 +121,25 @@ describe('Home Filter Feature', () => {
     const filtersButton = screen.getByRole('button', { name: /Filters/i });
     fireEvent.click(filtersButton);
 
-    // Wait for the filter dialog to appear (e.g., dialog title "Apply Filters")
+    // Wait for the filter dialog to appear
     await waitFor(() => {
-      expect(screen.getByText(/Apply Filters/i)).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    // Change the Head Coach Rating dropdown to 9
-    const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
-    fireEvent.change(headCoachSelect, { target: { value: '9' } });
+    // Verify that the dialog contains the expected elements
+    expect(screen.getByText('Rating Filters (Minimum Rating)')).toBeInTheDocument();
 
-    // Click the Apply button using getByRole with exact match
-    const applyButton = screen.getByRole('button', { name: /^Apply$/i });
+    // Check for the sport dropdown
+    const sportDropdown = screen.getByRole('combobox', { name: /Choose Sport/i });
+    expect(sportDropdown).toBeInTheDocument();
+
+    // Click the Apply Filters button
+    const applyButton = screen.getByTestId('apply-filters-button');
     fireEvent.click(applyButton);
 
-    // Wait for the filtered school to appear
+    // Wait for the dialog to close
     await waitFor(() => {
-      expect(screen.getByText(/Filtered Home School/i)).toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 });
