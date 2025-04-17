@@ -126,6 +126,8 @@ function Signup() {
     }
   };
 
+
+
   return (
     <Box sx={{ position: "relative" }}>
       {/* Back Arrow to home */}
@@ -249,7 +251,11 @@ function Signup() {
               </Typography>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} onKeyDown={(e) => {
+                if (e.key === "Enter" && isSubmitDisabled) {
+                    e.preventDefault();
+                }
+            }}>
               <TextField
                 fullWidth
                 margin="normal"
