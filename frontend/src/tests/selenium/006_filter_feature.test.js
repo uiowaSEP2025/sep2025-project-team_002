@@ -188,15 +188,15 @@ describe("Filter Feature Test", function () {
       try {
         // First try to find by text content
         applyButton = await driver.findElement(By.xpath("//button[normalize-space()='Apply Filters']"));
-      } catch (error1) {
+      } catch {
         try {
           // If that fails, try to find by ID
           applyButton = await driver.findElement(By.id("apply-filters-button"));
-        } catch (error2) {
+        } catch {
           try {
             // If that fails, try to find by name
             applyButton = await driver.findElement(By.name("apply-filters-button"));
-          } catch (error3) {
+          } catch {
             // If all else fails, try the original selector
             applyButton = await driver.findElement(By.xpath("//button[normalize-space()='Apply']"));
           }
