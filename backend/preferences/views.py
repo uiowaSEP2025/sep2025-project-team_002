@@ -20,10 +20,11 @@ class UserPreferencesView(generics.ListAPIView):
     def get_queryset(self):
         return Preferences.objects.filter(user=self.request.user)
 
+
 class UpdatePreferencesView(generics.RetrieveUpdateAPIView):
     serializer_class = PreferencesSerializer
     permission_classes = [permissions.IsAuthenticated]
-    lookup_field = 'id'
+    lookup_field = "id"
 
     def get_queryset(self):
         return Preferences.objects.filter(user=self.request.user)
