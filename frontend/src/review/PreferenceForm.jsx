@@ -117,68 +117,6 @@ const PreferenceForm = () => {
     }
   };
 
-  if (hasExistingPreferences) {
-    return (
-      <>
-        {/* Keep your header */}
-        <div style={{
-          maxWidth: '800px',
-          margin: 'auto',
-          padding: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          position: 'relative'
-        }}>
-          <button
-            onClick={() => navigate(-1)}
-            style={{
-              padding: '12px 25px',
-              backgroundColor: '#007bff',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '5px',
-              cursor: 'pointer',
-              position: 'absolute',
-              left: 0
-            }}
-          >
-            ← Back
-          </button>
-          <h2 style={{
-            flex: 1,
-            textAlign: 'center',
-            margin: 0
-          }}>
-            Athletic Insider
-          </h2>
-        </div>
-
-        <Dialog open={hasExistingPreferences} onClose={() => navigate("/secure-home")}>
-          <DialogTitle>Preferences Already Submitted</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              You've already submitted your preferences!
-              <br />
-              You can only submit one preference at this time.
-            </DialogContentText>
-          </DialogContent>
-          <DialogActions>
-              <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-            <Button
-              onClick={() => navigate("/secure-home")}
-              color="primary"
-              variant="contained"
-            >
-              Return to Dashboard
-            </Button>
-              </Box>
-          </DialogActions>
-        </Dialog>
-      </>
-    );
-  }
-
 
   return (
       <>
