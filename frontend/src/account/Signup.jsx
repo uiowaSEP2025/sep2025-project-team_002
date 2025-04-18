@@ -89,6 +89,12 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if any required field is missing
+    if (!formData.first_name || !formData.last_name || !formData.email || !formData.password || !formData.verifyPassword || !formData.transferType) {
+        setMessage("Please fill in all required fields.");
+        return;
+    }
+
     if (!passwordsMatch) {
       setMessage("Passwords do not match!");
       return;
@@ -125,6 +131,8 @@ function Signup() {
       }
     }
   };
+
+
 
   return (
     <Box sx={{ position: "relative" }}>
