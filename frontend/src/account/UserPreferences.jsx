@@ -96,6 +96,10 @@ function UserPreferences() {
     fetchPreferences();
   }, [navigate, logout]);
 
+  const handleModifyPreferenceForm = () => {
+    navigate("/preference-form", { state: { isEditing: true } });
+  };
+
   return (
     <SidebarWrapper title="My Preferences" menuItems={menuItems}>
       {error && (
@@ -176,14 +180,19 @@ function UserPreferences() {
             ))}
           </Box>
           <Button
-            id="back-to-account-btn"
-            variant="contained"
-            color="primary"
-            sx={{mt: 4, fontSize: "1rem", padding: "10px 20px"}}
-            onClick={() => navigate("/account")}
-          >
-            Back to Account
-          </Button>
+                        variant="contained"
+                        color="primary"
+                        onClick={handleModifyPreferenceForm}
+                        sx={{
+                          borderRadius: "20px",
+                          py: 0.8,
+                          px: 2.5,
+                          textTransform: "none",
+                          fontWeight: 500
+                        }}
+                      >
+                        Modify Preferences
+                      </Button>
         </Box>
       )}
     </SidebarWrapper>

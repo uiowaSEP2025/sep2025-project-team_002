@@ -280,6 +280,10 @@ function SecureHome() {
   const handleGoToPreferenceForm = () => {
     navigate("/preference-form");
   };
+
+  const handleModifyPreferenceForm = () => {
+    navigate("/preference-form", { state: { isEditing: true } });
+  };
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
   };
@@ -739,10 +743,28 @@ function SecureHome() {
                         boxShadow: 1
                       }}
                     >
-                      Set Your Preferences
+                      Set your preferences
                     </Button>
                   </Box>
                 )}
+                {hasPreferences && (
+                    <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleModifyPreferenceForm}
+                        sx={{
+                          borderRadius: "20px",
+                          py: 0.8,
+                          px: 2.5,
+                          textTransform: "none",
+                          fontWeight: 500
+                        }}
+                      >
+                        Modify Preferences
+                      </Button>
+                    </Box>
+                  )}
               </Box>
             )}
             {/*        /!*{filters.sport && (*!/*/}
