@@ -280,6 +280,10 @@ function SecureHome() {
   const handleGoToPreferenceForm = () => {
     navigate("/preference-form");
   };
+
+  const handleModifyPreferenceForm = () => {
+    navigate("/preference-form", { state: { isEditing: true } });
+  };
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
   };
@@ -748,7 +752,7 @@ function SecureHome() {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={handleGoToPreferenceForm}
+                        onClick={handleModifyPreferenceForm}
                         sx={{
                           borderRadius: "20px",
                           py: 0.8,

@@ -17,6 +17,8 @@ const PreferenceForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [hasExistingPreferences, setHasExistingPreferences] = useState(false);
+  const [existingPreferenceId, setExistingPreferenceId] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [preference, setPreference] = useState({
     sport: "",
     head_coach: 0,
@@ -30,6 +32,11 @@ const PreferenceForm = () => {
   });
 
   useEffect(() => {
+
+     if (location.state?.isEditing) {
+        setIsEditing(true);
+      }
+
     const checkExistingPreferences = async () => {
       try {
         const token = localStorage.getItem("token");
@@ -42,7 +49,20 @@ const PreferenceForm = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.length > 0) {
-            setHasExistingPreferences(true);
+               setHasExistingPreferences(true);
+            setExistingPreferenceId(data[0].id);
+            // Set the form with existing preferences
+            setPreference({
+              sport: data[0].sport,
+              head_coach: data[0].head_coach,
+              assistant_coaches: data[0].assistant_coaches,
+              team_culture: data[0].team_culture,
+              campus_life: data[0].campus_life,
+              athletic_facilities: data[0].athletic_facilities,
+              athletic_department: data[0].athletic_department,
+              player_development: data[0].player_development,
+              nil_opportunity: data[0].nil_opportunity,
+            });
           }
         }
       } catch (error) {
@@ -52,7 +72,7 @@ const PreferenceForm = () => {
     };
 
     checkExistingPreferences();
-  }, []);
+  }, [location.state]);
 
   const handleChange = (e) => {
     setPreference({ ...preference, [e.target.name]: e.target.value });
@@ -79,8 +99,14 @@ const PreferenceForm = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`${API_BASE_URL}/api/preferences/preferences-form/`, {
-        method: "POST",
+      const url = isEditing && existingPreferenceId
+        ? `${API_BASE_URL}/api/preferences/preference/${existingPreferenceId}/`
+        : `${API_BASE_URL}/api/preferences/preferences-form/`;
+
+      const method = isEditing && existingPreferenceId ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
@@ -117,6 +143,9 @@ const PreferenceForm = () => {
     }
   };
 
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
 
   return (
       <>
