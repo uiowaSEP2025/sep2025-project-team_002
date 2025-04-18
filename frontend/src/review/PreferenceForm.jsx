@@ -101,7 +101,7 @@ const PreferenceForm = () => {
     try {
       const token = localStorage.getItem("token");
       const url = isEditing && existingPreferenceId
-        ? `${API_BASE_URL}/api/preferences/preference/${existingPreferenceId}/`
+        ? `${API_BASE_URL}/api/preferences/preferences-form/${existingPreferenceId}/`
         : `${API_BASE_URL}/api/preferences/preferences-form/`;
 
       const method = isEditing && existingPreferenceId ? "PUT" : "POST";
