@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box, Grid,
   Typography, TextField, Button, MenuItem, Tooltip, IconButton,
@@ -14,6 +14,7 @@ import Bugsnag from '@bugsnag/js';
 
 const PreferenceForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [hasExistingPreferences, setHasExistingPreferences] = useState(false);
@@ -49,7 +50,7 @@ const PreferenceForm = () => {
         if (response.ok) {
           const data = await response.json();
           if (data.length > 0) {
-               setHasExistingPreferences(true);
+            setHasExistingPreferences(true);
             setExistingPreferenceId(data[0].id);
             // Set the form with existing preferences
             setPreference({
@@ -191,7 +192,7 @@ const PreferenceForm = () => {
             style={{ textAlign: "center" }}
           >
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
-              Share your Preferences
+              {isEditing ? "Modify your Preferences" : "Share your Preferences"}
             </Typography>
             <Typography variant="subtitle1" sx={{ fontWeight: 400, mb: 2 }}>
               Please rank the following factors based on their importance to you in your school search.
@@ -276,16 +277,18 @@ const PreferenceForm = () => {
                 onClick={handleSubmitClick}
                 disabled={!isFormValid()}
               >
-                Submit Preferences
+                {isEditing ? "Update Preferences" : "Submit Preferences"}
               </Button>
 
             <Dialog open={openConfirm} onClose={() => setOpenConfirm(false)}>
-              <DialogTitle>Confirm Submission</DialogTitle>
+              <DialogTitle>
+                {isEditing ? "Confirm Update":"Confirm Submission"}
+              </DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  Are you sure you want to submit your preferences?
+                  {isEditing ? "Are you sure you want to update your preferences? ":"Are you sure you want to submit your preferences?"}
                   <br />
-                  You cannot change your preferences once it is submitted.
+                  You may update these once they are submitted.
                 </DialogContentText>
               </DialogContent>
               <DialogActions>
