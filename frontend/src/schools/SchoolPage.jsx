@@ -14,6 +14,7 @@ import {
   Tabs,
   Tooltip,
   Tab,
+  Pagination,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from "@mui/icons-material/Home";
@@ -32,6 +33,20 @@ function SchoolPage() {
     email: "",
     transfer_type: ""
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 5;
+
+  // Calculate the index of the last review on the current page
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  // Calculate the index of the first review on the current page
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+
+  // Slice the reviews array to get the reviews for the current page
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
+  };
 
   useEffect(() => {
     const fetchSchool = async () => {
@@ -254,6 +269,15 @@ function SchoolPage() {
                           ))}
                         </Grid>
                       </CardContent>
+                      {/* Pagination */}
+      <Pagination
+        count={Math.ceil(reviews.length / reviewsPerPage)} // Calculate number of pages
+        page={currentPage}
+        onChange={handleChangePage}
+        color="primary"
+        showFirstButton
+        showLastButton
+      />
                     </Card>
                   ))}
               </CardContent>
