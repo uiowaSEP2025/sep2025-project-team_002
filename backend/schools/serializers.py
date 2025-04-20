@@ -55,14 +55,14 @@ class SchoolSerializer(serializers.ModelSerializer):
         # Sum up all the rating fields
         for review in reviews:
             fields_sum = (
-                review.head_coach +
-                review.assistant_coaches +
-                review.team_culture +
-                review.campus_life +
-                review.athletic_facilities +
-                review.athletic_department +
-                review.player_development +
-                review.nil_opportunity
+                review.head_coach
+                + review.assistant_coaches
+                + review.team_culture
+                + review.campus_life
+                + review.athletic_facilities
+                + review.athletic_department
+                + review.player_development
+                + review.nil_opportunity
             )
             total_avg += fields_sum / 8  # Average of 8 rating fields
             count += 1
