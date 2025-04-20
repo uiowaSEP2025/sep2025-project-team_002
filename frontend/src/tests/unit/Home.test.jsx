@@ -20,7 +20,9 @@ describe('App Component', () => {
             school_name: "University of Iowa",
             conference: "Big Ten",
             location: "Iowa City, Iowa",
-            available_sports: ["Men's Basketball", "Women's Basketball", "Football"]
+            available_sports: ["Men's Basketball", "Women's Basketball", "Football"],
+            review_count: 125,
+            average_rating: 8.5
           }
         ])
       })
@@ -76,7 +78,9 @@ describe('Home Filter Feature', () => {
               school_name: "Filtered Home School",
               conference: "Test Conference",
               location: "Test Location",
-              available_sports: ["Men's Basketball"]
+              available_sports: ["Men's Basketball"],
+              review_count: 75,
+              average_rating: 9.2
             }
           ]), {
             status: 200,
@@ -96,7 +100,9 @@ describe('Home Filter Feature', () => {
             school_name: "Public Default School",
             conference: "Test Conference",
             location: "Test Location",
-            available_sports: ["Men's Basketball", "Football"]
+            available_sports: ["Men's Basketball", "Football"],
+            review_count: 42,
+            average_rating: 7.8
           }
         ]), {
           status: 200,
@@ -158,6 +164,8 @@ describe('Home Pagination Feature', () => {
       conference: "Test Conference",
       location: "Test Location",
       available_sports: ["Sport A", "Sport B"],
+      review_count: Math.floor(Math.random() * 600),
+      average_rating: (Math.random() * 5 + 5).toFixed(1),
     }));
 
     // Mock global.fetch to return the fake schools.
