@@ -88,6 +88,27 @@ describe("ReviewForm Component", () => {
     expect(screen.getByText("Test School")).toBeInTheDocument();
   });
 
+  it("allows school search via autocomplete", async () => {
+  render(
+    <BrowserRouter>
+      <ReviewForm />
+    </BrowserRouter>
+  );
+
+  const schoolInput = await screen.findByLabelText("School *");
+
+  fireEvent.change(schoolInput, { target: { value: "Test" } });
+
+  await waitFor(() => {
+    expect(screen.getByText("Test School")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByText("Test School"));
+
+  expect(schoolInput).toHaveValue("Test School");
+});
+
+
   it("sends Authorization header with API requests", async () => {
     render(
       <BrowserRouter>
