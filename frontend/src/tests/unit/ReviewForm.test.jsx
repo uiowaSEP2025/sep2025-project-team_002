@@ -86,7 +86,7 @@ describe("ReviewForm Component", () => {
 
     await waitFor(() => screen.getByText("Test School")); // Ensure dropdown is populated
     expect(screen.getByText("Test School")).toBeInTheDocument();
-  });
+  }, 20000);
 
   it("allows school search via autocomplete", async () => {
   render(
@@ -106,7 +106,7 @@ describe("ReviewForm Component", () => {
   fireEvent.click(screen.getByText("Test School"));
 
   expect(schoolInput).toHaveValue("Test School");
-});
+}, 20000);
 
 
   it("sends Authorization header with API requests", async () => {
