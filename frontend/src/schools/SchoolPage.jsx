@@ -236,17 +236,18 @@ function SchoolPage() {
                                 overlap="circular"
                                 anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                                 badgeContent={
-                                  <CheckCircleIcon
-                                    sx={{
-                                      color: "green",
-                                      fontSize: 14,
-                                      backgroundColor: "white",
-                                      borderRadius: "50%",
-                                      boxShadow: 1,
-                                    }}
-                                  />
+                                  review.user?.is_school_verified ? (
+                                    <CheckCircleIcon
+                                      sx={{
+                                        color: "green",
+                                        fontSize: 14,
+                                        backgroundColor: "white",
+                                        borderRadius: "50%",
+                                        boxShadow: 1,
+                                      }}
+                                    />
+                                  ) : null
                                 }
-                                invisible={!review.user?.is_school_verified}
                               >
                                 <Avatar
                                   src={
@@ -272,7 +273,7 @@ function SchoolPage() {
                                 }}
                               >
                                 {review.user?.is_school_verified
-                                  ? "Verified"
+                                  ? "  Verified"
                                   : "Unverified"}
                               </Typography>
                             </Box>
