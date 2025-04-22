@@ -16,6 +16,7 @@ import {
   Tab,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Avatar from '@mui/material/Avatar'
 import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
@@ -32,6 +33,8 @@ function SchoolPage() {
     email: "",
     transfer_type: ""
   });
+  const AVATAR_BASE_URL = "../../public/assets/profile-pictures/";
+
 
   useEffect(() => {
     const fetchSchool = async () => {
@@ -212,6 +215,20 @@ function SchoolPage() {
                           <Typography id={`coach-name-${review.review_id}`} variant="h6" gutterBottom>
                             Head Coach: {review.head_coach_name}
                           </Typography>
+                          <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1 }}>
+                            <Avatar
+                              src={
+                                review.user?.profile_picture
+                                  ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
+                                  : "/default-avatar.png"
+                              }
+                              alt="Reviewer avatar"
+                              sx={{ width: 40, height: 40 }}
+                            />
+                            <Typography variant="caption" color="text.secondary">
+                              {new Date(review.created_at).toLocaleDateString()}
+                            </Typography>
+                          </Stack>
                           {review.user?.is_school_verified && (
                             <Tooltip title="This reviewer has verified their school email">
                               <Stack direction="row" spacing={0.5} alignItems="center">
