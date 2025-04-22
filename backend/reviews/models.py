@@ -21,6 +21,9 @@ class Reviews(models.Model):
     nil_opportunity = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    coach_no_longer_at_university = models.BooleanField(default=False)
+    coach_history = models.TextField(null=True, blank=True)
+    summary = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"Review {self.review_id} for {self.school.school_name}"

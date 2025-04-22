@@ -10,9 +10,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
         # Convert display names to database codes
         sport_mapping = {
             "Men's Basketball": "mbb",
-            "Men's Basketball": "mbb",  # Handle both apostrophe types
             "Women's Basketball": "wbb",
-            "Women's Basketball": "wbb",  # Handle both apostrophe types
             "Football": "fb",
         }
         logger.info(f"ReviewsSerializer.validate_sport: Converting '{value}' to code")
@@ -37,5 +35,12 @@ class ReviewsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reviews
-        fields = "__all__"  # Includes all fields
-        extra_kwargs = {"review_id": {"read_only": True}, "user": {"read_only": True}}
+        fields = [
+            'review_id', 'school', 'user', 'sport', 'head_coach_name',
+            'review_message', 'head_coach', 'assistant_coaches',
+            'team_culture', 'campus_life', 'athletic_facilities',
+            'athletic_department', 'player_development', 'nil_opportunity',
+            'created_at', 'updated_at', 'coach_history',
+            'coach_no_longer_at_university'
+        ]
+        read_only_fields = ['review_id', 'user', 'created_at', 'updated_at']

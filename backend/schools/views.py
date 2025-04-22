@@ -10,6 +10,10 @@ from django.conf import settings
 import logging
 from django.db import models
 from preferences.models import Preferences
+from django.shortcuts import get_object_or_404
+import openai
+import os
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -50,80 +54,99 @@ class ProtectedSchoolDetailView(generics.RetrieveUpdateDestroyAPIView):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_review_summary(request, school_id):
-    logger.info(f"Received review summary request for school_id: {school_id}")
-    sport = request.GET.get("sport")
-
     try:
-        school = Schools.objects.get(pk=school_id)
-
-        # Get the latest review for this sport
-        latest_review = (
-            Reviews.objects.filter(school_id=school_id, sport=sport)
-            .order_by("-created_at")
-            .first()
-        )
-        if not latest_review:
+        # Get sport parameter and validate
+        sport = request.GET.get("sport")
+        if not sport:
             return Response(
-                {"summary": f"No reviews available for {sport} at this school yet."}
+                {"error": "Sport parameter is required"},
+                status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Get stored summaries and dates
-        summaries = school.sport_summaries or {}
-        last_dates = school.sport_review_dates or {}
+        # Get school or return 404
+        school = get_object_or_404(Schools, id=school_id)
+        
+        # Get all reviews for this school and sport
+        reviews = Reviews.objects.filter(
+            school=school,
+            sport=sport
+        ).order_by("-created_at")
+        
+        if not reviews.exists():
+            return Response(
+                {"summary": f"No reviews available for {sport} at {school.school_name} yet."},
+                status=status.HTTP_200_OK
+            )
 
-        # Check if we have a valid stored summary for this sport
-        if sport in summaries and sport in last_dates:
-            stored_date = last_dates[sport]
-            latest_date = latest_review.created_at.isoformat()
-            if stored_date >= latest_date:
-                return Response({"summary": summaries[sport]})
+        # Check if we have a valid cached summary
+        if (school.sport_summaries and 
+            school.sport_review_dates and 
+            sport in school.sport_summaries and 
+            sport in school.sport_review_dates):
+            
+            latest_review_date = reviews.first().created_at.isoformat()
+            cached_date = school.sport_review_dates[sport]
+            
+            if cached_date >= latest_review_date:
+                return Response({"summary": school.sport_summaries[sport]})
 
-        # Generate new summary if needed
+        # Generate new summary
+        if not settings.OPENAI_API_KEY:
+            # Fallback to concatenated reviews if OpenAI is not configured
+            reviews_text = "\n\n".join([
+                f"Review from {review.created_at.strftime('%Y-%m-%d')}:\n{review.review_message}"
+                for review in reviews
+            ])
+            return Response({"summary": reviews_text})
+
+        # Initialize OpenAI client
+        client = OpenAI()
+        
+        # Prepare reviews text
+        reviews_text = " ".join([review.review_message for review in reviews])
+        
+        # Generate summary using OpenAI
         try:
-            if not settings.OPENAI_API_KEY:
-                logger.error("OpenAI API key is not configured")
-                return Response(
-                    {"error": "OpenAI API key is not configured"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
-
-            # Get all reviews for this sport
-            reviews = Reviews.objects.filter(school_id=school_id, sport=sport)
-            reviews_text = " ".join([review.review_message for review in reviews])
-            client = OpenAI()
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "system",
-                        "content": f"You are a helpful assistant that summarizes {sport} program reviews. Provide a concise summary in exactly 2 sentences, without using bullet points or dashes. Focus on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...'",
+                        "content": f"You are a helpful assistant that summarizes {sport} program reviews. Provide a concise summary in exactly 2 sentences, without using bullet points or dashes. Focus on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...'"
                     },
-                    {"role": "user", "content": reviews_text},
+                    {"role": "user", "content": reviews_text}
                 ],
-                max_tokens=250,
+                max_tokens=250
             )
+            
             summary = response.choices[0].message.content
-
-            # Store the new summary and date
-            summaries[sport] = summary
-            last_dates[sport] = latest_review.created_at.isoformat()
-            school.sport_summaries = summaries
-            school.sport_review_dates = last_dates
+            
+            # Update cache
+            if not school.sport_summaries:
+                school.sport_summaries = {}
+            if not school.sport_review_dates:
+                school.sport_review_dates = {}
+                
+            school.sport_summaries[sport] = summary
+            school.sport_review_dates[sport] = reviews.first().created_at.isoformat()
             school.save()
+            
             return Response({"summary": summary})
+            
         except Exception as e:
             logger.error(f"OpenAI API error: {str(e)}")
-            return Response(
-                {"error": f"Error generating summary: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-    except Schools.DoesNotExist:
-        return Response({"error": "School not found"}, status=status.HTTP_404_NOT_FOUND)
+            # Fallback to concatenated reviews on API error
+            reviews_text = "\n\n".join([
+                f"Review from {review.created_at.strftime('%Y-%m-%d')}:\n{review.review_message}"
+                for review in reviews
+            ])
+            return Response({"summary": reviews_text})
+            
     except Exception as e:
-        logger.error(f"Unexpected error in get_review_summary: {str(e)}")
+        logger.error(f"Error in get_review_summary: {str(e)}")
         return Response(
-            {"error": f"An unexpected error occurred: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            {"error": str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
 
@@ -425,3 +448,28 @@ def get_recommended_schools(request):
     except Exception as e:
         logger.error(f"Error in get_recommended_schools: {str(e)}", exc_info=True)
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def debug_reviews(request, school_id):
+    try:
+        school = get_object_or_404(Schools, id=school_id)
+        reviews = Reviews.objects.filter(school_id=school_id)
+        
+        review_data = []
+        for review in reviews:
+            review_data.append({
+                'id': review.id,
+                'sport': review.sport,
+                'created_at': review.created_at,
+                'message': review.review_message[:100]
+            })
+            
+        return Response({
+            'school_name': school.school_name,
+            'reviews': review_data
+        })
+    except Exception as e:
+        logger.error(f"Error in debug_reviews: {str(e)}")
+        return Response({"error": str(e)}, status=500)

@@ -2,7 +2,9 @@ from rest_framework import serializers
 from .models import Schools
 from reviews.models import Reviews
 from reviews.serializers import ReviewsSerializer
+import logging
 
+logger = logging.getLogger(__name__)
 
 class SchoolSerializer(serializers.ModelSerializer):
     available_sports = serializers.SerializerMethodField()
@@ -33,5 +35,9 @@ class SchoolSerializer(serializers.ModelSerializer):
         return sports
 
     def get_reviews(self, obj):
-        reviews = Reviews.objects.filter(school=obj.id)
-        return ReviewsSerializer(reviews, many=True).data
+        logger.info(f"Getting reviews for school: {obj.school_name}")
+        reviews = Reviews.objects.filter(school=obj.id).order_by('-created_at')
+        logger.info(f"Found {reviews.count()} reviews")
+        serialized_reviews = ReviewsSerializer(reviews, many=True).data
+        logger.info(f"Serialized reviews: {serialized_reviews}")
+        return serialized_reviews
