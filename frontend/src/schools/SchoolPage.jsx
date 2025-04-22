@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Box,
+  Avatar,
+  Badge,
   Typography,
   Button,
   Card,
@@ -32,12 +34,14 @@ function SchoolPage() {
     email: "",
     transfer_type: ""
   });
+  const AVATAR_BASE_URL = "../../public/assets/profile-pictures/";
+
 
   useEffect(() => {
     const fetchSchool = async () => {
       try {
         const token = localStorage.getItem('token');
-        const endpoint = token 
+        const endpoint = token
           ? `${API_BASE_URL}/api/schools/${id}/`
           : `${API_BASE_URL}/api/public/schools/${id}/`;
 
@@ -58,7 +62,7 @@ function SchoolPage() {
 
         const data = await response.json();
         setSchool(data);
-        
+
         // Set default selected sport if available
         if (data.mbb) setSelectedSport("Men's Basketball");
         else if (data.wbb) setSelectedSport("Women's Basketball");
@@ -162,7 +166,7 @@ function SchoolPage() {
             <Typography id="program-title" variant="h4" gutterBottom>
               {selectedSport} Program
             </Typography>
-            
+
             {/* Reviews Summary */}
             <Card id="summary-card" sx={{ mb: 3 }}>
               <CardContent>
@@ -186,10 +190,10 @@ function SchoolPage() {
                       variant="contained"
                       color="primary"
                       onClick={() => navigate(`/reviews/new`, {
-                        state: { 
+                        state: {
                           schoolId: id,
                           schoolName: school.school_name,
-                          selectedSport: selectedSport 
+                          selectedSport: selectedSport
                         }
                       })}
                     >
@@ -197,31 +201,83 @@ function SchoolPage() {
                     </Button>
                   )}
                 </Box>
-                
+
                 {/* Filter reviews by sport */}
                 {school.reviews
                   .filter(review => review.sport === selectedSport)
                   .map((review) => (
-                    <Card 
+                    <Card
                       id={`review-${review.review_id}`}
-                      key={review.review_id} 
+                      key={review.review_id}
                       sx={{ mb: 2 }}
                     >
                       <CardContent>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <Typography id={`coach-name-${review.review_id}`} variant="h6" gutterBottom>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            mb: 1,
+                          }}
+                        >
+                          <Typography variant="h6" gutterBottom>
                             Head Coach: {review.head_coach_name}
                           </Typography>
-                          {review.user?.is_school_verified && (
-                            <Tooltip title="This reviewer has verified their school email">
-                              <Stack direction="row" spacing={0.5} alignItems="center">
-                                <CheckCircleIcon sx={{ color: 'green' }} fontSize="small" />
-                                <Typography variant="caption" sx={{ color: 'green', fontWeight: 500 }}>
-                                  Verified Reviewer
-                                </Typography>
-                              </Stack>
+
+                          <Stack direction="row" spacing={2} alignItems="center">
+                            <Tooltip
+                              title={
+                                review.user?.is_school_verified
+                                  ? "This reviewer has verified their school email"
+                                  : ""
+                              }
+                            >
+                              <Badge
+                                overlap="circular"
+                                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                                badgeContent={
+                                  review.user?.is_school_verified ? (
+                                    <CheckCircleIcon
+                                      sx={{
+                                        color: "green",
+                                        fontSize: 14,
+                                        backgroundColor: "white",
+                                        borderRadius: "50%",
+                                        boxShadow: 1,
+                                      }}
+                                    />
+                                  ) : null
+                                }
+                              >
+                                <Avatar
+                                  src={
+                                    review.user?.profile_picture
+                                      ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
+                                      : "/default-avatar.png"
+                                  }
+                                  alt="Reviewer avatar"
+                                  sx={{ width: 40, height: 40 }}
+                                />
+                              </Badge>
                             </Tooltip>
-                          )}
+
+                            <Box sx={{ textAlign: "right" }}>
+                              <Typography variant="caption" color="text.secondary" display="block">
+                                {new Date(review.created_at).toLocaleDateString()}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                display="block"
+                                sx={{
+                                  color: review.user?.is_school_verified ? "green" : "text.secondary",
+                                }}
+                              >
+                                {review.user?.is_school_verified
+                                  ? "  Verified"
+                                  : "Unverified"}
+                              </Typography>
+                            </Box>
+                          </Stack>
                         </Box>
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
@@ -241,11 +297,11 @@ function SchoolPage() {
                               <Typography id={`${field}-label-${review.review_id}`} variant="subtitle2">
                                 {label}
                               </Typography>
-                              <Rating 
+                              <Rating
                                 id={`${field}-rating-${review.review_id}`}
-                                value={review[field]} 
-                                readOnly 
-                                max={10} 
+                                value={review[field]}
+                                readOnly
+                                max={10}
                               />
                               <Typography id={`${field}-score-${review.review_id}`} variant="caption">
                                 {review[field]}/10
@@ -265,4 +321,4 @@ function SchoolPage() {
   );
 }
 
-export default SchoolPage; 
+export default SchoolPage;
