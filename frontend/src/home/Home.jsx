@@ -22,6 +22,7 @@ import {
   Grid,
 } from "@mui/material";
 import API_BASE_URL from "../utils/config";
+import StarRating from "../components/StarRating";
 
 function Home() {
   const navigate = useNavigate();
@@ -265,15 +266,39 @@ function Home() {
               onClick={() => handleSchoolClick(school.id)}
             >
               <CardContent>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                    {school.school_name}
-                  </Typography>
-                  <Typography variant="body2">
-                    {school.available_sports?.length > 0
-                      ? school.available_sports.join(" • ")
-                      : "No sports listed"}
-                  </Typography>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <Box sx={{ maxWidth: "70%" }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, textAlign: "left" }}>
+                        {school.school_name}
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: "left" }}>
+                        {school.available_sports?.length > 0
+                          ? school.available_sports.join(" • ")
+                          : "No sports listed"}
+                      </Typography>
+                    </Box>
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                    <Box sx={{
+                      backgroundColor: "#f0f7ff",
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5
+                    }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: "#1976d2" }}>
+                        {school.review_count > 500 ? "500+" : school.review_count || 0} {school.review_count === 1 ? "review" : "reviews"}
+                      </Typography>
+                    </Box>
+                    {school.review_count > 0 && (
+                      <Box sx={{ mt: 0.5 }}>
+                        <StarRating rating={school.average_rating} showValue={true} />
+                      </Box>
+                    )}
+                  </Box>
+                  </Box>
                 </Box>
               </CardContent>
             </Card>

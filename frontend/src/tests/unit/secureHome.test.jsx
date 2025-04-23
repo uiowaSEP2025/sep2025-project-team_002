@@ -42,7 +42,9 @@ const mockSchools = [
     school_name: "University of Iowa",
     conference: "Big Ten",
     location: "Iowa City, Iowa",
-    available_sports: ["Men's Basketball", "Women's Basketball", "Football"]
+    available_sports: ["Men's Basketball", "Women's Basketball", "Football"],
+    review_count: 325,
+    average_rating: 8.7
   }
 ];
 
@@ -54,7 +56,9 @@ const mockRecommendations = [
       school_name: "University of Iowa",
       conference: "Big Ten",
       location: "Iowa City, Iowa",
-      available_sports: ["Men's Basketball", "Women's Basketball", "Football"]
+      available_sports: ["Men's Basketball", "Women's Basketball", "Football"],
+      review_count: 325,
+      average_rating: 8.7
     },
     sport: "Men's Basketball",
     similarity_score: 8
@@ -246,7 +250,9 @@ describe('SecureHome Filter Dialog', () => {
               school_name: "Filtered School",
               conference: "Test Conference",
               location: "Test Location",
-              available_sports: ["Men's Basketball"]
+              available_sports: ["Men's Basketball"],
+              review_count: 150,
+              average_rating: 8.2
             }
           ]), {
             status: 200,
@@ -266,7 +272,9 @@ describe('SecureHome Filter Dialog', () => {
             school_name: "Default School",
             conference: "Test Conference",
             location: "Test Location",
-            available_sports: ["Football"]
+            available_sports: ["Football"],
+            review_count: 85,
+            average_rating: 7.5
           }
         ]), {
           status: 200,
@@ -359,6 +367,8 @@ describe('SecureHome Pagination Feature', () => {
       conference: "Test Conference",
       location: "Test Location",
       available_sports: ["Sport A", "Sport B"],
+      review_count: Math.floor(Math.random() * 600),
+      average_rating: (Math.random() * 5 + 5).toFixed(1),
     }));
 
     // Setup fetch to return responses for both the user info and schools endpoints.

@@ -3,7 +3,8 @@ import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import {
   Box, Grid,
   Typography, TextField, Button, MenuItem, Rating, Tooltip, IconButton,
-  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, useMediaQuery
+  Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, useMediaQuery,
+  Autocomplete
 } from "@mui/material";
 import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
@@ -83,6 +84,7 @@ const ReviewForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [review, setReview] = useState({
     school: schoolId || "",
     sport: selectedSport || "",
@@ -103,6 +105,13 @@ const ReviewForm = () => {
         a.school_name.localeCompare(b.school_name)
       );
     }, [schools]);
+
+  const filteredSchools = useMemo(() => {
+  return sortedSchools.filter((school) =>
+    school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+}, [searchQuery, sortedSchools]);
+
 
   const isMobile = useMediaQuery("(max-width: 600px)");
 
@@ -271,24 +280,39 @@ const ReviewForm = () => {
             </Typography>
           </motion.div>
           <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: { xs: 2, md: 4 }, borderRadius: 2, boxShadow: 3 }}>
-          <TextField
-            id="school-select"
-            select
-            fullWidth
-            label="School *"
-            name="school"
-            value={review.school}
-            onChange={handleSchoolChange}  // Update available sports when a school is selected
-            sx={{ mb: 2 }}
-            error={!review.school && isSubmitted} // Highlight field if empty
-            helperText={!review.school && isSubmitted ? "This field is required" : ""}
-          >
-            {sortedSchools.map((school) => (
-              <MenuItem id={`school-option-${school.id}`} key={school.id} value={school.id}>
-                {school.school_name}
-              </MenuItem>
-            ))}
-          </TextField>
+          <Autocomplete
+              id="school-autocomplete"
+              options={sortedSchools}
+              getOptionLabel={(option) => option.school_name}
+              value={selectedSchool}
+              onChange={(event, newValue) => {
+                if (newValue) {
+                  setSelectedSchool(newValue);
+                  setReview({ ...review, school: newValue.id });
+
+                  const sports = [];
+                  if (newValue.mbb) sports.push("Men's Basketball");
+                  if (newValue.wbb) sports.push("Women's Basketball");
+                  if (newValue.fb) sports.push("Football");
+                  setAvailableSports(sports);
+                } else {
+                  setSelectedSchool(null);
+                  setReview({ ...review, school: "" });
+                  setAvailableSports([]);
+                }
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="School *"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  error={!review.school && isSubmitted}
+                  helperText={!review.school && isSubmitted ? "This field is required" : ""}
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option.id === value?.id}
+            />
 
             <TextField
               id="sport-select"

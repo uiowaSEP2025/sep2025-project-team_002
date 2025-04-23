@@ -34,6 +34,7 @@ import LoginIcon from "@mui/icons-material/Login";
 import ErrorIcon from "@mui/icons-material/Error";
 import WarningIcon from "@mui/icons-material/Warning";
 import API_BASE_URL from "../utils/config";
+import StarRating from "../components/StarRating";
 
 function SecureHome() {
   const navigate = useNavigate();
@@ -279,6 +280,10 @@ function SecureHome() {
   };
   const handleGoToPreferenceForm = () => {
     navigate("/preference-form");
+  };
+
+  const handleModifyPreferenceForm = () => {
+    navigate("/preference-form", { state: { isEditing: true } });
   };
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
@@ -668,21 +673,52 @@ function SecureHome() {
                                     )}
                                   </Box>
                                 </Box>
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    p: 1,
-                                    backgroundColor: "#e3f2fd",
-                                    borderRadius: 1
-                                  }}
-                                >
-                                  <Typography
-                                    variant="body2"
-                                    sx={{ fontWeight: 600, color: "#1976d2" }}
+                                <Box sx={{ display: "flex", gap: 1 }}>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                      p: 1,
+                                      backgroundColor: "#e3f2fd",
+                                      borderRadius: 1
+                                    }}
                                   >
-                                    Match Score: {rec.similarity_score}/10
-                                  </Typography>
+                                    <Typography
+                                      variant="body2"
+                                      sx={{ fontWeight: 600, color: "#1976d2" }}
+                                    >
+                                      Match Score: {rec.similarity_score}/10
+                                    </Typography>
+                                  </Box>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Box
+                                      sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        p: 1,
+                                        backgroundColor: "#f0f7ff",
+                                        borderRadius: 1
+                                      }}
+                                    >
+                                      <Typography
+                                        variant="body2"
+                                        sx={{ fontWeight: 500, color: "#1976d2" }}
+                                      >
+                                        {rec.school.review_count > 500 ? "500+" : rec.school.review_count || 0} {rec.school.review_count === 1 ? "review" : "reviews"}
+                                      </Typography>
+                                    </Box>
+                                    {rec.school.review_count > 0 && (
+                                      <Box sx={{ mt: 0.5 }}>
+                                        <StarRating rating={rec.school.average_rating} showValue={true} />
+                                      </Box>
+                                    )}
+                                  </Box>
                                 </Box>
                               </Box>
                             </CardContent>
@@ -739,10 +775,28 @@ function SecureHome() {
                         boxShadow: 1
                       }}
                     >
-                      Set Your Preferences
+                      Set your preferences
                     </Button>
                   </Box>
                 )}
+                {hasPreferences && (
+                    <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleModifyPreferenceForm}
+                        sx={{
+                          borderRadius: "20px",
+                          py: 0.8,
+                          px: 2.5,
+                          textTransform: "none",
+                          fontWeight: 500
+                        }}
+                      >
+                        Modify Preferences
+                      </Button>
+                    </Box>
+                  )}
               </Box>
             )}
             {/*        /!*{filters.sport && (*!/*/}
@@ -870,15 +924,37 @@ function SecureHome() {
                       onClick={() => handleSchoolClick(school.id)}
                     >
                       <CardContent>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                          <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }} data-testid={`school-list-name-${school.id}`}>
-                            {school.school_name}
-                          </Typography>
-                          <Typography variant="body2" data-testid={`school-list-sports-${school.id}`}>
-                            {school.available_sports && school.available_sports.length > 0
-                              ? school.available_sports.join(" • ")
-                              : "No sports listed"}
-                          </Typography>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>
+                          <Box>
+                            <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }} data-testid={`school-list-name-${school.id}`}>
+                              {school.school_name}
+                            </Typography>
+                            <Typography variant="body2" data-testid={`school-list-sports-${school.id}`}>
+                              {school.available_sports && school.available_sports.length > 0
+                                ? school.available_sports.join(" • ")
+                                : "No sports listed"}
+                            </Typography>
+                          </Box>
+                          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                            <Box sx={{
+                              backgroundColor: "#f0f7ff",
+                              px: 1.5,
+                              py: 0.5,
+                              borderRadius: 1,
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 0.5
+                            }}>
+                              <Typography variant="body2" sx={{ fontWeight: 500, color: "#1976d2" }}>
+                                {school.review_count > 500 ? "500+" : school.review_count || 0} {school.review_count === 1 ? "review" : "reviews"}
+                              </Typography>
+                            </Box>
+                            {school.review_count > 0 && (
+                              <Box sx={{ mt: 0.5 }}>
+                                <StarRating rating={school.average_rating} showValue={true} />
+                              </Box>
+                            )}
+                          </Box>
                         </Box>
                       </CardContent>
                     </Card>
