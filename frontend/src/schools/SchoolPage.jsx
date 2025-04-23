@@ -39,13 +39,16 @@ function SchoolPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
 
+  // Filter reviews by selected sport
+const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
+
   // Calculate the index of the last review on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
   // Calculate the index of the first review on the current page
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
 
   // Slice the reviews array to get the reviews for the current page
-  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+  const currentReviews = filteredReviews.slice(indexOfFirstReview, indexOfLastReview);
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
@@ -220,8 +223,7 @@ function SchoolPage() {
                 </Box>
 
                 {/* Filter reviews by sport */}
-                {school.reviews
-                  .filter(review => review.sport === selectedSport)
+                {currentReviews
                   .map((review) => (
                     <Card
                       id={`review-${review.review_id}`}
@@ -327,17 +329,18 @@ function SchoolPage() {
                           ))}
                         </Grid>
                       </CardContent>
-                      {/* Pagination */}
+
+                    </Card>
+                  ))}
+                                      {/* Pagination */}
       <Pagination
-        count={Math.ceil(reviews.length / reviewsPerPage)} // Calculate number of pages
+        count={Math.ceil(filteredReviews.length / reviewsPerPage)} // Calculate number of pages
         page={currentPage}
         onChange={handleChangePage}
         color="primary"
         showFirstButton
         showLastButton
       />
-                    </Card>
-                  ))}
               </CardContent>
             </Card>
           </Box>
