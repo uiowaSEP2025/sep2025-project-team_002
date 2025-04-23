@@ -1,5 +1,5 @@
 from rest_framework import generics, permissions, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from .models import Reviews
 from .serializers import ReviewsSerializer
@@ -7,6 +7,9 @@ from .services import CoachSearchService
 from schools.models import Schools
 import logging
 from rest_framework import serializers
+from rest_framework.decorators import api_view, permission_classes
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
 
 logger = logging.getLogger(__name__)
 
@@ -18,52 +21,35 @@ class ReviewCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         try:
-            # Get the school name
             school_id = self.request.data.get('school')
-            logger.info(f"Creating review for school_id: {school_id}")
-            logger.info(f"Full request data: {self.request.data}")
-            
             school = Schools.objects.get(id=school_id)
-            logger.info(f"Found school: {school.school_name}")
-            
             sport = self.request.data.get('sport')
-            logger.info(f"Sport from request: {sport}")
+            coach_name = self.request.data.get('head_coach_name')
             
-            # Only check coach history for Men's Basketball (mbb)
-            if sport == "Men's Basketball" or sport == "mbb":
-                coach_name = self.request.data.get('head_coach_name')
-                logger.info(f"Checking coach history for: {coach_name}")
-                
-                coach_service = CoachSearchService()
-                history, no_longer_at_university = coach_service.search_coach_history(
-                    coach_name, 
-                    school.school_name
-                )
-                
-                logger.info(f"Coach history found: {history}")
-                logger.info(f"No longer at university: {no_longer_at_university}")
-                
-                # Save the review with coach history
-                review = serializer.save(
-                    user=self.request.user,
-                    coach_history=history,
-                    coach_no_longer_at_university=no_longer_at_university
-                )
-                logger.info(f"Saved review with coach history. Review ID: {review.review_id}")
-            else:
-                # For other sports, just save normally
-                review = serializer.save(user=self.request.user)
-                logger.info(f"Saved review without coach history. Review ID: {review.review_id}")
+            # Get coach history for all sports
+            coach_service = CoachSearchService()
+            history, _ = coach_service.search_coach_history(coach_name, school.school_name)
             
-            logger.info(f"Review created successfully: {review.review_id}")
-            logger.info(f"Final review data: {ReviewsSerializer(review).data}")
+            # Save the review with coach history
+            review = serializer.save(
+                user=self.request.user,
+                coach_history=history,
+                coach_no_longer_at_university=False  # This will be determined by frontend display logic
+            )
+            
+            # Clear the stored summary to force regeneration on next request
+            school = review.school
+            if school.sport_summaries:
+                school.sport_summaries.pop(review.sport, None)
+            if school.sport_review_dates:
+                school.sport_review_dates.pop(review.sport, None)
+            school.save()
+            
             return review
                 
         except Schools.DoesNotExist:
-            logger.error(f"School not found: {school_id}")
             raise serializers.ValidationError({"error": "School not found"})
         except Exception as e:
-            logger.error(f"Error creating review: {str(e)}", exc_info=True)
             raise serializers.ValidationError({"error": str(e)})
 
 
@@ -73,3 +59,36 @@ class UserReviewsView(generics.ListAPIView):
 
     def get_queryset(self):
         return Reviews.objects.filter(user=self.request.user)
+
+
+@require_http_methods(["GET"])
+def get_school_reviews(request, school_id):
+    try:
+        sport = request.GET.get('sport')
+        if not sport:
+            logger.error(f"Sport parameter missing for school reviews request: school_id={school_id}")
+            return JsonResponse({"error": "Sport parameter is required"}, status=400)
+
+        school = Schools.objects.get(id=school_id)
+        reviews = Reviews.objects.filter(
+            school=school,
+            sport=sport
+        ).order_by('-created_at')
+
+        reviews_data = [{
+            'id': review.id,
+            'rating': review.rating,
+            'text': review.text,
+            'created_at': review.created_at.isoformat(),
+            'user': review.user.username if review.user else 'Anonymous'
+        } for review in reviews]
+
+        logger.info(f"Successfully fetched {len(reviews_data)} reviews for school {school_id}, sport {sport}")
+        return JsonResponse(reviews_data, safe=False)
+
+    except Schools.DoesNotExist:
+        logger.error(f"School not found for reviews request: school_id={school_id}")
+        return JsonResponse({"error": "School not found"}, status=404)
+    except Exception as e:
+        logger.error(f"Error fetching school reviews: school_id={school_id}, error={str(e)}")
+        return JsonResponse({"error": "Internal server error"}, status=500)

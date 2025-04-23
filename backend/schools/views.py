@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404
 import openai
 import os
 from datetime import datetime
+from reviews.services import CoachSearchService
 
 logger = logging.getLogger(__name__)
 
@@ -90,57 +91,85 @@ def get_review_summary(request, school_id):
             if cached_date >= latest_review_date:
                 return Response({"summary": school.sport_summaries[sport]})
 
-        # Generate new summary
-        if not settings.OPENAI_API_KEY:
-            # Fallback to concatenated reviews if OpenAI is not configured
-            reviews_text = "\n\n".join([
-                f"Review from {review.created_at.strftime('%Y-%m-%d')}:\n{review.review_message}"
-                for review in reviews
-            ])
-            return Response({"summary": reviews_text})
+        # Group reviews by coach
+        coach_reviews = {}
+        for review in reviews:
+            coach_name = review.head_coach_name
+            if coach_name not in coach_reviews:
+                coach_reviews[coach_name] = []
+            coach_reviews[coach_name].append(review)
 
         # Initialize OpenAI client
         client = OpenAI()
         
-        # Prepare reviews text
-        reviews_text = " ".join([review.review_message for review in reviews])
+        # Initialize CoachSearchService
+        coach_service = CoachSearchService()
         
-        # Generate summary using OpenAI
-        try:
-            response = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": f"You are a helpful assistant that summarizes {sport} program reviews. Provide a concise summary in exactly 2 sentences, without using bullet points or dashes. Focus on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...'"
-                    },
-                    {"role": "user", "content": reviews_text}
-                ],
-                max_tokens=250
-            )
+        # Generate summaries for each coach
+        coach_summaries = []
+        for coach_name, coach_review_list in coach_reviews.items():
+            # Get coach history using Azure AI
+            history, _ = coach_service.search_coach_history(coach_name, school.school_name)
             
-            summary = response.choices[0].message.content
+            # Prepare reviews text for this coach
+            reviews_text = " ".join([review.review_message for review in coach_review_list])
             
-            # Update cache
-            if not school.sport_summaries:
-                school.sport_summaries = {}
-            if not school.sport_review_dates:
-                school.sport_review_dates = {}
+            # Generate summary using OpenAI
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {coach_name}. Provide a concise summary in exactly 2 sentences, focusing on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{coach_name}'). Include specific details about coaching style, program culture, and player development when mentioned."
+                        },
+                        {"role": "user", "content": reviews_text}
+                    ],
+                    max_tokens=250,
+                    temperature=0.7,  # Slightly more creative but still consistent
+                    presence_penalty=0.6,  # Encourage some variety
+                    frequency_penalty=0.6  # Discourage repetition
+                )
                 
-            school.sport_summaries[sport] = summary
-            school.sport_review_dates[sport] = reviews.first().created_at.isoformat()
-            school.save()
+                summary = response.choices[0].message.content
+                
+                # Only add history if it's not empty and contains years
+                if history and any(char.isdigit() for char in history):
+                    coach_summary = f"Reviews for {coach_name} ({history}):\n{summary}"
+                else:
+                    # Try to get history again with a more specific query
+                    coach_service = CoachSearchService()
+                    history, _ = coach_service.search_coach_history(coach_name, school.school_name)
+                    if history and any(char.isdigit() for char in history):
+                        coach_summary = f"Reviews for {coach_name} ({history}):\n{summary}"
+                    else:
+                        coach_summary = f"Reviews for {coach_name}:\n{summary}"
+                
+                coach_summaries.append(coach_summary)
+                
+            except Exception as e:
+                logger.error(f"OpenAI API error: {str(e)}")
+                # Fallback to concatenated reviews on API error
+                reviews_text = "\n\n".join([
+                    f"Review from {review.created_at.strftime('%Y-%m-%d')}:\n{review.review_message}"
+                    for review in coach_review_list
+                ])
+                coach_summaries.append(f"Reviews for {coach_name}:\n{reviews_text}")
+        
+        # Combine all coach summaries with newlines between them
+        final_summary = "\n\n".join(coach_summaries)
+        
+        # Update cache
+        if not school.sport_summaries:
+            school.sport_summaries = {}
+        if not school.sport_review_dates:
+            school.sport_review_dates = {}
             
-            return Response({"summary": summary})
-            
-        except Exception as e:
-            logger.error(f"OpenAI API error: {str(e)}")
-            # Fallback to concatenated reviews on API error
-            reviews_text = "\n\n".join([
-                f"Review from {review.created_at.strftime('%Y-%m-%d')}:\n{review.review_message}"
-                for review in reviews
-            ])
-            return Response({"summary": reviews_text})
+        school.sport_summaries[sport] = final_summary
+        school.sport_review_dates[sport] = reviews.first().created_at.isoformat()
+        school.save()
+        
+        return Response({"summary": final_summary})
             
     except Exception as e:
         logger.error(f"Error in get_review_summary: {str(e)}")

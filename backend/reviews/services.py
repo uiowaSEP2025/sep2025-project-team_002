@@ -1,76 +1,52 @@
 import os
-import requests
-from django.conf import settings
+from openai import OpenAI
 import logging
 
+# Set up logging to always show info level messages
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class CoachSearchService:
     def __init__(self):
-        self.search_url = "https://athleticinsidersearch.search.windows.net"
-        self.api_key = getattr(settings, 'AZURE_SEARCH_KEY', None)
-        if self.api_key:
-            self.headers = {
-                "api-key": self.api_key,
-                "Content-Type": "application/json"
-            }
-        else:
-            logger.warning("AZURE_SEARCH_KEY not found in settings")
+        self.client = OpenAI()
 
-    def search_coach_history(self, coach_name, current_school):
-        """
-        Search for coach history using Azure Search
-        """
+    def search_coach_history(self, coach_name, school_name=None):
         try:
-            # If no API key, return None values
-            if not self.api_key:
-                logger.warning("Skipping coach history search - no API key available")
-                return None, False
+            if not school_name:
+                return "", None
 
-            # Prepare the search query
-            search_params = {
-                "search": coach_name,
-                "queryType": "full",
-                "searchMode": "all",
-                "select": "coach_name,years,schools",
-                "count": "true"
-            }
-
-            # Make the request to Azure Search
-            response = requests.get(
-                f"{self.search_url}/indexes/coaches/docs",
-                headers=self.headers,
-                params=search_params
+            # Build a specific prompt for school tenure only
+            system_prompt = "For a given coach name and school: First check the CSV data for their tenure at this school. ONLY use internet sources if either: 1) This is their most recent coaching position (then use 'Present' if still there), or 2) The school isn't found in their CSV tenure data. For all other cases, use EXACTLY the tenure dates from the CSV. Format as 'YYYY-YY - Present @School' for current position or 'YYYY-YY - YYYY-YY @School' for past positions. Return ONLY the formatted string, no other text. If not found in either source, return empty string."
+            
+            # Specific query for the school
+            query = f"Check CSV data for {coach_name}'s tenure at {school_name}. Only check internet if this is their current school or if {school_name} isn't in their CSV tenure history."
+            
+            logger.info(f"Starting tenure search for {coach_name} at {school_name}")
+            
+            completion = self.client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system_prompt
+                    },
+                    {
+                        "role": "user",
+                        "content": query,
+                    },
+                ],
+                temperature=0,  # More precise responses
+                max_tokens=100,  # Shorter response needed for single tenure
             )
-
-            if response.status_code != 200:
-                logger.error(f"Azure Search request failed: {response.status_code}")
-                return None, False
-
-            data = response.json()
             
-            # Process the response
-            if not data.get('value'):
-                logger.warning(f"No coach history found for {coach_name}")
-                return None, False
-
-            # Get the most recent entry
-            latest_entry = data['value'][0]
+            history = completion.choices[0].message.content
+            if history and any(char.isdigit() for char in history):
+                logger.info(f"Found tenure history for {coach_name} at {school_name}: {history}")
+                return history.strip(), None
+                
+            logger.info(f"No tenure history found for {coach_name} at {school_name}")
+            return "", None
             
-            # Format the history
-            history = f"{coach_name} has served as a head coach for {len(data['value'])} seasons at various institutions. His tenure includes:\n\n"
-            for entry in data['value']:
-                years = entry.get('years', '')
-                schools = entry.get('schools', '')
-                history += f"{years} at {schools}\n"
-
-            # Check if the coach is still at the current school
-            # Look at the most recent entry's school
-            latest_school = data['value'][0].get('schools', '')
-            is_current = current_school.lower() in latest_school.lower()
-
-            return history, not is_current
-
         except Exception as e:
-            logger.error(f"Error in coach search: {str(e)}")
-            return None, False
+            logger.error(f"Error in search: {str(e)}")
+            return "", str(e)
