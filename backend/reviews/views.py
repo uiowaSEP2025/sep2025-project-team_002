@@ -44,9 +44,9 @@ class ReviewCreateView(generics.CreateAPIView):
             if school.sport_review_dates:
                 school.sport_review_dates.pop(review.sport, None)
             school.save()
-            
+
             return review
-                
+            
         except Schools.DoesNotExist:
             raise serializers.ValidationError({"error": "School not found"})
         except Exception as e:

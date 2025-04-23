@@ -109,11 +109,14 @@ def get_review_summary(request, school_id):
         coach_summaries = []
         for coach_name, coach_review_list in coach_reviews.items():
             # Get coach history using Azure AI
-            history, _ = coach_service.search_coach_history(coach_name, school.school_name)
+            history, error = coach_service.search_coach_history(coach_name, school.school_name)
+            logger.info(f"Tenure search results - Coach: {coach_name}")
+            logger.info(f"History: '{history}'")
+            logger.info(f"Error: {error}")
             
             # Prepare reviews text for this coach
             reviews_text = " ".join([review.review_message for review in coach_review_list])
-            
+        
             # Generate summary using OpenAI
             try:
                 response = client.chat.completions.create(
@@ -126,27 +129,24 @@ def get_review_summary(request, school_id):
                         {"role": "user", "content": reviews_text}
                     ],
                     max_tokens=250,
-                    temperature=0.7,  # Slightly more creative but still consistent
-                    presence_penalty=0.6,  # Encourage some variety
-                    frequency_penalty=0.6  # Discourage repetition
+                    temperature=0.7,
+                    presence_penalty=0.6,
+                    frequency_penalty=0.6
                 )
                 
                 summary = response.choices[0].message.content
                 
-                # Only add history if it's not empty and contains years
+                # Format the coach summary with tenure history first, then the review summary
                 if history and any(char.isdigit() for char in history):
-                    coach_summary = f"Reviews for {coach_name} ({history}):\n{summary}"
+                    logger.info(f"Adding tenure history to summary for {coach_name}")
+                    coach_summary = f"Reviews for {coach_name}:\n{history}\n\n{summary}"
                 else:
-                    # Try to get history again with a more specific query
-                    coach_service = CoachSearchService()
-                    history, _ = coach_service.search_coach_history(coach_name, school.school_name)
-                    if history and any(char.isdigit() for char in history):
-                        coach_summary = f"Reviews for {coach_name} ({history}):\n{summary}"
-                    else:
-                        coach_summary = f"Reviews for {coach_name}:\n{summary}"
+                    logger.info(f"No tenure history to add for {coach_name}")
+                    coach_summary = f"Reviews for {coach_name}:\n{summary}"
                 
+                logger.info(f"Final coach summary for {coach_name}: {coach_summary}")
                 coach_summaries.append(coach_summary)
-                
+            
             except Exception as e:
                 logger.error(f"OpenAI API error: {str(e)}")
                 # Fallback to concatenated reviews on API error

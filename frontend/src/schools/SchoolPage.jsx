@@ -288,12 +288,46 @@ function SchoolPage() {
                       sx={{ mb: 2 }}
                     >
                       <CardContent>
-                        <Typography id={`coach-name-${review.review_id}`} variant="h6" gutterBottom>
-                          Head Coach: {review.head_coach_name}
-                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                          <Typography id={`coach-name-${review.review_id}`} variant="h6">
+                            Head Coach: {review.head_coach_name}
+                          </Typography>
+                          {review.coach_no_longer_at_university && (
+                            <Typography 
+                              component="span" 
+                              sx={{ 
+                                backgroundColor: 'warning.main', 
+                                color: 'warning.contrastText',
+                                px: 1,
+                                py: 0.5,
+                                borderRadius: 1,
+                                fontSize: '0.875rem'
+                              }}
+                            >
+                              No Longer at University
+                            </Typography>
+                          )}
+                        </Box>
+                        
+                        {review.coach_history && (
+                          <Typography 
+                            variant="body2" 
+                            sx={{ 
+                              mb: 2, 
+                              backgroundColor: 'grey.100',
+                              p: 2,
+                              borderRadius: 1,
+                              whiteSpace: 'pre-line'
+                            }}
+                          >
+                            {review.coach_history}
+                          </Typography>
+                        )}
+
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
                         </Typography>
+
                         <Grid container spacing={2}>
                           {[
                             ['head_coach', 'Head Coach'],

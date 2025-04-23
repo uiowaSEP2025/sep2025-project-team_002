@@ -1,62 +1,94 @@
-import { useState, useEffect } from 'react';
-import API_BASE_URL from '../utils/config.js';
+import React, { useState, useEffect } from 'react';
+import { Typography } from '@mui/material';
+import API_BASE_URL from '../utils/config';
 
-function ReviewSummary({ schoolId, sport }) {
-    const [summary, setSummary] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const ReviewSummary = ({ schoolId, sport }) => {
+  const [summary, setSummary] = useState('');
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchSummary = async () => {
-            const token = localStorage.getItem('token');
-            
-            try {
-                // Use public route if no token, otherwise use protected route
-                const endpoint = token
-                    ? `${API_BASE_URL}/api/schools/${schoolId}/reviews/summary/?sport=${encodeURIComponent(sport)}`
-                    : `${API_BASE_URL}/api/public/schools/${schoolId}/reviews/summary/?sport=${encodeURIComponent(sport)}`;
+  // Sport code mapping
+  const sportToCode = {
+    "Men's Basketball": "mbb",
+    "Women's Basketball": "wbb",
+    "Football": "fb"
+  };
 
-                const headers = token
-                    ? {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                      }
-                    : {
-                        'Content-Type': 'application/json'
-                      };
+  useEffect(() => {
+    console.log('ReviewSummary component mounted');
+    console.log('Props received:', { schoolId, sport });
+    
+    const fetchSummary = async () => {
+      try {
+        // Convert sport display name to code if needed
+        const sportCode = sportToCode[sport] || sport;
+        console.log('Sport conversion:', { original: sport, code: sportCode });
 
-                const response = await fetch(endpoint, { headers });
-                const data = await response.json();
-                
-                if (response.ok) {
-                    setSummary(data.summary);
-                } else {
-                    setError(data.error || 'Failed to fetch summary');
-                    console.error('Error response:', data);
-                }
-            } catch (err) {
-                console.error('Fetch error:', err);
-                setError('Failed to fetch review summary');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (sport) {
-            fetchSummary();
+        const url = `${API_BASE_URL}/api/public/schools/${schoolId}/reviews/summary/?sport=${encodeURIComponent(sportCode)}`;
+        console.log('Fetching summary from URL:', url);
+        
+        const response = await fetch(url);
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-    }, [schoolId, sport]);
+        
+        const data = await response.json();
+        console.log('Response data:', data);
+        
+        if (response.ok) {
+          const fullSummary = data.summary;
+          setSummary(fullSummary);
+          console.log('Summary set:', fullSummary);
+          console.log('FULL REVIEW SUMMARY RECEIVED:', fullSummary); 
 
-    if (!sport) return null;
-    if (loading) return <div>Loading summary...</div>;
-    if (error) return <div>Error: {error}</div>;
+          // Extract and log only the tenure part
+          const lines = fullSummary.split('\n');
+          // Find the tenure lines - they should be between "Reviews for" and the next empty line
+          const startIndex = lines.findIndex(line => line.includes('Reviews for')) + 1;
+          const endIndex = lines.findIndex((line, idx) => idx > startIndex && line.trim() === '');
+          
+          if (startIndex > 0 && endIndex > startIndex) {
+            const tenureLines = lines.slice(startIndex, endIndex).filter(line => line.trim());
+            if (tenureLines.length > 0) {
+              console.log('TENURE HISTORY:');
+              tenureLines.forEach(line => console.log(line.trim()));
+            }
+          } else {
+            console.log('No tenure information found in expected format');
+          }
 
-    return (
-        <div className="review-summary">
-            <h3>{sport} Program Reviews Summary</h3>
-            <p>{summary}</p>
-        </div>
-    );
-}
+        } else {
+          setError(data.error || 'Failed to fetch summary');
+          console.error('Error fetching summary:', data.error);
+        }
+      } catch (error) {
+        console.error('Error in fetchSummary:', error);
+        setError('Failed to fetch summary');
+      }
+    };
+
+    if (schoolId && sport) {
+      console.log('Initiating summary fetch');
+      fetchSummary();
+    } else {
+      console.log('Missing required props:', { schoolId, sport });
+    }
+  }, [schoolId, sport]);
+
+  if (error) {
+    console.error('Rendering error state:', error);
+    return <Typography color="error">{error}</Typography>;
+  }
+
+  if (!summary) {
+    console.log('No summary available');
+    return <Typography>Loading summary...</Typography>;
+  }
+
+  console.log('Rendering summary:', summary);
+  return <Typography>{summary}</Typography>;
+};
 
 export default ReviewSummary; 
