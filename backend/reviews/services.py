@@ -14,17 +14,31 @@ load_dotenv()
 
 class CoachSearchService:
     def __init__(self):
-        self.coach_data = self._load_coach_data()
+        self.mbb_coach_data = self._load_coach_data('coach_tenures.json')
+        self.wbb_coach_data = self._load_coach_data('coach_tenures_wbb.json')
 
-    def _load_coach_data(self):
+    def _convert_sport_to_code(self, sport):
+        """Convert sport display name to code"""
+        sport_mapping = {
+            "Men's Basketball": "mbb",
+            "Women's Basketball": "wbb",
+            "Football": "fb",
+            # Also handle the codes themselves
+            "mbb": "mbb",
+            "wbb": "wbb",
+            "fb": "fb"
+        }
+        return sport_mapping.get(sport, sport)
+
+    def _load_coach_data(self, filename):
         try:
             # Get the absolute path to the fixtures directory
-            fixtures_path = Path(__file__).parent / 'fixtures' / 'coach_tenures.json'
+            fixtures_path = Path(__file__).parent / 'fixtures' / filename
             with open(fixtures_path, 'r') as file:
                 return json.load(file)
         except Exception as e:
-            logger.error(f"Error loading coach data: {str(e)}")
-            raise
+            logger.error(f"Error loading coach data from {filename}: {str(e)}")
+            return []
 
     def _normalize_name(self, name):
         """Normalize coach names and school names for better matching"""
@@ -82,19 +96,30 @@ class CoachSearchService:
         normalized = ' '.join(normalized.split())  # Normalize spaces
         return normalized.strip()
 
-    def search_coach_history(self, coach_name, school_name=None):
+    def search_coach_history(self, coach_name, school_name=None, sport=None):
         try:
             if not coach_name:
                 return "", None
 
-            logger.info(f"Starting tenure search for coach: {coach_name}")
+            logger.info(f"Starting tenure search for coach: {coach_name} (sport: {sport})")
+            
+            # Convert sport to code and select the appropriate coach data
+            sport_code = self._convert_sport_to_code(sport)
+            logger.info(f"Converted sport '{sport}' to code '{sport_code}'")
+            
+            if sport_code == "wbb":
+                coach_data = self.wbb_coach_data
+                logger.info("Using women's basketball coach data")
+            else:  # Default to men's basketball
+                coach_data = self.mbb_coach_data
+                logger.info("Using men's basketball coach data")
             
             # Normalize the search name and school name
             search_name = self._normalize_name(coach_name)
             normalized_school = self._normalize_name(school_name) if school_name else None
             
             # Search for the coach in the data
-            for coach in self.coach_data:
+            for coach in coach_data:
                 if self._normalize_name(coach["person"]) == search_name:
                     history = coach["tenure"]
                     logger.info(f"Found tenure history for {coach_name}: {history}")

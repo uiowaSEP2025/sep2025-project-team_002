@@ -79,17 +79,28 @@ def get_review_summary(request, school_id):
                 status=status.HTTP_200_OK
             )
 
-        # Check if we have a valid cached summary
-        if (school.sport_summaries and 
-            school.sport_review_dates and 
-            sport in school.sport_summaries and 
-            sport in school.sport_review_dates):
+        # Get the most recent review's coach
+        latest_review = reviews.first()
+        latest_coach = latest_review.head_coach_name
+        latest_review_date = latest_review.created_at.isoformat()
+
+        # Ensure we have dictionaries for our JSON fields
+        if not isinstance(school.sport_summaries, dict):
+            school.sport_summaries = {}
+        if not isinstance(school.sport_review_dates, dict):
+            school.sport_review_dates = {}
+        
+        # Initialize sport-specific dictionaries if they don't exist
+        if sport not in school.sport_summaries:
+            school.sport_summaries[sport] = {}
+        if sport not in school.sport_review_dates:
+            school.sport_review_dates[sport] = {}
             
-            latest_review_date = reviews.first().created_at.isoformat()
-            cached_date = school.sport_review_dates[sport]
-            
-            if cached_date >= latest_review_date:
-                return Response({"summary": school.sport_summaries[sport]})
+        # Ensure the sport-specific entries are dictionaries
+        if not isinstance(school.sport_summaries[sport], dict):
+            school.sport_summaries[sport] = {}
+        if not isinstance(school.sport_review_dates[sport], dict):
+            school.sport_review_dates[sport] = {}
 
         # Group reviews by coach
         coach_reviews = {}
@@ -103,24 +114,32 @@ def get_review_summary(request, school_id):
         client = OpenAI()
         coach_service = CoachSearchService()
         
-        # Generate summaries for each coach
+        # List to store all summaries for final output
         coach_summaries = []
-        for coach_name, coach_review_list in coach_reviews.items():
-            # Get coach history 
-            history, error = coach_service.search_coach_history(coach_name, school.school_name)
-            logger.info(f"Tenure search results - Coach: {coach_name}, History: '{history}', Error: {error}")
-            
-            # Prepare reviews text for this coach
-            reviews_text = " ".join([review.review_message for review in coach_review_list])
         
-            # Generate summary using OpenAI
+        # First, handle the latest reviewed coach
+        stored_date = school.sport_review_dates[sport].get(latest_coach)
+        needs_update = (
+            latest_coach not in school.sport_summaries[sport] or  # No summary exists
+            (stored_date and stored_date < latest_review_date)  # Summary is outdated
+        )
+        
+        if needs_update:
             try:
+                # Get coach history 
+                history, error = coach_service.search_coach_history(latest_coach, school.school_name, sport)
+                logger.info(f"Generating new summary for {latest_coach} due to new review")
+                
+                # Prepare reviews text
+                reviews_text = " ".join([review.review_message for review in coach_reviews[latest_coach]])
+            
+                # Generate summary using OpenAI
                 response = client.chat.completions.create(
                     model="gpt-3.5-turbo",
                     messages=[
                         {
                             "role": "system",
-                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {coach_name}. Provide a concise summary in exactly 2 sentences, focusing on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{coach_name}'). Include specific details about coaching style, program culture, and player development when mentioned."
+                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {latest_coach}. Provide a concise summary in exactly 2 sentences, focusing on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{latest_coach}'). Include specific details about coaching style, program culture, and player development when mentioned."
                         },
                         {"role": "user", "content": reviews_text}
                     ],
@@ -132,17 +151,15 @@ def get_review_summary(request, school_id):
                 
                 summary = response.choices[0].message.content
                 
-                # Format the coach summary with proper line breaks
-                coach_summary_parts = [f"**{coach_name}**:"]
+                # Format the coach summary
+                coach_summary_parts = [f"**{latest_coach}**:"]
                 
-                # Add tenure if it exists
                 if history and history != "No tenure found":
                     coach_summary_parts.extend([
                         "Tenure:",
                         history
                     ])
                     
-                    # Check if coach is no longer at this school
                     tenure_entries = history.split('\n')
                     if tenure_entries:
                         most_recent_tenure = tenure_entries[-1].lower()
@@ -150,60 +167,116 @@ def get_review_summary(request, school_id):
                         if not most_recent_tenure.endswith(f"@{normalized_school_name}"):
                             coach_summary_parts.append("*No longer at this school*")
                 else:
-                    # If no tenure found, add the tag
                     coach_summary_parts.append("*No longer at this school*")
                 
-                # Add the review summary
                 coach_summary_parts.append(summary)
-                
-                # Join all parts with single newline
                 coach_summary = "\n".join(coach_summary_parts)
                 
-                logger.info(f"Final coach summary for {coach_name}: {coach_summary}")
+                # Store the new summary and date
+                school.sport_summaries[sport][latest_coach] = coach_summary
+                school.sport_review_dates[sport][latest_coach] = latest_review_date
+                school.save()
+                
                 coach_summaries.append(coach_summary)
-            
+                
             except Exception as e:
-                logger.error(f"OpenAI API error: {str(e)}")
-                # Fallback to concatenated reviews on API error
-                coach_summary_parts = [f"**{coach_name}**:"]
-                
-                # Add tenure if it exists
-                if history and history != "No tenure found":
-                    coach_summary_parts.extend([
-                        "Tenure:",
-                        history
-                    ])
-                    
-                    # Check if coach is no longer at this school
-                    tenure_entries = history.split('\n')
-                    if tenure_entries:
-                        most_recent_tenure = tenure_entries[-1].lower()
-                        normalized_school_name = coach_service._normalize_name(school.school_name)
-                        if not most_recent_tenure.endswith(f"@{normalized_school_name}"):
-                            coach_summary_parts.append("*No longer at this school*")
+                logger.error(f"Error generating summary for {latest_coach}: {str(e)}")
+                # Use existing summary if available
+                if latest_coach in school.sport_summaries[sport]:
+                    coach_summaries.append(school.sport_summaries[sport][latest_coach])
                 else:
-                    # If no tenure found, add the tag
-                    coach_summary_parts.append("*No longer at this school*")
-                
-                reviews_text = "\n".join([
-                    f"Review from {review.created_at.strftime('%Y-%m-%d')}: {review.review_message}"
-                    for review in coach_review_list
-                ])
-                coach_summary_parts.append(reviews_text)
-        
-        # Combine all coach summaries with double newlines between them
+                    # Create basic fallback summary
+                    coach_summary_parts = [f"**{latest_coach}**:"]
+                    if history and history != "No tenure found":
+                        coach_summary_parts.extend([
+                            "Tenure:",
+                            history
+                        ])
+                        if tenure_entries:
+                            most_recent_tenure = tenure_entries[-1].lower()
+                            normalized_school_name = coach_service._normalize_name(school.school_name)
+                            if not most_recent_tenure.endswith(f"@{normalized_school_name}"):
+                                coach_summary_parts.append("*No longer at this school*")
+                    else:
+                        coach_summary_parts.append("*No longer at this school*")
+                    
+                    reviews_text = "\n".join([
+                        f"Review from {review.created_at.strftime('%Y-%m-%d')}: {review.review_message}"
+                        for review in coach_reviews[latest_coach]
+                    ])
+                    coach_summary_parts.append(reviews_text)
+                    coach_summary = "\n".join(coach_summary_parts)
+                    
+                    # Store the fallback summary
+                    school.sport_summaries[sport][latest_coach] = coach_summary
+                    school.sport_review_dates[sport][latest_coach] = latest_review_date
+                    school.save()
+                    
+                    coach_summaries.append(coach_summary)
+        else:
+            # Use existing summary for the latest coach
+            coach_summaries.append(school.sport_summaries[sport][latest_coach])
+
+        # Now handle other coaches - ONLY use their existing summaries, never regenerate
+        for coach_name, coach_review_list in coach_reviews.items():
+            if coach_name != latest_coach:
+                if coach_name in school.sport_summaries[sport]:
+                    # Use existing summary
+                    coach_summaries.append(school.sport_summaries[sport][coach_name])
+                else:
+                    # If no summary exists for this coach, generate an initial one
+                    try:
+                        history, error = coach_service.search_coach_history(coach_name, school.school_name, sport)
+                        reviews_text = " ".join([review.review_message for review in coach_review_list])
+                        
+                        response = client.chat.completions.create(
+                            model="gpt-3.5-turbo",
+                            messages=[
+                                {
+                                    "role": "system",
+                                    "content": f"You are a helpful assistant that summarizes {sport} program reviews for {coach_name}. Provide a concise summary in exactly 2 sentences, focusing on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{coach_name}'). Include specific details about coaching style, program culture, and player development when mentioned."
+                                },
+                                {"role": "user", "content": reviews_text}
+                            ],
+                            max_tokens=250,
+                            temperature=0.7,
+                            presence_penalty=0.6,
+                            frequency_penalty=0.6
+                        )
+                        
+                        summary = response.choices[0].message.content
+                        coach_summary_parts = [f"**{coach_name}**:"]
+                        
+                        if history and history != "No tenure found":
+                            coach_summary_parts.extend([
+                                "Tenure:",
+                                history
+                            ])
+                            tenure_entries = history.split('\n')
+                            if tenure_entries:
+                                most_recent_tenure = tenure_entries[-1].lower()
+                                normalized_school_name = coach_service._normalize_name(school.school_name)
+                                if not most_recent_tenure.endswith(f"@{normalized_school_name}"):
+                                    coach_summary_parts.append("*No longer at this school*")
+                        else:
+                            coach_summary_parts.append("*No longer at this school*")
+                        
+                        coach_summary_parts.append(summary)
+                        coach_summary = "\n".join(coach_summary_parts)
+                        
+                        # Store the initial summary with its date
+                        school.sport_summaries[sport][coach_name] = coach_summary
+                        school.sport_review_dates[sport][coach_name] = coach_review_list[0].created_at.isoformat()
+                        school.save()
+                        
+                        coach_summaries.append(coach_summary)
+                        
+                    except Exception as e:
+                        logger.error(f"Error generating initial summary for {coach_name}: {str(e)}")
+                        continue
+
+        # Combine all summaries with double newlines
         final_summary = "\n\n".join(coach_summaries)
-        
-        # Update cache
-        if not school.sport_summaries:
-            school.sport_summaries = {}
-        if not school.sport_review_dates:
-            school.sport_review_dates = {}
-            
-        school.sport_summaries[sport] = final_summary
-        school.sport_review_dates[sport] = reviews.first().created_at.isoformat()
-        school.save()
-        
         return Response({"summary": final_summary})
             
     except Exception as e:

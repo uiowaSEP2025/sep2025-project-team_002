@@ -28,7 +28,7 @@ class ReviewCreateView(generics.CreateAPIView):
             
             # Get coach history from JSON data only
             coach_service = CoachSearchService()
-            history, _ = coach_service.search_coach_history(coach_name, school.school_name)
+            history, _ = coach_service.search_coach_history(coach_name, school.school_name, sport)
             
             # Only save the review with coach history if it exists in JSON
             review = serializer.save(
@@ -37,11 +37,16 @@ class ReviewCreateView(generics.CreateAPIView):
                 coach_no_longer_at_university=False  # This will be determined by frontend display logic
             )
             
-            # Clear the stored summary to force regeneration on next request
+            # Only clear the summary for this specific coach
             school = review.school
-            if school.sport_summaries:
-                school.sport_summaries.pop(review.sport, None)
-                school.save()
+            if school.sport_summaries and sport in school.sport_summaries:
+                # Get the existing summaries for this sport
+                sport_summaries = school.sport_summaries[sport]
+                # Only remove the summary for the coach being reviewed
+                if coach_name in sport_summaries:
+                    sport_summaries.pop(coach_name)
+                    school.sport_summaries[sport] = sport_summaries
+                    school.save()
             
             logger.info(f"Successfully created review for {coach_name} at {school.school_name}")
             
@@ -78,7 +83,7 @@ def get_school_reviews(request, school_id):
         reviews_data = []
         for review in reviews:
             # Check if coach is still at the school
-            history, _ = coach_service.search_coach_history(review.head_coach_name, school.school_name)
+            history, _ = coach_service.search_coach_history(review.head_coach_name, school.school_name, sport)
             is_no_longer_at_school = False
             
             if history and history != "No tenure found":
