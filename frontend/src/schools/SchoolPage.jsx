@@ -40,7 +40,7 @@ function SchoolPage() {
   const reviewsPerPage = 5;
 
   // Filter reviews by selected sport
-const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
+  const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
 
   // Calculate the index of the last review on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
@@ -229,6 +229,8 @@ const filteredReviews = school ? school.reviews.filter(review => review.sport ==
                       id={`review-${review.review_id}`}
                       key={review.review_id}
                       sx={{ mb: 2 }}
+                      data-testid={`review-${review.review_id}`}
+
                     >
                       <CardContent>
                         <Box
