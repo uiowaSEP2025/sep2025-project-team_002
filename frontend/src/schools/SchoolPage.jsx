@@ -16,6 +16,7 @@ import {
   Tabs,
   Tooltip,
   Tab,
+  Pagination,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from "@mui/icons-material/Home";
@@ -34,6 +35,25 @@ function SchoolPage() {
     email: "",
     transfer_type: ""
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 5;
+
+  // Filter reviews by selected sport
+  const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
+
+  // Calculate the index of the last review on the current page
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  // Calculate the index of the first review on the current page
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+
+  // Slice the reviews array to get the reviews for the current page
+  const currentReviews = filteredReviews.slice(indexOfFirstReview, indexOfLastReview);
+
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
+  };
+
   const AVATAR_BASE_URL = "../../public/assets/profile-pictures/";
 
 
@@ -203,13 +223,14 @@ function SchoolPage() {
                 </Box>
 
                 {/* Filter reviews by sport */}
-                {school.reviews
-                  .filter(review => review.sport === selectedSport)
+                {currentReviews
                   .map((review) => (
                     <Card
                       id={`review-${review.review_id}`}
                       key={review.review_id}
                       sx={{ mb: 2 }}
+                      data-testid={`review-${review.review_id}`}
+
                     >
                       <CardContent>
                         <Box
@@ -310,8 +331,18 @@ function SchoolPage() {
                           ))}
                         </Grid>
                       </CardContent>
+
                     </Card>
                   ))}
+                                      {/* Pagination */}
+      <Pagination
+        count={Math.ceil(filteredReviews.length / reviewsPerPage)} // Calculate number of pages
+        page={currentPage}
+        onChange={handleChangePage}
+        color="primary"
+        showFirstButton
+        showLastButton
+      />
               </CardContent>
             </Card>
           </Box>

@@ -5,6 +5,9 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SchoolPage from '../../schools/SchoolPage.jsx';
 import { UserProvider } from '../../context/UserContext.jsx';
+import userEvent from '@testing-library/user-event';
+
+
 
 // Define rating categories to test consistently
 const ratingCategories = [
@@ -45,6 +48,66 @@ const mockSchool = {
       sport: "Men's Basketball",
       head_coach_name: "John Doe",
       review_message: "Great program with excellent facilities",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174001", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "John Dane",
+      review_message: "Excellent Facilities",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174002", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "John Doppy",
+      review_message: "Great program",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174003", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "John Hanes",
+      review_message: "Nice environment",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174004", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "Jane Doe",
+      review_message: "Enjoyable experience",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174005", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "Jeff Doe",
+      review_message: "Great sports culture",
       // Use the same rating values defined above
       ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
       created_at: "2024-02-28T12:00:00Z",
@@ -214,30 +277,98 @@ describe('SchoolPage Component', () => {
       });
 
       consoleErrorSpy.mockRestore();
+  });
+
+  it('shows loading indicator while fetching data', async () => {
+    const delayedFetch = vi.fn(() =>
+      new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            ok: true,
+            json: () => Promise.resolve(mockSchool)
+          });
+        }, 100);
+      })
+    );
+
+    renderWithRouter(delayedFetch);
+
+    // Check that the initial "Loading..." screen shows
+    expect(screen.getByText(/^Loading\.\.\.$/)).toBeInTheDocument();
+
+    // Wait for school data to load
+    await screen.findByText("University of Iowa");
+
+    // Confirm "Loading..." screen is gone (but allow other loading text to remain)
+    expect(screen.queryByText(/^Loading\.\.\.$/)).not.toBeInTheDocument();
+  });
+
+  it('displays the correct number of reviews per page and supports pagination', async () => {
+    renderWithRouter();
+
+    // Ensure that the "Men's Basketball" tab exists and is clicked
+    const basketballTab = await screen.findByRole('tab', { name: "Men's Basketball" });
+    userEvent.click(basketballTab);
+
+    // Wait for reviews to be displayed
+    await waitFor(() => {
+      expect(screen.getByText('Great program with excellent facilities')).toBeInTheDocument();
     });
 
-    it('shows loading indicator while fetching data', async () => {
-      const delayedFetch = vi.fn(() =>
-        new Promise(resolve => {
-          setTimeout(() => {
-            resolve({
-              ok: true,
-              json: () => Promise.resolve(mockSchool)
-            });
-          }, 100);
-        })
-      );
+    // Test if the correct number of reviews per page (5 reviews) are shown
+    const reviewCards = screen.getAllByTestId(/^review-/);  // Ensure this matches your `data-testid`
+    expect(reviewCards.length).toBe(5);  // This should be 5 reviews per page
 
-      renderWithRouter(delayedFetch);
+    // Test pagination by clicking next
+    const pagination = screen.getByRole('navigation', { name: /pagination/ });
+    const nextButton = within(pagination).getByRole('button', { name: /next page/i });
+    userEvent.click(nextButton);
 
-      // Check that the initial "Loading..." screen shows
-      expect(screen.getByText(/^Loading\.\.\.$/)).toBeInTheDocument();
-
-      // Wait for school data to load
-      await screen.findByText("University of Iowa");
-
-      // Confirm "Loading..." screen is gone (but allow other loading text to remain)
-      expect(screen.queryByText(/^Loading\.\.\.$/)).not.toBeInTheDocument();
+    // Wait for page change and verify next reviews are displayed
+    await waitFor(() => {
+      expect(screen.getByText('Great sports culture')).toBeInTheDocument();
     });
+
+    const nextReviewCards = screen.getAllByTestId(/^review-/);
+    expect(nextReviewCards.length).toBe(1); // Should show 1 review on the next page
+  });
+
+  it('shows pagination control when reviews exceed the page limit', async () => {
+    renderWithRouter();
+    // Verify that pagination control exists
+    await waitFor(() => {
+      expect(screen.getByRole('list')).toBeInTheDocument();
+    });
+
+    const pagination = screen.getByRole('list'); // This will target the pagination list
+
+    // Check if "Next" button is available for pagination
+    expect(within(pagination).getByRole('button', { name: /next page/i })).toBeInTheDocument();
+  });
+
+
+  it('changes the page number and displays the correct reviews', async () => {
+    renderWithRouter();
+    // Verify that pagination control exists
+    await waitFor(() => {
+      expect(screen.getByRole('list')).toBeInTheDocument();
+    });
+
+    // Simulate switching to page 2 (assuming 5 reviews per page and 6 total reviews)
+    const pagination = screen.getByRole('list'); // Query pagination by role="list"
+
+    const nextButton = within(pagination).getByRole('button', { name: /next page/i });
+
+    // Simulate clicking on the next page
+    userEvent.click(nextButton);
+
+    // Wait for page change and verify next reviews are displayed
+    await waitFor(() => {
+      expect(screen.getByText('Great sports culture')).toBeInTheDocument();
+    });
+  });
+
+
+
 
 });
