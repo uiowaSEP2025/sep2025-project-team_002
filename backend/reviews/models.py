@@ -24,3 +24,24 @@ class Reviews(models.Model):
 
     def __str__(self):
         return f"Review {self.review_id} for {self.school.school_name}"
+
+class ReviewVote(models.Model):
+    VOTE_CHOICES = [
+        (1, 'helpful'),
+        (0, 'unhelpful'),
+    ]
+
+    review = models.ForeignKey('Reviews', on_delete=models.CASCADE, related_name='votes')
+    user = models.ForeignKey(Users, on_delete=models.CASCADE)  # or settings.AUTH_USER_MODEL
+    vote = models.IntegerField(choices=VOTE_CHOICES)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('review', 'user')
+        indexes = [
+            models.Index(fields=['review', 'user']),
+        ]
+
+    def __str__(self):
+        return f"{self.user} voted {self.get_vote_display()} on {self.review}"

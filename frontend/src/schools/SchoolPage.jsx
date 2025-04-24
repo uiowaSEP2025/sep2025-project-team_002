@@ -19,6 +19,8 @@ import {
   Pagination,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
@@ -52,6 +54,42 @@ function SchoolPage() {
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
+  };
+
+  const handleVote = async (reviewId, voteValue) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `${API_BASE_URL}/api/reviews/${reviewId}/vote/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ vote: voteValue }),
+        }
+      );
+      if (!response.ok) throw new Error('Vote failed');
+
+      const data = await response.json();
+      setSchool((prev) => {
+        const newReviews = prev.reviews.map((r) => {
+          if (r.review_id === reviewId) {
+            return {
+              ...r,
+              my_vote: data.vote,
+              helpful_count: data.helpful_count,
+              unhelpful_count: data.unhelpful_count,
+            };
+          }
+          return r;
+        });
+        return { ...prev, reviews: newReviews };
+      });
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const AVATAR_BASE_URL = "../../public/assets/profile-pictures/";
@@ -330,6 +368,25 @@ function SchoolPage() {
                             </Grid>
                           ))}
                         </Grid>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                          <Button
+                            startIcon={<ThumbUpIcon />}
+                            onClick={() => handleVote(review.review_id, 1)}
+                            variant={review.my_vote === 1 ? 'contained' : 'outlined'}
+                            size="small"
+                          >
+                            Helpful ({review.helpful_count})
+                          </Button>
+                          <Button
+                            startIcon={<ThumbDownIcon />}
+                            onClick={() => handleVote(review.review_id, 0)}
+                            variant={review.my_vote === 0 ? 'contained' : 'outlined'}
+                            size="small"
+                            sx={{ ml: 1 }}
+                          >
+                            Unhelpful ({review.unhelpful_count})
+                          </Button>
+                        </Box>
                       </CardContent>
 
                     </Card>
