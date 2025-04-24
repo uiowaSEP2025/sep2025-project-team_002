@@ -26,14 +26,14 @@ class ReviewCreateView(generics.CreateAPIView):
             sport = self.request.data.get('sport')
             coach_name = self.request.data.get('head_coach_name')
             
-            # Get coach history for all sports
+            # Get coach history from JSON data only
             coach_service = CoachSearchService()
             history, _ = coach_service.search_coach_history(coach_name, school.school_name)
             
-            # Save the review with coach history
+            # Only save the review with coach history if it exists in JSON
             review = serializer.save(
                 user=self.request.user,
-                coach_history=history,
+                coach_history=history,  # Will be None if not in JSON
                 coach_no_longer_at_university=False  # This will be determined by frontend display logic
             )
             
@@ -41,16 +41,13 @@ class ReviewCreateView(generics.CreateAPIView):
             school = review.school
             if school.sport_summaries:
                 school.sport_summaries.pop(review.sport, None)
-            if school.sport_review_dates:
-                school.sport_review_dates.pop(review.sport, None)
-            school.save()
-
-            return review
+                school.save()
             
-        except Schools.DoesNotExist:
-            raise serializers.ValidationError({"error": "School not found"})
+            logger.info(f"Successfully created review for {coach_name} at {school.school_name}")
+            
         except Exception as e:
-            raise serializers.ValidationError({"error": str(e)})
+            logger.error(f"Error creating review: {str(e)}")
+            raise serializers.ValidationError(str(e))
 
 
 class UserReviewsView(generics.ListAPIView):

@@ -99,20 +99,16 @@ def get_review_summary(request, school_id):
                 coach_reviews[coach_name] = []
             coach_reviews[coach_name].append(review)
 
-        # Initialize OpenAI client
+        # Initialize OpenAI client and CoachSearchService
         client = OpenAI()
-        
-        # Initialize CoachSearchService
         coach_service = CoachSearchService()
         
         # Generate summaries for each coach
         coach_summaries = []
         for coach_name, coach_review_list in coach_reviews.items():
-            # Get coach history using Azure AI
+            # Get coach history 
             history, error = coach_service.search_coach_history(coach_name, school.school_name)
-            logger.info(f"Tenure search results - Coach: {coach_name}")
-            logger.info(f"History: '{history}'")
-            logger.info(f"Error: {error}")
+            logger.info(f"Tenure search results - Coach: {coach_name}, History: '{history}', Error: {error}")
             
             # Prepare reviews text for this coach
             reviews_text = " ".join([review.review_message for review in coach_review_list])
@@ -136,13 +132,13 @@ def get_review_summary(request, school_id):
                 
                 summary = response.choices[0].message.content
                 
-                # Format the coach summary with tenure history first, then the review summary
-                if history and any(char.isdigit() for char in history):
-                    logger.info(f"Adding tenure history to summary for {coach_name}")
-                    coach_summary = f"Reviews for {coach_name}:\n{history}\n\n{summary}"
+                # Format the coach summary: Tenure first, then the review summary
+                if history and history != "No tenure found.": # Check if valid history exists
+                    tenure_section = f"Tenure:\n{history}\n"
                 else:
-                    logger.info(f"No tenure history to add for {coach_name}")
-                    coach_summary = f"Reviews for {coach_name}:\n{summary}"
+                    tenure_section = "No tenure found.\n"
+                
+                coach_summary = f"Reviews for {coach_name}:\n{tenure_section}\n{summary}"
                 
                 logger.info(f"Final coach summary for {coach_name}: {coach_summary}")
                 coach_summaries.append(coach_summary)
@@ -150,13 +146,18 @@ def get_review_summary(request, school_id):
             except Exception as e:
                 logger.error(f"OpenAI API error: {str(e)}")
                 # Fallback to concatenated reviews on API error
-                reviews_text = "\n\n".join([
-                    f"Review from {review.created_at.strftime('%Y-%m-%d')}:\n{review.review_message}"
+                if history and history != "No tenure found.":
+                    tenure_section = f"Tenure:\n{history}\n"
+                else:
+                    tenure_section = "No tenure found.\n"
+                
+                reviews_text = "\n".join([
+                    f"Review from {review.created_at.strftime('%Y-%m-%d')}: {review.review_message}"
                     for review in coach_review_list
                 ])
-                coach_summaries.append(f"Reviews for {coach_name}:\n{reviews_text}")
+                coach_summaries.append(f"Reviews for {coach_name}:\n{tenure_section}\n{reviews_text}")
         
-        # Combine all coach summaries with newlines between them
+        # Combine all coach summaries with double newlines between them
         final_summary = "\n\n".join(coach_summaries)
         
         # Update cache

@@ -41,23 +41,6 @@ const ReviewSummary = ({ schoolId, sport }) => {
           const fullSummary = data.summary;
           setSummary(fullSummary);
           console.log('Summary set:', fullSummary);
-          console.log('FULL REVIEW SUMMARY RECEIVED:', fullSummary); 
-
-          // Extract and log only the tenure part
-          const lines = fullSummary.split('\n');
-          // Find the tenure lines - they should be between "Reviews for" and the next empty line
-          const startIndex = lines.findIndex(line => line.includes('Reviews for')) + 1;
-          const endIndex = lines.findIndex((line, idx) => idx > startIndex && line.trim() === '');
-          
-          if (startIndex > 0 && endIndex > startIndex) {
-            const tenureLines = lines.slice(startIndex, endIndex).filter(line => line.trim());
-            if (tenureLines.length > 0) {
-              console.log('TENURE HISTORY:');
-              tenureLines.forEach(line => console.log(line.trim()));
-            }
-          } else {
-            console.log('No tenure information found in expected format');
-          }
 
         } else {
           setError(data.error || 'Failed to fetch summary');
