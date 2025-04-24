@@ -1,8 +1,53 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Typography, Paper, Grid, Divider } from '@mui/material';
 import RatingRow from './RatingRow';
+import API_BASE_URL from '../utils/config';
 
-const ReviewList = ({ reviews }) => {
+const ReviewList = ({ schoolId, sport }) => {
+  const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/reviews/school/${schoolId}/?sport=${encodeURIComponent(sport)}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch reviews');
+        }
+        const data = await response.json();
+        console.log('Fetched reviews:', data);
+        setReviews(data);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching reviews:', err);
+        setError(err.message);
+        setLoading(false);
+      }
+    };
+
+    if (schoolId && sport) {
+      console.log('Fetching reviews for:', { schoolId, sport });
+      fetchReviews();
+    }
+  }, [schoolId, sport]);
+
+  if (loading) {
+    return (
+      <Box sx={{ mt: 3 }}>
+        <Typography>Loading reviews...</Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ mt: 3 }}>
+        <Typography color="error">Error loading reviews: {error}</Typography>
+      </Box>
+    );
+  }
+
   if (!reviews || reviews.length === 0) {
     return (
       <Box sx={{ mt: 3 }}>
@@ -10,7 +55,7 @@ const ReviewList = ({ reviews }) => {
           No reviews available
         </Typography>
       </Box>
-  );
+    );
   }
 
   return (
@@ -20,7 +65,7 @@ const ReviewList = ({ reviews }) => {
       </Typography>
       {reviews.map((review, index) => (
         <Paper key={index} sx={{ p: 2, mb: 2 }}>
-          <Typography variant="h6">
+          <Typography variant="h6" sx={{ mb: 2 }}>
             Head Coach: {review.head_coach_name}
           </Typography>
           

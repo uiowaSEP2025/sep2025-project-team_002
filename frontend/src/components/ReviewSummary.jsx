@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Box } from '@mui/material';
 import API_BASE_URL from '../utils/config';
 
 const ReviewSummary = ({ schoolId, sport }) => {
@@ -11,6 +11,36 @@ const ReviewSummary = ({ schoolId, sport }) => {
     "Men's Basketball": "mbb",
     "Women's Basketball": "wbb",
     "Football": "fb"
+  };
+
+  // Helper function to parse markdown bold and italic syntax
+  const renderFormattedText = (text) => {
+    // First split by bold syntax
+    const parts = text.split(/(\*\*.*?\*\*)/);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        // Handle bold text
+        return <strong key={i}>{part.slice(2, -2)}</strong>;
+      } else if (part.startsWith('*') && part.endsWith('*')) {
+        // Handle italic text with custom color for the status tag
+        return (
+          <em key={i} style={{ color: '#ff6b6b', fontStyle: 'italic', marginLeft: '8px' }}>
+            {part.slice(1, -1)}
+          </em>
+        );
+      }
+      // Further split remaining text by italic syntax
+      return part.split(/(\*.*?\*)/).map((subPart, j) => {
+        if (subPart.startsWith('*') && subPart.endsWith('*')) {
+          return (
+            <em key={`${i}-${j}`} style={{ color: '#ff6b6b', fontStyle: 'italic', marginLeft: '8px' }}>
+              {subPart.slice(1, -1)}
+            </em>
+          );
+        }
+        return subPart;
+      });
+    });
   };
 
   useEffect(() => {
@@ -71,7 +101,24 @@ const ReviewSummary = ({ schoolId, sport }) => {
   }
 
   console.log('Rendering summary:', summary);
-  return <Typography>{summary}</Typography>;
+  // Split the summary into paragraphs and render each with proper spacing
+  return (
+    <Box>
+      {summary.split('\n').map((paragraph, index) => (
+        paragraph ? (
+          <Typography 
+            key={index} 
+            sx={{ 
+              mb: 0.5, // Reduced margin bottom
+              ...(paragraph.includes('**') && { mt: 1.5 }) // Add margin top only for new coach sections
+            }}
+          >
+            {renderFormattedText(paragraph)}
+          </Typography>
+        ) : <Box key={index} sx={{ height: '0.5em' }} /> // Reduced empty line spacing
+      ))}
+    </Box>
+  );
 };
 
 export default ReviewSummary; 

@@ -70,7 +70,8 @@ class CoachSearchService:
             'ucla': 'california los angeles',
             'ucf': 'central florida',
             'ole miss': 'mississippi',
-            'unc greensboro': 'greensboro'
+            'unc greensboro': 'greensboro',
+            'penn': 'pennsylvania'
         }
         
         for short_name, full_name in common_mappings.items():

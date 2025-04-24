@@ -132,13 +132,32 @@ def get_review_summary(request, school_id):
                 
                 summary = response.choices[0].message.content
                 
-                # Format the coach summary: Tenure first, then the review summary
-                if history and history != "No tenure found.": # Check if valid history exists
-                    tenure_section = f"Tenure:\n{history}\n"
-                else:
-                    tenure_section = "No tenure found.\n"
+                # Format the coach summary with proper line breaks
+                coach_summary_parts = [f"**{coach_name}**:"]
                 
-                coach_summary = f"Reviews for {coach_name}:\n{tenure_section}\n{summary}"
+                # Add tenure if it exists
+                if history and history != "No tenure found":
+                    coach_summary_parts.extend([
+                        "Tenure:",
+                        history
+                    ])
+                    
+                    # Check if coach is no longer at this school
+                    tenure_entries = history.split('\n')
+                    if tenure_entries:
+                        most_recent_tenure = tenure_entries[-1].lower()
+                        normalized_school_name = coach_service._normalize_name(school.school_name)
+                        if not most_recent_tenure.endswith(f"@{normalized_school_name}"):
+                            coach_summary_parts.append("*No longer at this school*")
+                else:
+                    # If no tenure found, add the tag
+                    coach_summary_parts.append("*No longer at this school*")
+                
+                # Add the review summary
+                coach_summary_parts.append(summary)
+                
+                # Join all parts with single newline
+                coach_summary = "\n".join(coach_summary_parts)
                 
                 logger.info(f"Final coach summary for {coach_name}: {coach_summary}")
                 coach_summaries.append(coach_summary)
@@ -146,16 +165,31 @@ def get_review_summary(request, school_id):
             except Exception as e:
                 logger.error(f"OpenAI API error: {str(e)}")
                 # Fallback to concatenated reviews on API error
-                if history and history != "No tenure found.":
-                    tenure_section = f"Tenure:\n{history}\n"
+                coach_summary_parts = [f"**{coach_name}**:"]
+                
+                # Add tenure if it exists
+                if history and history != "No tenure found":
+                    coach_summary_parts.extend([
+                        "Tenure:",
+                        history
+                    ])
+                    
+                    # Check if coach is no longer at this school
+                    tenure_entries = history.split('\n')
+                    if tenure_entries:
+                        most_recent_tenure = tenure_entries[-1].lower()
+                        normalized_school_name = coach_service._normalize_name(school.school_name)
+                        if not most_recent_tenure.endswith(f"@{normalized_school_name}"):
+                            coach_summary_parts.append("*No longer at this school*")
                 else:
-                    tenure_section = "No tenure found.\n"
+                    # If no tenure found, add the tag
+                    coach_summary_parts.append("*No longer at this school*")
                 
                 reviews_text = "\n".join([
                     f"Review from {review.created_at.strftime('%Y-%m-%d')}: {review.review_message}"
                     for review in coach_review_list
                 ])
-                coach_summaries.append(f"Reviews for {coach_name}:\n{tenure_section}\n{reviews_text}")
+                coach_summary_parts.append(reviews_text)
         
         # Combine all coach summaries with double newlines between them
         final_summary = "\n\n".join(coach_summaries)

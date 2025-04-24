@@ -72,13 +72,42 @@ def get_school_reviews(request, school_id):
             sport=sport
         ).order_by('-created_at')
 
-        reviews_data = [{
-            'id': review.id,
-            'rating': review.rating,
-            'text': review.text,
-            'created_at': review.created_at.isoformat(),
-            'user': review.user.username if review.user else 'Anonymous'
-        } for review in reviews]
+        # Initialize coach service for checking tenure
+        coach_service = CoachSearchService()
+
+        reviews_data = []
+        for review in reviews:
+            # Check if coach is still at the school
+            history, _ = coach_service.search_coach_history(review.head_coach_name, school.school_name)
+            is_no_longer_at_school = False
+            
+            if history and history != "No tenure found":
+                tenure_entries = history.split('\n')
+                if tenure_entries:
+                    most_recent_tenure = tenure_entries[-1].lower()
+                    normalized_school_name = coach_service._normalize_name(school.school_name)
+                    logger.info(f"Comparing schools - Most recent tenure: {most_recent_tenure}, Normalized school name: {normalized_school_name}")
+                    is_no_longer_at_school = not most_recent_tenure.endswith(f"@{normalized_school_name}")
+                    logger.info(f"Is no longer at school: {is_no_longer_at_school}")
+
+            review_data = {
+                'id': review.id,
+                'review_id': review.review_id,
+                'head_coach_name': review.head_coach_name,
+                'review_message': review.review_message,
+                'head_coach': review.head_coach,
+                'assistant_coaches': review.assistant_coaches,
+                'team_culture': review.team_culture,
+                'campus_life': review.campus_life,
+                'athletic_facilities': review.athletic_facilities,
+                'athletic_department': review.athletic_department,
+                'player_development': review.player_development,
+                'nil_opportunity': review.nil_opportunity,
+                'created_at': review.created_at.isoformat(),
+                'coach_history': history,
+                'is_no_longer_at_school': is_no_longer_at_school
+            }
+            reviews_data.append(review_data)
 
         logger.info(f"Successfully fetched {len(reviews_data)} reviews for school {school_id}, sport {sport}")
         return JsonResponse(reviews_data, safe=False)
