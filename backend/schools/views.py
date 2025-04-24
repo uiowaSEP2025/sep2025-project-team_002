@@ -52,6 +52,19 @@ class ProtectedSchoolDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 
+def _normalize_coach_name(name):
+    """Normalize coach name by converting to lowercase and stripping whitespace."""
+    return name.lower().strip()
+
+
+def _standardize_coach_name(name):
+    """Standardize coach name capitalization (e.g., 'jan JENSEN' -> 'Jan Jensen')."""
+    # Split into words and capitalize each word
+    words = name.split()
+    standardized = ' '.join(word.capitalize() for word in words)
+    return standardized
+
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_review_summary(request, school_id):
@@ -102,13 +115,18 @@ def get_review_summary(request, school_id):
         if not isinstance(school.sport_review_dates[sport], dict):
             school.sport_review_dates[sport] = {}
 
-        # Group reviews by coach
+        # Group reviews by normalized coach name
         coach_reviews = {}
         for review in reviews:
             coach_name = review.head_coach_name
-            if coach_name not in coach_reviews:
-                coach_reviews[coach_name] = []
-            coach_reviews[coach_name].append(review)
+            normalized_name = _normalize_coach_name(coach_name)
+            if normalized_name not in coach_reviews:
+                # Use standardized capitalization for the original name
+                coach_reviews[normalized_name] = {
+                    'original_name': _standardize_coach_name(coach_name),
+                    'reviews': []
+                }
+            coach_reviews[normalized_name]['reviews'].append(review)
 
         # Initialize OpenAI client and CoachSearchService
         client = OpenAI()
@@ -118,6 +136,7 @@ def get_review_summary(request, school_id):
         coach_summaries = []
         
         # First, handle the latest reviewed coach
+        latest_coach_normalized = _normalize_coach_name(latest_coach)
         stored_date = school.sport_review_dates[sport].get(latest_coach)
         needs_update = (
             latest_coach not in school.sport_summaries[sport] or  # No summary exists
@@ -174,7 +193,7 @@ def get_review_summary(request, school_id):
                         f"Head Coach Performance: {review.review_message if latest_coach.lower() in review.review_message.lower() else ''}",
                         f"Coaching Style: {review.review_message if 'coach' in review.review_message.lower() or 'coaching' in review.review_message.lower() else ''}",
                         f"Player Development: {review.review_message if 'development' in review.review_message.lower() or 'player development' in review.review_message.lower() else ''}"
-                    ]) for review in coach_reviews[latest_coach]
+                    ]) for review in coach_reviews[latest_coach_normalized]['reviews']
                 ])
             
                 # Generate summary using OpenAI
@@ -183,7 +202,7 @@ def get_review_summary(request, school_id):
                     messages=[
                         {
                             "role": "system",
-                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {latest_coach}. Provide a concise summary in exactly 2 sentences, focusing on coaching style, player development, and overall coaching performance. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{latest_coach}'). Focus only on coach-specific aspects."
+                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {coach_reviews[latest_coach_normalized]['original_name']}. Provide a concise summary in exactly 2 sentences, focusing on coaching style, player development, and overall coaching performance. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{coach_reviews[latest_coach_normalized]['original_name']}'). Focus only on coach-specific aspects."
                         },
                         {"role": "user", "content": reviews_text}
                     ],
@@ -196,7 +215,7 @@ def get_review_summary(request, school_id):
                 summary = response.choices[0].message.content
                 
                 # Format the coach summary
-                coach_summary_parts = [f"**{latest_coach}**:"]
+                coach_summary_parts = [f"**{coach_reviews[latest_coach_normalized]['original_name']}**:"]
                 
                 if history and history != "No tenure found":
                     coach_summary_parts.extend([
@@ -217,8 +236,8 @@ def get_review_summary(request, school_id):
                 coach_summary = "\n".join(coach_summary_parts)
                 
                 # Store the new summary and date
-                school.sport_summaries[sport][latest_coach] = coach_summary
-                school.sport_review_dates[sport][latest_coach] = latest_review_date
+                school.sport_summaries[sport][coach_reviews[latest_coach_normalized]['original_name']] = coach_summary
+                school.sport_review_dates[sport][coach_reviews[latest_coach_normalized]['original_name']] = latest_review_date
                 school.save()
                 
                 coach_summaries.append(coach_summary)
@@ -226,11 +245,11 @@ def get_review_summary(request, school_id):
             except Exception as e:
                 logger.error(f"Error generating summary for {latest_coach}: {str(e)}")
                 # Use existing summary if available
-                if latest_coach in school.sport_summaries[sport]:
-                    coach_summaries.append(school.sport_summaries[sport][latest_coach])
+                if coach_reviews[latest_coach_normalized]['original_name'] in school.sport_summaries[sport]:
+                    coach_summaries.append(school.sport_summaries[sport][coach_reviews[latest_coach_normalized]['original_name']])
                 else:
                     # Create basic fallback summary
-                    coach_summary_parts = [f"**{latest_coach}**:"]
+                    coach_summary_parts = [f"**{coach_reviews[latest_coach_normalized]['original_name']}**:"]
                     if history and history != "No tenure found":
                         coach_summary_parts.extend([
                             "Tenure:",
@@ -246,26 +265,28 @@ def get_review_summary(request, school_id):
                     
                     reviews_text = "\n".join([
                         f"Review from {review.created_at.strftime('%Y-%m-%d')}: {review.review_message}"
-                        for review in coach_reviews[latest_coach]
+                        for review in coach_reviews[latest_coach_normalized]['reviews']
                     ])
                     coach_summary_parts.append(reviews_text)
                     coach_summary = "\n".join(coach_summary_parts)
                     
                     # Store the fallback summary
-                    school.sport_summaries[sport][latest_coach] = coach_summary
-                    school.sport_review_dates[sport][latest_coach] = latest_review_date
+                    school.sport_summaries[sport][coach_reviews[latest_coach_normalized]['original_name']] = coach_summary
+                    school.sport_review_dates[sport][coach_reviews[latest_coach_normalized]['original_name']] = latest_review_date
                     school.save()
                     
                     coach_summaries.append(coach_summary)
         else:
             # Use existing summary for the latest coach
-            coach_summaries.append(school.sport_summaries[sport][latest_coach])
+            coach_summaries.append(school.sport_summaries[sport][coach_reviews[latest_coach_normalized]['original_name']])
 
         # For other coaches, ONLY use existing summaries from the database
-        for coach_name in coach_reviews.keys():
-            if coach_name != latest_coach and coach_name in school.sport_summaries[sport]:
-                # Only append existing summaries, never generate new ones
-                coach_summaries.append(school.sport_summaries[sport][coach_name])
+        for normalized_name, coach_data in coach_reviews.items():
+            if normalized_name != latest_coach_normalized:
+                original_name = coach_data['original_name']
+                if original_name in school.sport_summaries[sport]:
+                    # Only append existing summaries, never generate new ones
+                    coach_summaries.append(school.sport_summaries[sport][original_name])
 
         # Add the general summary at the end
         final_parts = coach_summaries + ["**Program Overview**:", general_summary]
