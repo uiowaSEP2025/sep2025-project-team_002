@@ -4,6 +4,7 @@ from .serializers import ReviewsSerializer, ReviewVoteSerializer
 from django.db.models import Count, Q
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 
 
 class CreateReviewView(generics.CreateAPIView):
@@ -40,19 +41,30 @@ class ReviewVoteAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, review_id):
-        review = Reviews.objects.get(review_id=review_id)
-        serializer = ReviewVoteSerializer(data={
-            'review': review.pk,
-            'vote': request.data.get('vote'),
-        }, context={'request': request})
-        serializer.is_valid(raise_exception=True)
+        review = get_object_or_404(Reviews, review_id=review_id)
+        try:
+            vote_value = int(request.data.get('vote'))
+        except (TypeError, ValueError):
+            return Response({'detail': 'Invalid vote value.'}, status=status.HTTP_400_BAD_REQUEST)
+        if vote_value not in (0, 1):
+            return Response({'detail': 'Vote must be 0 or 1.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        obj, created = ReviewVote.objects.update_or_create(
-            review=review, user=request.user,
-            defaults={'vote': serializer.validated_data['vote']}
-        )
+        existing = ReviewVote.objects.filter(review=review, user=request.user).first()
+        if existing and existing.vote == vote_value:
+            existing.delete()
+            current_vote = None
+        else:
+            obj, created = ReviewVote.objects.update_or_create(
+                review=review, user=request.user,
+                defaults={'vote': vote_value}
+            )
+            current_vote = obj.vote
+
+        helpful_count = review.votes.filter(vote=1).count()
+        unhelpful_count = review.votes.filter(vote=0).count()
+
         return Response({
-            'vote': obj.vote,
-            'helpful_count': review.votes.filter(vote=1).count(),
-            'unhelpful_count': review.votes.filter(vote=0).count(),
+            'vote': current_vote,
+            'helpful_count': helpful_count,
+            'unhelpful_count': unhelpful_count,
         }, status=status.HTTP_200_OK)
