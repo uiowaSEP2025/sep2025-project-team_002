@@ -124,14 +124,58 @@ def get_review_summary(request, school_id):
             (stored_date and stored_date < latest_review_date)  # Summary is outdated
         )
         
+        # Get all reviews text for general aspects (facilities, NIL, etc.)
+        all_reviews_text = " ".join([
+            " ".join([
+                f"Athletic Facilities: {review.review_message if 'facilities' in review.review_message.lower() else ''}",
+                f"NIL Opportunities: {review.review_message if 'nil' in review.review_message.lower() else ''}",
+                f"Campus Life: {review.review_message if 'campus' in review.review_message.lower() else ''}",
+                f"Athletic Department: {review.review_message if 'department' in review.review_message.lower() or 'athletic department' in review.review_message.lower() else ''}",
+                f"Team Culture: {review.review_message if 'culture' in review.review_message.lower() or 'team culture' in review.review_message.lower() else ''}"
+            ]) for review in reviews
+        ])
+
+        # Generate general summary
+        try:
+            general_response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": f"You are a helpful assistant that summarizes general aspects of {sport} programs (excluding coach-specific information). Focus on athletic facilities, NIL opportunities, campus life, athletic department support, and team culture. Provide a concise 2-3 sentence summary that captures the overall sentiment about these aspects from the reviews."
+                    },
+                    {"role": "user", "content": all_reviews_text}
+                ],
+                max_tokens=250,
+                temperature=0.7,
+                presence_penalty=0.6,
+                frequency_penalty=0.6
+            )
+            general_summary = general_response.choices[0].message.content
+            
+            # Store the general summary
+            if not isinstance(school.sport_summaries[sport], dict):
+                school.sport_summaries[sport] = {}
+            school.sport_summaries[sport]['general_summary'] = general_summary
+            school.save()
+        except Exception as e:
+            logger.error(f"Error generating general summary: {str(e)}")
+            general_summary = school.sport_summaries[sport].get('general_summary', '')
+        
         if needs_update:
             try:
                 # Get coach history 
                 history, error = coach_service.search_coach_history(latest_coach, school.school_name, sport)
                 logger.info(f"Generating new summary for {latest_coach} due to new review")
                 
-                # Prepare reviews text
-                reviews_text = " ".join([review.review_message for review in coach_reviews[latest_coach]])
+                # Prepare reviews text - only coach-specific aspects
+                reviews_text = " ".join([
+                    " ".join([
+                        f"Head Coach Performance: {review.review_message if latest_coach.lower() in review.review_message.lower() else ''}",
+                        f"Coaching Style: {review.review_message if 'coach' in review.review_message.lower() or 'coaching' in review.review_message.lower() else ''}",
+                        f"Player Development: {review.review_message if 'development' in review.review_message.lower() or 'player development' in review.review_message.lower() else ''}"
+                    ]) for review in coach_reviews[latest_coach]
+                ])
             
                 # Generate summary using OpenAI
                 response = client.chat.completions.create(
@@ -139,7 +183,7 @@ def get_review_summary(request, school_id):
                     messages=[
                         {
                             "role": "system",
-                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {latest_coach}. Provide a concise summary in exactly 2 sentences, focusing on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{latest_coach}'). Include specific details about coaching style, program culture, and player development when mentioned."
+                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {latest_coach}. Provide a concise summary in exactly 2 sentences, focusing on coaching style, player development, and overall coaching performance. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{latest_coach}'). Focus only on coach-specific aspects."
                         },
                         {"role": "user", "content": reviews_text}
                     ],
@@ -217,66 +261,17 @@ def get_review_summary(request, school_id):
             # Use existing summary for the latest coach
             coach_summaries.append(school.sport_summaries[sport][latest_coach])
 
-        # Now handle other coaches - ONLY use their existing summaries, never regenerate
-        for coach_name, coach_review_list in coach_reviews.items():
-            if coach_name != latest_coach:
-                if coach_name in school.sport_summaries[sport]:
-                    # Use existing summary
-                    coach_summaries.append(school.sport_summaries[sport][coach_name])
-                else:
-                    # If no summary exists for this coach, generate an initial one
-                    try:
-                        history, error = coach_service.search_coach_history(coach_name, school.school_name, sport)
-                        reviews_text = " ".join([review.review_message for review in coach_review_list])
-                        
-                        response = client.chat.completions.create(
-                            model="gpt-3.5-turbo",
-                            messages=[
-                                {
-                                    "role": "system",
-                                    "content": f"You are a helpful assistant that summarizes {sport} program reviews for {coach_name}. Provide a concise summary in exactly 2 sentences, focusing on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{coach_name}'). Include specific details about coaching style, program culture, and player development when mentioned."
-                                },
-                                {"role": "user", "content": reviews_text}
-                            ],
-                            max_tokens=250,
-                            temperature=0.7,
-                            presence_penalty=0.6,
-                            frequency_penalty=0.6
-                        )
-                        
-                        summary = response.choices[0].message.content
-                        coach_summary_parts = [f"**{coach_name}**:"]
-                        
-                        if history and history != "No tenure found":
-                            coach_summary_parts.extend([
-                                "Tenure:",
-                                history
-                            ])
-                            tenure_entries = history.split('\n')
-                            if tenure_entries:
-                                most_recent_tenure = tenure_entries[-1].lower()
-                                normalized_school_name = coach_service._normalize_name(school.school_name)
-                                if not most_recent_tenure.endswith(f"@{normalized_school_name}"):
-                                    coach_summary_parts.append("*No longer at this school*")
-                        else:
-                            coach_summary_parts.append("*No longer at this school*")
-                        
-                        coach_summary_parts.append(summary)
-                        coach_summary = "\n".join(coach_summary_parts)
-                        
-                        # Store the initial summary with its date
-                        school.sport_summaries[sport][coach_name] = coach_summary
-                        school.sport_review_dates[sport][coach_name] = coach_review_list[0].created_at.isoformat()
-                        school.save()
-                        
-                        coach_summaries.append(coach_summary)
-                        
-                    except Exception as e:
-                        logger.error(f"Error generating initial summary for {coach_name}: {str(e)}")
-                        continue
+        # For other coaches, ONLY use existing summaries from the database
+        for coach_name in coach_reviews.keys():
+            if coach_name != latest_coach and coach_name in school.sport_summaries[sport]:
+                # Only append existing summaries, never generate new ones
+                coach_summaries.append(school.sport_summaries[sport][coach_name])
 
+        # Add the general summary at the end
+        final_parts = coach_summaries + ["**Program Overview**:", general_summary]
+        
         # Combine all summaries with double newlines
-        final_summary = "\n\n".join(coach_summaries)
+        final_summary = "\n\n".join(final_parts)
         return Response({"summary": final_summary})
             
     except Exception as e:
