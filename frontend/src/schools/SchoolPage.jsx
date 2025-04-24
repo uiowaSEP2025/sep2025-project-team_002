@@ -44,13 +44,25 @@ function SchoolPage() {
   // Filter reviews by selected sport
   const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
 
+  const sortedReviews = React.useMemo(() => {
+    return [...filteredReviews].sort((a, b) => {
+      if (a.helpful_count !== b.helpful_count) {
+        return b.helpful_count - a.helpful_count;
+      }
+      if (a.unhelpful_count !== b.unhelpful_count) {
+        return a.unhelpful_count - b.unhelpful_count;
+      }
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+  }, [filteredReviews]);
+
   // Calculate the index of the last review on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
   // Calculate the index of the first review on the current page
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
 
   // Slice the reviews array to get the reviews for the current page
-  const currentReviews = filteredReviews.slice(indexOfFirstReview, indexOfLastReview);
+  const currentReviews = sortedReviews.slice(indexOfFirstReview, indexOfLastReview);
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
