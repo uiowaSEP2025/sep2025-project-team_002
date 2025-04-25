@@ -1,0 +1,3207 @@
+[
+  {
+    "person": "Al Golden",
+    "tenure": "2010-2015 @Miami FL\n2005-2010 @Temple",
+    "current_institution": ""
+  },
+  {
+    "person": "Al Groh",
+    "tenure": "2000-2009 @Virginia",
+    "current_institution": ""
+  },
+  {
+    "person": "Al Kincaid",
+    "tenure": "1989-1991 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Al Luginbill",
+    "tenure": "1988-1993 @San Diego State",
+    "current_institution": ""
+  },
+  {
+    "person": "Al Molde",
+    "tenure": "1986-1996 @Western Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Alex Golesh",
+    "tenure": "2022-2024 @South Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Andy Avalos",
+    "tenure": "2020-2023 @Boise State",
+    "current_institution": ""
+  },
+  {
+    "person": "Andy McCollum",
+    "tenure": "1998-2005 @Middle Tennessee",
+    "current_institution": ""
+  },
+  {
+    "person": "Art Baker",
+    "tenure": "1986-1988 @East Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Art Briles",
+    "tenure": "2007-2015 @Baylor\n2002-2007 @Houston",
+    "current_institution": ""
+  },
+  {
+    "person": "Barry Alvarez",
+    "tenure": "1989-2005 @Wisconsin",
+    "current_institution": ""
+  },
+  {
+    "person": "Barry Odom",
+    "tenure": "2022-2024 @UNLV\n2015-2019 @Missouri",
+    "current_institution": ""
+  },
+  {
+    "person": "Barry Switzer",
+    "tenure": "1986-1988 @Oklahoma",
+    "current_institution": ""
+  },
+  {
+    "person": "Barry Wilson",
+    "tenure": "1989-1993 @Duke",
+    "current_institution": ""
+  },
+  {
+    "person": "Biff Poggi",
+    "tenure": "2022-2024 @Charlotte",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Belichick",
+    "tenure": "2024-2025 @North Carolina",
+    "current_institution": "North Carolina"
+  },
+  {
+    "person": "Bill Blankenship",
+    "tenure": "2010-2014 @Tulsa",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Callahan",
+    "tenure": "2003-2007 @Nebraska",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Clark",
+    "tenure": "2013-2014 @UAB\n2016-2021 @UAB",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Cubit",
+    "tenure": "2014-2015 @Illinois\n2004-2012 @Western Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Curry",
+    "tenure": "2007-2012 @Georgia State\n1989-1996 @Kentucky\n1986-1989 @Alabama",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Dando",
+    "tenure": "1986-1989 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Doba",
+    "tenure": "2002-2007 @Washington State",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Dooley",
+    "tenure": "1986-1992 @Wake Forest",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Lewis",
+    "tenure": "1991-1994 @Georgia Tech\n1988-1991 @East Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Lynch",
+    "tenure": "2006-2010 @Indiana\n1994-2002 @Ball State",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Mallory",
+    "tenure": "1986-1996 @Indiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill McCartney",
+    "tenure": "1986-1994 @Colorado",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill O'Brien",
+    "tenure": "2023-2024 @Boston College\n2011-2013 @Penn State",
+    "current_institution": "Boston College"
+  },
+  {
+    "person": "Bill Snyder",
+    "tenure": "1988-2005 @Kansas State\n2008-2018 @Kansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Stewart",
+    "tenure": "2007-2010 @West Virginia",
+    "current_institution": ""
+  },
+  {
+    "person": "Bill Walsh",
+    "tenure": "1991-1994 @Stanford",
+    "current_institution": ""
+  },
+  {
+    "person": "Billy Brewer",
+    "tenure": "1986-1993 @Ole Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Billy Napier",
+    "tenure": "2021-2024 @Florida\n2017-2021 @Louisiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Blake Anderson",
+    "tenure": "2020-2023 @Utah State\n2013-2020 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Bo Pelini",
+    "tenure": "2007-2014 @Nebraska",
+    "current_institution": ""
+  },
+  {
+    "person": "Bo Schembechler",
+    "tenure": "1986-1989 @Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Chesney",
+    "tenure": "2023-2024 @James Madison",
+    "current_institution": "James Madison"
+  },
+  {
+    "person": "Bob Davie",
+    "tenure": "2011-2019 @New Mexico\n1996-2001 @Notre Dame",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob DeBesse",
+    "tenure": "1996-2002 @Texas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Diaco",
+    "tenure": "2013-2016 @Connecticut",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Pruett",
+    "tenure": "1995-2004 @Marshall",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Simmons",
+    "tenure": "1994-2000 @Oklahoma State",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Stoops",
+    "tenure": "1998-2016 @Oklahoma",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Stull",
+    "tenure": "1988-1993 @Missouri\n1986-1988 @UTEP",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Sutton",
+    "tenure": "1990-1999 @Army",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Toledo",
+    "tenure": "2006-2011 @Tulane\n1995-2002 @UCLA",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Valesente",
+    "tenure": "1986-1987 @Kansas",
+    "current_institution": ""
+  },
+  {
+    "person": "Bob Wagner",
+    "tenure": "1986-1995 @Hawaii",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Bowden",
+    "tenure": "1986-2009 @Florida State",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Hauck",
+    "tenure": "2009-2014 @UNLV",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Johnson",
+    "tenure": "2001-2009 @Vanderbilt",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Keasler",
+    "tenure": "1998-2001 @Louisiana Monroe",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Petrino",
+    "tenure": "2002-2006 @Louisville\n2013-2018 @Louisville\n2012-2013 @Western Kentucky\n2007-2011 @Arkansas",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Ross",
+    "tenure": "2003-2006 @Army\n1986-1991 @Georgia Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Wallace",
+    "tenure": "1997-2005 @Temple",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Wilder",
+    "tenure": "2008-2019 @Old Dominion",
+    "current_institution": ""
+  },
+  {
+    "person": "Bobby Williams",
+    "tenure": "1999-2002 @Michigan State",
+    "current_institution": ""
+  },
+  {
+    "person": "Brad Lambert",
+    "tenure": "2010-2018 @Charlotte",
+    "current_institution": ""
+  },
+  {
+    "person": "Brad Scott",
+    "tenure": "1993-1998 @South Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Brad Wright",
+    "tenure": "2006-2010 @Texas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Brady Hoke",
+    "tenure": "2008-2010 @San Diego State\n2019-2023 @San Diego State\n2010-2014 @Michigan\n2002-2008 @Ball State",
+    "current_institution": ""
+  },
+  {
+    "person": "Brent Brennan",
+    "tenure": "2023-2024 @Arizona\n2016-2023 @San Jose State",
+    "current_institution": "Arizona"
+  },
+  {
+    "person": "Brent Guy",
+    "tenure": "2004-2008 @Utah State",
+    "current_institution": ""
+  },
+  {
+    "person": "Brent Key",
+    "tenure": "2022-2024 @Georgia Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Brent Pry",
+    "tenure": "2021-2024 @Virginia Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Brent Venables",
+    "tenure": "2021-2024 @Oklahoma",
+    "current_institution": ""
+  },
+  {
+    "person": "Bret Bielema",
+    "tenure": "2020-2024 @Illinois\n2012-2017 @Arkansas\n2005-2012 @Wisconsin",
+    "current_institution": ""
+  },
+  {
+    "person": "Brian Bohannon",
+    "tenure": "2023-2024 @Kennesaw State",
+    "current_institution": "Kennesaw State"
+  },
+  {
+    "person": "Brian Kelly",
+    "tenure": "2021-2024 @LSU\n2009-2021 @Notre Dame\n2006-2009 @Cincinnati\n2003-2006 @Central Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Brian Knorr",
+    "tenure": "2000-2004 @Ohio",
+    "current_institution": ""
+  },
+  {
+    "person": "Brian Newberry",
+    "tenure": "2022-2024 @Navy",
+    "current_institution": ""
+  },
+  {
+    "person": "Brian Polian",
+    "tenure": "2012-2016 @Nevada",
+    "current_institution": ""
+  },
+  {
+    "person": "Brian VanGorder",
+    "tenure": "2005-2006 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Bronco Mendenhall",
+    "tenure": "2023-2024 @New Mexico\n2015-2021 @Virginia\n2004-2015 @BYU",
+    "current_institution": "New Mexico"
+  },
+  {
+    "person": "Bruce Arians",
+    "tenure": "1986-1988 @Temple",
+    "current_institution": ""
+  },
+  {
+    "person": "Bruce Snyder",
+    "tenure": "1991-2000 @Arizona State\n1986-1991 @California",
+    "current_institution": ""
+  },
+  {
+    "person": "Bryan Harsin",
+    "tenure": "2020-2022 @Auburn\n2013-2020 @Boise State\n2012-2013 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Bryant Vincent",
+    "tenure": "2023-2024 @Louisiana Monroe\n2021-2022 @UAB",
+    "current_institution": "Louisiana Monroe"
+  },
+  {
+    "person": "Buddy Teevens",
+    "tenure": "2001-2004 @Stanford\n1991-1996 @Tulane",
+    "current_institution": ""
+  },
+  {
+    "person": "Butch Davis",
+    "tenure": "2016-2021 @Florida International\n2006-2010 @North Carolina\n1994-2000 @Miami FL",
+    "current_institution": ""
+  },
+  {
+    "person": "Butch Jones",
+    "tenure": "2020-2024 @Arkansas State\n2012-2017 @Tennessee\n2009-2012 @Cincinnati\n2006-2009 @Central Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Cam Cameron",
+    "tenure": "1996-2001 @Indiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Carl Franks",
+    "tenure": "1998-2003 @Duke",
+    "current_institution": ""
+  },
+  {
+    "person": "Carl Pelini",
+    "tenure": "2011-2013 @Florida Atlantic",
+    "current_institution": ""
+  },
+  {
+    "person": "Carl Torbush",
+    "tenure": "1997-2000 @North Carolina\n1986-1987 @Louisiana Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Chad Lunsford",
+    "tenure": "2017-2021 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Chad Morris",
+    "tenure": "2017-2019 @Arkansas\n2014-2017 @SMU",
+    "current_institution": ""
+  },
+  {
+    "person": "Chan Gailey",
+    "tenure": "2001-2007 @Georgia Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Charles Huff",
+    "tenure": "2020-2024 @Marshall",
+    "current_institution": ""
+  },
+  {
+    "person": "Charley Molnar",
+    "tenure": "2011-2013 @Massachusetts",
+    "current_institution": ""
+  },
+  {
+    "person": "Charlie Bailey",
+    "tenure": "1993-1999 @UTEP\n1986-1989 @Memphis",
+    "current_institution": ""
+  },
+  {
+    "person": "Charlie Partridge",
+    "tenure": "2013-2016 @Florida Atlantic",
+    "current_institution": ""
+  },
+  {
+    "person": "Charlie Sadler",
+    "tenure": "1990-1995 @Northern Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Charlie Strong",
+    "tenure": "2016-2019 @South Florida\n2013-2016 @Texas\n2009-2013 @Louisville",
+    "current_institution": ""
+  },
+  {
+    "person": "Charlie Weatherbie",
+    "tenure": "2002-2009 @Louisiana Monroe\n1994-2001 @Navy\n1991-1994 @Utah State",
+    "current_institution": ""
+  },
+  {
+    "person": "Charlie Weis",
+    "tenure": "2011-2014 @Kansas\n2004-2009 @Notre Dame",
+    "current_institution": ""
+  },
+  {
+    "person": "Chip Kelly",
+    "tenure": "2017-2023 @UCLA\n2008-2012 @Oregon",
+    "current_institution": ""
+  },
+  {
+    "person": "Chip Lindsey",
+    "tenure": "2018-2021 @Troy",
+    "current_institution": ""
+  },
+  {
+    "person": "Chris Ash",
+    "tenure": "2015-2019 @Rutgers",
+    "current_institution": ""
+  },
+  {
+    "person": "Chris Ault",
+    "tenure": "1986-1992 @Nevada\n1993-1995 @Nevada\n2003-2012 @Nevada",
+    "current_institution": ""
+  },
+  {
+    "person": "Chris Creighton",
+    "tenure": "2013-2024 @Eastern Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Chris Hatcher",
+    "tenure": "2006-2009 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Chris Klieman",
+    "tenure": "2018-2024 @Kansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Chris Petersen",
+    "tenure": "2013-2019 @Washington\n2005-2013 @Boise State",
+    "current_institution": ""
+  },
+  {
+    "person": "Chris Scelfo",
+    "tenure": "1998-2006 @Tulane",
+    "current_institution": ""
+  },
+  {
+    "person": "Chris Tormey",
+    "tenure": "1999-2003 @Nevada",
+    "current_institution": ""
+  },
+  {
+    "person": "Chuck Amato",
+    "tenure": "1999-2006 @North Carolina State",
+    "current_institution": ""
+  },
+  {
+    "person": "Chuck Long",
+    "tenure": "2005-2008 @San Diego State",
+    "current_institution": ""
+  },
+  {
+    "person": "Chuck Martin",
+    "tenure": "2013-2024 @Miami OH",
+    "current_institution": ""
+  },
+  {
+    "person": "Chuck Reedy",
+    "tenure": "1992-1996 @Baylor",
+    "current_institution": ""
+  },
+  {
+    "person": "Chuck Shelton",
+    "tenure": "1986-1991 @Utah State",
+    "current_institution": ""
+  },
+  {
+    "person": "Chuck Stobart",
+    "tenure": "1989-1994 @Memphis",
+    "current_institution": ""
+  },
+  {
+    "person": "Clark Lea",
+    "tenure": "2020-2024 @Vanderbilt",
+    "current_institution": ""
+  },
+  {
+    "person": "Claude Gilbert",
+    "tenure": "1986-1989 @San Jose State",
+    "current_institution": ""
+  },
+  {
+    "person": "Clay Helton",
+    "tenure": "2021-2024 @Georgia Southern\n2015-2021 @USC",
+    "current_institution": ""
+  },
+  {
+    "person": "Cleve Bryant",
+    "tenure": "1986-1989 @Ohio",
+    "current_institution": ""
+  },
+  {
+    "person": "Corky Nelson",
+    "tenure": "1986-1990 @North Texas",
+    "current_institution": ""
+  },
+  {
+    "person": "Craig Bohl",
+    "tenure": "2013-2023 @Wyoming",
+    "current_institution": ""
+  },
+  {
+    "person": "Craig Cirbus",
+    "tenure": "1994-2000 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Curley Hallman",
+    "tenure": "1990-1994 @LSU\n1987-1990 @Southern Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Curt Cignetti",
+    "tenure": "2023-2024 @Indiana\n2021-2023 @James Madison",
+    "current_institution": "Indiana"
+  },
+  {
+    "person": "Curtis Johnson",
+    "tenure": "2011-2015 @Tulane",
+    "current_institution": ""
+  },
+  {
+    "person": "D.J. Durkin",
+    "tenure": "2015-2018 @Maryland",
+    "current_institution": ""
+  },
+  {
+    "person": "Dabo Swinney",
+    "tenure": "2007-2024 @Clemson",
+    "current_institution": ""
+  },
+  {
+    "person": "Dan Enos",
+    "tenure": "2009-2014 @Central Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Dan Hawkins",
+    "tenure": "2005-2010 @Colorado\n2000-2005 @Boise State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dan Henning",
+    "tenure": "1993-1996 @Boston College",
+    "current_institution": ""
+  },
+  {
+    "person": "Dan Lanning",
+    "tenure": "2021-2024 @Oregon",
+    "current_institution": ""
+  },
+  {
+    "person": "Dan McCarney",
+    "tenure": "2010-2015 @North Texas\n1994-2006 @Iowa State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dan Mullen",
+    "tenure": "2017-2021 @Florida\n2008-2017 @Mississippi State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dan Simrell",
+    "tenure": "1986-1989 @Toledo",
+    "current_institution": ""
+  },
+  {
+    "person": "Dana Dimel",
+    "tenure": "2017-2023 @UTEP\n1999-2002 @Houston\n1996-1999 @Wyoming",
+    "current_institution": ""
+  },
+  {
+    "person": "Dana Holgorsen",
+    "tenure": "2018-2023 @Houston\n2010-2018 @West Virginia",
+    "current_institution": ""
+  },
+  {
+    "person": "Danny Ford",
+    "tenure": "1992-1997 @Arkansas\n1986-1989 @Clemson",
+    "current_institution": ""
+  },
+  {
+    "person": "Danny Gonzales",
+    "tenure": "2019-2023 @New Mexico",
+    "current_institution": ""
+  },
+  {
+    "person": "Danny Hope",
+    "tenure": "2008-2012 @Purdue",
+    "current_institution": ""
+  },
+  {
+    "person": "Danny Rocco",
+    "tenure": "2005-2011 @Liberty",
+    "current_institution": ""
+  },
+  {
+    "person": "Darrell Dickey",
+    "tenure": "1997-2006 @North Texas",
+    "current_institution": ""
+  },
+  {
+    "person": "Darrell Hazell",
+    "tenure": "2012-2016 @Purdue\n2010-2012 @Kent State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Aranda",
+    "tenure": "2019-2024 @Baylor",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Arslanian",
+    "tenure": "1997-1999 @Utah State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Baldwin",
+    "tenure": "1996-2000 @San Jose State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Christensen",
+    "tenure": "2008-2013 @Wyoming",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Clawson",
+    "tenure": "2013-2024 @Wake Forest\n2008-2013 @Bowling Green",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Currey",
+    "tenure": "1986-1988 @Cincinnati",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Doeren",
+    "tenure": "2012-2024 @North Carolina State\n2010-2012 @Northern Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Kragthorpe",
+    "tenure": "1986-1990 @Oregon State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Rader",
+    "tenure": "1987-1999 @Tulsa",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Roberts",
+    "tenure": "1996-1998 @Baylor\n1988-1993 @Louisiana Monroe\n1986-1988 @Western Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Dave Wannstedt",
+    "tenure": "2004-2010 @Pittsburgh",
+    "current_institution": ""
+  },
+  {
+    "person": "David Bailiff",
+    "tenure": "2006-2017 @Rice\n2003-2006 @Texas State",
+    "current_institution": ""
+  },
+  {
+    "person": "David Beaty",
+    "tenure": "2014-2018 @Kansas",
+    "current_institution": ""
+  },
+  {
+    "person": "David Bennett",
+    "tenure": "2002-2011 @Coastal Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "David Braun",
+    "tenure": "2022-2024 @Northwestern",
+    "current_institution": ""
+  },
+  {
+    "person": "David Cutcliffe",
+    "tenure": "2007-2021 @Duke\n1998-2004 @Ole Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "David Elson",
+    "tenure": "2002-2009 @Western Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "David Lee",
+    "tenure": "1988-1993 @UTEP",
+    "current_institution": ""
+  },
+  {
+    "person": "David McWilliams",
+    "tenure": "1986-1991 @Texas",
+    "current_institution": ""
+  },
+  {
+    "person": "David Shaw",
+    "tenure": "2010-2022 @Stanford",
+    "current_institution": ""
+  },
+  {
+    "person": "DeShaun Foster",
+    "tenure": "2023-2024 @UCLA",
+    "current_institution": "UCLA"
+  },
+  {
+    "person": "DeWayne Walker",
+    "tenure": "2008-2012 @New Mexico State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dean Pees",
+    "tenure": "1997-2003 @Kent State",
+    "current_institution": ""
+  },
+  {
+    "person": "Deion Sanders",
+    "tenure": "2022-2024 @Colorado",
+    "current_institution": ""
+  },
+  {
+    "person": "Dell McGee",
+    "tenure": "2023-2024 @Georgia State",
+    "current_institution": "Georgia State"
+  },
+  {
+    "person": "Dennis Erickson",
+    "tenure": "2006-2011 @Arizona State\n1998-2002 @Oregon State\n1988-1994 @Miami FL\n1986-1988 @Washington State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dennis Franchione",
+    "tenure": "1989-1991 @Texas State\n2010-2015 @Texas State\n2002-2007 @Texas A&M\n2000-2002 @Alabama\n1997-2000 @TCU\n1991-1997 @New Mexico",
+    "current_institution": ""
+  },
+  {
+    "person": "Dennis Green",
+    "tenure": "1988-1991 @Stanford",
+    "current_institution": ""
+  },
+  {
+    "person": "Dennis Parker",
+    "tenure": "1990-1993 @North Texas",
+    "current_institution": ""
+  },
+  {
+    "person": "Denny Stolz",
+    "tenure": "1986-1988 @San Diego State",
+    "current_institution": ""
+  },
+  {
+    "person": "Derek Dooley",
+    "tenure": "2009-2012 @Tennessee\n2006-2009 @Louisiana Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Derek Mason",
+    "tenure": "2023-2024 @Middle Tennessee\n2013-2020 @Vanderbilt",
+    "current_institution": "Middle Tennessee"
+  },
+  {
+    "person": "Dick Anderson",
+    "tenure": "1986-1989 @Rutgers",
+    "current_institution": ""
+  },
+  {
+    "person": "Dick Crum",
+    "tenure": "1987-1990 @Kent State\n1986-1987 @North Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Dick Flynn",
+    "tenure": "1993-1999 @Central Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Dick MacPherson",
+    "tenure": "1986-1990 @Syracuse",
+    "current_institution": ""
+  },
+  {
+    "person": "Dick Sheridan",
+    "tenure": "1986-1992 @North Carolina State",
+    "current_institution": ""
+  },
+  {
+    "person": "Dick Tomey",
+    "tenure": "2004-2009 @San Jose State\n1986-2000 @Arizona",
+    "current_institution": ""
+  },
+  {
+    "person": "Dino Babers",
+    "tenure": "2015-2023 @Syracuse\n2013-2015 @Bowling Green",
+    "current_institution": ""
+  },
+  {
+    "person": "Dirk Koetter",
+    "tenure": "2000-2006 @Arizona State\n1997-2000 @Boise State",
+    "current_institution": ""
+  },
+  {
+    "person": "Doc Holliday",
+    "tenure": "2009-2020 @Marshall",
+    "current_institution": ""
+  },
+  {
+    "person": "Don Brown",
+    "tenure": "2003-2008 @Massachusetts\n2021-2024 @Massachusetts",
+    "current_institution": ""
+  },
+  {
+    "person": "Don James",
+    "tenure": "1986-1992 @Washington",
+    "current_institution": ""
+  },
+  {
+    "person": "Don Morton",
+    "tenure": "1986-1989 @Wisconsin",
+    "current_institution": ""
+  },
+  {
+    "person": "Don Nehlen",
+    "tenure": "1986-2000 @West Virginia",
+    "current_institution": ""
+  },
+  {
+    "person": "Don Strock",
+    "tenure": "2001-2006 @Florida International",
+    "current_institution": ""
+  },
+  {
+    "person": "Don Treadwell",
+    "tenure": "2010-2013 @Miami OH",
+    "current_institution": ""
+  },
+  {
+    "person": "Doug Graber",
+    "tenure": "1989-1995 @Rutgers",
+    "current_institution": ""
+  },
+  {
+    "person": "Doug Marrone",
+    "tenure": "2008-2012 @Syracuse",
+    "current_institution": ""
+  },
+  {
+    "person": "Doug Martin",
+    "tenure": "2012-2021 @New Mexico State\n2003-2010 @Kent State",
+    "current_institution": ""
+  },
+  {
+    "person": "Earle Bruce",
+    "tenure": "1988-1992 @Colorado State\n1986-1987 @Ohio State",
+    "current_institution": ""
+  },
+  {
+    "person": "Ed Orgeron",
+    "tenure": "2016-2021 @LSU\n2012-2013 @USC\n2004-2007 @Ole Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Ed Zaunbrecher",
+    "tenure": "1993-1998 @Louisiana Monroe",
+    "current_institution": ""
+  },
+  {
+    "person": "Eliah Drinkwitz",
+    "tenure": "2019-2024 @Missouri\n2018-2019 @Appalachian State",
+    "current_institution": ""
+  },
+  {
+    "person": "Elliot Uzelac",
+    "tenure": "1986-1989 @Navy",
+    "current_institution": ""
+  },
+  {
+    "person": "Ellis Johnson",
+    "tenure": "2011-2012 @Southern Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Eric Morris",
+    "tenure": "2022-2024 @North Texas",
+    "current_institution": ""
+  },
+  {
+    "person": "Erk Russell",
+    "tenure": "1986-1989 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Everett Withers",
+    "tenure": "2015-2018 @Texas State\n2010-2011 @North Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Fisher DeBerry",
+    "tenure": "1986-2006 @Air Force",
+    "current_institution": ""
+  },
+  {
+    "person": "Fitz Hill",
+    "tenure": "2000-2004 @San Jose State",
+    "current_institution": ""
+  },
+  {
+    "person": "Forrest Gregg",
+    "tenure": "1988-1990 @SMU",
+    "current_institution": ""
+  },
+  {
+    "person": "Fran Brown",
+    "tenure": "2023-2024 @Syracuse",
+    "current_institution": "Syracuse"
+  },
+  {
+    "person": "Francis Peay",
+    "tenure": "1986-1991 @Northwestern",
+    "current_institution": ""
+  },
+  {
+    "person": "Frank Beamer",
+    "tenure": "1986-2015 @Virginia Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Frank Ellwood",
+    "tenure": "1995-1996 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Frank Solich",
+    "tenure": "2004-2020 @Ohio\n1997-2003 @Nebraska",
+    "current_institution": ""
+  },
+  {
+    "person": "Frank Spaziani",
+    "tenure": "2008-2012 @Boston College",
+    "current_institution": ""
+  },
+  {
+    "person": "Frank Wilson",
+    "tenure": "2015-2019 @UTSA",
+    "current_institution": ""
+  },
+  {
+    "person": "Fred Akers",
+    "tenure": "1986-1990 @Purdue",
+    "current_institution": ""
+  },
+  {
+    "person": "Fred Goldsmith",
+    "tenure": "1993-1998 @Duke\n1988-1993 @Rice",
+    "current_institution": ""
+  },
+  {
+    "person": "Fred von Appen",
+    "tenure": "1995-1998 @Hawaii",
+    "current_institution": ""
+  },
+  {
+    "person": "GJ Kinne",
+    "tenure": "2022-2024 @Texas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Galen Hall",
+    "tenure": "1986-1989 @Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Garrick McGee",
+    "tenure": "2011-2013 @UAB",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Andersen",
+    "tenure": "2008-2012 @Utah State\n2018-2020 @Utah State\n2014-2017 @Oregon State\n2012-2014 @Wisconsin",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Barnett",
+    "tenure": "1998-2005 @Colorado\n1991-1998 @Northwestern",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Blackney",
+    "tenure": "1990-2000 @Bowling Green",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Crowton",
+    "tenure": "2000-2004 @BYU\n1995-1998 @Louisiana Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Darnell",
+    "tenure": "1996-2004 @Western Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Gibbs",
+    "tenure": "1988-1994 @Oklahoma",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Moeller",
+    "tenure": "1989-1994 @Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Nord",
+    "tenure": "1999-2003 @UTEP",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Patterson",
+    "tenure": "2000-2021 @TCU",
+    "current_institution": ""
+  },
+  {
+    "person": "Gary Pinkel",
+    "tenure": "2000-2015 @Missouri\n1990-2000 @Toledo",
+    "current_institution": ""
+  },
+  {
+    "person": "Gene Chizik",
+    "tenure": "2008-2012 @Auburn\n2006-2008 @Iowa State",
+    "current_institution": ""
+  },
+  {
+    "person": "Gene McDowell",
+    "tenure": "1986-1997 @Central Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Gene Stallings",
+    "tenure": "1989-1996 @Alabama",
+    "current_institution": ""
+  },
+  {
+    "person": "Geoff Collins",
+    "tenure": "2018-2022 @Georgia Tech\n2016-2018 @Temple",
+    "current_institution": ""
+  },
+  {
+    "person": "George Barlow",
+    "tenure": "2010-2011 @New Mexico",
+    "current_institution": ""
+  },
+  {
+    "person": "George Chaump",
+    "tenure": "1989-1994 @Navy\n1986-1989 @Marshall",
+    "current_institution": ""
+  },
+  {
+    "person": "George Henshaw",
+    "tenure": "1986-1987 @Tulsa",
+    "current_institution": ""
+  },
+  {
+    "person": "George O'Leary",
+    "tenure": "2003-2015 @Central Florida\n1994-2001 @Georgia Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "George Perles",
+    "tenure": "1986-1994 @Michigan State",
+    "current_institution": ""
+  },
+  {
+    "person": "George Welsh",
+    "tenure": "1986-2000 @Virginia",
+    "current_institution": ""
+  },
+  {
+    "person": "Gerad Parker",
+    "tenure": "2023-2024 @Troy",
+    "current_institution": "Troy"
+  },
+  {
+    "person": "Gerry DiNardo",
+    "tenure": "2001-2004 @Indiana\n1990-1994 @Vanderbilt",
+    "current_institution": ""
+  },
+  {
+    "person": "Gerry Dinardo",
+    "tenure": "1994-1999 @LSU",
+    "current_institution": ""
+  },
+  {
+    "person": "Gerry Faust",
+    "tenure": "1986-1994 @Akron",
+    "current_institution": ""
+  },
+  {
+    "person": "Glen Mason",
+    "tenure": "1996-2006 @Minnesota\n1987-1996 @Kansas\n1986-1987 @Kent State",
+    "current_institution": ""
+  },
+  {
+    "person": "Grant Teaff",
+    "tenure": "1986-1992 @Baylor",
+    "current_institution": ""
+  },
+  {
+    "person": "Greg Davis",
+    "tenure": "1987-1991 @Tulane",
+    "current_institution": ""
+  },
+  {
+    "person": "Greg McMackin",
+    "tenure": "2007-2011 @Hawaii",
+    "current_institution": ""
+  },
+  {
+    "person": "Greg Robinson",
+    "tenure": "2004-2008 @Syracuse",
+    "current_institution": ""
+  },
+  {
+    "person": "Greg Schiano",
+    "tenure": "2000-2011 @Rutgers\n2019-2024 @Rutgers",
+    "current_institution": ""
+  },
+  {
+    "person": "Gregg Brandon",
+    "tenure": "2002-2008 @Bowling Green",
+    "current_institution": ""
+  },
+  {
+    "person": "Gus Malzahn",
+    "tenure": "2012-2020 @Auburn\n2011-2012 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Gus Malzahn",
+    "tenure": "2020-2024 @Central Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Guy Morriss",
+    "tenure": "2002-2007 @Baylor\n2000-2002 @Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Hal Mumme",
+    "tenure": "2004-2008 @New Mexico State\n1996-2000 @Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Hayden Fry",
+    "tenure": "1986-1998 @Iowa",
+    "current_institution": ""
+  },
+  {
+    "person": "Herb Deromedi",
+    "tenure": "1986-1993 @Central Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Herm Edwards",
+    "tenure": "2017-2022 @Arizona State",
+    "current_institution": ""
+  },
+  {
+    "person": "Houston Nutt",
+    "tenure": "2007-2011 @Ole Miss\n1997-2007 @Arkansas\n1996-1997 @Boise State",
+    "current_institution": ""
+  },
+  {
+    "person": "Howard Schnellenberger",
+    "tenure": "2000-2011 @Florida Atlantic\n1994-1995 @Oklahoma\n1986-1994 @Louisville",
+    "current_institution": ""
+  },
+  {
+    "person": "Hugh Freeze",
+    "tenure": "2022-2024 @Auburn\n2018-2022 @Liberty\n2011-2016 @Ole Miss\n2010-2011 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "J. D. Brookhart",
+    "tenure": "2003-2009 @Akron",
+    "current_institution": ""
+  },
+  {
+    "person": "Jack Bicknell",
+    "tenure": "1986-1990 @Boston College",
+    "current_institution": ""
+  },
+  {
+    "person": "Jack Bicknell Jr",
+    "tenure": "1998-2006 @Louisiana Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Jack Crowe",
+    "tenure": "1989-1991 @Arkansas",
+    "current_institution": ""
+  },
+  {
+    "person": "Jack Elway",
+    "tenure": "1986-1988 @Stanford",
+    "current_institution": ""
+  },
+  {
+    "person": "Jack Harbaugh",
+    "tenure": "1988-2002 @Western Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Jack Pardee",
+    "tenure": "1986-1989 @Houston",
+    "current_institution": ""
+  },
+  {
+    "person": "Jackie Sherrill",
+    "tenure": "1990-2003 @Mississippi State\n1986-1988 @Texas A&M",
+    "current_institution": ""
+  },
+  {
+    "person": "Jake Dickert",
+    "tenure": "2021-2024 @Washington State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jake Spavital",
+    "tenure": "2018-2022 @Texas State",
+    "current_institution": ""
+  },
+  {
+    "person": "James F Donnelly",
+    "tenure": "1986-1998 @Middle Tennessee",
+    "current_institution": ""
+  },
+  {
+    "person": "James Franklin",
+    "tenure": "2013-2024 @Penn State\n2010-2013 @Vanderbilt",
+    "current_institution": ""
+  },
+  {
+    "person": "Jamey Chadwell",
+    "tenure": "2022-2024 @Liberty\n2016-2017 @Coastal Carolina\n2018-2022 @Coastal Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Jason Candle",
+    "tenure": "2015-2024 @Toledo",
+    "current_institution": ""
+  },
+  {
+    "person": "Jay Hopson",
+    "tenure": "2015-2020 @Southern Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Jay Norvell",
+    "tenure": "2021-2024 @Colorado State\n2016-2021 @Nevada",
+    "current_institution": ""
+  },
+  {
+    "person": "Jay Sawvel",
+    "tenure": "2023-2024 @Wyoming",
+    "current_institution": "Wyoming"
+  },
+  {
+    "person": "Jedd Fisch",
+    "tenure": "2023-2024 @Washington\n2020-2023 @Arizona",
+    "current_institution": "Washington"
+  },
+  {
+    "person": "Jeff Bower",
+    "tenure": "1990-2007 @Southern Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Brohm",
+    "tenure": "2022-2024 @Louisville\n2016-2022 @Purdue\n2013-2016 @Western Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Choate",
+    "tenure": "2023-2024 @Nevada",
+    "current_institution": "Nevada"
+  },
+  {
+    "person": "Jeff Genyk",
+    "tenure": "2003-2008 @Eastern Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Hafley",
+    "tenure": "2019-2023 @Boston College",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Horton",
+    "tenure": "1993-1998 @UNLV\n1992-1993 @Nevada",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Jagodzinski",
+    "tenure": "2006-2008 @Boston College",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Lebby",
+    "tenure": "2023-2024 @Mississippi State",
+    "current_institution": "Mississippi State"
+  },
+  {
+    "person": "Jeff Monken",
+    "tenure": "2013-2024 @Army\n2009-2013 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Quinn",
+    "tenure": "2009-2014 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Scott",
+    "tenure": "2019-2022 @South Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Tedford",
+    "tenure": "2016-2019 @Fresno State\n2021-2023 @Fresno State\n2001-2012 @California",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Tisdel",
+    "tenure": "1995-1999 @Nevada",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Traylor",
+    "tenure": "2019-2024 @UTSA",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeff Woodruff",
+    "tenure": "1999-2003 @Eastern Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Jeremy Pruitt",
+    "tenure": "2017-2020 @Tennessee",
+    "current_institution": ""
+  },
+  {
+    "person": "Jerry Baldwin",
+    "tenure": "1998-2001 @Louisiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Jerry Berndt",
+    "tenure": "1988-1992 @Temple\n1986-1988 @Rice",
+    "current_institution": ""
+  },
+  {
+    "person": "Jerry Claiborne",
+    "tenure": "1986-1989 @Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Jerry Kill",
+    "tenure": "2021-2024 @New Mexico State\n2010-2015 @Minnesota\n2007-2010 @Northern Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Jerry Moore",
+    "tenure": "1988-2012 @Appalachian State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jerry Pettibone",
+    "tenure": "1990-1996 @Oregon State\n1986-1990 @Northern Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Bob Helduser",
+    "tenure": "1991-1996 @Texas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Caldwell",
+    "tenure": "1992-2000 @Wake Forest",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Carmody",
+    "tenure": "1986-1987 @Southern Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Colletto",
+    "tenure": "1990-1996 @Purdue",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Corrigall",
+    "tenure": "1993-1997 @Kent State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Donnan",
+    "tenure": "1995-2000 @Georgia\n1989-1995 @Marshall",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Fassel",
+    "tenure": "1986-1989 @Utah",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Grobe",
+    "tenure": "2015-2016 @Baylor\n2000-2013 @Wake Forest\n1994-2000 @Ohio",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Harbaugh",
+    "tenure": "2014-2023 @Michigan\n2006-2010 @Stanford",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Harkema",
+    "tenure": "1986-1992 @Eastern Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Hess",
+    "tenure": "1989-1996 @New Mexico State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Hilyer",
+    "tenure": "1990-1994 @UAB",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Hofher",
+    "tenure": "2000-2005 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim L. Mora",
+    "tenure": "2021-2024 @Connecticut\n2011-2017 @UCLA",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Lambright",
+    "tenure": "1992-1998 @Washington",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Leavitt",
+    "tenure": "1996-2009 @South Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim McElwain",
+    "tenure": "2018-2024 @Central Michigan\n2014-2017 @Florida\n2011-2014 @Colorado State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Reid",
+    "tenure": "1986-1991 @Massachusetts",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Strong",
+    "tenure": "1989-1993 @UNLV",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Sweeney",
+    "tenure": "1986-1996 @Fresno State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Tressel",
+    "tenure": "2000-2010 @Ohio State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Wacker",
+    "tenure": "1991-1996 @Minnesota\n1986-1991 @TCU",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Walden",
+    "tenure": "1986-1994 @Iowa State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Ward",
+    "tenure": "1991-1994 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Jim Young",
+    "tenure": "1986-1990 @Army",
+    "current_institution": ""
+  },
+  {
+    "person": "Jimbo Fisher",
+    "tenure": "2017-2023 @Texas A&M\n2009-2017 @Florida State",
+    "current_institution": ""
+  },
+  {
+    "person": "Jimmy Johnson",
+    "tenure": "1986-1988 @Miami FL",
+    "current_institution": ""
+  },
+  {
+    "person": "Jimmy Lake",
+    "tenure": "2019-2021 @Washington",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Glenn",
+    "tenure": "2002-2008 @Wyoming",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Hollis",
+    "tenure": "1996-2001 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Kines",
+    "tenure": "1991-1992 @Arkansas",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Krivak",
+    "tenure": "1986-1991 @Maryland",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Lee Dunn",
+    "tenure": "1993-1994 @Ole Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Moglia",
+    "tenure": "2011-2016 @Coastal Carolina\n2017-2018 @Coastal Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Moorhead",
+    "tenure": "2021-2024 @Akron\n2017-2019 @Mississippi State",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Morrison",
+    "tenure": "1986-1988 @South Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Novak",
+    "tenure": "1995-2007 @Northern Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Paterno",
+    "tenure": "1986-2011 @Penn State",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Raymond Peace",
+    "tenure": "1987-1995 @Louisiana Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Joe Tiller",
+    "tenure": "1996-2008 @Purdue\n1990-1996 @Wyoming",
+    "current_institution": ""
+  },
+  {
+    "person": "Joey Jones",
+    "tenure": "2008-2017 @South Alabama",
+    "current_institution": ""
+  },
+  {
+    "person": "Joey McGuire",
+    "tenure": "2021-2024 @Texas Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "John Blake",
+    "tenure": "1995-1998 @Oklahoma",
+    "current_institution": ""
+  },
+  {
+    "person": "John Bobo",
+    "tenure": "1992-1996 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "John Bonamego",
+    "tenure": "2014-2018 @Central Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "John Bunting",
+    "tenure": "2000-2006 @North Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "John Cooper",
+    "tenure": "1987-2000 @Ohio State\n1986-1987 @Arizona State",
+    "current_institution": ""
+  },
+  {
+    "person": "John Gutekunst",
+    "tenure": "1986-1991 @Minnesota",
+    "current_institution": ""
+  },
+  {
+    "person": "John Jenkins",
+    "tenure": "1989-1992 @Houston",
+    "current_institution": ""
+  },
+  {
+    "person": "John L Smith",
+    "tenure": "2011-2012 @Arkansas\n2002-2006 @Michigan State\n1997-2002 @Louisville\n1994-1997 @Utah State",
+    "current_institution": ""
+  },
+  {
+    "person": "John Mackovic",
+    "tenure": "2000-2003 @Arizona\n1991-1997 @Texas\n1987-1990 @Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "John O'Hara",
+    "tenure": "1986-1989 @Texas State",
+    "current_institution": ""
+  },
+  {
+    "person": "John Ralston",
+    "tenure": "1992-1996 @San Jose State",
+    "current_institution": ""
+  },
+  {
+    "person": "John Robinson",
+    "tenure": "1998-2004 @UNLV\n1992-1997 @USC",
+    "current_institution": ""
+  },
+  {
+    "person": "John Thompson",
+    "tenure": "2002-2004 @East Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Johnny Majors",
+    "tenure": "1992-1996 @Pittsburgh\n1986-1992 @Tennessee",
+    "current_institution": ""
+  },
+  {
+    "person": "Joker Phillips",
+    "tenure": "2009-2012 @Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Jon Embree",
+    "tenure": "2010-2012 @Colorado",
+    "current_institution": ""
+  },
+  {
+    "person": "Jon Sumrall",
+    "tenure": "2023-2024 @Tulane\n2021-2023 @Troy",
+    "current_institution": "Tulane"
+  },
+  {
+    "person": "Jonathan Smith",
+    "tenure": "2023-2024 @Michigan State\n2017-2023 @Oregon State",
+    "current_institution": "Michigan State"
+  },
+  {
+    "person": "Josh Heupel",
+    "tenure": "2020-2024 @Tennessee\n2017-2020 @Central Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "June Jones",
+    "tenure": "2007-2014 @SMU\n1998-2007 @Hawaii",
+    "current_institution": ""
+  },
+  {
+    "person": "Justin Fuente",
+    "tenure": "2015-2021 @Virginia Tech\n2011-2015 @Memphis",
+    "current_institution": ""
+  },
+  {
+    "person": "Justin Wilcox",
+    "tenure": "2016-2024 @California",
+    "current_institution": ""
+  },
+  {
+    "person": "K.C Keeler",
+    "tenure": "2022-2024 @Sam Houston State",
+    "current_institution": ""
+  },
+  {
+    "person": "Kalani Sitake",
+    "tenure": "2015-2024 @BYU",
+    "current_institution": ""
+  },
+  {
+    "person": "Kalen DeBoer",
+    "tenure": "2023-2024 @Alabama\n2021-2023 @Washington\n2019-2021 @Fresno State",
+    "current_institution": "Alabama"
+  },
+  {
+    "person": "Kane Wommack",
+    "tenure": "2020-2023 @South Alabama",
+    "current_institution": ""
+  },
+  {
+    "person": "Karl Dorrell",
+    "tenure": "2019-2022 @Colorado\n2002-2007 @UCLA",
+    "current_institution": ""
+  },
+  {
+    "person": "Keith Burns",
+    "tenure": "1999-2002 @Tulsa",
+    "current_institution": ""
+  },
+  {
+    "person": "Keith Gilbertson",
+    "tenure": "2002-2004 @Washington\n1991-1995 @California",
+    "current_institution": ""
+  },
+  {
+    "person": "Ken Hatfield",
+    "tenure": "1993-2005 @Rice\n1989-1993 @Clemson\n1986-1989 @Arkansas",
+    "current_institution": ""
+  },
+  {
+    "person": "Ken Karcher",
+    "tenure": "1999-2005 @Liberty",
+    "current_institution": ""
+  },
+  {
+    "person": "Ken Niumatalolo",
+    "tenure": "2023-2024 @San Jose State\n2007-2022 @Navy",
+    "current_institution": "San Jose State"
+  },
+  {
+    "person": "Ken Wilson",
+    "tenure": "2021-2023 @Nevada",
+    "current_institution": ""
+  },
+  {
+    "person": "Kenni Burns",
+    "tenure": "2022-2024 @Kent State",
+    "current_institution": ""
+  },
+  {
+    "person": "Kenny Dillingham",
+    "tenure": "2022-2024 @Arizona State",
+    "current_institution": ""
+  },
+  {
+    "person": "Kevin Morris",
+    "tenure": "2008-2011 @Massachusetts",
+    "current_institution": ""
+  },
+  {
+    "person": "Kevin Steele",
+    "tenure": "1998-2002 @Baylor",
+    "current_institution": ""
+  },
+  {
+    "person": "Kevin Sumlin",
+    "tenure": "2017-2020 @Arizona\n2011-2017 @Texas A&M\n2007-2011 @Houston",
+    "current_institution": ""
+  },
+  {
+    "person": "Kevin Wilson",
+    "tenure": "2022-2024 @Tulsa\n2010-2016 @Indiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Kim Helton",
+    "tenure": "1992-1999 @Houston",
+    "current_institution": ""
+  },
+  {
+    "person": "Kirby Smart",
+    "tenure": "2015-2024 @Georgia",
+    "current_institution": ""
+  },
+  {
+    "person": "Kirk Ferentz",
+    "tenure": "1998-2024 @Iowa",
+    "current_institution": ""
+  },
+  {
+    "person": "Kliff Kingsbury",
+    "tenure": "2012-2018 @Texas Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Kyle Flood",
+    "tenure": "2011-2015 @Rutgers",
+    "current_institution": ""
+  },
+  {
+    "person": "Kyle Whittingham",
+    "tenure": "2004-2024 @Utah",
+    "current_institution": ""
+  },
+  {
+    "person": "LaVell Edwards",
+    "tenure": "1986-2000 @BYU",
+    "current_institution": ""
+  },
+  {
+    "person": "Lance Leipold",
+    "tenure": "2020-2024 @Kansas\n2014-2020 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Lance Taylor",
+    "tenure": "2022-2024 @Western Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Lane Kiffin",
+    "tenure": "2019-2024 @Ole Miss\n2016-2019 @Florida Atlantic\n2009-2012 @USC\n2008-2009 @Tennessee",
+    "current_institution": ""
+  },
+  {
+    "person": "Larry Blakeney",
+    "tenure": "1990-2014 @Troy",
+    "current_institution": ""
+  },
+  {
+    "person": "Larry Coker",
+    "tenure": "2010-2015 @UTSA\n2000-2006 @Miami FL",
+    "current_institution": ""
+  },
+  {
+    "person": "Larry Fedora",
+    "tenure": "2011-2018 @North Carolina\n2007-2011 @Southern Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Larry Lacewell",
+    "tenure": "1986-1989 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Larry Marmie",
+    "tenure": "1987-1991 @Arizona State",
+    "current_institution": ""
+  },
+  {
+    "person": "Larry Porter",
+    "tenure": "2009-2011 @Memphis",
+    "current_institution": ""
+  },
+  {
+    "person": "Larry Smith",
+    "tenure": "1993-2000 @Missouri\n1986-1992 @USC",
+    "current_institution": ""
+  },
+  {
+    "person": "Lee Owens",
+    "tenure": "1994-2003 @Akron",
+    "current_institution": ""
+  },
+  {
+    "person": "Leon Fuller",
+    "tenure": "1986-1988 @Colorado State",
+    "current_institution": ""
+  },
+  {
+    "person": "Les Miles",
+    "tenure": "2018-2020 @Kansas\n2004-2016 @LSU\n2000-2004 @Oklahoma State",
+    "current_institution": ""
+  },
+  {
+    "person": "Lincoln Riley",
+    "tenure": "2021-2024 @USC\n2016-2021 @Oklahoma",
+    "current_institution": ""
+  },
+  {
+    "person": "Lloyd Carr",
+    "tenure": "1994-2007 @Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Lou Holtz",
+    "tenure": "1998-2004 @South Carolina\n1986-1996 @Notre Dame",
+    "current_institution": ""
+  },
+  {
+    "person": "Lou Tepper",
+    "tenure": "1990-1996 @Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Lovie Smith",
+    "tenure": "2015-2020 @Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Luke Fickell",
+    "tenure": "2022-2024 @Wisconsin\n2016-2022 @Cincinnati\n2010-2011 @Ohio State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mack Brown",
+    "tenure": "1987-1997 @North Carolina\n2018-2024 @North Carolina\n1997-2013 @Texas\n1986-1987 @Tulane",
+    "current_institution": ""
+  },
+  {
+    "person": "Major Applewhite",
+    "tenure": "2023-2024 @South Alabama\n2016-2018 @Houston",
+    "current_institution": "South Alabama"
+  },
+  {
+    "person": "Manny Diaz",
+    "tenure": "2023-2024 @Duke\n2018-2021 @Miami FL",
+    "current_institution": "Duke"
+  },
+  {
+    "person": "Manny Matsakis",
+    "tenure": "2002-2003 @Texas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Marcus Arroyo",
+    "tenure": "2019-2022 @UNLV",
+    "current_institution": ""
+  },
+  {
+    "person": "Marcus Freeman",
+    "tenure": "2021-2024 @Notre Dame",
+    "current_institution": ""
+  },
+  {
+    "person": "Mario Cristobal",
+    "tenure": "2021-2024 @Miami FL\n2017-2021 @Oregon\n2006-2012 @Florida International",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Dantonio",
+    "tenure": "2006-2019 @Michigan State\n2003-2006 @Cincinnati",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Duffner",
+    "tenure": "1991-1996 @Maryland",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Helfrich",
+    "tenure": "2012-2016 @Oregon",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Hudspeth",
+    "tenure": "2010-2017 @Louisiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Mangino",
+    "tenure": "2001-2009 @Kansas",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Richt",
+    "tenure": "2015-2018 @Miami FL\n2000-2015 @Georgia",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Snyder",
+    "tenure": "2004-2009 @Marshall",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Stoops",
+    "tenure": "2012-2024 @Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Mark Whipple",
+    "tenure": "1997-2003 @Massachusetts\n2013-2018 @Massachusetts",
+    "current_institution": ""
+  },
+  {
+    "person": "Matt Campbell",
+    "tenure": "2015-2024 @Iowa State\n2011-2015 @Toledo",
+    "current_institution": ""
+  },
+  {
+    "person": "Matt Luke",
+    "tenure": "2016-2019 @Ole Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Matt Rhule",
+    "tenure": "2022-2024 @Nebraska\n2016-2019 @Baylor\n2012-2016 @Temple",
+    "current_institution": ""
+  },
+  {
+    "person": "Matt Simon",
+    "tenure": "1993-1997 @North Texas",
+    "current_institution": ""
+  },
+  {
+    "person": "Matt Viator",
+    "tenure": "2015-2020 @Louisiana Monroe",
+    "current_institution": ""
+  },
+  {
+    "person": "Matt Wells",
+    "tenure": "2018-2021 @Texas Tech\n2012-2018 @Utah State",
+    "current_institution": ""
+  },
+  {
+    "person": "Maurice Linguist",
+    "tenure": "2020-2023 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Mel Tucker",
+    "tenure": "2019-2023 @Michigan State\n2018-2019 @Colorado",
+    "current_institution": ""
+  },
+  {
+    "person": "Michael Desormeaux",
+    "tenure": "2021-2024 @Louisiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Mick Dennehy",
+    "tenure": "1999-2004 @Utah State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Archer",
+    "tenure": "1986-1990 @LSU",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Bellotti",
+    "tenure": "1994-2008 @Oregon",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Bloomgren",
+    "tenure": "2017-2024 @Rice",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Bobo",
+    "tenure": "2014-2019 @Colorado State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Cavan",
+    "tenure": "1996-2001 @SMU",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Collins",
+    "tenure": "2001-2002 @Louisiana Monroe",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike DeBord",
+    "tenure": "1999-2003 @Central Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike DuBose",
+    "tenure": "1996-2000 @Alabama",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Elko",
+    "tenure": "2023-2024 @Texas A&M\n2021-2023 @Duke",
+    "current_institution": "Texas A&M"
+  },
+  {
+    "person": "Mike Gottfried",
+    "tenure": "1986-1989 @Pittsburgh",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Gundy",
+    "tenure": "2004-2024 @Oklahoma State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Haywood",
+    "tenure": "2008-2010 @Miami OH",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Hodges",
+    "tenure": "1991-1997 @Massachusetts",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Houston",
+    "tenure": "2018-2024 @East Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Jinks",
+    "tenure": "2015-2018 @Bowling Green",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Knoll",
+    "tenure": "1986-1989 @New Mexico State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Kruczek",
+    "tenure": "1997-2003 @Central Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Leach",
+    "tenure": "2019-2022 @Mississippi State\n2011-2019 @Washington State\n1999-2009 @Texas Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Locksley",
+    "tenure": "2018-2024 @Maryland\n2008-2010 @New Mexico",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike London",
+    "tenure": "2009-2015 @Virginia",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike MacIntyre",
+    "tenure": "2021-2024 @Florida International\n2012-2018 @Colorado\n2009-2012 @San Jose State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Neu",
+    "tenure": "2015-2024 @Ball State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Norvell",
+    "tenure": "2019-2024 @Florida State\n2015-2019 @Memphis",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike O'Cain",
+    "tenure": "1992-1999 @North Carolina State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Price",
+    "tenure": "2003-2012 @UTEP\n1988-2002 @Washington State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Riley",
+    "tenure": "2014-2017 @Nebraska\n1996-1998 @Oregon State\n2002-2014 @Oregon State",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Sanford",
+    "tenure": "2004-2009 @UNLV",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Sanford Jr",
+    "tenure": "2016-2018 @Western Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Sewak",
+    "tenure": "2001-2005 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Sheppard",
+    "tenure": "1986-1991 @New Mexico",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Sherman",
+    "tenure": "2007-2011 @Texas A&M",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Shula",
+    "tenure": "2002-2006 @Alabama",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike Stoops",
+    "tenure": "2003-2011 @Arizona",
+    "current_institution": ""
+  },
+  {
+    "person": "Mike White",
+    "tenure": "1986-1987 @Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Moe Ankney",
+    "tenure": "1986-1990 @Bowling Green",
+    "current_institution": ""
+  },
+  {
+    "person": "Morgan Hout",
+    "tenure": "1986-1988 @Liberty",
+    "current_institution": ""
+  },
+  {
+    "person": "Nate Dreiling",
+    "tenure": "2023-2024 @Utah State",
+    "current_institution": "Utah State"
+  },
+  {
+    "person": "Neal Brown",
+    "tenure": "2018-2024 @West Virginia\n2014-2018 @Troy",
+    "current_institution": ""
+  },
+  {
+    "person": "Neil Callaway",
+    "tenure": "2006-2011 @UAB",
+    "current_institution": ""
+  },
+  {
+    "person": "Nelson Stokley",
+    "tenure": "1986-1998 @Louisiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Nick Rolovich",
+    "tenure": "2019-2021 @Washington State\n2015-2019 @Hawaii",
+    "current_institution": ""
+  },
+  {
+    "person": "Nick Saban",
+    "tenure": "2006-2023 @Alabama\n1999-2004 @LSU\n1994-1999 @Michigan State\n1989-1990 @Toledo",
+    "current_institution": ""
+  },
+  {
+    "person": "No FBS Team",
+    "tenure": "1986-2023 @Kennesaw State\n1986-2022 @Jacksonville State\n1986-2022 @Sam Houston State\n1986-2021 @James Madison\n1986-1990 @UAB\n2014-2016 @UAB\n1986-2010 @Charlotte\n1986-2010 @UTSA\n1986-2008 @Old Dominion\n1986-2008 @South Alabama\n1986-2007 @Georgia State\n1986-2002 @Coastal Carolina\n1986-2001 @Florida International\n1986-2000 @Florida Atlantic\n1986-1996 @South Florida\n1986-1988 @SMU",
+    "current_institution": ""
+  },
+  {
+    "person": "Norm Chow",
+    "tenure": "2011-2015 @Hawaii",
+    "current_institution": ""
+  },
+  {
+    "person": "P. J. Fleck",
+    "tenure": "2016-2024 @Minnesota\n2012-2016 @Western Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Pat Collins",
+    "tenure": "1986-1988 @Louisiana Monroe",
+    "current_institution": ""
+  },
+  {
+    "person": "Pat Dye",
+    "tenure": "1986-1992 @Auburn",
+    "current_institution": ""
+  },
+  {
+    "person": "Pat Fitzgerald",
+    "tenure": "2005-2022 @Northwestern",
+    "current_institution": ""
+  },
+  {
+    "person": "Pat Hill",
+    "tenure": "1996-2011 @Fresno State",
+    "current_institution": ""
+  },
+  {
+    "person": "Pat Jones",
+    "tenure": "1986-1994 @Oklahoma State",
+    "current_institution": ""
+  },
+  {
+    "person": "Pat Narduzzi",
+    "tenure": "2014-2024 @Pittsburgh",
+    "current_institution": ""
+  },
+  {
+    "person": "Pat Sullivan",
+    "tenure": "1991-1997 @TCU",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Chryst",
+    "tenure": "2014-2022 @Wisconsin\n2011-2014 @Pittsburgh",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Hackett",
+    "tenure": "1997-2000 @USC\n1989-1992 @Pittsburgh",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Haynes",
+    "tenure": "2012-2017 @Kent State",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Johnson",
+    "tenure": "2007-2018 @Georgia Tech\n2001-2007 @Navy\n1996-2001 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Pasqualoni",
+    "tenure": "2010-2013 @Connecticut\n1990-2004 @Syracuse",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Rhoads",
+    "tenure": "2008-2015 @Iowa State",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Roach",
+    "tenure": "1986-1990 @Wyoming",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Schudel",
+    "tenure": "1986-1994 @Ball State",
+    "current_institution": ""
+  },
+  {
+    "person": "Paul Wulff",
+    "tenure": "2007-2011 @Washington State",
+    "current_institution": ""
+  },
+  {
+    "person": "Pete Carroll",
+    "tenure": "2000-2009 @USC",
+    "current_institution": ""
+  },
+  {
+    "person": "Pete Cordelli",
+    "tenure": "1990-1993 @Kent State",
+    "current_institution": ""
+  },
+  {
+    "person": "Pete Lembo",
+    "tenure": "2023-2024 @Buffalo\n2010-2015 @Ball State",
+    "current_institution": "Buffalo"
+  },
+  {
+    "person": "Phil Bennett",
+    "tenure": "2001-2007 @SMU",
+    "current_institution": ""
+  },
+  {
+    "person": "Phil Fulmer",
+    "tenure": "1992-2008 @Tennessee",
+    "current_institution": ""
+  },
+  {
+    "person": "Philip Montgomery",
+    "tenure": "2014-2022 @Tulsa",
+    "current_institution": ""
+  },
+  {
+    "person": "Pokey Allen",
+    "tenure": "1992-1996 @Boise State",
+    "current_institution": ""
+  },
+  {
+    "person": "RC Slocum",
+    "tenure": "1988-2002 @Texas A&M",
+    "current_institution": ""
+  },
+  {
+    "person": "Ralph Friedgen",
+    "tenure": "2000-2010 @Maryland",
+    "current_institution": ""
+  },
+  {
+    "person": "Randy Edsall",
+    "tenure": "1998-2010 @Connecticut\n2016-2021 @Connecticut\n2010-2015 @Maryland",
+    "current_institution": ""
+  },
+  {
+    "person": "Randy Shannon",
+    "tenure": "2006-2010 @Miami FL",
+    "current_institution": ""
+  },
+  {
+    "person": "Randy Walker",
+    "tenure": "1998-2005 @Northwestern\n1989-1998 @Miami OH",
+    "current_institution": ""
+  },
+  {
+    "person": "Ray Goff",
+    "tenure": "1988-1995 @Georgia",
+    "current_institution": ""
+  },
+  {
+    "person": "Ray Perkins",
+    "tenure": "1991-1992 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Rhett Lashlee",
+    "tenure": "2021-2024 @SMU",
+    "current_institution": ""
+  },
+  {
+    "person": "Rich Brooks",
+    "tenure": "1986-1994 @Oregon",
+    "current_institution": ""
+  },
+  {
+    "person": "Rich Ellerson",
+    "tenure": "2008-2013 @Army",
+    "current_institution": ""
+  },
+  {
+    "person": "Rich Rodriguez",
+    "tenure": "2022-2024 @Jacksonville State\n2011-2017 @Arizona\n2007-2010 @Michigan\n2000-2007 @West Virginia",
+    "current_institution": ""
+  },
+  {
+    "person": "Rich Rodriguez",
+    "tenure": "2024-2025 @West Virginia",
+    "current_institution": "West Virginia"
+  },
+  {
+    "person": "Rick Brooks",
+    "tenure": "2002-2009 @Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Rick Minter",
+    "tenure": "1993-2003 @Cincinnati",
+    "current_institution": ""
+  },
+  {
+    "person": "Rick Neuheisel",
+    "tenure": "2007-2011 @UCLA\n1998-2002 @Washington\n1994-1998 @Colorado",
+    "current_institution": ""
+  },
+  {
+    "person": "Rick Rasnick",
+    "tenure": "1994-1999 @Eastern Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Rick Rhoades",
+    "tenure": "1986-1987 @Troy",
+    "current_institution": ""
+  },
+  {
+    "person": "Rick Stockstill",
+    "tenure": "2005-2023 @Middle Tennessee",
+    "current_institution": ""
+  },
+  {
+    "person": "Rickey Bustle",
+    "tenure": "2001-2010 @Louisiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Ricky Rahne",
+    "tenure": "2019-2024 @Old Dominion",
+    "current_institution": ""
+  },
+  {
+    "person": "Rip Scherer",
+    "tenure": "1994-2000 @Memphis",
+    "current_institution": ""
+  },
+  {
+    "person": "Rob Ianello",
+    "tenure": "2009-2011 @Akron",
+    "current_institution": ""
+  },
+  {
+    "person": "Robbie Caldwell",
+    "tenure": "2009-2010 @Vanderbilt",
+    "current_institution": ""
+  },
+  {
+    "person": "Robert Maddox",
+    "tenure": "1987-1990 @Troy",
+    "current_institution": ""
+  },
+  {
+    "person": "Rockey Felker",
+    "tenure": "1986-1990 @Mississippi State",
+    "current_institution": ""
+  },
+  {
+    "person": "Rocky Long",
+    "tenure": "2010-2019 @San Diego State\n1997-2008 @New Mexico",
+    "current_institution": ""
+  },
+  {
+    "person": "Rod Carey",
+    "tenure": "2018-2021 @Temple\n2012-2018 @Northern Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Rod Dowhower",
+    "tenure": "1994-1996 @Vanderbilt",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron Caragher",
+    "tenure": "2012-2016 @San Jose State",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron Cooper",
+    "tenure": "1994-1997 @Louisville\n1992-1994 @Eastern Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron Dickerson",
+    "tenure": "1992-1997 @Temple",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron English",
+    "tenure": "2008-2013 @Eastern Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron McBride",
+    "tenure": "1989-2002 @Utah",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron Prince",
+    "tenure": "2005-2008 @Kansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron Turner",
+    "tenure": "2012-2016 @Florida International\n1996-2004 @Illinois\n1991-1992 @San Jose State",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron Vanderlinden",
+    "tenure": "1996-2000 @Maryland",
+    "current_institution": ""
+  },
+  {
+    "person": "Ron Zook",
+    "tenure": "2004-2011 @Illinois\n2001-2004 @Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Ruffin McNeil",
+    "tenure": "2009-2015 @East Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Ryan Day",
+    "tenure": "2018-2024 @Ohio State",
+    "current_institution": ""
+  },
+  {
+    "person": "Ryan Silverfield",
+    "tenure": "2019-2024 @Memphis",
+    "current_institution": ""
+  },
+  {
+    "person": "Ryan Walters",
+    "tenure": "2022-2024 @Purdue",
+    "current_institution": ""
+  },
+  {
+    "person": "Sam Pittman",
+    "tenure": "2019-2024 @Arkansas",
+    "current_institution": ""
+  },
+  {
+    "person": "Sam Rutigliano",
+    "tenure": "1988-1999 @Liberty",
+    "current_institution": ""
+  },
+  {
+    "person": "Sam Sanders",
+    "tenure": "1989-1991 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Scot Loeffler",
+    "tenure": "2018-2024 @Bowling Green",
+    "current_institution": ""
+  },
+  {
+    "person": "Scott Frost",
+    "tenure": "2015-2017 @Central Florida\n2024-2025 @Central Florida\n2017-2022 @Nebraska",
+    "current_institution": "Central Florida"
+  },
+  {
+    "person": "Scott Satterfield",
+    "tenure": "2022-2024 @Cincinnati\n2018-2022 @Louisville\n2012-2018 @Appalachian State",
+    "current_institution": ""
+  },
+  {
+    "person": "Scott Shafer",
+    "tenure": "2012-2015 @Syracuse",
+    "current_institution": ""
+  },
+  {
+    "person": "Scottie Montgomery",
+    "tenure": "2015-2018 @East Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Scotty Walden",
+    "tenure": "2023-2024 @UTEP",
+    "current_institution": "UTEP"
+  },
+  {
+    "person": "Sean Kugler",
+    "tenure": "2012-2017 @UTEP",
+    "current_institution": ""
+  },
+  {
+    "person": "Sean Lewis",
+    "tenure": "2023-2024 @San Diego State\n2017-2022 @Kent State",
+    "current_institution": "San Diego State"
+  },
+  {
+    "person": "Seth Littrell",
+    "tenure": "2015-2022 @North Texas",
+    "current_institution": ""
+  },
+  {
+    "person": "Shane Beamer",
+    "tenure": "2020-2024 @South Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Shane Montgomery",
+    "tenure": "2004-2008 @Miami OH",
+    "current_institution": ""
+  },
+  {
+    "person": "Shawn Clark",
+    "tenure": "2019-2024 @Appalachian State",
+    "current_institution": ""
+  },
+  {
+    "person": "Shawn Elliott",
+    "tenure": "2016-2023 @Georgia State",
+    "current_institution": ""
+  },
+  {
+    "person": "Sherrone Moore",
+    "tenure": "2023-2024 @Michigan",
+    "current_institution": "Michigan"
+  },
+  {
+    "person": "Skip Hall",
+    "tenure": "1986-1992 @Boise State",
+    "current_institution": ""
+  },
+  {
+    "person": "Skip Holtz",
+    "tenure": "2012-2021 @Louisiana Tech\n2009-2012 @South Florida\n2004-2009 @East Carolina\n1993-1998 @Connecticut",
+    "current_institution": ""
+  },
+  {
+    "person": "Sonny Cumbie",
+    "tenure": "2021-2024 @Louisiana Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Sonny Dykes",
+    "tenure": "2021-2024 @TCU\n2017-2021 @SMU\n2012-2016 @California\n2009-2012 @Louisiana Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Sonny Lubick",
+    "tenure": "1992-2007 @Colorado State",
+    "current_institution": ""
+  },
+  {
+    "person": "Sparky Woods",
+    "tenure": "1988-1993 @South Carolina\n1986-1988 @Appalachian State",
+    "current_institution": ""
+  },
+  {
+    "person": "Spencer Danielson",
+    "tenure": "2023-2024 @Boise State",
+    "current_institution": "Boise State"
+  },
+  {
+    "person": "Spike Dykes",
+    "tenure": "1986-1999 @Texas Tech",
+    "current_institution": ""
+  },
+  {
+    "person": "Stan Brock",
+    "tenure": "2006-2008 @Army",
+    "current_institution": ""
+  },
+  {
+    "person": "Stan Drayton",
+    "tenure": "2021-2024 @Temple",
+    "current_institution": ""
+  },
+  {
+    "person": "Stan Parrish",
+    "tenure": "2008-2010 @Ball State\n1986-1988 @Kansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Addazio",
+    "tenure": "2019-2021 @Colorado State\n2012-2019 @Boston College\n2010-2012 @Temple",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Campbell",
+    "tenure": "2017-2020 @South Alabama",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Fairchild",
+    "tenure": "2007-2011 @Colorado State",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Kragthorpe",
+    "tenure": "2006-2009 @Louisville\n2002-2006 @Tulsa",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Logan",
+    "tenure": "1991-2002 @East Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Mariucci",
+    "tenure": "1995-1996 @California",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Roberts",
+    "tenure": "2001-2010 @Arkansas State",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Sarkisian",
+    "tenure": "2020-2024 @Texas\n2013-2015 @USC\n2008-2013 @Washington",
+    "current_institution": ""
+  },
+  {
+    "person": "Steve Spurrier",
+    "tenure": "2004-2015 @South Carolina\n1989-2001 @Florida\n1986-1989 @Duke",
+    "current_institution": ""
+  },
+  {
+    "person": "Sylvester Croom",
+    "tenure": "2003-2008 @Mississippi State",
+    "current_institution": ""
+  },
+  {
+    "person": "Ted Roof",
+    "tenure": "2003-2007 @Duke",
+    "current_institution": ""
+  },
+  {
+    "person": "Ted Tollner",
+    "tenure": "1993-2001 @San Diego State",
+    "current_institution": ""
+  },
+  {
+    "person": "Terry Allen",
+    "tenure": "1996-2001 @Kansas",
+    "current_institution": ""
+  },
+  {
+    "person": "Terry Bowden",
+    "tenure": "2020-2023 @Louisiana Monroe\n2011-2018 @Akron\n1992-1998 @Auburn",
+    "current_institution": ""
+  },
+  {
+    "person": "Terry Donahue",
+    "tenure": "1986-1995 @UCLA",
+    "current_institution": ""
+  },
+  {
+    "person": "Terry Hoeppner",
+    "tenure": "2004-2006 @Indiana\n1998-2004 @Miami OH",
+    "current_institution": ""
+  },
+  {
+    "person": "Terry Shea",
+    "tenure": "1995-2000 @Rutgers\n1989-1991 @San Jose State",
+    "current_institution": ""
+  },
+  {
+    "person": "Thomas Hammock",
+    "tenure": "2018-2024 @Northern Illinois",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim Albin",
+    "tenure": "2020-2024 @Ohio",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim Beck",
+    "tenure": "2022-2024 @Coastal Carolina",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim Beckman",
+    "tenure": "2011-2014 @Illinois\n2008-2011 @Toledo",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim Brewster",
+    "tenure": "2006-2010 @Minnesota",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim DeRuyter",
+    "tenure": "2011-2016 @Fresno State",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim Lester",
+    "tenure": "2016-2022 @Western Michigan",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim Murphy",
+    "tenure": "1988-1993 @Cincinnati",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim Rose",
+    "tenure": "1986-1989 @Miami OH",
+    "current_institution": ""
+  },
+  {
+    "person": "Tim Skipper",
+    "tenure": "2023-2024 @Fresno State",
+    "current_institution": "Fresno State"
+  },
+  {
+    "person": "Tim Stowers",
+    "tenure": "1989-1995 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Todd Berry",
+    "tenure": "2009-2015 @Louisiana Monroe\n1999-2003 @Army",
+    "current_institution": ""
+  },
+  {
+    "person": "Todd Dodge",
+    "tenure": "2006-2010 @North Texas",
+    "current_institution": ""
+  },
+  {
+    "person": "Todd Graham",
+    "tenure": "2019-2024 @Hawaii\n2011-2017 @Arizona State\n2010-2011 @Pittsburgh\n2006-2010 @Tulsa\n2005-2006 @Rice",
+    "current_institution": ""
+  },
+  {
+    "person": "Todd Monken",
+    "tenure": "2012-2015 @Southern Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Allen",
+    "tenure": "2016-2023 @Indiana",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Amstutz",
+    "tenure": "2000-2008 @Toledo",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Arth",
+    "tenure": "2018-2021 @Akron",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Coughlin",
+    "tenure": "1990-1993 @Boston College",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Craft",
+    "tenure": "2001-2005 @San Diego State",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Herman",
+    "tenure": "2022-2024 @Florida Atlantic\n2016-2020 @Texas\n2014-2016 @Houston",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Holmoe",
+    "tenure": "1996-2001 @California",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Jackson",
+    "tenure": "1986-1993 @Connecticut",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Lichtenberg",
+    "tenure": "1989-1994 @Ohio",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom O'Brien",
+    "tenure": "2006-2012 @North Carolina State\n1996-2006 @Boston College",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Osborne",
+    "tenure": "1986-1997 @Nebraska",
+    "current_institution": ""
+  },
+  {
+    "person": "Tom Rossley",
+    "tenure": "1990-1996 @SMU",
+    "current_institution": ""
+  },
+  {
+    "person": "Tommy Bowden",
+    "tenure": "1998-2007 @Clemson\n1996-1998 @Tulane",
+    "current_institution": ""
+  },
+  {
+    "person": "Tommy Tuberville",
+    "tenure": "2012-2016 @Cincinnati\n2009-2012 @Texas Tech\n1998-2008 @Auburn\n1994-1998 @Ole Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Tommy West",
+    "tenure": "2000-2009 @Memphis\n1993-1998 @Clemson",
+    "current_institution": ""
+  },
+  {
+    "person": "Tony Elliott",
+    "tenure": "2021-2024 @Virginia",
+    "current_institution": ""
+  },
+  {
+    "person": "Tony Levine",
+    "tenure": "2011-2014 @Houston",
+    "current_institution": ""
+  },
+  {
+    "person": "Tony Samuel",
+    "tenure": "1996-2004 @New Mexico State",
+    "current_institution": ""
+  },
+  {
+    "person": "Tony Sanchez",
+    "tenure": "2014-2019 @UNLV",
+    "current_institution": ""
+  },
+  {
+    "person": "Tracy Claeys",
+    "tenure": "2015-2016 @Minnesota",
+    "current_institution": ""
+  },
+  {
+    "person": "Trent Bray",
+    "tenure": "2023-2024 @Oregon State",
+    "current_institution": "Oregon State"
+  },
+  {
+    "person": "Trent Dilfer",
+    "tenure": "2022-2024 @UAB",
+    "current_institution": ""
+  },
+  {
+    "person": "Trent Miles",
+    "tenure": "2012-2016 @Georgia State",
+    "current_institution": ""
+  },
+  {
+    "person": "Troy Calhoun",
+    "tenure": "2006-2024 @Air Force",
+    "current_institution": ""
+  },
+  {
+    "person": "Troy Taylor",
+    "tenure": "2022-2024 @Stanford",
+    "current_institution": ""
+  },
+  {
+    "person": "Turner Gill",
+    "tenure": "2011-2018 @Liberty\n2009-2011 @Kansas\n2005-2009 @Buffalo",
+    "current_institution": ""
+  },
+  {
+    "person": "Tyrone Willingham",
+    "tenure": "2004-2008 @Washington\n2001-2004 @Notre Dame\n1994-2001 @Stanford",
+    "current_institution": ""
+  },
+  {
+    "person": "Tyson Helton",
+    "tenure": "2018-2024 @Western Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Tyson Summers",
+    "tenure": "2015-2017 @Georgia Southern",
+    "current_institution": ""
+  },
+  {
+    "person": "Urban Meyer",
+    "tenure": "2011-2018 @Ohio State\n2004-2010 @Florida\n2002-2004 @Utah\n2000-2002 @Bowling Green",
+    "current_institution": ""
+  },
+  {
+    "person": "Vic Koenning",
+    "tenure": "1999-2002 @Wyoming",
+    "current_institution": ""
+  },
+  {
+    "person": "Vince Dooley",
+    "tenure": "1986-1988 @Georgia",
+    "current_institution": ""
+  },
+  {
+    "person": "Walt Bell",
+    "tenure": "2018-2021 @Massachusetts",
+    "current_institution": ""
+  },
+  {
+    "person": "Walt Harris",
+    "tenure": "2004-2006 @Stanford\n1996-2004 @Pittsburgh",
+    "current_institution": ""
+  },
+  {
+    "person": "Watson Brown",
+    "tenure": "1994-2006 @UAB\n1986-1990 @Vanderbilt",
+    "current_institution": ""
+  },
+  {
+    "person": "Wayne Nunnely",
+    "tenure": "1986-1989 @UNLV",
+    "current_institution": ""
+  },
+  {
+    "person": "Will Hall",
+    "tenure": "2020-2024 @Southern Miss",
+    "current_institution": ""
+  },
+  {
+    "person": "Will Healy",
+    "tenure": "2018-2022 @Charlotte",
+    "current_institution": ""
+  },
+  {
+    "person": "Will Muschamp",
+    "tenure": "2015-2020 @South Carolina\n2010-2014 @Florida",
+    "current_institution": ""
+  },
+  {
+    "person": "Willie Fritz",
+    "tenure": "2023-2024 @Houston\n2015-2023 @Tulane\n2013-2015 @Georgia Southern",
+    "current_institution": "Houston"
+  },
+  {
+    "person": "Willie Taggart",
+    "tenure": "2019-2022 @Florida Atlantic\n2017-2019 @Florida State\n2016-2017 @Oregon\n2012-2016 @South Florida\n2009-2012 @Western Kentucky",
+    "current_institution": ""
+  },
+  {
+    "person": "Woody Widenhofer",
+    "tenure": "1996-2001 @Vanderbilt\n1986-1988 @Missouri",
+    "current_institution": ""
+  },
+  {
+    "person": "Zach Arnett",
+    "tenure": "2022-2023 @Mississippi State",
+    "current_institution": ""
+  }
+]

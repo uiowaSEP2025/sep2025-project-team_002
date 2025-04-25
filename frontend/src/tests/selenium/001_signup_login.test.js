@@ -87,13 +87,22 @@ describe("Selenium Signup & Login Test", function () {
       // Wait for redirection to the secure home page
       await driver.wait(until.urlContains("/secure-home"), 5000);
 
-      // Wait for the element containing "Schools and Sports" to appear
-      let textElement = await driver.wait(until.elementLocated(By.css('h3.MuiTypography-h3')), 10000); // Wait for the h3 tag with the class
-      await driver.wait(until.elementTextContains(textElement, "Schools and Sports"), 5000); // Wait for the text
+      // Wait for the page to be fully loaded
+      await driver.wait(until.elementLocated(By.id("secure-home")), 10000);
+      
+      // Wait for the "Schools and Sports" text to be visible
+      const schoolsAndSportsText = await driver.wait(
+        until.elementLocated(By.xpath("//h3[contains(text(), 'Schools and Sports')]")),
+        10000
+      );
+      
+      // Verify the text is visible
+      expect(await schoolsAndSportsText.isDisplayed()).to.be.true;
+      
+      // Get the text content and verify it
+      const textContent = await schoolsAndSportsText.getText();
+      expect(textContent).to.equal("Schools and Sports");
 
-      // Verify that the page contains the expected text
-      let text = await textElement.getText();
-      expect(text).to.include("Schools and Sports");
 
       console.log("Test passed: User successfully signed up, logged in, and accessed secure home.");
     } catch (error) {

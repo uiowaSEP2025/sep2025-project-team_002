@@ -247,6 +247,50 @@ function SchoolPage() {
               </CardContent>
             </Card>
 
+            {/* Average Ratings Section */}
+            <Card id="average-ratings-card" sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography id="average-ratings-title" variant="h6" gutterBottom>
+                  Average Ratings
+                </Typography>
+                <Grid container spacing={2}>
+                  {[
+                    ['head_coach', 'Head Coach'],
+                    ['assistant_coaches', 'Assistant Coaches'],
+                    ['team_culture', 'Team Culture'],
+                    ['campus_life', 'Campus Life'],
+                    ['athletic_facilities', 'Athletic Facilities'],
+                    ['athletic_department', 'Athletic Department'],
+                    ['player_development', 'Player Development'],
+                    ['nil_opportunity', 'NIL Opportunity']
+                  ].map(([field, label]) => {
+                    // Calculate average for this category
+                    const average = filteredReviews.length > 0
+                      ? filteredReviews.reduce((sum, review) => sum + review[field], 0) / filteredReviews.length
+                      : 0;
+
+                    return (
+                      <Grid item xs={6} sm={3} key={field}>
+                        <Typography id={`average-${field}-label`} variant="subtitle2">
+                          {label}
+                        </Typography>
+                        <Rating
+                          id={`average-${field}-rating`}
+                          value={average}
+                          readOnly
+                          precision={0.1}
+                          max={10}
+                        />
+                        <Typography id={`average-${field}-score`} variant="caption">
+                          {average.toFixed(1)}/10
+                        </Typography>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </CardContent>
+            </Card>
+
             {/* Reviews Section */}
             <Card id="reviews-section">
               <CardContent>
@@ -283,76 +327,102 @@ function SchoolPage() {
 
                     >
                       <CardContent>
-                        <Box
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            mb: 1,
-                          }}
-                        >
-                          <Typography variant="h6" gutterBottom>
-                            Head Coach: {review.head_coach_name}
-                          </Typography>
+<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+  <Box sx={{ flex: 1 }}>
+    <Typography id={`coach-name-${review.review_id}`} variant="h6">
+      Head Coach: {review.head_coach_name}
+    </Typography>
+    {review.coach_history && (
+      <Typography 
+        variant="body2" 
+        sx={{ 
+          mt: 1,
+          backgroundColor: 'grey.100',
+          p: 2,
+          borderRadius: 1,
+          whiteSpace: 'pre-line'
+        }}
+      >
+        {review.coach_history}
+      </Typography>
+    )}
+  </Box>
 
-                          <Stack direction="row" spacing={2} alignItems="center">
-                            <Tooltip
-                              title={
-                                review.user?.is_school_verified
-                                  ? "This reviewer has verified their school email"
-                                  : ""
-                              }
-                            >
-                              <Badge
-                                overlap="circular"
-                                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-                                badgeContent={
-                                  review.user?.is_school_verified ? (
-                                    <CheckCircleIcon
-                                      sx={{
-                                        color: "green",
-                                        fontSize: 14,
-                                        backgroundColor: "white",
-                                        borderRadius: "50%",
-                                        boxShadow: 1,
-                                      }}
-                                    />
-                                  ) : null
-                                }
-                              >
-                                <Avatar
-                                  src={
-                                    review.user?.profile_picture
-                                      ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
-                                      : "/default-avatar.png"
-                                  }
-                                  alt="Reviewer avatar"
-                                  sx={{ width: 40, height: 40 }}
-                                />
-                              </Badge>
-                            </Tooltip>
+  <Stack direction="row" spacing={2} alignItems="center">
+    {review.coach_no_longer_at_university && (
+      <Typography 
+        component="span" 
+        sx={{ 
+          backgroundColor: 'warning.main', 
+          color: 'warning.contrastText',
+          px: 1,
+          py: 0.5,
+          borderRadius: 1,
+          fontSize: '0.875rem'
+        }}
+      >
+        No Longer at University
+      </Typography>
+    )}
 
-                            <Box sx={{ textAlign: "right" }}>
-                              <Typography variant="caption" color="text.secondary" display="block">
-                                {new Date(review.created_at).toLocaleDateString()}
-                              </Typography>
-                              <Typography
-                                variant="caption"
-                                display="block"
-                                sx={{
-                                  color: review.user?.is_school_verified ? "green" : "text.secondary",
-                                }}
-                              >
-                                {review.user?.is_school_verified
-                                  ? "  Verified"
-                                  : "Unverified"}
-                              </Typography>
-                            </Box>
-                          </Stack>
-                        </Box>
+    <Tooltip
+      title={
+        review.user?.is_school_verified
+          ? "This reviewer has verified their school email"
+          : ""
+      }
+    >
+      <Badge
+        overlap="circular"
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        badgeContent={
+          review.user?.is_school_verified ? (
+            <CheckCircleIcon
+              sx={{
+                color: "green",
+                fontSize: 14,
+                backgroundColor: "white",
+                borderRadius: "50%",
+                boxShadow: 1,
+              }}
+            />
+          ) : null
+        }
+      >
+        <Avatar
+          src={
+            review.user?.profile_picture
+              ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
+              : "/default-avatar.png"
+          }
+          alt="Reviewer avatar"
+          sx={{ width: 40, height: 40 }}
+        />
+      </Badge>
+    </Tooltip>
+
+    <Box sx={{ textAlign: "right" }}>
+      <Typography variant="caption" color="text.secondary" display="block">
+        {new Date(review.created_at).toLocaleDateString()}
+      </Typography>
+      <Typography
+        variant="caption"
+        display="block"
+        sx={{
+          color: review.user?.is_school_verified ? "green" : "text.secondary",
+        }}
+      >
+        {review.user?.is_school_verified
+          ? "Verified"
+          : "Unverified"}
+      </Typography>
+    </Box>
+  </Stack>
+</Box>
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
                         </Typography>
+
                         <Grid container spacing={2}>
                           {[
                             ['head_coach', 'Head Coach'],

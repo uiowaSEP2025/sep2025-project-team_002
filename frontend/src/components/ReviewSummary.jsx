@@ -1,62 +1,121 @@
-import { useState, useEffect } from 'react';
-import API_BASE_URL from '../utils/config.js';
+import React, { useState, useEffect } from 'react';
+import { Typography, Box } from '@mui/material';
+import API_BASE_URL from '../utils/config';
 
-function ReviewSummary({ schoolId, sport }) {
-    const [summary, setSummary] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const ReviewSummary = ({ schoolId, sport }) => {
+  const [summary, setSummary] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchSummary = async () => {
-            const token = localStorage.getItem('token');
+  // Sport code mapping
+  const sportToCode = {
+    "Men's Basketball": "mbb",
+    "Women's Basketball": "wbb",
+    "Football": "fb"
+  };
 
-            try {
-                // Use public route if no token, otherwise use protected route
-                const endpoint = token
-                    ? `${API_BASE_URL}/api/schools/${schoolId}/reviews/summary/?sport=${encodeURIComponent(sport)}`
-                    : `${API_BASE_URL}/api/public/schools/${schoolId}/reviews/summary/?sport=${encodeURIComponent(sport)}`;
-
-                const headers = token
-                    ? {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                      }
-                    : {
-                        'Content-Type': 'application/json'
-                      };
-
-                const response = await fetch(endpoint, { headers });
-                const data = await response.json();
-
-                if (response.ok) {
-                    setSummary(data.summary);
-                } else {
-                    setError(data.error || 'Failed to fetch summary');
-                    console.error('Error response:', data);
-                }
-            } catch (err) {
-                console.error('Fetch error:', err);
-                setError('Failed to fetch review summary');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (sport) {
-            fetchSummary();
+  // Helper function to parse markdown bold and italic syntax
+  const renderFormattedText = (text) => {
+    // First split by bold syntax
+    const parts = text.split(/(\*\*.*?\*\*)/);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        // Handle bold text
+        return <strong key={i}>{part.slice(2, -2)}</strong>;
+      } else if (part.startsWith('*') && part.endsWith('*')) {
+        // Handle italic text with custom color for the status tag
+        return (
+          <em key={i} style={{ color: '#ff6b6b', fontStyle: 'italic', marginLeft: '8px' }}>
+            {part.slice(1, -1)}
+          </em>
+        );
+      }
+      // Further split remaining text by italic syntax
+      return part.split(/(\*.*?\*)/).map((subPart, j) => {
+        if (subPart.startsWith('*') && subPart.endsWith('*')) {
+          return (
+            <em key={`${i}-${j}`} style={{ color: '#ff6b6b', fontStyle: 'italic', marginLeft: '8px' }}>
+              {subPart.slice(1, -1)}
+            </em>
+          );
         }
-    }, [schoolId, sport]);
+        return subPart;
+      });
+    });
+  };
 
-    if (!sport) return null;
-    if (loading) return <div>Loading summary...</div>;
-    if (error) return <div>Error: {error}</div>;
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        // Convert sport display name to code if needed
+        const sportCode = sportToCode[sport] || sport;
 
-    return (
-        <div className="review-summary">
-            <h3 className="rating-display">{sport} Program Reviews Summary</h3>
-            <p>{summary}</p>
-        </div>
-    );
-}
+        // Use public route if no token, otherwise use protected route
+        const endpoint = token
+          ? `${API_BASE_URL}/api/schools/${schoolId}/reviews/summary/?sport=${encodeURIComponent(sportCode)}`
+          : `${API_BASE_URL}/api/public/schools/${schoolId}/reviews/summary/?sport=${encodeURIComponent(sportCode)}`;
+
+        const headers = token
+          ? {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          : {
+              'Content-Type': 'application/json'
+            };
+
+        const response = await fetch(endpoint, { headers });
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          setSummary(data.summary);
+        } else {
+          setError(data.error || 'Failed to fetch summary');
+        }
+      } catch (error) {
+        console.error('Error in fetchSummary:', error);
+        setError('Failed to fetch summary');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (schoolId && sport) {
+      fetchSummary();
+    }
+  }, [schoolId, sport]);
+
+  if (!sport) return null;
+  if (loading) return <Typography>Loading summary...</Typography>;
+  if (error) return <Typography color="error">{error}</Typography>;
+  if (!summary) return <Typography>No summary available</Typography>;
+
+  return (
+    <Box>
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        {sport} Program Reviews Summary
+      </Typography>
+      {summary.split('\n').map((paragraph, index) => (
+        paragraph ? (
+          <Typography 
+            key={index} 
+            sx={{ 
+              mb: 0.5, // Reduced margin bottom
+              ...(paragraph.includes('**') && { mt: 1.5 }) // Add margin top only for new coach sections
+            }}
+          >
+            {renderFormattedText(paragraph)}
+          </Typography>
+        ) : <Box key={index} sx={{ height: '0.5em' }} /> // Reduced empty line spacing
+      ))}
+    </Box>
+  );
+};
 
 export default ReviewSummary;

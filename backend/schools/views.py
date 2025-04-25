@@ -10,6 +10,11 @@ from django.conf import settings
 import logging
 from django.db import models
 from preferences.models import Preferences
+from django.shortcuts import get_object_or_404
+import openai
+import os
+from datetime import datetime
+from reviews.services import CoachSearchService
 
 logger = logging.getLogger(__name__)
 
@@ -47,84 +52,333 @@ class ProtectedSchoolDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
 
+def _normalize_coach_name(name):
+    """Normalize coach name by converting to lowercase and stripping whitespace."""
+    return name.lower().strip()
+
+
+def _standardize_coach_name(name):
+    """Standardize coach name capitalization (e.g., 'jan JENSEN' -> 'Jan Jensen')."""
+    # Split into words and capitalize each word
+    words = name.split()
+    standardized = " ".join(word.capitalize() for word in words)
+    return standardized
+
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_review_summary(request, school_id):
-    logger.info(f"Received review summary request for school_id: {school_id}")
-    sport = request.GET.get("sport")
-
     try:
-        school = Schools.objects.get(pk=school_id)
-
-        # Get the latest review for this sport
-        latest_review = (
-            Reviews.objects.filter(school_id=school_id, sport=sport)
-            .order_by("-created_at")
-            .first()
-        )
-        if not latest_review:
+        # Get sport parameter and validate
+        sport = request.GET.get("sport")
+        if not sport:
             return Response(
-                {"summary": f"No reviews available for {sport} at this school yet."}
+                {"error": "Sport parameter is required"},
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Get stored summaries and dates
-        summaries = school.sport_summaries or {}
-        last_dates = school.sport_review_dates or {}
+        # Get school or return 404
+        school = get_object_or_404(Schools, id=school_id)
 
-        # Check if we have a valid stored summary for this sport
-        if sport in summaries and sport in last_dates:
-            stored_date = last_dates[sport]
-            latest_date = latest_review.created_at.isoformat()
-            if stored_date >= latest_date:
-                return Response({"summary": summaries[sport]})
+        # Get all reviews for this school and sport
+        reviews = Reviews.objects.filter(school=school, sport=sport).order_by(
+            "-created_at"
+        )
 
-        # Generate new summary if needed
-        try:
-            if not settings.OPENAI_API_KEY:
-                logger.error("OpenAI API key is not configured")
-                return Response(
-                    {"error": "OpenAI API key is not configured"},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        if not reviews.exists():
+            return Response(
+                {
+                    "summary": f"No reviews available for {sport} at {school.school_name} yet."
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        # Get the most recent review's coach
+        latest_review = reviews.first()
+        latest_coach = latest_review.head_coach_name
+        latest_review_date = latest_review.created_at.isoformat()
+
+        # Ensure we have dictionaries for our JSON fields
+        if not isinstance(school.sport_summaries, dict):
+            school.sport_summaries = {}
+        if not isinstance(school.sport_review_dates, dict):
+            school.sport_review_dates = {}
+
+        # Initialize sport-specific dictionaries if they don't exist
+        if sport not in school.sport_summaries:
+            school.sport_summaries[sport] = {}
+        if sport not in school.sport_review_dates:
+            school.sport_review_dates[sport] = {}
+
+        # Ensure the sport-specific entries are dictionaries
+        if not isinstance(school.sport_summaries[sport], dict):
+            school.sport_summaries[sport] = {}
+        if not isinstance(school.sport_review_dates[sport], dict):
+            school.sport_review_dates[sport] = {}
+
+        # Group reviews by normalized coach name
+        coach_reviews = {}
+        for review in reviews:
+            coach_name = review.head_coach_name
+            normalized_name = _normalize_coach_name(coach_name)
+            if normalized_name not in coach_reviews:
+                # Use standardized capitalization for the original name
+                coach_reviews[normalized_name] = {
+                    "original_name": _standardize_coach_name(coach_name),
+                    "reviews": [],
+                }
+            coach_reviews[normalized_name]["reviews"].append(review)
+
+        # Initialize OpenAI client and CoachSearchService
+        client = OpenAI()
+        coach_service = CoachSearchService()
+
+        # List to store all summaries for final output
+        coach_summaries = []
+
+        # First, handle the latest reviewed coach
+        latest_coach_normalized = _normalize_coach_name(latest_coach)
+        stored_date = school.sport_review_dates[sport].get(latest_coach)
+        needs_update = latest_coach not in school.sport_summaries[
+            sport
+        ] or (  # No summary exists
+            stored_date and stored_date < latest_review_date
+        )  # Summary is outdated
+
+        # Get all reviews text for general aspects (facilities, NIL, etc.)
+        all_reviews_text = " ".join(
+            [
+                " ".join(
+                    [
+                        f"Athletic Facilities: {review.review_message if 'facilities' in review.review_message.lower() else ''}",
+                        f"NIL Opportunities: {review.review_message if 'nil' in review.review_message.lower() else ''}",
+                        f"Campus Life: {review.review_message if 'campus' in review.review_message.lower() else ''}",
+                        f"Athletic Department: {review.review_message if 'department' in review.review_message.lower() or 'athletic department' in review.review_message.lower() else ''}",
+                        f"Team Culture: {review.review_message if 'culture' in review.review_message.lower() or 'team culture' in review.review_message.lower() else ''}",
+                    ]
                 )
+                for review in reviews
+            ]
+        )
 
-            # Get all reviews for this sport
-            reviews = Reviews.objects.filter(school_id=school_id, sport=sport)
-            reviews_text = " ".join([review.review_message for review in reviews])
-            client = OpenAI()
-            response = client.chat.completions.create(
+        # Generate general summary
+        try:
+            general_response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
                     {
                         "role": "system",
-                        "content": f"You are a helpful assistant that summarizes {sport} program reviews. Provide a concise summary in exactly 2 sentences, without using bullet points or dashes. Focus on the most important themes and overall sentiment from the reviews. Always talk about it from a reviews perspective, like 'reviewers state...'",
+                        "content": f"You are a helpful assistant that summarizes general aspects of {sport} programs (excluding coach-specific information). Focus on athletic facilities, NIL opportunities, campus life, athletic department support, and team culture. Provide a concise 2-3 sentence summary that captures the overall sentiment about these aspects from the reviews.",
                     },
-                    {"role": "user", "content": reviews_text},
+                    {"role": "user", "content": all_reviews_text},
                 ],
                 max_tokens=250,
+                temperature=0.7,
+                presence_penalty=0.6,
+                frequency_penalty=0.6,
             )
-            summary = response.choices[0].message.content
+            general_summary = general_response.choices[0].message.content
 
-            # Store the new summary and date
-            summaries[sport] = summary
-            last_dates[sport] = latest_review.created_at.isoformat()
-            school.sport_summaries = summaries
-            school.sport_review_dates = last_dates
+            # Store the general summary
+            if not isinstance(school.sport_summaries[sport], dict):
+                school.sport_summaries[sport] = {}
+            school.sport_summaries[sport]["general_summary"] = general_summary
             school.save()
-            return Response({"summary": summary})
         except Exception as e:
-            logger.error(f"OpenAI API error: {str(e)}")
-            return Response(
-                {"error": f"Error generating summary: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            logger.error(f"Error generating general summary: {str(e)}")
+            general_summary = school.sport_summaries[sport].get("general_summary", "")
+
+        if needs_update:
+            try:
+                # Get coach history
+                history, error = coach_service.search_coach_history(
+                    latest_coach, school.school_name, sport
+                )
+                logger.info(
+                    f"Generating new summary for {latest_coach} due to new review"
+                )
+
+                # Prepare reviews text - only coach-specific aspects
+                reviews_text = " ".join(
+                    [
+                        " ".join(
+                            [
+                                f"Head Coach Performance: {review.review_message if latest_coach.lower() in review.review_message.lower() else ''}",
+                                f"Coaching Style: {review.review_message if 'coach' in review.review_message.lower() or 'coaching' in review.review_message.lower() else ''}",
+                                f"Player Development: {review.review_message if 'development' in review.review_message.lower() or 'player development' in review.review_message.lower() else ''}",
+                            ]
+                        )
+                        for review in coach_reviews[latest_coach_normalized]["reviews"]
+                    ]
+                )
+
+                # Generate summary using OpenAI
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {coach_reviews[latest_coach_normalized]['original_name']}. Provide a concise summary in exactly 2 sentences, focusing on coaching style, player development, and overall coaching performance. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{coach_reviews[latest_coach_normalized]['original_name']}'). Focus only on coach-specific aspects.",
+                        },
+                        {"role": "user", "content": reviews_text},
+                    ],
+                    max_tokens=250,
+                    temperature=0.7,
+                    presence_penalty=0.6,
+                    frequency_penalty=0.6,
+                )
+
+                summary = response.choices[0].message.content
+
+                # Format the coach summary
+                coach_summary_parts = [
+                    f"**{coach_reviews[latest_coach_normalized]['original_name']}**:"
+                ]
+
+                if history and history != "No tenure found":
+                    coach_summary_parts.extend(["Tenure:", history])
+
+                    # Only check if coach is no longer at school for basketball coaches
+                    if sport in [
+                        "Men's Basketball",
+                        "Women's Basketball",
+                        "mbb",
+                        "wbb",
+                    ]:
+                        tenure_entries = history.split("\n")
+                        if tenure_entries:
+                            most_recent_tenure = tenure_entries[-1].lower()
+                            normalized_school_names = coach_service._normalize_name(
+                                school.school_name
+                            )
+                            # Check if the tenure matches any of the normalized forms of the school name
+                            is_at_school = any(
+                                most_recent_tenure.endswith(f"@{name}")
+                                for name in normalized_school_names
+                            )
+                            if not is_at_school:
+                                coach_summary_parts.append("*No longer at this school*")
+                else:
+                    # Only show no tenure message for basketball coaches
+                    if sport in [
+                        "Men's Basketball",
+                        "Women's Basketball",
+                        "mbb",
+                        "wbb",
+                    ]:
+                        coach_summary_parts.append("*No longer at this school*")
+
+                coach_summary_parts.append(summary)
+                coach_summary = "\n".join(coach_summary_parts)
+
+                # Store the new summary and date
+                school.sport_summaries[sport][
+                    coach_reviews[latest_coach_normalized]["original_name"]
+                ] = coach_summary
+                school.sport_review_dates[sport][
+                    coach_reviews[latest_coach_normalized]["original_name"]
+                ] = latest_review_date
+                school.save()
+
+                coach_summaries.append(coach_summary)
+
+            except Exception as e:
+                logger.error(f"Error generating summary for {latest_coach}: {str(e)}")
+                # Use existing summary if available
+                if (
+                    coach_reviews[latest_coach_normalized]["original_name"]
+                    in school.sport_summaries[sport]
+                ):
+                    coach_summaries.append(
+                        school.sport_summaries[sport][
+                            coach_reviews[latest_coach_normalized]["original_name"]
+                        ]
+                    )
+                else:
+                    # Create basic fallback summary
+                    coach_summary_parts = [
+                        f"**{coach_reviews[latest_coach_normalized]['original_name']}**:"
+                    ]
+                    if history and history != "No tenure found":
+                        coach_summary_parts.extend(["Tenure:", history])
+                        # Only check if coach is no longer at school for basketball coaches
+                        if sport in [
+                            "Men's Basketball",
+                            "Women's Basketball",
+                            "mbb",
+                            "wbb",
+                        ]:
+                            if tenure_entries:
+                                most_recent_tenure = tenure_entries[-1].lower()
+                                normalized_school_names = coach_service._normalize_name(
+                                    school.school_name
+                                )
+                                # Check if the tenure matches any of the normalized forms of the school name
+                                is_at_school = any(
+                                    most_recent_tenure.endswith(f"@{name}")
+                                    for name in normalized_school_names
+                                )
+                                if not is_at_school:
+                                    coach_summary_parts.append(
+                                        "*No longer at this school*"
+                                    )
+                    else:
+                        # Only show no tenure message for basketball coaches
+                        if sport in [
+                            "Men's Basketball",
+                            "Women's Basketball",
+                            "mbb",
+                            "wbb",
+                        ]:
+                            coach_summary_parts.append("*No longer at this school*")
+
+                    reviews_text = "\n".join(
+                        [
+                            f"Review from {review.created_at.strftime('%Y-%m-%d')}: {review.review_message}"
+                            for review in coach_reviews[latest_coach_normalized][
+                                "reviews"
+                            ]
+                        ]
+                    )
+                    coach_summary_parts.append(reviews_text)
+                    coach_summary = "\n".join(coach_summary_parts)
+
+                    # Store the fallback summary
+                    school.sport_summaries[sport][
+                        coach_reviews[latest_coach_normalized]["original_name"]
+                    ] = coach_summary
+                    school.sport_review_dates[sport][
+                        coach_reviews[latest_coach_normalized]["original_name"]
+                    ] = latest_review_date
+                    school.save()
+
+                    coach_summaries.append(coach_summary)
+        else:
+            # Use existing summary for the latest coach
+            coach_summaries.append(
+                school.sport_summaries[sport][
+                    coach_reviews[latest_coach_normalized]["original_name"]
+                ]
             )
-    except Schools.DoesNotExist:
-        return Response({"error": "School not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # For other coaches, ONLY use existing summaries from the database
+        for normalized_name, coach_data in coach_reviews.items():
+            if normalized_name != latest_coach_normalized:
+                original_name = coach_data["original_name"]
+                if original_name in school.sport_summaries[sport]:
+                    # Only append existing summaries, never generate new ones
+                    coach_summaries.append(school.sport_summaries[sport][original_name])
+
+        # Add the general summary at the end
+        final_parts = coach_summaries + ["**Program Overview**:", general_summary]
+
+        # Combine all summaries with double newlines
+        final_summary = "\n\n".join(final_parts)
+        return Response({"summary": final_summary})
+
     except Exception as e:
-        logger.error(f"Unexpected error in get_review_summary: {str(e)}")
-        return Response(
-            {"error": f"An unexpected error occurred: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
+        logger.error(f"Error in get_review_summary: {str(e)}")
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # New endpoint for filtering schools based on reviews and ratings
@@ -435,3 +689,27 @@ def get_recommended_schools(request):
     except Exception as e:
         logger.error(f"Error in get_recommended_schools: {str(e)}", exc_info=True)
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def debug_reviews(request, school_id):
+    try:
+        school = get_object_or_404(Schools, id=school_id)
+        reviews = Reviews.objects.filter(school_id=school_id)
+
+        review_data = []
+        for review in reviews:
+            review_data.append(
+                {
+                    "id": review.id,
+                    "sport": review.sport,
+                    "created_at": review.created_at,
+                    "message": review.review_message[:100],
+                }
+            )
+
+        return Response({"school_name": school.school_name, "reviews": review_data})
+    except Exception as e:
+        logger.error(f"Error in debug_reviews: {str(e)}")
+        return Response({"error": str(e)}, status=500)
