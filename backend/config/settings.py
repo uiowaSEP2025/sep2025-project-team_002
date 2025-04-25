@@ -182,39 +182,39 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "{levelname} {asctime} {module} {message}",
+            "style": "{",
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
     },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
         },
-        'reviews': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+        "reviews": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
         },
-        'schools': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
+        "schools": {
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": False,
         },
     },
 }

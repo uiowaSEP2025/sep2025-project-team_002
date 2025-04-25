@@ -3,6 +3,7 @@ from django.conf import settings
 from schools.models import Schools
 import uuid
 
+
 class Reviews(models.Model):
     review_id = models.UUIDField(default=uuid.uuid4, editable=False)
     school = models.ForeignKey(Schools, on_delete=models.CASCADE)
@@ -26,7 +27,7 @@ class Reviews(models.Model):
     class Meta:
         verbose_name = "Review"
         verbose_name_plural = "Reviews"
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"Review by {self.user} for {self.school} - {self.sport}"

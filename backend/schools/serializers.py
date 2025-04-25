@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class SchoolSerializer(serializers.ModelSerializer):
     available_sports = serializers.SerializerMethodField()
     reviews = serializers.SerializerMethodField()
@@ -36,7 +37,7 @@ class SchoolSerializer(serializers.ModelSerializer):
 
     def get_reviews(self, obj):
         logger.info(f"Getting reviews for school: {obj.school_name}")
-        reviews = Reviews.objects.filter(school=obj.id).order_by('-created_at')
+        reviews = Reviews.objects.filter(school=obj.id).order_by("-created_at")
         logger.info(f"Found {reviews.count()} reviews")
         serialized_reviews = ReviewsSerializer(reviews, many=True).data
         logger.info(f"Serialized reviews: {serialized_reviews}")
