@@ -8,6 +8,7 @@ from schools.serializers import SchoolSerializer
 from django.utils import timezone
 from unittest.mock import Mock
 
+
 @pytest.mark.django_db
 class TestSchoolSerializer:
     @pytest.fixture
@@ -105,7 +106,9 @@ class TestSchoolSerializer:
         # Check that review_count is 0
         assert serializer.data["review_count"] == 0
 
-    def test_average_rating_calculation(self, create_school, create_review, mock_request):
+    def test_average_rating_calculation(
+        self, create_school, create_review, mock_request
+    ):
         """Test that the average_rating field calculates the correct average"""
         school = create_school()
 
@@ -128,7 +131,9 @@ class TestSchoolSerializer:
         # The average should be (10+8+6+4+2+10+8+6)/8 = 54/8 = 6.75, rounded to 6.8
         assert serializer.data["average_rating"] == 6.8
 
-    def test_average_rating_multiple_reviews(self, create_school, create_review, mock_request):
+    def test_average_rating_multiple_reviews(
+        self, create_school, create_review, mock_request
+    ):
         """Test that average_rating correctly averages across multiple reviews"""
         school = create_school()
 
@@ -175,7 +180,9 @@ class TestSchoolSerializer:
         # Check that average_rating is 0
         assert serializer.data["average_rating"] == 0
 
-    def test_serializer_includes_all_fields(self, create_school, create_review, mock_request):
+    def test_serializer_includes_all_fields(
+        self, create_school, create_review, mock_request
+    ):
         """Test that the serializer includes all expected fields"""
         school = create_school()
         create_review(school)

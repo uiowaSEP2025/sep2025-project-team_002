@@ -450,7 +450,9 @@ def filter_schools(request):
         elif sport == "Football":
             schools_query = schools_query.filter(fb=True)
 
-    serializer = SchoolSerializer(schools_query, many=True, context={"request": request})
+    serializer = SchoolSerializer(
+        schools_query, many=True, context={"request": request}
+    )
     return Response(serializer.data)
 
 
@@ -669,7 +671,9 @@ def get_recommended_schools(request):
                 # Add this school to recommendations
                 recommended_schools.append(
                     {
-                        "school": SchoolSerializer(school, context={"request": request}).data,
+                        "school": SchoolSerializer(
+                            school, context={"request": request}
+                        ).data,
                         "similarity_score": round(similarity_score, 2),
                         "average_ratings": avg_ratings,
                         "sport": code_to_display.get(sport_code, sport_code),
