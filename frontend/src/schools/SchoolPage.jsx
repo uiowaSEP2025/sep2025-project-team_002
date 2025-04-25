@@ -41,20 +41,10 @@ function SchoolPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
 
+  const [sortedReviews, setSortedReviews] = useState([]);
+
   // Filter reviews by selected sport
   const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
-
-  const sortedReviews = React.useMemo(() => {
-    return [...filteredReviews].sort((a, b) => {
-      if (a.helpful_count !== b.helpful_count) {
-        return b.helpful_count - a.helpful_count;
-      }
-      if (a.unhelpful_count !== b.unhelpful_count) {
-        return a.unhelpful_count - b.unhelpful_count;
-      }
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
-  }, [filteredReviews]);
 
   // Calculate the index of the last review on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
@@ -85,20 +75,18 @@ function SchoolPage() {
       if (!response.ok) throw new Error('Vote failed');
 
       const data = await response.json();
-      setSchool((prev) => {
-        const newReviews = prev.reviews.map((r) => {
-          if (r.review_id === reviewId) {
-            return {
-              ...r,
-              my_vote: data.vote,
-              helpful_count: data.helpful_count,
-              unhelpful_count: data.unhelpful_count,
-            };
-          }
-          return r;
-        });
-        return { ...prev, reviews: newReviews };
-      });
+      setSortedReviews((prevReviews) =>
+        prevReviews.map((r) =>
+          r.review_id === reviewId
+            ? {
+                ...r,
+                my_vote: data.vote,
+                helpful_count: data.helpful_count,
+                unhelpful_count: data.unhelpful_count,
+              }
+            : r
+        )
+      );
     } catch (err) {
       console.error(err);
     }
@@ -106,6 +94,24 @@ function SchoolPage() {
 
   const AVATAR_BASE_URL = "../../public/assets/profile-pictures/";
 
+  useEffect(() => {
+    if (!school || !selectedSport) return;
+
+    const filtered = school.reviews.filter(review => review.sport === selectedSport);
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (a.helpful_count !== b.helpful_count) {
+        return b.helpful_count - a.helpful_count;
+      }
+      if (a.unhelpful_count !== b.unhelpful_count) {
+        return a.unhelpful_count - b.unhelpful_count;
+      }
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    setSortedReviews(sorted);
+    setCurrentPage(1);
+  }, [school, selectedSport]);
 
   useEffect(() => {
     const fetchSchool = async () => {
