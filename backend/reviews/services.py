@@ -52,34 +52,14 @@ class CoachSearchService:
         if "university of" in normalized:
             normalized = normalized.replace("university of", "").strip()
 
-        # Handle state university variations before removing 'university'
-        normalized = normalized.replace("state university", "st").replace("state", "st")
-
         # Remove common prefixes, suffixes, and words
         normalized = normalized.replace("university", "").replace("college", "")
         normalized = normalized.replace("@", "").replace("the", "").replace("of", "")
 
-        # Handle specific state abbreviations
-        state_abbrev = {
-            "iowa st": "iowa st",
-            "ohio st": "ohio st",
-            "michigan st": "michigan st",
-            "florida st": "florida st",
-            "mississippi st": "mississippi st",
-            "kansas st": "kansas st",
-            "arizona st": "arizona st",
-            "arkansas st": "arkansas st",
-            "colorado st": "colorado st",
-        }
-
-        for full, abbrev in state_abbrev.items():
-            if full in normalized:
-                normalized = normalized.replace(full, abbrev)
-
         # Special cases for common variations
         common_mappings = {
             "unc": "north carolina",
-            "nc state": "north carolina st",
+            "nc state": "north carolina state",
             "usc": "southern california",
             "pitt": "pittsburgh",
             "ucla": "california los angeles",
