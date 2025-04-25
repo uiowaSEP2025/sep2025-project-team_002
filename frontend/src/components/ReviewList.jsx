@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Paper, Grid, Divider } from '@mui/material';
-import RatingRow from './RatingRow';
+//import RatingRow from './RatingRow';
 import API_BASE_URL from '../utils/config';
 
 const ReviewList = ({ schoolId, sport }) => {
