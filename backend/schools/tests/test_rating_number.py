@@ -6,7 +6,7 @@ from schools.models import Schools
 from reviews.models import Reviews
 from schools.serializers import SchoolSerializer
 from django.utils import timezone
-
+from unittest.mock import Mock
 
 @pytest.mark.django_db
 class TestSchoolSerializer:
@@ -43,6 +43,13 @@ class TestSchoolSerializer:
         return _create_school
 
     @pytest.fixture
+    def mock_request(self, create_user):
+        user = create_user()
+        request = Mock()
+        request.user = user
+        return request
+
+    @pytest.fixture
     def create_review(self, create_user):
         def _create_review(school, user=None, sport="mbb", **ratings):
             if user is None:
@@ -75,7 +82,7 @@ class TestSchoolSerializer:
 
         return _create_review
 
-    def test_review_count_field(self, create_school, create_review):
+    def test_review_count_field(self, create_school, create_review, mock_request):
         """Test that the review_count field returns the correct count of reviews"""
         school = create_school()
 
@@ -84,21 +91,21 @@ class TestSchoolSerializer:
         create_review(school, sport="wbb")
         create_review(school, sport="fb")
 
-        serializer = SchoolSerializer(school)
+        serializer = SchoolSerializer(school, context={"request": mock_request})
 
         # Check that review_count is 3
         assert serializer.data["review_count"] == 3
 
-    def test_review_count_zero(self, create_school):
+    def test_review_count_zero(self, create_school, mock_request):
         """Test that review_count is 0 when there are no reviews"""
         school = create_school()
 
-        serializer = SchoolSerializer(school)
+        serializer = SchoolSerializer(school, context={"request": mock_request})
 
         # Check that review_count is 0
         assert serializer.data["review_count"] == 0
 
-    def test_average_rating_calculation(self, create_school, create_review):
+    def test_average_rating_calculation(self, create_school, create_review, mock_request):
         """Test that the average_rating field calculates the correct average"""
         school = create_school()
 
@@ -116,12 +123,12 @@ class TestSchoolSerializer:
             nil_opportunity=6,
         )
 
-        serializer = SchoolSerializer(school)
+        serializer = SchoolSerializer(school, context={"request": mock_request})
 
         # The average should be (10+8+6+4+2+10+8+6)/8 = 54/8 = 6.75, rounded to 6.8
         assert serializer.data["average_rating"] == 6.8
 
-    def test_average_rating_multiple_reviews(self, create_school, create_review):
+    def test_average_rating_multiple_reviews(self, create_school, create_review, mock_request):
         """Test that average_rating correctly averages across multiple reviews"""
         school = create_school()
 
@@ -152,28 +159,28 @@ class TestSchoolSerializer:
             nil_opportunity=5,
         )
 
-        serializer = SchoolSerializer(school)
+        serializer = SchoolSerializer(school, context={"request": mock_request})
 
         # First review average: 10
         # Second review average: 5
         # Overall average: (10+5)/2 = 7.5
         assert serializer.data["average_rating"] == 7.5
 
-    def test_average_rating_zero(self, create_school):
+    def test_average_rating_zero(self, create_school, mock_request):
         """Test that average_rating is 0 when there are no reviews"""
         school = create_school()
 
-        serializer = SchoolSerializer(school)
+        serializer = SchoolSerializer(school, context={"request": mock_request})
 
         # Check that average_rating is 0
         assert serializer.data["average_rating"] == 0
 
-    def test_serializer_includes_all_fields(self, create_school, create_review):
+    def test_serializer_includes_all_fields(self, create_school, create_review, mock_request):
         """Test that the serializer includes all expected fields"""
         school = create_school()
         create_review(school)
 
-        serializer = SchoolSerializer(school)
+        serializer = SchoolSerializer(school, context={"request": mock_request})
 
         # Check that all expected fields are present
         expected_fields = [

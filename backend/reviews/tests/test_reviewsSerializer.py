@@ -5,6 +5,7 @@ from reviews.serializers import ReviewsSerializer
 from reviews.models import Reviews
 from schools.models import Schools
 from users.models import Users
+from unittest.mock import Mock
 import uuid
 
 
@@ -38,6 +39,9 @@ class TestReviewsSerializer(APITestCase):
             "nil_opportunity": 5,
         }
 
+        self.mock_request = Mock()
+        self.mock_request.user = self.user
+
         # Create serializer data (uses ID for school)
         self.base_serializer_data = {**self.base_review_data, "school": self.school.id}
 
@@ -54,7 +58,7 @@ class TestReviewsSerializer(APITestCase):
             **self.base_review_data, user=self.user, sport="mbb"
         )
 
-        serializer = ReviewsSerializer(review)
+        serializer = ReviewsSerializer(review, context={"request": self.mock_request})
         data = serializer.data
 
         self.assertEqual(data["sport"], "Men's Basketball")
@@ -91,7 +95,7 @@ class TestReviewsSerializer(APITestCase):
             **self.base_review_data, user=self.user, sport="mbb"
         )
 
-        serializer = ReviewsSerializer(review)
+        serializer = ReviewsSerializer(review, context={"request": self.mock_request})
         data = serializer.data
 
         self.assertEqual(data["school_name"], "Test University")
@@ -102,7 +106,7 @@ class TestReviewsSerializer(APITestCase):
             **self.base_review_data, user=self.user, sport="mbb"
         )
 
-        serializer = ReviewsSerializer(review)
+        serializer = ReviewsSerializer(review, context={"request": self.mock_request})
         data = serializer.data
 
         self.assertEqual(data["user"]["id"], self.user.id)

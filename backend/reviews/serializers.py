@@ -11,10 +11,12 @@ class ReviewUserSerializer(serializers.ModelSerializer):
         model = Users
         fields = ["id", "is_school_verified", "profile_picture"]
 
+
 class ReviewVoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReviewVote
-        fields = ('review', 'vote')
+        fields = ("review", "vote")
+
 
 class ReviewsSerializer(serializers.ModelSerializer):
     school_name = serializers.ReadOnlyField(source="school.school_name")
@@ -71,7 +73,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
         return data
 
     def get_my_vote(self, obj):
-        user = self.context['request'].user
+        user = self.context["request"].user
         if not user.is_authenticated:
             return None
         vote = obj.votes.filter(user=user).first()

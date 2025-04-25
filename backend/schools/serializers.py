@@ -41,10 +41,14 @@ class SchoolSerializer(serializers.ModelSerializer):
         return sports
 
     def get_reviews(self, obj):
-        qs = Reviews.objects.filter(school=obj).annotate(
-            helpful_count=Count('votes', filter=Q(votes__vote=1)),
-            unhelpful_count=Count('votes', filter=Q(votes__vote=0)),
-        ).order_by("-created_at")
+        qs = (
+            Reviews.objects.filter(school=obj)
+            .annotate(
+                helpful_count=Count("votes", filter=Q(votes__vote=1)),
+                unhelpful_count=Count("votes", filter=Q(votes__vote=0)),
+            )
+            .order_by("-created_at")
+        )
         return ReviewsSerializer(qs, many=True, context=self.context).data
 
     def get_review_count(self, obj):
