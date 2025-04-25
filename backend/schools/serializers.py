@@ -41,10 +41,10 @@ class SchoolSerializer(serializers.ModelSerializer):
 
     def get_reviews(self, obj):
 
-        reviews = Reviews.objects.filter(school=obj.id).order_by("-created_at"))
+        reviews = Reviews.objects.filter(school=obj.id).order_by("-created_at")
         serialized_reviews = ReviewsSerializer(reviews, many=True).data
         return serialized_reviews
- 
+
     def get_review_count(self, obj):
         return Reviews.objects.filter(school=obj.id).count()
 

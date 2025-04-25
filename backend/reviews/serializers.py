@@ -20,10 +20,9 @@ class ReviewsSerializer(serializers.ModelSerializer):
         # Convert display names to database codes
         sport_mapping = {
             "Men's Basketball": "mbb",
-            "Men’s Basketball": "mbb",  # Handle both apostrophe types
+            "Men's Basketball": "mbb",  # Handle both apostrophe types
             "Women's Basketball": "wbb",
-            "Women’s Basketball": "wbb",  # Handle both apostrophe types
-
+            "Women's Basketball": "wbb",  # Handle both apostrophe types
             "Football": "fb",
         }
         logger.info(f"ReviewsSerializer.validate_sport: Converting '{value}' to code")
@@ -85,5 +84,6 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "updated_at",
             "coach_no_longer_at_university",
             "coach_history",
+            "school_name",
         ]
         read_only_fields = ["review_id", "user", "created_at", "updated_at"]
