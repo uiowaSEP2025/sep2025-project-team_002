@@ -95,7 +95,20 @@ class CoachSearchService:
 
         # Final cleanup
         normalized = " ".join(normalized.split())  # Normalize spaces
-        return normalized.strip()
+        normalized = normalized.strip()
+
+        # For school names with locations (e.g. "Indiana University Bloomington"),
+        # also return just the main school name without the location
+        parts = normalized.split()
+        if len(parts) > 1:
+            # Try to identify the main school name (usually the first word)
+            main_name = parts[0]
+            # For cases like "north carolina", keep both words
+            if main_name in ["north", "south", "east", "west"]:
+                main_name = f"{parts[0]} {parts[1]}"
+            return [normalized, main_name]
+
+        return [normalized]
 
     def search_coach_history(self, coach_name, school_name=None, sport=None):
         try:
@@ -117,36 +130,16 @@ class CoachSearchService:
                 coach_data = self.mbb_coach_data
                 logger.info("Using men's basketball coach data")
 
-            # Normalize the search name and school name
-            search_name = self._normalize_name(coach_name)
-            normalized_school = (
-                self._normalize_name(school_name) if school_name else None
-            )
+            # Normalize the search name
+            search_name = self._normalize_name(coach_name)[
+                0
+            ]  # Take first normalized form
 
             # Search for the coach in the data
             for coach in coach_data:
-                if self._normalize_name(coach["person"]) == search_name:
+                if self._normalize_name(coach["person"])[0] == search_name:
                     history = coach["tenure"]
                     logger.info(f"Found tenure history for {coach_name}: {history}")
-
-                    # If school name provided, verify coach has tenure there
-                    if normalized_school and history:
-                        # Normalize each school in the tenure history
-                        tenure_schools = [
-                            (
-                                self._normalize_name(school.split("@")[1])
-                                if "@" in school
-                                else self._normalize_name(school)
-                            )
-                            for school in history.split("\n")
-                        ]
-
-                        if not any(
-                            normalized_school in school for school in tenure_schools
-                        ):
-                            logger.info(f"Coach found but no tenure at {school_name}")
-                            continue
-
                     return history, None
 
             # If coach not found in database, return "No tenure found"
