@@ -1,18 +1,17 @@
-from rest_framework import generics, permissions, status, viewsets, permissions
+from rest_framework import generics, permissions, status, viewsets, permissions, serializers
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .models import Reviews, ReviewVote
 from .serializers import ReviewsSerializer, ReviewVoteSerializer
 from .services import CoachSearchService
 from schools.models import Schools
-import logging
-from rest_framework import serializers
-from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.db.models import Count, Q
-from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +67,13 @@ class UserReviewsView(generics.ListAPIView):
     def get_queryset(self):
         return Reviews.objects.filter(user=self.request.user)
 
+class ReviewViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Reviews.objects.all().annotate(
+        helpful_count=Count('votes', filter=Q(votes__vote=1)),
+        unhelpful_count=Count('votes', filter=Q(votes__vote=0)),
+    )
+    serializer_class = ReviewsSerializer
+
 class ReviewVoteAPIView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
@@ -99,7 +105,6 @@ class ReviewVoteAPIView(APIView):
             'helpful_count': helpful_count,
             'unhelpful_count': unhelpful_count,
         }, status=status.HTTP_200_OK)
-
 
 @require_http_methods(["GET"])
 def get_school_reviews(request, school_id):
@@ -174,11 +179,3 @@ def get_school_reviews(request, school_id):
             f"Error fetching school reviews: school_id={school_id}, error={str(e)}"
         )
         return JsonResponse({"error": "Internal server error"}, status=500)
-
-
-class ReviewViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Reviews.objects.all().annotate(
-        helpful_count=Count('votes', filter=Q(votes__vote=1)),
-        unhelpful_count=Count('votes', filter=Q(votes__vote=0)),
-    )
-    serializer_class = ReviewsSerializer

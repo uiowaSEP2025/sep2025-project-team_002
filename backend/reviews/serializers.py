@@ -100,5 +100,8 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "coach_no_longer_at_university",
             "coach_history",
             "school_name",
+            "helpful_count",
+            "unhelpful_count",
+            "my_vote",
         ]
         read_only_fields = ["review_id", "user", "created_at", "updated_at"]
