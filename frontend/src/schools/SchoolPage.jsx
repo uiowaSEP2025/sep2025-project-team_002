@@ -197,6 +197,50 @@ function SchoolPage() {
               </CardContent>
             </Card>
 
+            {/* Average Ratings Section */}
+            <Card id="average-ratings-card" sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography id="average-ratings-title" variant="h6" gutterBottom>
+                  Average Ratings
+                </Typography>
+                <Grid container spacing={2}>
+                  {[
+                    ['head_coach', 'Head Coach'],
+                    ['assistant_coaches', 'Assistant Coaches'],
+                    ['team_culture', 'Team Culture'],
+                    ['campus_life', 'Campus Life'],
+                    ['athletic_facilities', 'Athletic Facilities'],
+                    ['athletic_department', 'Athletic Department'],
+                    ['player_development', 'Player Development'],
+                    ['nil_opportunity', 'NIL Opportunity']
+                  ].map(([field, label]) => {
+                    // Calculate average for this category
+                    const average = filteredReviews.length > 0
+                      ? filteredReviews.reduce((sum, review) => sum + review[field], 0) / filteredReviews.length
+                      : 0;
+
+                    return (
+                      <Grid item xs={6} sm={3} key={field}>
+                        <Typography id={`average-${field}-label`} variant="subtitle2">
+                          {label}
+                        </Typography>
+                        <Rating
+                          id={`average-${field}-rating`}
+                          value={average}
+                          readOnly
+                          precision={0.1}
+                          max={10}
+                        />
+                        <Typography id={`average-${field}-score`} variant="caption">
+                          {average.toFixed(1)}/10
+                        </Typography>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
+              </CardContent>
+            </Card>
+
             {/* Reviews Section */}
             <Card id="reviews-section">
               <CardContent>
