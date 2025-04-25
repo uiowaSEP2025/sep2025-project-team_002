@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from schools.models import Schools
+from users.models import Users
 import uuid
 
 

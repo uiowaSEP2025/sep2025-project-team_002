@@ -327,98 +327,98 @@ function SchoolPage() {
 
                     >
                       <CardContent>
-<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-  <Box sx={{ flex: 1 }}>
-    <Typography id={`coach-name-${review.review_id}`} variant="h6">
-      Head Coach: {review.head_coach_name}
-    </Typography>
-    {review.coach_history && (
-      <Typography 
-        variant="body2" 
-        sx={{ 
-          mt: 1,
-          backgroundColor: 'grey.100',
-          p: 2,
-          borderRadius: 1,
-          whiteSpace: 'pre-line'
-        }}
-      >
-        {review.coach_history}
-      </Typography>
-    )}
-  </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography id={`coach-name-${review.review_id}`} variant="h6">
+                              Head Coach: {review.head_coach_name}
+                            </Typography>
+                            {review.coach_history && (
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  mt: 1,
+                                  backgroundColor: 'grey.100',
+                                  p: 2,
+                                  borderRadius: 1,
+                                  whiteSpace: 'pre-line'
+                                }}
+                              >
+                                {review.coach_history}
+                              </Typography>
+                            )}
+                          </Box>
 
-  <Stack direction="row" spacing={2} alignItems="center">
-    {review.coach_no_longer_at_university && (
-      <Typography 
-        component="span" 
-        sx={{ 
-          backgroundColor: 'warning.main', 
-          color: 'warning.contrastText',
-          px: 1,
-          py: 0.5,
-          borderRadius: 1,
-          fontSize: '0.875rem'
-        }}
-      >
-        No Longer at University
-      </Typography>
-    )}
+                          <Stack direction="row" spacing={2} alignItems="center">
+                            {review.coach_no_longer_at_university && (
+                              <Typography
+                                component="span"
+                                sx={{
+                                  backgroundColor: 'warning.main',
+                                  color: 'warning.contrastText',
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: 1,
+                                  fontSize: '0.875rem'
+                                }}
+                              >
+                                No Longer at University
+                              </Typography>
+                            )}
 
-    <Tooltip
-      title={
-        review.user?.is_school_verified
-          ? "This reviewer has verified their school email"
-          : ""
-      }
-    >
-      <Badge
-        overlap="circular"
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        badgeContent={
-          review.user?.is_school_verified ? (
-            <CheckCircleIcon
-              sx={{
-                color: "green",
-                fontSize: 14,
-                backgroundColor: "white",
-                borderRadius: "50%",
-                boxShadow: 1,
-              }}
-            />
-          ) : null
-        }
-      >
-        <Avatar
-          src={
-            review.user?.profile_picture
-              ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
-              : "/default-avatar.png"
-          }
-          alt="Reviewer avatar"
-          sx={{ width: 40, height: 40 }}
-        />
-      </Badge>
-    </Tooltip>
+                            <Tooltip
+                              title={
+                                review.user?.is_school_verified
+                                  ? "This reviewer has verified their school email"
+                                  : ""
+                              }
+                            >
+                              <Badge
+                                overlap="circular"
+                                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                                badgeContent={
+                                  review.user?.is_school_verified ? (
+                                    <CheckCircleIcon
+                                      sx={{
+                                        color: "green",
+                                        fontSize: 14,
+                                        backgroundColor: "white",
+                                        borderRadius: "50%",
+                                        boxShadow: 1,
+                                      }}
+                                    />
+                                  ) : null
+                                }
+                              >
+                                <Avatar
+                                  src={
+                                    review.user?.profile_picture
+                                      ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
+                                      : "/default-avatar.png"
+                                  }
+                                  alt="Reviewer avatar"
+                                  sx={{ width: 40, height: 40 }}
+                                />
+                              </Badge>
+                            </Tooltip>
 
-    <Box sx={{ textAlign: "right" }}>
-      <Typography variant="caption" color="text.secondary" display="block">
-        {new Date(review.created_at).toLocaleDateString()}
-      </Typography>
-      <Typography
-        variant="caption"
-        display="block"
-        sx={{
-          color: review.user?.is_school_verified ? "green" : "text.secondary",
-        }}
-      >
-        {review.user?.is_school_verified
-          ? "Verified"
-          : "Unverified"}
-      </Typography>
-    </Box>
-  </Stack>
-</Box>
+                            <Box sx={{ textAlign: "right" }}>
+                              <Typography variant="caption" color="text.secondary" display="block">
+                                {new Date(review.created_at).toLocaleDateString()}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                display="block"
+                                sx={{
+                                  color: review.user?.is_school_verified ? "green" : "text.secondary",
+                                }}
+                              >
+                                {review.user?.is_school_verified
+                                  ? "Verified"
+                                  : "Unverified"}
+                              </Typography>
+                            </Box>
+                          </Stack>
+                        </Box>
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
                         </Typography>
