@@ -84,7 +84,9 @@ const ReviewForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedSchool, setSelectedSchool] = useState(null);
+  const [error, setError] = useState(null); // Add error state
   const [searchQuery, setSearchQuery] = useState("");
+
   const [review, setReview] = useState({
     school: schoolId || "",
     sport: selectedSport || "",
@@ -192,6 +194,7 @@ const ReviewForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitted(true);
+    setError(null); // Clear any previous errors
   
     // Check for duplicate review dynamically
     const duplicateReview = userReviews.some(
@@ -202,7 +205,7 @@ const ReviewForm = () => {
     );
   
     if (duplicateReview) {
-      console.warn("Duplicate review detected, preventing submission.");
+      setError("You have already submitted a review for this coach at this school.");
       return;
     }
   
@@ -214,15 +217,18 @@ const ReviewForm = () => {
         body: JSON.stringify(review),
       });
   
+      const data = await response.json();
+      
       if (!response.ok) {
-        const data = await response.json();
-        console.error("API Error Response:", data);
+        // Display the error message directly from the backend
+        setError(data.error || "Failed to submit review. Please try again.");
         return;
       }
   
       navigate("/secure-home");
     } catch (error) {
       console.error("Submission failed", error);
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 
@@ -280,39 +286,62 @@ const ReviewForm = () => {
             </Typography>
           </motion.div>
           <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: { xs: 2, md: 4 }, borderRadius: 2, boxShadow: 3 }}>
-          <Autocomplete
-              id="school-autocomplete"
-              options={sortedSchools}
-              getOptionLabel={(option) => option.school_name}
-              value={selectedSchool}
-              onChange={(event, newValue) => {
-                if (newValue) {
-                  setSelectedSchool(newValue);
-                  setReview({ ...review, school: newValue.id });
+{error && (
+  <Box 
+    sx={{ 
+      mb: 2, 
+      p: 2, 
+      backgroundColor: '#ffebee', 
+      borderRadius: 1,
+      textAlign: 'center',
+      border: '1px solid #ffcdd2'
+    }}
+  >
+    <Typography 
+      color="error" 
+      sx={{ 
+        fontWeight: 500,
+        fontSize: '1.1rem'
+      }}
+    >
+      {error}
+    </Typography>
+  </Box>
+)}
 
-                  const sports = [];
-                  if (newValue.mbb) sports.push("Men's Basketball");
-                  if (newValue.wbb) sports.push("Women's Basketball");
-                  if (newValue.fb) sports.push("Football");
-                  setAvailableSports(sports);
-                } else {
-                  setSelectedSchool(null);
-                  setReview({ ...review, school: "" });
-                  setAvailableSports([]);
-                }
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="School *"
-                  fullWidth
-                  sx={{ mb: 2 }}
-                  error={!review.school && isSubmitted}
-                  helperText={!review.school && isSubmitted ? "This field is required" : ""}
-                />
-              )}
-              isOptionEqualToValue={(option, value) => option.id === value?.id}
-            />
+<Autocomplete
+  id="school-autocomplete"
+  options={sortedSchools}
+  getOptionLabel={(option) => option.school_name}
+  value={selectedSchool}
+  onChange={(event, newValue) => {
+    if (newValue) {
+      setSelectedSchool(newValue);
+      setReview({ ...review, school: newValue.id });
+
+      const sports = [];
+      if (newValue.mbb) sports.push("Men's Basketball");
+      if (newValue.wbb) sports.push("Women's Basketball");
+      if (newValue.fb) sports.push("Football");
+      setAvailableSports(sports);
+    } else {
+      setSelectedSchool(null);
+      setReview({ ...review, school: "" });
+      setAvailableSports([]);
+    }
+  }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="School *"
+      fullWidth
+      sx={{ mb: 2 }}
+      error={!review.school && isSubmitted}
+      helperText={!review.school && isSubmitted ? "This field is required" : ""}
+    />
+  )}
+  isOptionEqualToValue={(option, value) => option.id === value?.id}
+/>
 
             <TextField
               id="sport-select"

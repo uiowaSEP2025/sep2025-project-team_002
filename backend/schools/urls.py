@@ -8,6 +8,7 @@ from .views import (
     get_review_summary,
     filter_schools,
     get_recommended_schools,
+    debug_reviews,
 )
 
 urlpatterns = [
@@ -22,6 +23,11 @@ urlpatterns = [
         "public/schools/<int:school_id>/reviews/summary/",
         get_review_summary,
         name="public-review-summary",
+    ),
+    path(
+        "public/schools/<int:school_id>/reviews/debug/",
+        debug_reviews,
+        name="debug-reviews",
     ),
     # Protected endpoints (authentication required)
     path("schools/", ProtectedSchoolListView.as_view(), name="school-list"),
