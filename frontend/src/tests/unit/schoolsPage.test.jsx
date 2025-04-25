@@ -1,9 +1,13 @@
 import React from 'react';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, within, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SchoolPage from '../../schools/SchoolPage.jsx';
+import { UserProvider } from '../../context/UserContext.jsx';
+import userEvent from '@testing-library/user-event';
+
+
 
 // Define rating categories to test consistently
 const ratingCategories = [
@@ -34,7 +38,7 @@ const mockSchool = {
   last_review_date: null, // Added to match model
   sport_summaries: {},    // Added to match model
   sport_review_dates: {}, // Added to match model
-  
+
   // Instead of available_sports array, use the boolean fields
   reviews: [
     {
@@ -44,6 +48,66 @@ const mockSchool = {
       sport: "Men's Basketball",
       head_coach_name: "John Doe",
       review_message: "Great program with excellent facilities",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174001", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "John Dane",
+      review_message: "Excellent Facilities",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174002", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "John Doppy",
+      review_message: "Great program",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174003", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "John Hanes",
+      review_message: "Nice environment",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174004", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "Jane Doe",
+      review_message: "Enjoyable experience",
+      // Use the same rating values defined above
+      ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
+      created_at: "2024-02-28T12:00:00Z",
+      updated_at: "2024-02-28T12:00:00Z"  // Added to match model
+    },
+      {
+      review_id: "123e4567-e89b-12d3-a456-426614174005", // Added UUID
+      school: 1,    // Reference to school
+      user: 1,      // Reference to user
+      sport: "Men's Basketball",
+      head_coach_name: "Jeff Doe",
+      review_message: "Great sports culture",
       // Use the same rating values defined above
       ...Object.fromEntries(ratingCategories.map(cat => [cat.name, cat.value])),
       created_at: "2024-02-28T12:00:00Z",
@@ -60,6 +124,21 @@ global.fetch = vi.fn(() =>
   })
 );
 
+// Mock navigate function for testing redirects
+const mockNavigate = vi.fn();
+
+// Mock logout function for testing token expiration
+const mockLogout = vi.fn();
+
+// Mock useUser hook and UserProvider
+vi.mock('../../context/UserContext.jsx', () => ({
+  useUser: () => ({
+    user: { first_name: 'Test', last_name: 'User' },
+    logout: mockLogout
+  }),
+  UserProvider: ({ children }) => children
+}));
+
 describe('SchoolPage Component', () => {
   beforeEach(() => {
     // Mock localStorage to simulate logged-in state
@@ -69,19 +148,35 @@ describe('SchoolPage Component', () => {
       clear: vi.fn()
     };
     global.localStorage = mockLocalStorage;
-    
+
     fetch.mockClear();
   });
 
-  const renderWithRouter = () => {
+  const renderWithRouter = (mockFetch = null) => {
+    // If a custom fetch mock is provided, use it
+    if (mockFetch) {
+      fetch.mockImplementation(mockFetch);
+    }
+
     return render(
       <MemoryRouter initialEntries={['/school/3']}>
-        <Routes>
-          <Route path="/school/:id" element={<SchoolPage />} />
-        </Routes>
+        <UserProvider>
+          <Routes>
+            <Route path="/school/:id" element={<SchoolPage />} />
+          </Routes>
+        </UserProvider>
       </MemoryRouter>
     );
   };
+
+  // Mock useNavigate for testing redirects
+  vi.mock('react-router-dom', async () => {
+    const actual = await vi.importActual('react-router-dom');
+    return {
+      ...actual,
+      useNavigate: () => mockNavigate
+    };
+  });
 
   it('renders school information', async () => {
     renderWithRouter();
@@ -105,13 +200,13 @@ describe('SchoolPage Component', () => {
 
   it('displays review information', async () => {
     renderWithRouter();
-    
+
     // Look for the sport in the tab specifically
     expect(await screen.findByRole('tab', { name: "Men's Basketball" })).toBeInTheDocument();
-    
+
     // Look for the coach name in a heading
     expect(await screen.findByRole('heading', { name: /John Doe/ })).toBeInTheDocument();
-    
+
     // Look for the review text in a paragraph
     expect(await screen.findByText(/Great program with excellent facilities/)).toBeInTheDocument();
   });
@@ -155,4 +250,125 @@ describe('SchoolPage Component', () => {
     const backButton = await screen.findByText(/Back to Schools/);
     expect(backButton).toBeInTheDocument();
   });
-}); 
+
+  it('handles 401 error without redirect if not implemented', async () => {
+      localStorage.setItem('token', 'expired_token');
+
+      const mockFetchWith401 = vi.fn((url) => {
+        if (url.includes('/api/schools/')) {
+          return Promise.resolve({
+            ok: false,
+            status: 401,
+            json: () => Promise.resolve({ detail: 'Token has expired' })
+          });
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
+      });
+
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+      renderWithRouter(mockFetchWith401);
+
+      await waitFor(() => {
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Error fetching school:',
+          expect.any(Error)
+        );
+      });
+
+      consoleErrorSpy.mockRestore();
+  });
+
+  it('shows loading indicator while fetching data', async () => {
+    const delayedFetch = vi.fn(() =>
+      new Promise(resolve => {
+        setTimeout(() => {
+          resolve({
+            ok: true,
+            json: () => Promise.resolve(mockSchool)
+          });
+        }, 100);
+      })
+    );
+
+    renderWithRouter(delayedFetch);
+
+    // Check that the initial "Loading..." screen shows
+    expect(screen.getByText(/^Loading\.\.\.$/)).toBeInTheDocument();
+
+    // Wait for school data to load
+    await screen.findByText("University of Iowa");
+
+    // Confirm "Loading..." screen is gone (but allow other loading text to remain)
+    expect(screen.queryByText(/^Loading\.\.\.$/)).not.toBeInTheDocument();
+  });
+
+  it('displays the correct number of reviews per page and supports pagination', async () => {
+    renderWithRouter();
+
+    // Ensure that the "Men's Basketball" tab exists and is clicked
+    const basketballTab = await screen.findByRole('tab', { name: "Men's Basketball" });
+    userEvent.click(basketballTab);
+
+    // Wait for reviews to be displayed
+    await waitFor(() => {
+      expect(screen.getByText('Great program with excellent facilities')).toBeInTheDocument();
+    });
+
+    // Test if the correct number of reviews per page (5 reviews) are shown
+    const reviewCards = screen.getAllByTestId(/^review-/);  // Ensure this matches your `data-testid`
+    expect(reviewCards.length).toBe(5);  // This should be 5 reviews per page
+
+    // Test pagination by clicking next
+    const pagination = screen.getByRole('navigation', { name: /pagination/ });
+    const nextButton = within(pagination).getByRole('button', { name: /next page/i });
+    userEvent.click(nextButton);
+
+    // Wait for page change and verify next reviews are displayed
+    await waitFor(() => {
+      expect(screen.getByText('Great sports culture')).toBeInTheDocument();
+    });
+
+    const nextReviewCards = screen.getAllByTestId(/^review-/);
+    expect(nextReviewCards.length).toBe(1); // Should show 1 review on the next page
+  });
+
+  it('shows pagination control when reviews exceed the page limit', async () => {
+    renderWithRouter();
+    // Verify that pagination control exists
+    await waitFor(() => {
+      expect(screen.getByRole('list')).toBeInTheDocument();
+    });
+
+    const pagination = screen.getByRole('list'); // This will target the pagination list
+
+    // Check if "Next" button is available for pagination
+    expect(within(pagination).getByRole('button', { name: /next page/i })).toBeInTheDocument();
+  });
+
+
+  it('changes the page number and displays the correct reviews', async () => {
+    renderWithRouter();
+    // Verify that pagination control exists
+    await waitFor(() => {
+      expect(screen.getByRole('list')).toBeInTheDocument();
+    });
+
+    // Simulate switching to page 2 (assuming 5 reviews per page and 6 total reviews)
+    const pagination = screen.getByRole('list'); // Query pagination by role="list"
+
+    const nextButton = within(pagination).getByRole('button', { name: /next page/i });
+
+    // Simulate clicking on the next page
+    userEvent.click(nextButton);
+
+    // Wait for page change and verify next reviews are displayed
+    await waitFor(() => {
+      expect(screen.getByText('Great sports culture')).toBeInTheDocument();
+    });
+  });
+
+
+
+
+});

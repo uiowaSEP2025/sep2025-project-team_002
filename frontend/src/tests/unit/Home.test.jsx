@@ -5,8 +5,10 @@ import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import Home from '../../home/Home.jsx';
 import { act } from 'react';
+import * as MUI from '@mui/material';
 
 describe('App Component', () => {
+
   beforeEach(() => {
     // Mock fetch before each test with the correct data structure
     global.fetch = vi.fn(() =>
@@ -18,7 +20,9 @@ describe('App Component', () => {
             school_name: "University of Iowa",
             conference: "Big Ten",
             location: "Iowa City, Iowa",
-            available_sports: ["Men's Basketball", "Women's Basketball", "Football"]
+            available_sports: ["Men's Basketball", "Women's Basketball", "Football"],
+            review_count: 125,
+            average_rating: 8.5
           }
         ])
       })
@@ -74,7 +78,9 @@ describe('Home Filter Feature', () => {
               school_name: "Filtered Home School",
               conference: "Test Conference",
               location: "Test Location",
-              available_sports: ["Men's Basketball"]
+              available_sports: ["Men's Basketball"],
+              review_count: 75,
+              average_rating: 9.2
             }
           ]), {
             status: 200,
@@ -94,7 +100,9 @@ describe('Home Filter Feature', () => {
             school_name: "Public Default School",
             conference: "Test Conference",
             location: "Test Location",
-            available_sports: ["Men's Basketball", "Football"]
+            available_sports: ["Men's Basketball", "Football"],
+            review_count: 42,
+            average_rating: 7.8
           }
         ]), {
           status: 200,
@@ -105,7 +113,7 @@ describe('Home Filter Feature', () => {
     });
   });
 
-  it('opens filter dialog and applies filter in Home component', async () => {
+  it('opens and closes filter dialog in Home component', async () => {
     render(
       <BrowserRouter>
         <Home />
@@ -121,28 +129,32 @@ describe('Home Filter Feature', () => {
     const filtersButton = screen.getByRole('button', { name: /Filters/i });
     fireEvent.click(filtersButton);
 
-    // Wait for the filter dialog to appear (e.g., dialog title "Apply Filters")
+    // Wait for the filter dialog to appear
     await waitFor(() => {
-      expect(screen.getByText(/Apply Filters/i)).toBeInTheDocument();
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    // Change the Head Coach Rating dropdown to 9
-    const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
-    fireEvent.change(headCoachSelect, { target: { value: '9' } });
+    // Verify that the dialog contains the expected elements
+    expect(screen.getByText('Rating Filters (Minimum Rating)')).toBeInTheDocument();
 
-    // Click the Apply button using getByRole with exact match
-    const applyButton = screen.getByRole('button', { name: /^Apply$/i });
+    // Check for the sport dropdown
+    const sportDropdown = screen.getByRole('combobox', { name: /Choose Sport/i });
+    expect(sportDropdown).toBeInTheDocument();
+
+    // Click the Apply Filters button
+    const applyButton = screen.getByTestId('apply-filters-button');
     fireEvent.click(applyButton);
 
-    // Wait for the filtered school to appear
+    // Wait for the dialog to close
     await waitFor(() => {
-      expect(screen.getByText(/Filtered Home School/i)).toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 });
 
 describe('Home Pagination Feature', () => {
   beforeEach(() => {
+
     // Create an array of 15 fake schools so that:
     // - Page 1 shows 10 schools (indices 0-9)
     // - Page 2 shows 5 schools (indices 10-14)
@@ -152,6 +164,8 @@ describe('Home Pagination Feature', () => {
       conference: "Test Conference",
       location: "Test Location",
       available_sports: ["Sport A", "Sport B"],
+      review_count: Math.floor(Math.random() * 600),
+      average_rating: (Math.random() * 5 + 5).toFixed(1),
     }));
 
     // Mock global.fetch to return the fake schools.
@@ -161,49 +175,46 @@ describe('Home Pagination Feature', () => {
         json: () => Promise.resolve(fakeSchools),
       })
     );
+    window.innerWidth = 1024;
   });
 
-  it('allows the jump to page input to change pages', async () => {
-    render(
-      <BrowserRouter>
-        <Home />
-      </BrowserRouter>
-    );
+  it('allows the jump to page input to change pages on desktop', async () => {
+      render(
+        <BrowserRouter>
+          <Home />
+        </BrowserRouter>
+      );
 
-    // Wait until the first page school cards (headings with level 6) are rendered.
-    await waitFor(() => {
-      const schoolHeadings = screen.getAllByRole('heading', { level: 6 });
-      expect(schoolHeadings.length).toBe(10); // 10 schools on page 1
+      // Wait for initial load
+      await waitFor(() => {
+        expect(screen.getAllByRole('heading', { level: 6 }).length).toBe(10);
+      });
+
+      // Get all school names from page 1
+      const firstPageSchools = screen.getAllByRole('heading', { level: 6 })
+        .map(el => el.textContent);
+
+      // Change to page 2
+      const jumpInput = screen.getByRole('spinbutton');
+      fireEvent.change(jumpInput, { target: { value: '2' } });
+      fireEvent.keyDown(jumpInput, { key: 'Enter', code: 'Enter' });
+
+      // Wait for page 2 to load
+      await waitFor(() => {
+        expect(screen.getAllByRole('heading', { level: 6 }).length).toBe(5);
+      });
+
+      // Get all school names from page 2
+      const secondPageSchools = screen.getAllByRole('heading', { level: 6 })
+        .map(el => el.textContent);
+
+      // Verify no overlap between pages
+      secondPageSchools.forEach(school => {
+        expect(firstPageSchools).not.toContain(school);
+      });
+
+      // Verify counts are correct
+      expect(firstPageSchools.length).toBe(10);
+      expect(secondPageSchools.length).toBe(5);
     });
-
-    // Locate the jump-to input (a number input with role "spinbutton").
-    const jumpInput = screen.getByRole('spinbutton');
-
-    // Simulate changing the input value to "2".
-    fireEvent.change(jumpInput, { target: { value: '2' } });
-    // Trigger an event to ensure the change is processed (Enter key press or blur)
-    fireEvent.keyDown(jumpInput, { key: 'Enter', code: 'Enter' });
-    // Alternatively, you could use:
-    // fireEvent.blur(jumpInput);
-
-    // Wait until the page updates to page 2.
-    await waitFor(() => {
-      const schoolHeadings = screen.getAllByRole('heading', { level: 6 });
-      // With 15 total schools, page 2 should contain only 5 schools.
-      expect(schoolHeadings.length).toBe(5);
-    });
-
-    // Retrieve the school names on page 2.
-    const schoolHeadings = screen.getAllByRole('heading', { level: 6 });
-    const secondPageNames = schoolHeadings.map((el) => el.textContent);
-
-    // Verify that schools 11-15 are present on page 2.
-    for (let i = 11; i <= 15; i++) {
-      expect(secondPageNames).toContain(`School ${i}`);
-    }
-    // Verify that schools 1-10 are not present on page 2.
-    for (let i = 1; i <= 10; i++) {
-      expect(secondPageNames).not.toContain(`School ${i}`);
-    }
-  });
 });

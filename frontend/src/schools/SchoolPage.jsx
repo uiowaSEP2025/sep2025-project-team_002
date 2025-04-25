@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import {
   Box,
+  Avatar,
+  Badge,
   Typography,
   Button,
   Card,
@@ -12,48 +14,14 @@ import {
   Stack,
   Grid,
   Tabs,
+  Tooltip,
   Tab,
+  Pagination,
 } from "@mui/material";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HomeIcon from "@mui/icons-material/Home";
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
-
-// Function to calculate the average rating for a set of reviews
-const calculateAverageRating = (reviews) => {
-  const ratingFields = [
-    'head_coach', 'assistant_coaches', 'team_culture', 'campus_life',
-    'athletic_facilities', 'athletic_department', 'player_development', 'nil_opportunity'
-  ];
-  let totalSum = 0;
-  let totalCount = 0;
-
-  reviews.forEach(review => {
-    ratingFields.forEach(field => {
-      if (review[field] != null) { // Check if the rating exists
-        totalSum += review[field];
-        totalCount++;
-      }
-    });
-  });
-
-  return totalCount > 0 ? totalSum / totalCount : 0; // Return average or 0 if no ratings
-};
-
-// Function to calculate the average rating for each category
-const calculateCategoryAverages = (reviews) => {
-  const ratingFields = [
-    'head_coach', 'assistant_coaches', 'team_culture', 'campus_life',
-    'athletic_facilities', 'athletic_department', 'player_development', 'nil_opportunity'
-  ];
-  const averages = {};
-
-  ratingFields.forEach(field => {
-    const total = reviews.reduce((sum, review) => sum + (review[field] || 0), 0);
-    averages[field] = reviews.length > 0 ? total / reviews.length : 0;
-  });
-
-  return averages;
-};
 
 function SchoolPage() {
   const { id } = useParams();
@@ -68,11 +36,32 @@ function SchoolPage() {
     transfer_type: ""
   });
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 5;
+
+  // Filter reviews by selected sport
+  const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
+
+  // Calculate the index of the last review on the current page
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  // Calculate the index of the first review on the current page
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+
+  // Slice the reviews array to get the reviews for the current page
+  const currentReviews = filteredReviews.slice(indexOfFirstReview, indexOfLastReview);
+
+  const handleChangePage = (event, value) => {
+    setCurrentPage(value);
+  };
+
+  const AVATAR_BASE_URL = "../../public/assets/profile-pictures/";
+
+
   useEffect(() => {
     const fetchSchool = async () => {
       try {
         const token = localStorage.getItem('token');
-        const endpoint = token 
+        const endpoint = token
           ? `${API_BASE_URL}/api/schools/${id}/`
           : `${API_BASE_URL}/api/public/schools/${id}/`;
 
@@ -93,7 +82,7 @@ function SchoolPage() {
 
         const data = await response.json();
         setSchool(data);
-        
+
         // Set default selected sport if available
         if (data.mbb) setSelectedSport("Men's Basketball");
         else if (data.wbb) setSelectedSport("Women's Basketball");
@@ -102,7 +91,6 @@ function SchoolPage() {
         console.error('Error fetching school:', error);
       }
     };
-
     fetchSchool();
   }, [id]);
 
@@ -140,18 +128,14 @@ function SchoolPage() {
     fetchUserInfo();
   }, []);
 
+
+
   if (!school) return <div>Loading...</div>;
 
   const availableSports = [];
   if (school.mbb) availableSports.push("Men's Basketball");
   if (school.wbb) availableSports.push("Women's Basketball");
   if (school.fb) availableSports.push("Football");
-
-  // Filter reviews for the currently selected sport
-  const sportReviews = school.reviews?.filter(review => review.sport === selectedSport) || [];
-
-  // Calculate the average rating for each category
-  const categoryAverages = calculateCategoryAverages(sportReviews);
 
   const handleWriteReview = (sport) => {
     navigate(`/reviews/new?school=${id}&sport=${encodeURIComponent(sport)}`);
@@ -202,57 +186,16 @@ function SchoolPage() {
             <Typography id="program-title" variant="h4" gutterBottom>
               {selectedSport} Program
             </Typography>
-            
-            {/* Conditionally render Review Summary */}
-            {sportReviews.length > 0 && (
-              <Card id="summary-card" sx={{ mb: 3 }}>
-                <CardContent>
-                  <Typography id="summary-title" variant="h6" gutterBottom>
-                    Program Summary
-                  </Typography>
-                  <ReviewSummary schoolId={id} sport={selectedSport} />
-                </CardContent>
-              </Card>
-            )}
 
-            {/* Conditionally render Category Averages */}
-            {sportReviews.length > 0 && (
-              <Card id="category-averages-card" sx={{ mb: 3 }}>
-                <CardContent>
-                  <Typography id="category-averages-title" variant="h6" gutterBottom>
-                    Average Ratings by Category
-                  </Typography>
-                  <Grid container spacing={2}>
-                    {[
-                      ['head_coach', 'Head Coach'],
-                      ['assistant_coaches', 'Assistant Coaches'],
-                      ['team_culture', 'Team Culture'],
-                      ['campus_life', 'Campus Life'],
-                      ['athletic_facilities', 'Athletic Facilities'],
-                      ['athletic_department', 'Athletic Department'],
-                      ['player_development', 'Player Development'],
-                      ['nil_opportunity', 'NIL Opportunity']
-                    ].map(([field, label]) => (
-                      <Grid item xs={6} sm={3} key={field}>
-                        <Typography id={`average-${field}-label`} variant="subtitle2">
-                          {label}
-                        </Typography>
-                        <Rating
-                          id={`average-${field}-rating`}
-                          value={categoryAverages[field]}
-                          readOnly
-                          precision={0.1}
-                          max={10}
-                        />
-                        <Typography id={`average-${field}-score`} variant="caption">
-                          {categoryAverages[field].toFixed(1)}/10
-                        </Typography>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </CardContent>
-              </Card>
-            )}
+            {/* Reviews Summary */}
+            <Card id="summary-card" sx={{ mb: 3 }}>
+              <CardContent>
+                <Typography id="summary-title" variant="h6" gutterBottom>
+                  Program Summary
+                </Typography>
+                <ReviewSummary schoolId={id} sport={selectedSport} />
+              </CardContent>
+            </Card>
 
             {/* Reviews Section */}
             <Card id="reviews-section">
@@ -267,10 +210,10 @@ function SchoolPage() {
                       variant="contained"
                       color="primary"
                       onClick={() => navigate(`/reviews/new`, {
-                        state: { 
+                        state: {
                           schoolId: id,
                           schoolName: school.school_name,
-                          selectedSport: selectedSport 
+                          selectedSport: selectedSport
                         }
                       })}
                     >
@@ -278,52 +221,110 @@ function SchoolPage() {
                     </Button>
                   )}
                 </Box>
-                
-                {/* Display reviews or message if none */}
-                {sportReviews.length > 0 ? (
-                  sportReviews.map((review) => (
-                    <Card 
+
+                {/* Filter reviews by sport */}
+                {currentReviews
+                  .map((review) => (
+                    <Card
                       id={`review-${review.review_id}`}
-                      key={review.review_id} 
+                      key={review.review_id}
                       sx={{ mb: 2 }}
+                      data-testid={`review-${review.review_id}`}
+
                     >
                       <CardContent>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                          <Typography id={`coach-name-${review.review_id}`} variant="h6">
-                            Head Coach: {review.head_coach_name}
-                          </Typography>
-                          {review.coach_no_longer_at_university && (
-                            <Typography 
-                              component="span" 
-                              sx={{ 
-                                backgroundColor: 'warning.main', 
-                                color: 'warning.contrastText',
-                                px: 1,
-                                py: 0.5,
-                                borderRadius: 1,
-                                fontSize: '0.875rem'
-                              }}
-                            >
-                              No Longer at University
-                            </Typography>
-                          )}
-                        </Box>
-                        
-                        {review.coach_history && (
-                          <Typography 
-                            variant="body2" 
-                            sx={{ 
-                              mb: 2, 
-                              backgroundColor: 'grey.100',
-                              p: 2,
-                              borderRadius: 1,
-                              whiteSpace: 'pre-line'
-                            }}
-                          >
-                            {review.coach_history}
-                          </Typography>
-                        )}
+<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+  <Box sx={{ flex: 1 }}>
+    <Typography id={`coach-name-${review.review_id}`} variant="h6">
+      Head Coach: {review.head_coach_name}
+    </Typography>
+    {review.coach_history && (
+      <Typography 
+        variant="body2" 
+        sx={{ 
+          mt: 1,
+          backgroundColor: 'grey.100',
+          p: 2,
+          borderRadius: 1,
+          whiteSpace: 'pre-line'
+        }}
+      >
+        {review.coach_history}
+      </Typography>
+    )}
+  </Box>
 
+  <Stack direction="row" spacing={2} alignItems="center">
+    {review.coach_no_longer_at_university && (
+      <Typography 
+        component="span" 
+        sx={{ 
+          backgroundColor: 'warning.main', 
+          color: 'warning.contrastText',
+          px: 1,
+          py: 0.5,
+          borderRadius: 1,
+          fontSize: '0.875rem'
+        }}
+      >
+        No Longer at University
+      </Typography>
+    )}
+
+    <Tooltip
+      title={
+        review.user?.is_school_verified
+          ? "This reviewer has verified their school email"
+          : ""
+      }
+    >
+      <Badge
+        overlap="circular"
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        badgeContent={
+          review.user?.is_school_verified ? (
+            <CheckCircleIcon
+              sx={{
+                color: "green",
+                fontSize: 14,
+                backgroundColor: "white",
+                borderRadius: "50%",
+                boxShadow: 1,
+              }}
+            />
+          ) : null
+        }
+      >
+        <Avatar
+          src={
+            review.user?.profile_picture
+              ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
+              : "/default-avatar.png"
+          }
+          alt="Reviewer avatar"
+          sx={{ width: 40, height: 40 }}
+        />
+      </Badge>
+    </Tooltip>
+
+    <Box sx={{ textAlign: "right" }}>
+      <Typography variant="caption" color="text.secondary" display="block">
+        {new Date(review.created_at).toLocaleDateString()}
+      </Typography>
+      <Typography
+        variant="caption"
+        display="block"
+        sx={{
+          color: review.user?.is_school_verified ? "green" : "text.secondary",
+        }}
+      >
+        {review.user?.is_school_verified
+          ? "Verified"
+          : "Unverified"}
+      </Typography>
+    </Box>
+  </Stack>
+</Box>
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
                         </Typography>
@@ -343,11 +344,11 @@ function SchoolPage() {
                               <Typography id={`${field}-label-${review.review_id}`} variant="subtitle2">
                                 {label}
                               </Typography>
-                              <Rating 
+                              <Rating
                                 id={`${field}-rating-${review.review_id}`}
-                                value={review[field]} 
-                                readOnly 
-                                max={10} 
+                                value={review[field]}
+                                readOnly
+                                max={10}
                               />
                               <Typography id={`${field}-score-${review.review_id}`} variant="caption">
                                 {review[field]}/10
@@ -356,13 +357,18 @@ function SchoolPage() {
                           ))}
                         </Grid>
                       </CardContent>
+
                     </Card>
-                  ))
-                ) : (
-                  <Typography id="no-reviews-message" sx={{ textAlign: 'center', mt: 3 }}>
-                    No reviews available for {selectedSport} yet.
-                  </Typography>
-                )}
+                  ))}
+                                      {/* Pagination */}
+      <Pagination
+        count={Math.ceil(filteredReviews.length / reviewsPerPage)} // Calculate number of pages
+        page={currentPage}
+        onChange={handleChangePage}
+        color="primary"
+        showFirstButton
+        showLastButton
+      />
               </CardContent>
             </Card>
           </Box>
@@ -372,4 +378,4 @@ function SchoolPage() {
   );
 }
 
-export default SchoolPage; 
+export default SchoolPage;

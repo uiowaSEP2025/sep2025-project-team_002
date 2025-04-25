@@ -16,8 +16,13 @@ import {
   Select,
   InputLabel,
   FormControl,
+  useMediaQuery,
+  useTheme,
+  MenuItem,
+  Grid,
 } from "@mui/material";
 import API_BASE_URL from "../utils/config";
+import StarRating from "../components/StarRating";
 
 function Home() {
   const navigate = useNavigate();
@@ -27,6 +32,9 @@ function Home() {
   const queryParams = new URLSearchParams(location.search);
   const pageFromURL = parseInt(queryParams.get("page")) || 1;
   const searchFromURL = queryParams.get("search") || "";
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const schoolsPerPage = 10;
 
@@ -45,9 +53,11 @@ function Home() {
     athletic_department: "",
     player_development: "",
     nil_opportunity: "",
+    sport: "",
   });
   const [filteredSchools, setFilteredSchools] = useState([]);
   const [filterApplied, setFilterApplied] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -128,8 +138,10 @@ function Home() {
     setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
   const applyFilters = async () => {
+    closeFilterDialog();
+
     const queryParams = new URLSearchParams();
-    if (filters.coach) queryParams.append("coach", filters.coach);
+    if (filters.sport) queryParams.append("sport", filters.sport);
     // Append rating filters if provided
     [
       "head_coach",
@@ -147,11 +159,14 @@ function Home() {
     });
 
     try {
+      setLoading(true);
+      console.log("Applying filters with params:", queryParams.toString());
       const response = await fetch(
         `${API_BASE_URL}/api/filter/?${queryParams.toString()}`
       );
       if (response.ok) {
         const data = await response.json();
+        console.log("Filter response:", data);
         setFilteredSchools(data);
         setFilterApplied(true);
         setCurrentPage(1);
@@ -161,8 +176,9 @@ function Home() {
       }
     } catch (error) {
       console.error("Error applying filters:", error);
+    } finally {
+      setLoading(false);
     }
-    closeFilterDialog();
   };
   const clearFilters = () => {
     setFilters({
@@ -174,10 +190,11 @@ function Home() {
       athletic_department: "",
       player_development: "",
       nil_opportunity: "",
+      sport: "",
     });
     setFilterApplied(false);
     setFilteredSchools([]);
-    closeFilterDialog();
+    // closeFilterDialog();
   };
 
   // Determine which schools to display: filtered if applied, else all
@@ -186,9 +203,14 @@ function Home() {
   const filteredBySearch = schoolsToDisplay.filter((school) =>
     school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+    // Sort alphabetically
+  const sortedFilteredSchools = [...filteredBySearch].sort((a, b) =>
+    a.school_name.localeCompare(b.school_name)
+  );
   const indexOfLastSchool = currentPage * schoolsPerPage;
   const indexOfFirstSchool = indexOfLastSchool - schoolsPerPage;
-  const currentSchools = filteredBySearch.slice(indexOfFirstSchool, indexOfLastSchool);
+  const currentSchools = sortedFilteredSchools.slice(indexOfFirstSchool, indexOfLastSchool);
 
   return (
     <div>
@@ -244,15 +266,39 @@ function Home() {
               onClick={() => handleSchoolClick(school.id)}
             >
               <CardContent>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                    {school.school_name}
-                  </Typography>
-                  <Typography variant="body2">
-                    {school.available_sports?.length > 0
-                      ? school.available_sports.join(" • ")
-                      : "No sports listed"}
-                  </Typography>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <Box sx={{ maxWidth: "70%" }}>
+                      <Typography variant="h6" sx={{ fontWeight: 700, textAlign: "left" }}>
+                        {school.school_name}
+                      </Typography>
+                      <Typography variant="body2" sx={{ textAlign: "left" }}>
+                        {school.available_sports?.length > 0
+                          ? school.available_sports.join(" • ")
+                          : "No sports listed"}
+                      </Typography>
+                    </Box>
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+                    <Box sx={{
+                      backgroundColor: "#f0f7ff",
+                      px: 1.5,
+                      py: 0.5,
+                      borderRadius: 1,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 0.5
+                    }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: "#1976d2" }}>
+                        {school.review_count > 500 ? "500+" : school.review_count || 0} {school.review_count === 1 ? "review" : "reviews"}
+                      </Typography>
+                    </Box>
+                    {school.review_count > 0 && (
+                      <Box sx={{ mt: 0.5 }}>
+                        <StarRating rating={school.average_rating} showValue={true} />
+                      </Box>
+                    )}
+                  </Box>
+                  </Box>
                 </Box>
               </CardContent>
             </Card>
@@ -283,7 +329,7 @@ function Home() {
               }}
             />
           </Box>
-
+ {!isSmallScreen && (
           <Box
             sx={{
               position: "absolute",
@@ -325,7 +371,7 @@ function Home() {
                 style: { width: 60, textAlign: "center" }
               }}
             />
-          </Box>
+          </Box> )}
         </Box>
       )}
 
@@ -333,183 +379,209 @@ function Home() {
       <Dialog open={filterDialogOpen} onClose={closeFilterDialog} fullWidth maxWidth="sm">
         <DialogTitle>Apply Filters</DialogTitle>
         <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="head_coach-select" id="head_coach-label">
-                Head Coach Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="head_coach-label"
-                id="head_coach-select"
-                label="Head Coach Rating"
-                name="head_coach"
-                value={filters.head_coach}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="assistant_coaches-select" id="assistant_coaches-label">
-                Assistant Coaches Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="assistant_coaches-label"
-                id="assistant_coaches-select"
-                label="Assistant Coaches Rating"
-                name="assistant_coaches"
-                value={filters.assistant_coaches}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="team_culture-select" id="team_culture-label">
-                Team Culture Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="team_culture-label"
-                id="team_culture-select"
-                label="Team Culture Rating"
-                name="team_culture"
-                value={filters.team_culture}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="campus_life-select" id="campus_life-label">
-                Campus Life Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="campus_life-label"
-                id="campus_life-select"
-                label="Campus Life Rating"
-                name="campus_life"
-                value={filters.campus_life}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="athletic_facilities-select" id="athletic_facilities-label">
-                Athletic Facilities Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="athletic_facilities-label"
-                id="athletic_facilities-select"
-                label="Athletic Facilities Rating"
-                name="athletic_facilities"
-                value={filters.athletic_facilities}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="athletic_department-select" id="athletic_department-label">
-                Athletic Department Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="athletic_department-label"
-                id="athletic_department-select"
-                label="Athletic Department Rating"
-                name="athletic_department"
-                value={filters.athletic_department}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="player_development-select" id="player_development-label">
-                Player Development Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="player_development-label"
-                id="player_development-select"
-                label="Player Development Rating"
-                name="player_development"
-                value={filters.player_development}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl fullWidth>
-              <InputLabel htmlFor="nil_opportunity-select" id="nil_opportunity-label">
-                NIL Opportunity Rating
-              </InputLabel>
-              <Select
-                native
-                labelId="nil_opportunity-label"
-                id="nil_opportunity-select"
-                label="NIL Opportunity Rating"
-                name="nil_opportunity"
-                value={filters.nil_opportunity}
-                onChange={handleFilterChange}
-              >
-                <option value=""> </option>
-                {[...Array(10)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </Select>
-            </FormControl>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <TextField
+              select
+              fullWidth
+              id="sport-select"
+              label="Choose Sport"
+              name="sport"
+              value={filters.sport}
+              onChange={handleFilterChange}
+              variant="outlined"
+              margin="normal"
+            >
+              <MenuItem value="">All Sports</MenuItem>
+              <MenuItem value="Men's Basketball">Men's Basketball</MenuItem>
+              <MenuItem value="Women's Basketball">Women's Basketball</MenuItem>
+              <MenuItem value="Football">Football</MenuItem>
+            </TextField>
+
+            <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 600 }}>
+              Rating Filters (Minimum Rating)
+            </Typography>
+
+            {/* Rating filters */}
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Head Coach Rating</InputLabel>
+                  <Select
+                    id="head_coach-select"
+                    data-testid="head_coach-select"
+                    name="head_coach"
+                    value={filters.head_coach}
+                    onChange={handleFilterChange}
+                    label="Head Coach Rating"
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                      <MenuItem key={rating} value={rating}>
+                        {rating}+
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Assistant Coaches</InputLabel>
+                  <Select
+                    name="assistant_coaches"
+                    value={filters.assistant_coaches}
+                    onChange={handleFilterChange}
+                    label="Assistant Coaches"
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                      <MenuItem key={rating} value={rating}>
+                        {rating}+
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Team Culture</InputLabel>
+                  <Select
+                    name="team_culture"
+                    value={filters.team_culture}
+                    onChange={handleFilterChange}
+                    label="Team Culture"
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                      <MenuItem key={rating} value={rating}>
+                        {rating}+
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Campus Life</InputLabel>
+                  <Select
+                    name="campus_life"
+                    value={filters.campus_life}
+                    onChange={handleFilterChange}
+                    label="Campus Life"
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                      <MenuItem key={rating} value={rating}>
+                        {rating}+
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Athletic Facilities</InputLabel>
+                  <Select
+                    name="athletic_facilities"
+                    value={filters.athletic_facilities}
+                    onChange={handleFilterChange}
+                    label="Athletic Facilities"
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                      <MenuItem key={rating} value={rating}>
+                        {rating}+
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Athletic Department</InputLabel>
+                  <Select
+                    name="athletic_department"
+                    value={filters.athletic_department}
+                    onChange={handleFilterChange}
+                    label="Athletic Department"
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                      <MenuItem key={rating} value={rating}>
+                        {rating}+
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Player Development</InputLabel>
+                  <Select
+                    name="player_development"
+                    value={filters.player_development}
+                    onChange={handleFilterChange}
+                    label="Player Development"
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                      <MenuItem key={rating} value={rating}>
+                        {rating}+
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>NIL Opportunity</InputLabel>
+                  <Select
+                    name="nil_opportunity"
+                    value={filters.nil_opportunity}
+                    onChange={handleFilterChange}
+                    label="NIL Opportunity"
+                  >
+                    <MenuItem value="">Any</MenuItem>
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
+                      <MenuItem key={rating} value={rating}>
+                        {rating}+
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
           </Box>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={clearFilters} color="secondary">
-            Clear
+        <DialogActions sx={{ p: 3 }}>
+          <Button
+            onClick={clearFilters}
+            color="secondary"
+            sx={{
+              borderRadius: "20px",
+              py: 0.6,
+              px: 2,
+              textTransform: "none",
+              fontWeight: 500
+            }}
+          >
+            Clear Filters
           </Button>
-          <Button id="apply-filters-button" onClick={applyFilters} color="primary" variant="contained">
-            Apply
+          <Button
+            id="apply-filters-button"
+            data-testid="apply-filters-button"
+            name="apply-filters-button"
+            onClick={applyFilters}
+            color="primary"
+            variant="contained"
+            sx={{
+              borderRadius: "20px",
+              py: 0.6,
+              px: 2,
+              textTransform: "none",
+              fontWeight: 500
+            }}
+          >
+            Apply Filters
           </Button>
         </DialogActions>
       </Dialog>

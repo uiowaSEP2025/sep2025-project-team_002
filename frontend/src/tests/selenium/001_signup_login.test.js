@@ -103,6 +103,7 @@ describe("Selenium Signup & Login Test", function () {
       const textContent = await schoolsAndSportsText.getText();
       expect(textContent).to.equal("Schools and Sports");
 
+
       console.log("Test passed: User successfully signed up, logged in, and accessed secure home.");
     } catch (error) {
       console.error("Test failed:", error);

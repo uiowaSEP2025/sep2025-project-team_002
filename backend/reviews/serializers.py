@@ -1,16 +1,29 @@
 from rest_framework import serializers
 from .models import Reviews
+from users.models import Users
 import logging
 
 logger = logging.getLogger(__name__)
 
 
+class ReviewUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Users
+        fields = ["id", "is_school_verified", "profile_picture"]
+
+
 class ReviewsSerializer(serializers.ModelSerializer):
+    school_name = serializers.ReadOnlyField(source="school.school_name")
+    user = ReviewUserSerializer(read_only=True)
+
     def validate_sport(self, value):
         # Convert display names to database codes
         sport_mapping = {
             "Men's Basketball": "mbb",
+            "Men’s Basketball": "mbb",  # Handle both apostrophe types
             "Women's Basketball": "wbb",
+            "Women’s Basketball": "wbb",  # Handle both apostrophe types
+
             "Football": "fb",
         }
         logger.info(f"ReviewsSerializer.validate_sport: Converting '{value}' to code")

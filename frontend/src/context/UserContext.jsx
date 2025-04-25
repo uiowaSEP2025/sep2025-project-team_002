@@ -1,18 +1,22 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import API_BASE_URL from "../utils/config";
 
-
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // Initialize isLoggedIn based on token presence
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
   const [loading, setLoading] = useState(true);
 
-    // Function to fetch the user data from the backend
+  // Function to fetch the user data from the backend
   const fetchUser = async () => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token) {
+      setIsLoggedIn(false);
+      setUser(null);
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE_URL}/users/user/`, {
@@ -28,13 +32,29 @@ export const UserProvider = ({ children }) => {
         setIsLoggedIn(true);
       }
       else {
-        setIsLoggedIn(false);
+        // If we get a 401 Unauthorized, the token is invalid or expired
+        if (response.status === 401) {
+          // Don't call logout() directly to avoid infinite loops
+          // Just clear the token and state
+          localStorage.removeItem("token");
+          setUser(null);
+          setIsLoggedIn(false);
+          // Don't navigate here - let the RequireAuth component handle navigation
+        } else {
+          setIsLoggedIn(false);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
     } finally {
       setLoading(false);
     }
+  };
+  // Function to handle logout
+  const logout = () => {
+    localStorage.removeItem("token");
+    setUser(null);
+    setIsLoggedIn(false);
   };
 
   // Function to update user profile picture in state and backend
@@ -54,8 +74,6 @@ export const UserProvider = ({ children }) => {
 
       if (response.ok) {
         await fetchUser();
-        // setUser((prevUser) => ({ ...prevUser, profile_picture: newPic }));
-        // fetchUser();
       }
     } catch (error) {
       console.error("Failed to update profile picture:", error);
@@ -68,11 +86,14 @@ export const UserProvider = ({ children }) => {
     : "/assets/profile-pictures/pic1.png"; // Default image
 
   useEffect(() => {
-    fetchUser()
+    // Fetch user data on mount if token exists
+    if (localStorage.getItem("token")) {
+      fetchUser();
+    }
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser, isLoggedIn, loading }}>
+    <UserContext.Provider value={{ user, setUser, updateProfilePic, profilePic, fetchUser, isLoggedIn, loading, logout }}>
       {children}
     </UserContext.Provider>
   );

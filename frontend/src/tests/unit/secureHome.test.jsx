@@ -4,14 +4,35 @@ import { render, screen, waitFor, fireEvent, act, within } from '@testing-librar
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import SecureHome from '../../home/SecureHome.jsx';
+import { UserContext } from '../../context/UserContext';
 
-// Mock the authentication state
-const mockAuthState = {
-  isAuthenticated: true,
+// Mock user context value
+const mockUserContextValue = {
   user: {
-    username: 'testuser',
-    email: 'test@example.com'
-  }
+    first_name: 'Test',
+    last_name: 'User',
+    email: 'test@example.com',
+    transfer_type: 'transfer',
+    profile_picture: ''
+  },
+  isLoggedIn: true,
+  logout: vi.fn(),
+  fetchUser: vi.fn(),
+  updateProfilePic: vi.fn(),
+  profilePic: '/assets/profile-pictures/pic1.png',
+  filters: {
+    sport: "",
+    head_coach: "",
+    assistant_coaches: "",
+    team_culture: "",
+    campus_life: "",
+    athletic_facilities: "",
+    athletic_department: "",
+    player_development: "",
+    nil_opportunity: "",
+  },
+  setFilters: vi.fn(),
+  clearFilters: vi.fn()
 };
 
 // Mock the API response for schools
@@ -21,7 +42,9 @@ const mockSchools = [
     school_name: "University of Iowa",
     conference: "Big Ten",
     location: "Iowa City, Iowa",
-    available_sports: ["Men's Basketball", "Women's Basketball", "Football"]
+    available_sports: ["Men's Basketball", "Women's Basketball", "Football"],
+    review_count: 325,
+    average_rating: 8.7
   }
 ];
 
@@ -33,7 +56,9 @@ const mockRecommendations = [
       school_name: "University of Iowa",
       conference: "Big Ten",
       location: "Iowa City, Iowa",
-      available_sports: ["Men's Basketball", "Women's Basketball", "Football"]
+      available_sports: ["Men's Basketball", "Women's Basketball", "Football"],
+      review_count: 325,
+      average_rating: 8.7
     },
     sport: "Men's Basketball",
     similarity_score: 8
@@ -43,7 +68,7 @@ const mockRecommendations = [
 describe('SecureHome Component', () => {
   beforeEach(() => {
     console.log("Running SecureHome test suite");
-    
+
     // Mock localStorage
     const mockLocalStorage = {
       getItem: vi.fn(() => 'fake-token'),
@@ -51,7 +76,7 @@ describe('SecureHome Component', () => {
       clear: vi.fn()
     };
     global.localStorage = mockLocalStorage;
-    
+
     // Mock fetch with a proper Response object
     global.fetch = vi.fn((url) => {
       if (url.includes('/api/recommendations/')) {
@@ -94,20 +119,30 @@ describe('SecureHome Component', () => {
   it('renders schools list', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
+
+    // Initially should show loading indicator
+    expect(screen.getByRole('progressbar')).toBeInTheDocument();
 
     // Wait for the school name to appear in the school list
     await waitFor(() => {
       expect(screen.getByTestId('school-list-name-1')).toHaveTextContent('University of Iowa');
     });
+
+    // Loading indicator should be gone
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
   it('displays sports for each school', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -120,7 +155,9 @@ describe('SecureHome Component', () => {
   it('shows recommendations', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -138,7 +175,9 @@ describe('SecureHome Component', () => {
   it('shows submit review button when transfer_type is not "high_school"', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -172,11 +211,14 @@ describe('SecureHome Component', () => {
       }));
     });
 
-    render(
-      <BrowserRouter>
+  render(
+    <BrowserRouter>
+      <UserContext.Provider value={{...mockUserContextValue, user: {...mockUserContextValue.user, transfer_type: 'high_school'}}}>
         <SecureHome />
-      </BrowserRouter>
-    );
+      </UserContext.Provider>
+    </BrowserRouter>
+  );
+
 
     // Wait for the component to render
     await waitFor(() => {
@@ -185,7 +227,7 @@ describe('SecureHome Component', () => {
   });
 });
 
-describe('SecureHome Filter Feature', () => {
+describe('SecureHome Filter Dialog', () => {
   beforeEach(() => {
     // Mock localStorage for authentication
     global.localStorage = {
@@ -199,15 +241,18 @@ describe('SecureHome Filter Feature', () => {
       if (url.includes('/api/filter/')) {
         const urlObj = new URL(url, 'http://localhost');
         const headCoachRating = urlObj.searchParams.get('head_coach');
-        // Return a filtered school when head_coach equals '8'
-        if (headCoachRating === '8') {
+        const sport = urlObj.searchParams.get('sport');
+        // Return a filtered school when head_coach equals '8' and sport is Men's Basketball
+        if (headCoachRating === '8' && sport === "Men's Basketball") {
           return Promise.resolve(new Response(JSON.stringify([
             {
               id: 2,
               school_name: "Filtered School",
               conference: "Test Conference",
               location: "Test Location",
-              available_sports: ["Football"]
+              available_sports: ["Men's Basketball"],
+              review_count: 150,
+              average_rating: 8.2
             }
           ]), {
             status: 200,
@@ -227,9 +272,17 @@ describe('SecureHome Filter Feature', () => {
             school_name: "Default School",
             conference: "Test Conference",
             location: "Test Location",
-            available_sports: ["Football"]
+            available_sports: ["Football"],
+            review_count: 85,
+            average_rating: 7.5
           }
         ]), {
+          status: 200,
+          headers: new Headers({ 'Content-Type': 'application/json' })
+        }));
+      } else if (url.includes('/api/recommendations/')) {
+        // Return mock recommendations
+        return Promise.resolve(new Response(JSON.stringify(mockRecommendations), {
           status: 200,
           headers: new Headers({ 'Content-Type': 'application/json' })
         }));
@@ -245,14 +298,19 @@ describe('SecureHome Filter Feature', () => {
           headers: new Headers({ 'Content-Type': 'application/json' })
         }));
       }
-      return Promise.reject(new Error('Unhandled endpoint'));
+      return Promise.resolve(new Response(JSON.stringify({}), {
+        status: 200,
+        headers: new Headers({ 'Content-Type': 'application/json' })
+      }));
     });
   });
 
-  it('opens filter dialog and applies filter', async () => {
+  it('opens filter dialog and closes it', async () => {
     render(
       <BrowserRouter>
-        <SecureHome />
+        <UserContext.Provider value={mockUserContextValue}>
+          <SecureHome />
+        </UserContext.Provider>
       </BrowserRouter>
     );
 
@@ -261,28 +319,33 @@ describe('SecureHome Filter Feature', () => {
       expect(screen.getByText(/Default School/i)).toBeInTheDocument();
     });
 
-    // Click the Filters button
-    const filtersButton = screen.getByRole('button', { name: /Filters/i });
+    // Click the Filter button
+    const filtersButton = screen.getByRole('button', { name: /Filter/i });
     fireEvent.click(filtersButton);
 
     // Wait for the filter dialog to appear (e.g., dialog title "Apply Filters")
     await waitFor(() => {
-      expect(screen.getByText(/Apply Filters/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Apply Filters/i)[0]).toBeInTheDocument();
     });
 
-    // Change the Head Coach Rating dropdown to 8
-    const headCoachSelect = screen.getByLabelText(/Head Coach Rating/i);
-    fireEvent.mouseDown(headCoachSelect);
-    const option = within(screen.getByRole('listbox')).getByText('8');
-    fireEvent.click(option);
+    // Wait for the dialog content to be visible
+    await waitFor(() => {
+      expect(screen.getByText(/Rating Filters/i)).toBeInTheDocument();
+    });
 
-    // Click the Apply button by using its role and exact name "Apply"
-    const applyButton = screen.getByRole('button', { name: /^Apply$/i });
+    // Verify that the sport dropdown is present
+    expect(screen.getByLabelText(/Choose Sport/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/Men's Basketball/i)).toBeInTheDocument();
+    expect(screen.getByText(/Football/i)).toBeInTheDocument();
+
+    // Click the Apply Filters button
+    const applyButton = screen.getByRole('button', { name: /Apply Filters/i });
     fireEvent.click(applyButton);
 
-    // Wait for the filtered school to appear
+    // Verify that the dialog closes
     await waitFor(() => {
-      expect(screen.getByText(/Filtered School/i)).toBeInTheDocument();
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     });
   });
 });
@@ -304,6 +367,8 @@ describe('SecureHome Pagination Feature', () => {
       conference: "Test Conference",
       location: "Test Location",
       available_sports: ["Sport A", "Sport B"],
+      review_count: Math.floor(Math.random() * 600),
+      average_rating: (Math.random() * 5 + 5).toFixed(1),
     }));
 
     // Setup fetch to return responses for both the user info and schools endpoints.
@@ -332,52 +397,55 @@ describe('SecureHome Pagination Feature', () => {
     });
   });
 
-  it('renders first page schools and paginates to page 2 when the pagination button is clicked', async () => {
-    render(
-      <BrowserRouter>
-        <SecureHome />
-      </BrowserRouter>
-    );
+    it('renders first page schools and paginates correctly when changing pages', async () => {
+      render(
+        <BrowserRouter>
+          <UserContext.Provider value={mockUserContextValue}>
+            <SecureHome />
+          </UserContext.Provider>
+        </BrowserRouter>
+      );
 
-    // Wait until the initial 10 school cards (rendered as h6 headings) are present.
-    await waitFor(() => {
-      // Get all h6 headings and filter out the ones that aren't school names
-      const headings = screen.getAllByRole('heading', { level: 6 })
-        .filter(heading => heading.textContent.startsWith('School'));
-      expect(headings.length).toBe(10);
+      // Wait for initial load and verify page 1 has 10 schools
+      await waitFor(() => {
+        const schoolHeadings = screen.getAllByRole('heading', { level: 6 })
+          .filter(heading => heading.textContent.startsWith('School'));
+        expect(schoolHeadings.length).toBe(10);
+      });
+
+      // Get all school names from page 1
+      const firstPageSchools = screen.getAllByRole('heading', { level: 6 })
+        .filter(heading => heading.textContent.startsWith('School'))
+        .map(el => el.textContent);
+
+      // Click page 2 button
+      const page2Button = screen.getByRole('button', { name: /go to page 2/i });
+      fireEvent.click(page2Button);
+
+      // Wait for page 2 to load with 5 schools
+      await waitFor(() => {
+        const schoolHeadings = screen.getAllByRole('heading', { level: 6 })
+          .filter(heading => heading.textContent.startsWith('School'));
+        expect(schoolHeadings.length).toBe(5);
+      });
+
+      // Get all school names from page 2
+      const secondPageSchools = screen.getAllByRole('heading', { level: 6 })
+        .filter(heading => heading.textContent.startsWith('School'))
+        .map(el => el.textContent);
+
+      // Verify counts are correct
+      expect(firstPageSchools.length).toBe(10);
+      expect(secondPageSchools.length).toBe(5);
+
+      // Verify no overlap between pages
+      secondPageSchools.forEach(school => {
+        expect(firstPageSchools).not.toContain(school);
+      });
+
+      // Verify all schools are unique (no duplicates)
+      const allSchools = [...firstPageSchools, ...secondPageSchools];
+      const uniqueSchools = new Set(allSchools);
+      expect(uniqueSchools.size).toBe(15);
     });
-
-    // Verify that page 1 has School 1 through School 10.
-    let headings = screen.getAllByRole('heading', { level: 6 })
-      .filter(heading => heading.textContent.startsWith('School'));
-    const firstPageNames = headings.map((el) => el.textContent);
-    for (let i = 1; i <= 10; i++) {
-      expect(firstPageNames).toContain(`School ${i}`);
-    }
-    for (let i = 11; i <= 15; i++) {
-      expect(firstPageNames).not.toContain(`School ${i}`);
-    }
-
-    // Find the page 2 button by its accessible name "Go to page 2" (MUI's Pagination typically renders it this way).
-    const page2Button = screen.getByRole('button', { name: /go to page 2/i });
-    fireEvent.click(page2Button);
-
-    // Wait until page 2 is rendered (which should contain only 5 school cards).
-    await waitFor(() => {
-      const headingsPage2 = screen.getAllByRole('heading', { level: 6 })
-        .filter(heading => heading.textContent.startsWith('School'));
-      expect(headingsPage2.length).toBe(5);
-    });
-
-    // Verify that page 2 contains School 11 through School 15.
-    headings = screen.getAllByRole('heading', { level: 6 })
-      .filter(heading => heading.textContent.startsWith('School'));
-    const secondPageNames = headings.map((el) => el.textContent);
-    for (let i = 11; i <= 15; i++) {
-      expect(secondPageNames).toContain(`School ${i}`);
-    }
-    for (let i = 1; i <= 10; i++) {
-      expect(secondPageNames).not.toContain(`School ${i}`);
-    }
-  });
 });

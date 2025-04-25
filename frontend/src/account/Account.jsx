@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import {
   Grid,
   Typography,
@@ -27,13 +27,16 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import RateReviewIcon from '@mui/icons-material/RateReview';
 import API_BASE_URL from "../utils/config.js";
-import {UserProvider, useUser} from "../context/UserContext.jsx"
+import {useUser} from "../context/UserContext.jsx";
 
 function Account() {
   const navigate = useNavigate();
 
-  // For any error or status messages
+  // Get user context for logout functionality
+  const { logout } = useUser();
+
   const [message] = useState("");
 
   const { user, loading } = useUser();
@@ -74,10 +77,19 @@ function Account() {
         }]
       : []
     ),
+    // Conditionally block "My Reviews" tab for high school transfer type
+    ...(user?.transfer_type && user.transfer_type !== "high_school"
+    ? [{
+        text: "My Reviews",
+        action: () => navigate("/account/my-reviews"),
+        icon: <RateReviewIcon fontSize="medium" />
+      }]
+      : []
+    ),
     {
       text: "Logout",
       action: () => {
-        localStorage.removeItem("token");
+        logout();
         navigate("/login");
       },
       icon: <LogoutIcon fontSize="medium" />
@@ -140,7 +152,7 @@ function Account() {
           <div style={{ maxWidth: '500px', margin: 'auto', padding: '20px', backgroundColor: "#f5f5f5" }}>
         {/* Display selected profile picture */}
             <Box sx={{ textAlign: 'center', marginBottom: '20px' }}>
-              {user.profile_picture ? (
+              {user?.profile_picture && user.profile_picture ? (
                 <img
                   src={`/assets/profile-pictures/${user.profile_picture}`} // dynamic source based on user profile picture
                   alt="Profile"
@@ -218,6 +230,7 @@ function Account() {
               {user.email && (
                 <Box
                     id="account-verification-box"
+                    data-testid="account-verification-box"
                     sx={{
                     mt: 3,
                     p: 2,
@@ -315,6 +328,7 @@ function Account() {
               Loading account information...
             </Typography>
           )}
+          <Outlet />
         </motion.div>
       </Box>
     </SidebarWrapper>

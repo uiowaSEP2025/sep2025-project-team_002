@@ -75,9 +75,25 @@ function Signup() {
   const passwordsMatch =
     formData.verifyPassword.length > 0 && formData.password === formData.verifyPassword;
 
+  const isSubmitDisabled = !(
+      formData.first_name &&
+      formData.last_name &&
+      formData.email &&
+      formData.password &&
+      formData.verifyPassword &&
+      formData.transferType &&
+      passwordsMatch
+  );
+
   // Submit signup
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if any required field is missing
+    if (!formData.first_name || !formData.last_name || !formData.email || !formData.password || !formData.verifyPassword || !formData.transferType) {
+        setMessage("Please fill in all required fields.");
+        return;
+    }
 
     if (!passwordsMatch) {
       setMessage("Passwords do not match!");
@@ -116,6 +132,8 @@ function Signup() {
     }
   };
 
+
+
   return (
     <Box sx={{ position: "relative" }}>
       {/* Back Arrow to home */}
@@ -131,8 +149,10 @@ function Signup() {
           variant="text"
           onClick={() => navigate("/")}
           startIcon={<ArrowBackIcon />}
-          sx={{ color: "black" }}
-        />
+          sx={{ color: "white" }}
+        >
+        Back to Home
+      </Button>
       </Box>
 
       <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
@@ -374,7 +394,6 @@ function Signup() {
                   <FormControlLabel value="graduate" control={<Radio id="signup-graduate" />} label="Graduated Athlete" />
                 </RadioGroup>
               </FormControl>
-
               <Button
                 id="signup-button"
                 type="submit"
@@ -384,6 +403,7 @@ function Signup() {
                 component={motion.button}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                disabled={isSubmitDisabled}
               >
                 Sign Up
               </Button>
