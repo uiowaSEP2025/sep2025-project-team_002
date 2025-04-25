@@ -248,12 +248,15 @@ def get_review_summary(request, school_id):
                         tenure_entries = history.split("\n")
                         if tenure_entries:
                             most_recent_tenure = tenure_entries[-1].lower()
-                            normalized_school_name = coach_service._normalize_name(
+                            normalized_school_names = coach_service._normalize_name(
                                 school.school_name
                             )
-                            if not most_recent_tenure.endswith(
-                                f"@{normalized_school_name}"
-                            ):
+                            # Check if the tenure matches any of the normalized forms of the school name
+                            is_at_school = any(
+                                most_recent_tenure.endswith(f"@{name}")
+                                for name in normalized_school_names
+                            )
+                            if not is_at_school:
                                 coach_summary_parts.append("*No longer at this school*")
                 else:
                     # Only show no tenure message for basketball coaches
@@ -307,12 +310,15 @@ def get_review_summary(request, school_id):
                         ]:
                             if tenure_entries:
                                 most_recent_tenure = tenure_entries[-1].lower()
-                                normalized_school_name = coach_service._normalize_name(
+                                normalized_school_names = coach_service._normalize_name(
                                     school.school_name
                                 )
-                                if not most_recent_tenure.endswith(
-                                    f"@{normalized_school_name}"
-                                ):
+                                # Check if the tenure matches any of the normalized forms of the school name
+                                is_at_school = any(
+                                    most_recent_tenure.endswith(f"@{name}")
+                                    for name in normalized_school_names
+                                )
+                                if not is_at_school:
                                     coach_summary_parts.append(
                                         "*No longer at this school*"
                                     )
