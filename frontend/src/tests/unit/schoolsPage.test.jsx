@@ -1,3 +1,4 @@
+/// <reference types="vitest/globals" />
 import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, within, waitFor } from '@testing-library/react';
@@ -180,6 +181,7 @@ describe('SchoolPage Component', () => {
 
   // --- vote related tests ---
   it('shows login prompt when trying to vote without login', async () => {
+    // mock fetch
     fetch.mockImplementation(() =>
       Promise.resolve({
         ok: true,
@@ -189,11 +191,16 @@ describe('SchoolPage Component', () => {
 
     renderWithRouter();
 
-    await screen.findByText('Review message 0');
+    const basketballTab = await screen.findByRole('tab', { name: "Men's Basketball" });
+    userEvent.click(basketballTab);
 
-    global.localStorage.getItem = vi.fn(() => null); // Simulate no token
+    await screen.findByText('Great program with excellent facilities');
+
+    global.localStorage.getItem = vi.fn(() => null);
+
     const helpfulButtons = await screen.findAllByRole('button', { name: /Helpful/i });
     userEvent.click(helpfulButtons[0]);
+
     await screen.findByText(/Please log in to vote/i);
   });
 
