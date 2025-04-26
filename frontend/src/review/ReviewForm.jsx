@@ -103,16 +103,16 @@ const ReviewForm = () => {
   });
 
   const sortedSchools = useMemo(() => {
-      return [...schools].sort((a, b) =>
-        a.school_name.localeCompare(b.school_name)
-      );
-    }, [schools]);
+    return [...schools].sort((a, b) =>
+      a.school_name.localeCompare(b.school_name)
+    );
+  }, [schools]);
 
   const filteredSchools = useMemo(() => {
-  return sortedSchools.filter((school) =>
-    school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-}, [searchQuery, sortedSchools]);
+    return sortedSchools.filter((school) =>
+      school.school_name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, sortedSchools]);
 
 
   const isMobile = useMediaQuery("(max-width: 600px)");
@@ -167,21 +167,21 @@ const ReviewForm = () => {
   };
 
   const isFormValid = () => {
-  return (
-    review.school &&
-    review.sport &&
-    review.head_coach_name.trim() &&
-    review.review_message &&
-    review.head_coach > 0 &&
-    review.assistant_coaches > 0 &&
-    review.team_culture > 0 &&
-    review.campus_life > 0 &&
-    review.athletic_facilities > 0 &&
-    review.athletic_department > 0 &&
-    review.player_development > 0 &&
-    review.nil_opportunity > 0
-  );
-};
+    return (
+      review.school &&
+      review.sport &&
+      review.head_coach_name.trim() &&
+      review.review_message &&
+      review.head_coach > 0 &&
+      review.assistant_coaches > 0 &&
+      review.team_culture > 0 &&
+      review.campus_life > 0 &&
+      review.athletic_facilities > 0 &&
+      review.athletic_department > 0 &&
+      review.player_development > 0 &&
+      review.nil_opportunity > 0
+    );
+  };
 
   const normalizeString = (str) => str.replace(/\s+/g, "").toLowerCase();
   const isDuplicateReview = userReviews.some(
@@ -224,7 +224,6 @@ const ReviewForm = () => {
         setError(data.error || "Failed to submit review. Please try again.");
         return;
       }
-  
       navigate("/secure-home");
     } catch (error) {
       console.error("Submission failed", error);
@@ -233,8 +232,8 @@ const ReviewForm = () => {
   };
 
   return (
-      <>
-        <div style={{
+    <>
+      <div style={{
         maxWidth: '800px',
         margin: 'auto',
         padding: '20px',
@@ -245,30 +244,30 @@ const ReviewForm = () => {
         width: "100%",
         boxSizing: "border-box"
       }}>
-        <button
-          id="back-button"
-          onClick={() => navigate(-1)}
-          style={{
-            padding: '12px 25px',
-            backgroundColor: '#007bff',
-            color: '#fff',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            position: 'absolute',
-            left: 0
-          }}
-        >
-          ← Back
-        </button>
-        <h2 id="form-title" style={{
-          flex: 1,
-          textAlign: 'center',
-          margin: 0
-        }}>
-          Athletic Insider
-        </h2>
-      </div>
+      <button
+        id="back-button"
+        onClick={() => navigate(-1)}
+        style={{
+          padding: '12px 25px',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          position: 'absolute',
+          left: 0
+        }}
+      >
+        ← Back
+      </button>
+      <h2 id="form-title" style={{
+        flex: 1,
+        textAlign: 'center',
+        margin: 0
+      }}>
+        Athletic Insider
+      </h2>
+    </div>
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: { xs: 2, md: 4 }, overflowX: "hidden"}}>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={6}>
@@ -286,62 +285,62 @@ const ReviewForm = () => {
             </Typography>
           </motion.div>
           <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: { xs: 2, md: 4 }, borderRadius: 2, boxShadow: 3 }}>
-{error && (
-  <Box 
-    sx={{ 
-      mb: 2, 
-      p: 2, 
-      backgroundColor: '#ffebee', 
-      borderRadius: 1,
-      textAlign: 'center',
-      border: '1px solid #ffcdd2'
-    }}
-  >
-    <Typography 
-      color="error" 
-      sx={{ 
-        fontWeight: 500,
-        fontSize: '1.1rem'
-      }}
-    >
-      {error}
-    </Typography>
-  </Box>
-)}
+            {error && (
+              <Box
+                sx={{
+                  mb: 2,
+                  p: 2,
+                  backgroundColor: '#ffebee',
+                  borderRadius: 1,
+                  textAlign: 'center',
+                  border: '1px solid #ffcdd2'
+                }}
+              >
+                <Typography
+                  color="error"
+                  sx={{
+                    fontWeight: 500,
+                    fontSize: '1.1rem'
+                  }}
+                >
+                  {error}
+                </Typography>
+              </Box>
+            )}
 
-<Autocomplete
-  id="school-autocomplete"
-  options={sortedSchools}
-  getOptionLabel={(option) => option.school_name}
-  value={selectedSchool}
-  onChange={(event, newValue) => {
-    if (newValue) {
-      setSelectedSchool(newValue);
-      setReview({ ...review, school: newValue.id });
+            <Autocomplete
+              id="school-autocomplete"
+              options={sortedSchools}
+              getOptionLabel={(option) => option.school_name}
+              value={selectedSchool}
+              onChange={(event, newValue) => {
+                if (newValue) {
+                  setSelectedSchool(newValue);
+                  setReview({ ...review, school: newValue.id });
 
-      const sports = [];
-      if (newValue.mbb) sports.push("Men's Basketball");
-      if (newValue.wbb) sports.push("Women's Basketball");
-      if (newValue.fb) sports.push("Football");
-      setAvailableSports(sports);
-    } else {
-      setSelectedSchool(null);
-      setReview({ ...review, school: "" });
-      setAvailableSports([]);
-    }
-  }}
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="School *"
-      fullWidth
-      sx={{ mb: 2 }}
-      error={!review.school && isSubmitted}
-      helperText={!review.school && isSubmitted ? "This field is required" : ""}
-    />
-  )}
-  isOptionEqualToValue={(option, value) => option.id === value?.id}
-/>
+                  const sports = [];
+                  if (newValue.mbb) sports.push("Men's Basketball");
+                  if (newValue.wbb) sports.push("Women's Basketball");
+                  if (newValue.fb) sports.push("Football");
+                  setAvailableSports(sports);
+                } else {
+                  setSelectedSchool(null);
+                  setReview({ ...review, school: "" });
+                  setAvailableSports([]);
+                }
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="School *"
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  error={!review.school && isSubmitted}
+                  helperText={!review.school && isSubmitted ? "This field is required" : ""}
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option.id === value?.id}
+            />
 
             <TextField
               id="sport-select"
@@ -349,10 +348,10 @@ const ReviewForm = () => {
               fullWidth
               label="Sport *"
               name="sport"
-              value={review.sport}
+              value={availableSports.includes(review.sport) ? review.sport : ""}
               onChange={handleChange}
               sx={{ mb: 2 }}
-              disabled={!availableSports.length} 
+              disabled={!availableSports.length}
               error={!review.sport && isSubmitted}
               helperText={!review.sport && isSubmitted ? "This field is required" : ""}
             >
@@ -436,11 +435,11 @@ const ReviewForm = () => {
               helperText={!review.review_message && isSubmitted ? "This field is required" : ""}
             />
 
-            <Button 
+            <Button
               id="submit-review-button"
-              type="button"  
-              variant="contained" 
-              color="primary" 
+              type="button"
+              variant="contained"
+              color="primary"
               fullWidth
               onClick={() => setOpenConfirm(true)}
               disabled={(!isFormValid() )|| userReviews.some(
@@ -472,7 +471,7 @@ const ReviewForm = () => {
         </Grid>
       </Grid>
     </Box>
-        </>
+    </>
   );
 };
 

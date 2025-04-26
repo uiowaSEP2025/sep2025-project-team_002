@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Schools
 from reviews.models import Reviews
 from reviews.serializers import ReviewsSerializer
+from django.db.models import Count, Q
 import logging
 
 logger = logging.getLogger(__name__)
@@ -40,10 +41,15 @@ class SchoolSerializer(serializers.ModelSerializer):
         return sports
 
     def get_reviews(self, obj):
-
-        reviews = Reviews.objects.filter(school=obj.id).order_by("-created_at")
-        serialized_reviews = ReviewsSerializer(reviews, many=True).data
-        return serialized_reviews
+        qs = (
+            Reviews.objects.filter(school=obj)
+            .annotate(
+                helpful_count=Count("votes", filter=Q(votes__vote=1)),
+                unhelpful_count=Count("votes", filter=Q(votes__vote=0)),
+            )
+            .order_by("-created_at")
+        )
+        return ReviewsSerializer(qs, many=True, context=self.context).data
 
     def get_review_count(self, obj):
         return Reviews.objects.filter(school=obj.id).count()

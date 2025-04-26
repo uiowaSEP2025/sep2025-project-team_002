@@ -19,7 +19,11 @@ import {
   Pagination,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import HomeIcon from "@mui/icons-material/Home";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
 
@@ -39,6 +43,9 @@ function SchoolPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
 
+  const [sortedReviews, setSortedReviews] = useState([]);
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false);
+
   // Filter reviews by selected sport
   const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
 
@@ -48,14 +55,71 @@ function SchoolPage() {
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
 
   // Slice the reviews array to get the reviews for the current page
-  const currentReviews = filteredReviews.slice(indexOfFirstReview, indexOfLastReview);
+  const currentReviews = sortedReviews.slice(indexOfFirstReview, indexOfLastReview);
 
   const handleChangePage = (event, value) => {
     setCurrentPage(value);
   };
 
+  const handleVote = async (reviewId, voteValue) => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      setLoginPromptOpen(true);
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/reviews/${reviewId}/vote/`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ vote: voteValue }),
+        }
+      );
+
+      const data = await response.json();
+      setSortedReviews((prevReviews) =>
+        prevReviews.map((r) =>
+          r.review_id === reviewId
+            ? {
+                ...r,
+                my_vote: data.vote,
+                helpful_count: data.helpful_count,
+                unhelpful_count: data.unhelpful_count,
+              }
+            : r
+        )
+      );
+    } catch (error) {
+      console.error('Vote failed', error);
+    }
+  };
+
   const AVATAR_BASE_URL = "../../public/assets/profile-pictures/";
 
+  useEffect(() => {
+    if (!school || !selectedSport) return;
+
+    const filtered = school.reviews.filter(review => review.sport === selectedSport);
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (a.helpful_count !== b.helpful_count) {
+        return b.helpful_count - a.helpful_count;
+      }
+      if (a.unhelpful_count !== b.unhelpful_count) {
+        return a.unhelpful_count - b.unhelpful_count;
+      }
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    setSortedReviews(sorted);
+    setCurrentPage(1);
+  }, [school, selectedSport]);
 
   useEffect(() => {
     const fetchSchool = async () => {
@@ -143,6 +207,30 @@ function SchoolPage() {
 
   return (
     <Container maxWidth="lg">
+      <Snackbar
+        open={loginPromptOpen}
+        autoHideDuration={3000}
+        onClose={() => setLoginPromptOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setLoginPromptOpen(false)}
+          severity="warning"
+          sx={{
+            backgroundColor: '#e3f2fd',
+            color: '#1565c0',
+            border: '1px solid #bbdefb',
+            borderRadius: '8px',
+            fontSize: '1rem',
+            fontWeight: 500,
+            px: 2,
+            py: 1.5,
+            boxShadow: 2,
+          }}
+        >
+          Please log in to vote!
+        </Alert>
+      </Snackbar>
       <Box sx={{ my: 4 }}>
         {/* Navigation */}
         <Button
@@ -277,98 +365,98 @@ function SchoolPage() {
 
                     >
                       <CardContent>
-<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-  <Box sx={{ flex: 1 }}>
-    <Typography id={`coach-name-${review.review_id}`} variant="h6">
-      Head Coach: {review.head_coach_name}
-    </Typography>
-    {review.coach_history && (
-      <Typography 
-        variant="body2" 
-        sx={{ 
-          mt: 1,
-          backgroundColor: 'grey.100',
-          p: 2,
-          borderRadius: 1,
-          whiteSpace: 'pre-line'
-        }}
-      >
-        {review.coach_history}
-      </Typography>
-    )}
-  </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                          <Box sx={{ flex: 1 }}>
+                            <Typography id={`coach-name-${review.review_id}`} variant="h6">
+                              Head Coach: {review.head_coach_name}
+                            </Typography>
+                            {review.coach_history && (
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  mt: 1,
+                                  backgroundColor: 'grey.100',
+                                  p: 2,
+                                  borderRadius: 1,
+                                  whiteSpace: 'pre-line'
+                                }}
+                              >
+                                {review.coach_history}
+                              </Typography>
+                            )}
+                          </Box>
 
-  <Stack direction="row" spacing={2} alignItems="center">
-    {review.coach_no_longer_at_university && (
-      <Typography 
-        component="span" 
-        sx={{ 
-          backgroundColor: 'warning.main', 
-          color: 'warning.contrastText',
-          px: 1,
-          py: 0.5,
-          borderRadius: 1,
-          fontSize: '0.875rem'
-        }}
-      >
-        No Longer at University
-      </Typography>
-    )}
+                          <Stack direction="row" spacing={2} alignItems="center">
+                            {review.coach_no_longer_at_university && (
+                              <Typography
+                                component="span"
+                                sx={{
+                                  backgroundColor: 'warning.main',
+                                  color: 'warning.contrastText',
+                                  px: 1,
+                                  py: 0.5,
+                                  borderRadius: 1,
+                                  fontSize: '0.875rem'
+                                }}
+                              >
+                                No Longer at University
+                              </Typography>
+                            )}
 
-    <Tooltip
-      title={
-        review.user?.is_school_verified
-          ? "This reviewer has verified their school email"
-          : ""
-      }
-    >
-      <Badge
-        overlap="circular"
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        badgeContent={
-          review.user?.is_school_verified ? (
-            <CheckCircleIcon
-              sx={{
-                color: "green",
-                fontSize: 14,
-                backgroundColor: "white",
-                borderRadius: "50%",
-                boxShadow: 1,
-              }}
-            />
-          ) : null
-        }
-      >
-        <Avatar
-          src={
-            review.user?.profile_picture
-              ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
-              : "/default-avatar.png"
-          }
-          alt="Reviewer avatar"
-          sx={{ width: 40, height: 40 }}
-        />
-      </Badge>
-    </Tooltip>
+                            <Tooltip
+                              title={
+                                review.user?.is_school_verified
+                                  ? "This reviewer has verified their school email"
+                                  : ""
+                              }
+                            >
+                              <Badge
+                                overlap="circular"
+                                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                                badgeContent={
+                                  review.user?.is_school_verified ? (
+                                    <CheckCircleIcon
+                                      sx={{
+                                        color: "green",
+                                        fontSize: 14,
+                                        backgroundColor: "white",
+                                        borderRadius: "50%",
+                                        boxShadow: 1,
+                                      }}
+                                    />
+                                  ) : null
+                                }
+                              >
+                                <Avatar
+                                  src={
+                                    review.user?.profile_picture
+                                      ? `${AVATAR_BASE_URL}${review.user.profile_picture}`
+                                      : "/default-avatar.png"
+                                  }
+                                  alt="Reviewer avatar"
+                                  sx={{ width: 40, height: 40 }}
+                                />
+                              </Badge>
+                            </Tooltip>
 
-    <Box sx={{ textAlign: "right" }}>
-      <Typography variant="caption" color="text.secondary" display="block">
-        {new Date(review.created_at).toLocaleDateString()}
-      </Typography>
-      <Typography
-        variant="caption"
-        display="block"
-        sx={{
-          color: review.user?.is_school_verified ? "green" : "text.secondary",
-        }}
-      >
-        {review.user?.is_school_verified
-          ? "Verified"
-          : "Unverified"}
-      </Typography>
-    </Box>
-  </Stack>
-</Box>
+                            <Box sx={{ textAlign: "right" }}>
+                              <Typography variant="caption" color="text.secondary" display="block">
+                                {new Date(review.created_at).toLocaleDateString()}
+                              </Typography>
+                              <Typography
+                                variant="caption"
+                                display="block"
+                                sx={{
+                                  color: review.user?.is_school_verified ? "green" : "text.secondary",
+                                }}
+                              >
+                                {review.user?.is_school_verified
+                                  ? "Verified"
+                                  : "Unverified"}
+                              </Typography>
+                            </Box>
+                          </Stack>
+                        </Box>
                         <Typography id={`review-text-${review.review_id}`} variant="body1" paragraph>
                           {review.review_message}
                         </Typography>
@@ -394,12 +482,35 @@ function SchoolPage() {
                                 readOnly
                                 max={10}
                               />
-                              <Typography id={`${field}-score-${review.review_id}`} variant="caption">
+                              <Typography
+                                id={`${field}-score-${review.review_id}`}
+                                data-testid={`${field}-score-${review.review_id}`}
+                                variant="caption"
+                              >
                                 {review[field]}/10
                               </Typography>
                             </Grid>
                           ))}
                         </Grid>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                          <Button
+                            startIcon={<ThumbUpIcon />}
+                            onClick={() => handleVote(review.review_id, 1)}
+                            variant={review.my_vote === 1 ? 'contained' : 'outlined'}
+                            size="small"
+                          >
+                            Helpful ({review.helpful_count})
+                          </Button>
+                          <Button
+                            startIcon={<ThumbDownIcon />}
+                            onClick={() => handleVote(review.review_id, 0)}
+                            variant={review.my_vote === 0 ? 'contained' : 'outlined'}
+                            size="small"
+                            sx={{ ml: 1 }}
+                          >
+                            Unhelpful ({review.unhelpful_count})
+                          </Button>
+                        </Box>
                       </CardContent>
 
                     </Card>

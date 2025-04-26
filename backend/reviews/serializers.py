@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Reviews
+from .models import Reviews, ReviewVote
 from users.models import Users
 import logging
 
@@ -12,17 +12,27 @@ class ReviewUserSerializer(serializers.ModelSerializer):
         fields = ["id", "is_school_verified", "profile_picture"]
 
 
+class ReviewVoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReviewVote
+        fields = ("review", "vote")
+
+
 class ReviewsSerializer(serializers.ModelSerializer):
     school_name = serializers.ReadOnlyField(source="school.school_name")
     user = ReviewUserSerializer(read_only=True)
+
+    helpful_count = serializers.IntegerField(read_only=True)
+    unhelpful_count = serializers.IntegerField(read_only=True)
+    my_vote = serializers.SerializerMethodField()
 
     def validate_sport(self, value):
         # Convert display names to database codes
         sport_mapping = {
             "Men's Basketball": "mbb",
-            "Men's Basketball": "mbb",  # Handle both apostrophe types
+            "Men’s Basketball": "mbb",  # Handle both apostrophe types
             "Women's Basketball": "wbb",
-            "Women's Basketball": "wbb",  # Handle both apostrophe types
+            "Women’s Basketball": "wbb",  # Handle both apostrophe types
             "Football": "fb",
         }
         logger.info(f"ReviewsSerializer.validate_sport: Converting '{value}' to code")
@@ -62,6 +72,13 @@ class ReviewsSerializer(serializers.ModelSerializer):
 
         return data
 
+    def get_my_vote(self, obj):
+        user = self.context["request"].user
+        if not user.is_authenticated:
+            return None
+        vote = obj.votes.filter(user=user).first()
+        return vote.vote if vote else None
+
     class Meta:
         model = Reviews
         fields = [
@@ -85,5 +102,8 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "coach_no_longer_at_university",
             "coach_history",
             "school_name",
+            "helpful_count",
+            "unhelpful_count",
+            "my_vote",
         ]
         read_only_fields = ["review_id", "user", "created_at", "updated_at"]
