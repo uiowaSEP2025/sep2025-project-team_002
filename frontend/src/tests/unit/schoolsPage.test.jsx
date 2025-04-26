@@ -189,7 +189,7 @@ describe('SchoolPage Component', () => {
 
     renderWithRouter();
 
-    await screen.findByText('Great program with excellent facilities');
+    await screen.findByText('Review message 0');
 
     global.localStorage.getItem = vi.fn(() => null); // Simulate no token
     const helpfulButtons = await screen.findAllByRole('button', { name: /Helpful/i });
