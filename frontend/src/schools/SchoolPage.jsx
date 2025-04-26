@@ -450,7 +450,11 @@ function SchoolPage() {
                                 readOnly
                                 max={10}
                               />
-                              <Typography id={`${field}-score-${review.review_id}`} variant="caption">
+                              <Typography
+                                id={`${field}-score-${review.review_id}`}
+                                data-testid={`${field}-score-${review.review_id}`}
+                                variant="caption"
+                              >
                                 {review[field]}/10
                               </Typography>
                             </Grid>

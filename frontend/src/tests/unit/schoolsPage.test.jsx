@@ -218,16 +218,13 @@ describe('SchoolPage Component', () => {
     await screen.findByText("University of Iowa");
 
     // Check each rating category
-    for (const category of ratingCategories) {
-      // Look for the score by specific ID
-      const scoreId = `${category.name}-score-123e4567-e89b-12d3-a456-426614174000`;
-      const ratingElement = screen.getByText((content, element) => {
-        return element.id === scoreId && content.includes(category.value.toString());
-      });
-      console.log('Found rating element:', ratingElement);
-      expect(ratingElement).toBeInTheDocument();
-    }
-  });
+      for (const category of ratingCategories) {
+        const scoreTestId = `${category.name}-score-123e4567-e89b-12d3-a456-426614174000`;
+
+        const ratingElement = await screen.findByTestId(scoreTestId);
+        expect(ratingElement).toHaveTextContent(`${category.value}/10`);
+      }
+    });
 
   it('displays review details correctly', async () => {
     renderWithRouter();
