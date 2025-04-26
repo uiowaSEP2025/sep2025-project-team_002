@@ -178,6 +178,41 @@ describe('SchoolPage Component', () => {
     };
   });
 
+  // --- vote related tests ---
+  it('shows login prompt when trying to vote without login', async () => {
+    global.localStorage.getItem = vi.fn(() => null); // Simulate no token
+    renderWithRouter();
+    const helpfulButtons = await screen.findAllByRole('button', { name: /Helpful/i });
+    userEvent.click(helpfulButtons[0]);
+    await screen.findByText(/Please log in to vote/i);
+  });
+
+  it('allows authenticated user to vote and updates count', async () => {
+    fetch.mockImplementation((url, options) => {
+      if (url.includes('/vote')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve({
+            vote: 1,
+            helpful_count: 1,
+            unhelpful_count: 0
+          })
+        });
+      }
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSchool)
+      });
+    });
+
+    renderWithRouter();
+    const helpfulButtons = await screen.findAllByRole('button', { name: /Helpful/i });
+    userEvent.click(helpfulButtons[0]);
+    await waitFor(() => {
+      expect(helpfulButtons[0]).toHaveTextContent(/Helpful \(1\)/);
+    });
+  });
+
   it('renders school information', async () => {
     renderWithRouter();
     expect(await screen.findByText('University of Iowa')).toBeInTheDocument();
