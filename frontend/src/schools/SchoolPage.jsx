@@ -22,6 +22,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import HomeIcon from "@mui/icons-material/Home";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
 
@@ -42,6 +44,7 @@ function SchoolPage() {
   const reviewsPerPage = 5;
 
   const [sortedReviews, setSortedReviews] = useState([]);
+  const [loginPromptOpen, setLoginPromptOpen] = useState(false);
 
   // Filter reviews by selected sport
   const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
@@ -59,8 +62,14 @@ function SchoolPage() {
   };
 
   const handleVote = async (reviewId, voteValue) => {
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      setLoginPromptOpen(true);
+      return;
+    }
+
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(
         `${API_BASE_URL}/api/reviews/${reviewId}/vote/`,
         {
@@ -72,7 +81,6 @@ function SchoolPage() {
           body: JSON.stringify({ vote: voteValue }),
         }
       );
-      if (!response.ok) throw new Error('Vote failed');
 
       const data = await response.json();
       setSortedReviews((prevReviews) =>
@@ -87,8 +95,8 @@ function SchoolPage() {
             : r
         )
       );
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error('Vote failed', error);
     }
   };
 
@@ -199,6 +207,30 @@ function SchoolPage() {
 
   return (
     <Container maxWidth="lg">
+      <Snackbar
+        open={loginPromptOpen}
+        autoHideDuration={3000}
+        onClose={() => setLoginPromptOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={() => setLoginPromptOpen(false)}
+          severity="warning"
+          sx={{
+            backgroundColor: '#e3f2fd',
+            color: '#1565c0',
+            border: '1px solid #bbdefb',
+            borderRadius: '8px',
+            fontSize: '1rem',
+            fontWeight: 500,
+            px: 2,
+            py: 1.5,
+            boxShadow: 2,
+          }}
+        >
+          Please log in to vote!
+        </Alert>
+      </Snackbar>
       <Box sx={{ my: 4 }}>
         {/* Navigation */}
         <Button
