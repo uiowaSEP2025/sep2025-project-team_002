@@ -69,13 +69,19 @@ class TestReviewVotesAndFetching:
         client, user = auth_client
 
         # First vote (helpful)
-        response = client.post(f"/api/reviews/{create_review.review_id}/vote/", {"vote": 1})
+        response = client.post(
+            f"/api/reviews/{create_review.review_id}/vote/", {"vote": 1}
+        )
         assert response.status_code == status.HTTP_200_OK
         assert response.data["vote"] == 1
-        assert ReviewVote.objects.filter(review=create_review, user=user, vote=1).exists()
+        assert ReviewVote.objects.filter(
+            review=create_review, user=user, vote=1
+        ).exists()
 
         # Vote again with the same value (should cancel vote)
-        response = client.post(f"/api/reviews/{create_review.review_id}/vote/", {"vote": 1})
+        response = client.post(
+            f"/api/reviews/{create_review.review_id}/vote/", {"vote": 1}
+        )
         assert response.status_code == status.HTTP_200_OK
         assert response.data["vote"] is None
         assert ReviewVote.objects.filter(review=create_review, user=user).count() == 0
@@ -83,19 +89,28 @@ class TestReviewVotesAndFetching:
     def test_invalid_vote_value(self, auth_client, create_review):
         client, _ = auth_client
 
-        response = client.post(f"/api/reviews/{create_review.review_id}/vote/", {"vote": 2})
+        response = client.post(
+            f"/api/reviews/{create_review.review_id}/vote/", {"vote": 2}
+        )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "detail" in response.data
 
     @patch("reviews.views.CoachSearchService")
-    def test_get_school_reviews_success(self, mock_coach_service, auth_client, create_school, create_review):
+    def test_get_school_reviews_success(
+        self, mock_coach_service, auth_client, create_school, create_review
+    ):
         client, _ = auth_client
 
         mock_instance = mock_coach_service.return_value
-        mock_instance.search_coach_history.return_value = ("2010-2020 @Test University", None)
+        mock_instance.search_coach_history.return_value = (
+            "2010-2020 @Test University",
+            None,
+        )
         mock_instance._normalize_name.return_value = "test university"
 
-        response = client.get(f"/api/reviews/school/{create_school.id}/?sport=Men's Basketball")
+        response = client.get(
+            f"/api/reviews/school/{create_school.id}/?sport=Men's Basketball"
+        )
 
         assert response.status_code == status.HTTP_200_OK
         body = response.json()
