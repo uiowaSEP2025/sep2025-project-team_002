@@ -7,7 +7,7 @@ class Schools(models.Model):
     mbb = models.BooleanField()
     wbb = models.BooleanField()
     fb = models.BooleanField()
-    vb = models.BooleanField(default=False)
+    vb = models.BooleanField()
     conference = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     created_at = models.DateTimeField(default=timezone.now)

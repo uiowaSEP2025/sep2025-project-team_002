@@ -134,6 +134,7 @@ const ReviewForm = () => {
           if (school.mbb) sports.push("Men's Basketball");
           if (school.wbb) sports.push("Women's Basketball");
           if (school.fb) sports.push("Football");
+          if (school.vb) sports.push("Volleyball");
           setAvailableSports(sports);
         }
       }
@@ -162,6 +163,7 @@ const ReviewForm = () => {
       if (selectedSchool.mbb) sports.push("Men's Basketball");
       if (selectedSchool.wbb) sports.push("Women's Basketball");
       if (selectedSchool.fb) sports.push("Football");
+      if (selectedSchool.vb) sports.push("Volleyball");
       setAvailableSports(sports);
     }
   };
@@ -322,6 +324,7 @@ const ReviewForm = () => {
                   if (newValue.mbb) sports.push("Men's Basketball");
                   if (newValue.wbb) sports.push("Women's Basketball");
                   if (newValue.fb) sports.push("Football");
+                  if (newValue.vb) sports.push("Volleyball");
                   setAvailableSports(sports);
                 } else {
                   setSelectedSchool(null);

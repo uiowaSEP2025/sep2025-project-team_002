@@ -151,6 +151,7 @@ function SchoolPage() {
         if (data.mbb) setSelectedSport("Men's Basketball");
         else if (data.wbb) setSelectedSport("Women's Basketball");
         else if (data.fb) setSelectedSport("Football");
+        else if (data.vb) setSelectedSport("Volleyball");
       } catch (error) {
         console.error('Error fetching school:', error);
       }
@@ -200,6 +201,7 @@ function SchoolPage() {
   if (school.mbb) availableSports.push("Men's Basketball");
   if (school.wbb) availableSports.push("Women's Basketball");
   if (school.fb) availableSports.push("Football");
+  if (school.vb) availableSports.push("Volleyball");
 
   const handleWriteReview = (sport) => {
     navigate(`/reviews/new?school=${id}&sport=${encodeURIComponent(sport)}`);
