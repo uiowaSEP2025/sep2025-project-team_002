@@ -10,6 +10,12 @@ import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
 import InfoIcon from "@mui/icons-material/Info";
 
+const sportDisplayToCode = {
+  "Men's Basketball": "mbb",
+  "Women's Basketball": "wbb",
+  "Football": "fb",
+  "Volleyball": "vb",
+};
 
 const fetchUserReviews = async () => {
   try {
@@ -143,9 +149,16 @@ const ReviewForm = () => {
 
   }, [schoolId]);
 
-  const handleChange = (e) => {
-    setReview({ ...review, [e.target.name]: e.target.value });
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  if (name === "sport") {
+    const sportCode = sportDisplayToCode[value] || value;
+    setReview({ ...review, sport: sportCode });
+  } else {
+    setReview({ ...review, [name]: value });
+  }
+};
 
   const handleRatingChange = (name, newValue) => {
     setReview({ ...review, [name]: newValue });

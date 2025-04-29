@@ -1067,6 +1067,7 @@ function SecureHome() {
               <MenuItem value="Men's Basketball">Men's Basketball</MenuItem>
               <MenuItem value="Women's Basketball">Women's Basketball</MenuItem>
               <MenuItem value="Football">Football</MenuItem>
+              <MenuItem value="Volleyball">Volleyball</MenuItem>
               {/*<MenuItem value="baseball">Baseball</MenuItem>*/}
               {/*<MenuItem value="soccer">Soccer</MenuItem>*/}
               {/*<MenuItem value="volleyball">Volleyball</MenuItem>*/}
