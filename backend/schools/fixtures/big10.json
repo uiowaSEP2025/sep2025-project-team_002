@@ -7,6 +7,7 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
         "conference": "Big Ten",
         "location": "Champaign, Illinois"
       }
@@ -19,6 +20,7 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
         "conference": "Big Ten",
         "location": "Bloomington, Indiana"
       }
@@ -31,6 +33,7 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
         "conference": "Big Ten",
         "location": "Iowa City, Iowa"
       }
@@ -43,6 +46,7 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
         "conference": "Big Ten",
         "location": "College Park, Maryland"
       }

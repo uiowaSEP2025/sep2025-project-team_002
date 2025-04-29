@@ -22,6 +22,7 @@ class SchoolSerializer(serializers.ModelSerializer):
             "mbb",
             "wbb",
             "fb",
+            "vb",
             "conference",
             "location",
             "available_sports",
@@ -38,6 +39,8 @@ class SchoolSerializer(serializers.ModelSerializer):
             sports.append("Women's Basketball")
         if obj.fb:
             sports.append("Football")
+        if obj.vb:
+            sports.append("Volleyball")
         return sports
 
     def get_reviews(self, obj):
