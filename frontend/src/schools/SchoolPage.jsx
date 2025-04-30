@@ -47,7 +47,29 @@ function SchoolPage() {
   const [loginPromptOpen, setLoginPromptOpen] = useState(false);
 
   // Filter reviews by selected sport
-  const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
+const sportDisplayToCode = {
+  "Men's Basketball": "mbb",
+  "Women's Basketball": "wbb",
+  "Football": "fb",
+  "Volleyball": "vb"
+};
+
+const filteredReviews = school?.reviews.filter(review => {
+  // Normalize both values for comparison
+  const reviewSport = review.sport.toLowerCase();
+  const selectedCode = sportDisplayToCode[selectedSport]?.toLowerCase();
+
+  return (
+    reviewSport === selectedCode || // matches code (vb)
+    reviewSport === selectedSport.toLowerCase() || // matches full name
+    sportDisplayToCode[review.sport] === selectedSport // matches if review has code
+  );
+}) || [];
+
+// In your filtering logic, add:
+console.log("All reviews:", school?.reviews);
+console.log("Selected sport code:", sportDisplayToCode[selectedSport]);
+console.log("Filtered reviews:", filteredReviews);
 
   // Calculate the index of the last review on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
