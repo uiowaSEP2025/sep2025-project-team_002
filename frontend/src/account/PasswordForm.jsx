@@ -8,6 +8,9 @@ import {
   IconButton,
   Tooltip,
   Box,
+  Alert,
+  useTheme,
+  alpha,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -15,6 +18,7 @@ import InfoIcon from "@mui/icons-material/Info";
 import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
 
 function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
+  const theme = useTheme();
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -56,10 +60,15 @@ function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
           type={showCurrentPass ? "text" : "password"}
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
+          sx={{ mb: 2 }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={() => setShowCurrentPass(!showCurrentPass)}>
+                <IconButton
+                  onClick={() => setShowCurrentPass(!showCurrentPass)}
+                  edge="end"
+                  aria-label="toggle password visibility"
+                >
                   {showCurrentPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
                 </IconButton>
               </InputAdornment>
@@ -75,22 +84,34 @@ function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
         type={showNewPass ? "text" : "password"}
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
+        sx={{ mb: 1 }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => setShowNewPass(!showNewPass)}>
+              <IconButton
+                onClick={() => setShowNewPass(!showNewPass)}
+                edge="end"
+                aria-label="toggle password visibility"
+              >
                 {showNewPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
               </IconButton>
-              <Tooltip title="Min 6 chars, must have uppercase, lowercase, and number.">
-                <IconButton>
-                  <InfoIcon />
+              <Tooltip
+                title="Min 6 chars, must have uppercase, lowercase, and number."
+                arrow
+                placement="top"
+              >
+                <IconButton size="small">
+                  <InfoIcon fontSize="small" color="info" />
                 </IconButton>
               </Tooltip>
             </InputAdornment>
           ),
         }}
       />
-      <PasswordStrengthBar password={newPassword} />
+
+      <Box sx={{ mb: 2 }}>
+        <PasswordStrengthBar password={newPassword} />
+      </Box>
 
       <TextField
         fullWidth
@@ -100,14 +121,15 @@ function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
         value={confirmNewPassword}
         onChange={(e) => setConfirmNewPassword(e.target.value)}
         error={confirmNewPassword.length > 0 && newPassword !== confirmNewPassword}
+        sx={{ mb: 2 }}
         helperText={
           confirmNewPassword.length > 0 &&
           (newPassword === confirmNewPassword ? (
-            <Typography component="span" sx={{ color: "green" }}>
+            <Typography component="span" sx={{ color: theme.palette.success.main, fontWeight: 500 }}>
               Passwords match
             </Typography>
           ) : (
-            <Typography component="span" sx={{ color: "red" }}>
+            <Typography component="span" sx={{ color: theme.palette.error.main, fontWeight: 500 }}>
               Passwords do not match
             </Typography>
           ))
@@ -115,7 +137,11 @@ function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={() => setShowConfirmNewPass(!showConfirmNewPass)}>
+              <IconButton
+                onClick={() => setShowConfirmNewPass(!showConfirmNewPass)}
+                edge="end"
+                aria-label="toggle password visibility"
+              >
                 {showConfirmNewPass ? <VisibilityOffIcon /> : <VisibilityIcon />}
               </IconButton>
             </InputAdornment>
@@ -124,9 +150,13 @@ function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
       />
 
       {passwordError && (
-        <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+        <Alert
+          severity="error"
+          sx={{ mb: 2, borderRadius: 2 }}
+          variant="outlined"
+        >
           {passwordError}
-        </Typography>
+        </Alert>
       )}
 
       <Box sx={{ display: "flex", justifyContent: "center", width: "100%", mt: 3 }}>
@@ -134,9 +164,17 @@ function PasswordForm({ onSubmit, includeCurrentPassword = false }) {
           type="submit"
           variant="contained"
           sx={{
-            borderRadius: "40px",
-            width: "140px",
-            margin: "0 auto",
+            py: 1.5,
+            px: 4,
+            fontWeight: 600,
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+            },
+            '&:active': {
+              transform: 'translateY(1px)'
+            }
           }}
         >
           Submit

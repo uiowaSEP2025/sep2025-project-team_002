@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Box, Container, Typography, TextField, Button, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Snackbar, Alert, Grid, Divider, useTheme } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import API_BASE_URL from "../utils/config.js";
 
 function Footer() {
+  const theme = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [issueDescription, setIssueDescription] = useState('');
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
 
-  // State for custom notification
-  const [showNotification, setShowNotification] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState('');
-  const [notificationIsSuccess, setNotificationIsSuccess] = useState(false);
+  // State for notification
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   // Function to open the modal
   const openModal = () => setIsModalOpen(true);
@@ -25,10 +33,8 @@ function Footer() {
   };
 
   // Close the notification
-  const closeNotification = () => {
-    setShowNotification(false);
-    setNotificationMessage('');
-    setNotificationIsSuccess(false);
+  const handleSnackbarClose = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
   };
 
   // Check if required fields are filled
@@ -54,242 +60,208 @@ function Footer() {
       });
       if (response.ok) {
         // Show success notification
-        setNotificationMessage('Your issue has been submitted. Thank you for your feedback!');
-        setNotificationIsSuccess(true);
-        setShowNotification(true);
+        setSnackbar({
+          open: true,
+          message: 'Your issue has been submitted. Thank you for your feedback!',
+          severity: 'success'
+        });
 
         // Close the modal on success
         closeModal();
       } else {
         // Show error notification
-        setNotificationMessage('Submission failed. Please try again later.');
-        setNotificationIsSuccess(false);
-        setShowNotification(true);
+        setSnackbar({
+          open: true,
+          message: 'Submission failed. Please try again later.',
+          severity: 'error'
+        });
       }
     } catch (error) {
       console.error(error);
       // Show error notification
-      setNotificationMessage('Submission error. Please check your network or server.');
-      setNotificationIsSuccess(false);
-      setShowNotification(true);
+      setSnackbar({
+        open: true,
+        message: 'Submission error. Please check your network or server.',
+        severity: 'error'
+      });
     }
-  };
-
-  // Pill-shaped button style
-  const pillButtonStyle = {
-    border: 'none',
-    borderRadius: '25px',
-    padding: '12px 24px',
-    fontSize: '16px',
-    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
-    marginTop: '10px',
-    // Change background color based on form validity
-    backgroundColor: isFormValid ? '#007bff' : '#ccc',
-    // Change text color based on form validity
-    color: isFormValid ? '#fff' : '#666',
-    // Change cursor based on form validity
-    cursor: isFormValid ? 'pointer' : 'not-allowed'
   };
 
   return (
     <>
-      {/* Fixed footer bar */}
-      <footer
-        style={{
-          position: 'fixed',
+      {/* Modern footer */}
+      <Box
+        component="footer"
+        sx={{
+          position: 'relative',
           bottom: 0,
           left: 0,
           width: '100%',
-          backgroundColor: '#333',
+          bgcolor: theme.palette.background.dark,
           color: '#fff',
-          display: 'flex',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          padding: '5px',
-          zIndex: 9999,
-          textAlign: 'center',
-          fontSize: '14px'
+          py: 1.5,
+          zIndex: 10,
+          mt: 'auto',
+          boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.1)',
+          backdropFilter: 'blur(10px)',
         }}
       >
-        <span>© 2025 Athletic Insider</span>
-        <span style={{ margin: '0 10px' }}>|</span>
-        <span
-          onClick={openModal}
-          style={{
-            textDecoration: 'underline',
-            cursor: 'pointer'
-          }}
-        >
-          Report Issue
-        </span>
-            <span style={{ margin: '0 10px' }}>|</span>
-        <Link
-          to="/about"
-          style={{ color: '#fff', textDecoration: 'underline' }}
-        >
-          About Us
-        </Link>
-      </footer>
+        <Container maxWidth="lg">
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item xs={12} sm={4} sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+              <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
+                Made with <FavoriteIcon sx={{ mx: 0.5, fontSize: '0.9rem', color: theme.palette.secondary.main }} /> by Team 002
+              </Typography>
+            </Grid>
 
-      {/* Modal overlay */}
-      {isModalOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 10000,
-          }}
-        >
-          <div
-            style={{
-              position: 'relative',
-              background: '#fff',
-              padding: '20px',
-              borderRadius: '8px',
-              width: '400px',
-              maxWidth: '90%',
-              textAlign: 'center'
-            }}
-          >
-            {/* Square gray-black close button */}
-            <button
-              onClick={closeModal}
-              style={{
-                position: 'absolute',
-                top: '10px',
-                right: '10px',
-                backgroundColor: '#555',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '0',
-                width: '20px',
-                height: '20px',
-                fontSize: '14px',
-                lineHeight: '20px',
-                textAlign: 'center',
-                cursor: 'pointer',
-                padding: 0
-              }}
-            >
-              &times;
-            </button>
+            <Grid item xs={12} sm={4} sx={{ textAlign: 'center', my: { xs: 1, sm: 0 } }}>
+              <Typography variant="body2">
+                © 2025 Athletic Insider
+              </Typography>
+            </Grid>
 
-            <h2 style={{ marginBottom: '20px' }}>Report an Issue</h2>
-            <form onSubmit={handleSubmit} style={{ textAlign: 'left' }}>
-              <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>
-                Email *
-              </label>
-              <input
-                  id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: '100%',
-                  marginBottom: '10px',
-                  padding: '8px',
-                  boxSizing: 'border-box'
-                }}
-                required
-              />
-
-              <label htmlFor="name" style={{ display: 'block', marginBottom: '5px' }}>
-                Name (optional)
-              </label>
-              <input
-                  id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{
-                  width: '100%',
-                  marginBottom: '10px',
-                  padding: '8px',
-                  boxSizing: 'border-box'
-                }}
-              />
-
-              <label htmlFor="description" style={{ display: 'block', marginBottom: '5px' }}>
-                Issue Description *
-              </label>
-              <textarea
-                  id="description"
-                style={{
-                  width: '100%',
-                  height: '80px',
-                  marginBottom: '10px',
-                  padding: '8px',
-                  boxSizing: 'border-box',
-                  resize: 'vertical',
-                  maxHeight: '150px'
-                }}
-                value={issueDescription}
-                onChange={(e) => setIssueDescription(e.target.value)}
-                placeholder="Please describe the issue in detail..."
-                required
-              />
-
-              <div style={{ textAlign: 'center' }}>
-                <button
-                  type="submit"
-                  style={pillButtonStyle}
-                  disabled={!isFormValid}
+            <Grid item xs={12} sm={4} sx={{ textAlign: { xs: 'center', sm: 'right' } }}>
+              <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'flex-end' }, gap: 2 }}>
+                <Typography
+                  variant="body2"
+                  component="span"
+                  onClick={openModal}
+                  sx={{
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    transition: 'transform 0.2s ease, color 0.2s ease',
+                    '&:hover': {
+                      color: theme.palette.primary.light,
+                      transform: 'translateY(-2px)'
+                    }
+                  }}
                 >
-                  Submit
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+                  <ReportProblemOutlinedIcon sx={{ mr: 0.5, fontSize: '0.9rem' }} />
+                  Report Issue
+                </Typography>
 
-      {/* Custom notification overlay */}
-      {showNotification && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0, left: 0, right: 0, bottom: 0,
-            backgroundColor: 'rgba(0,0,0,0.4)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 20000  // higher than the modal
-          }}
+                <Typography
+                  variant="body2"
+                  component={Link}
+                  to="/about"
+                  sx={{
+                    color: 'inherit',
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    transition: 'transform 0.2s ease, color 0.2s ease',
+                    '&:hover': {
+                      color: theme.palette.primary.light,
+                      transform: 'translateY(-2px)'
+                    }
+                  }}
+                >
+                  <InfoOutlinedIcon sx={{ mr: 0.5, fontSize: '0.9rem' }} />
+                  About Us
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Report Issue Dialog */}
+      <Dialog
+        open={isModalOpen}
+        onClose={closeModal}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+            maxWidth: 500
+          }
+        }}
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <Typography variant="h5" component="div" sx={{ fontWeight: 600 }}>
+              Report an Issue
+            </Typography>
+            <IconButton onClick={closeModal} size="small">
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+
+        <DialogContent sx={{ pt: 2 }}>
+          <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+            <TextField
+              margin="dense"
+              id="email"
+              label="Email"
+              type="email"
+              fullWidth
+              variant="outlined"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              sx={{ mb: 2 }}
+            />
+
+            <TextField
+              margin="dense"
+              id="name"
+              label="Name (optional)"
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+
+            <TextField
+              margin="dense"
+              id="description"
+              label="Issue Description"
+              multiline
+              rows={4}
+              fullWidth
+              variant="outlined"
+              value={issueDescription}
+              onChange={(e) => setIssueDescription(e.target.value)}
+              placeholder="Please describe the issue in detail..."
+              required
+            />
+
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3 }}>
+              <Button onClick={closeModal} sx={{ mr: 2 }}>
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!isFormValid}
+              >
+                Submit
+              </Button>
+            </Box>
+          </Box>
+        </DialogContent>
+      </Dialog>
+
+      {/* Notification Snackbar */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{ width: '100%' }}
         >
-          <div
-            style={{
-              backgroundColor: '#fff',
-              padding: '20px',
-              borderRadius: '8px',
-              minWidth: '300px',
-              textAlign: 'center'
-            }}
-          >
-            <p style={{ color: notificationIsSuccess ? '#306731' : '#a13432' }}>
-              {notificationMessage}
-            </p>
-            <button
-              onClick={closeNotification}
-              style={{
-                marginTop: '10px',
-                padding: '8px 16px',
-                cursor: 'pointer',
-                border: 'none',
-                borderRadius: '4px',
-                backgroundColor: notificationIsSuccess ? 'rgba(94,161,94,0.9)' : '#ea6471',
-                color: '#fff'
-              }}
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

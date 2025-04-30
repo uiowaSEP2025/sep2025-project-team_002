@@ -35,7 +35,7 @@ describe('App Component', () => {
         <Home />
       </BrowserRouter>
     );
-    const schoolsElement = screen.getByText('Explore the Schools and their Sports!');
+    const schoolsElement = screen.getByText('Athletic Insider');
     expect(schoolsElement).toBeInTheDocument();
   });
 
