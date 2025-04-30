@@ -51,7 +51,8 @@ const sportDisplayToCode = {
   "Men's Basketball": "mbb",
   "Women's Basketball": "wbb",
   "Football": "fb",
-  "Volleyball": "vb"
+  "Volleyball": "vb",
+  "Baseball": "ba"
 };
 
 const filteredReviews = school?.reviews.filter(review => {
@@ -174,6 +175,7 @@ console.log("Filtered reviews:", filteredReviews);
         else if (data.wbb) setSelectedSport("Women's Basketball");
         else if (data.fb) setSelectedSport("Football");
         else if (data.vb) setSelectedSport("Volleyball");
+        else if (data.ba) setSelectedSport("Baseball");
       } catch (error) {
         console.error('Error fetching school:', error);
       }
@@ -224,6 +226,7 @@ console.log("Filtered reviews:", filteredReviews);
   if (school.wbb) availableSports.push("Women's Basketball");
   if (school.fb) availableSports.push("Football");
   if (school.vb) availableSports.push("Volleyball");
+  if (school.ba) availableSports.push("Baseball");
 
   const handleWriteReview = (sport) => {
     navigate(`/reviews/new?school=${id}&sport=${encodeURIComponent(sport)}`);

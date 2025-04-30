@@ -1068,9 +1068,8 @@ function SecureHome() {
               <MenuItem value="Women's Basketball">Women's Basketball</MenuItem>
               <MenuItem value="Football">Football</MenuItem>
               <MenuItem value="Volleyball">Volleyball</MenuItem>
-              {/*<MenuItem value="baseball">Baseball</MenuItem>*/}
+              <MenuItem value="Baseball">Baseball</MenuItem>
               {/*<MenuItem value="soccer">Soccer</MenuItem>*/}
-              {/*<MenuItem value="volleyball">Volleyball</MenuItem>*/}
               {/*<MenuItem value="tennis">Tennis</MenuItem>*/}
               {/*<MenuItem value="swimming">Swimming</MenuItem>*/}
               {/*<MenuItem value="track">Track & Field</MenuItem>*/}

@@ -15,6 +15,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "Women's Basketball": "wbb",  # Handle both apostrophe types
             "Football": "fb",
             "Volleyball": "vb",
+            "Baseball": "ba",
         }
         logger.info(
             f"PreferencesSerializer.validate_sport: Converting '{value}' to code"
@@ -31,6 +32,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "wbb": "Women's Basketball",
             "fb": "Football",
             "vb" :"Volleyball",
+            "ba": "Baseball",
         }
         original_sport = data["sport"]
         data["sport"] = display_mapping.get(data["sport"], data["sport"])

@@ -8,6 +8,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Tucson, Arizona"
       }
@@ -21,6 +22,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Tempe, Arizona"
       }
@@ -34,6 +36,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Waco, Texas"
       }
@@ -47,6 +50,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Provo, Utah"
       }
@@ -60,6 +64,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Orlando, Florida"
       }
@@ -73,6 +78,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Cincinnati, Ohio"
       }
@@ -86,6 +92,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": false,
         "conference": "Big 12",
         "location": "Boulder, Colorado"
       }
@@ -99,6 +106,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Houston, Texas"
       }
@@ -112,6 +120,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": false,
         "conference": "Big 12",
         "location": "Ames, Iowa"
       }
@@ -125,6 +134,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Lawrence, Kansas"
       }
@@ -138,6 +148,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Manhattan, Kansas"
       }
@@ -151,6 +162,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Stillwater, Oklahoma"
       }
@@ -164,6 +176,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Fort Worth, Texas"
       }
@@ -177,6 +190,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Lubbock, Texas"
       }
@@ -190,6 +204,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Salt Lake City, Utah"
       }
@@ -203,6 +218,7 @@
         "wbb": true,
         "fb": true,
         "vb": true,
+        "ba": true,
         "conference": "Big 12",
         "location": "Morgantown, West Virginia"
       }
