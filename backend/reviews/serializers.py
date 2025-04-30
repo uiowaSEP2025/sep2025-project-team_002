@@ -48,6 +48,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "mbb": "Men's Basketball",
             "wbb": "Women's Basketball",
             "fb": "Football",
+            "vb": "Volleyball",
         }
         original_sport = data["sport"]
         data["sport"] = display_mapping.get(data["sport"], data["sport"])
