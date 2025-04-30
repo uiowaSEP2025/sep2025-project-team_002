@@ -87,9 +87,8 @@ function Login() {
         setMessageType("success");
         await fetchUser();
         // Short delay for user to see success message
-        setTimeout(() => {
-          navigate("/secure-home"); // Redirect to secure home page
-        }, 1000);
+
+          navigate("/secure-home");
       } else {
         const errorData = await response.json();
         setMessage("Login failed: " + (errorData.detail || errorData.error || "Invalid credentials"));

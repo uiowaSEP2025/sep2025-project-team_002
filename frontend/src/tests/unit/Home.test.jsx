@@ -58,8 +58,9 @@ describe('App Component', () => {
     );
 
     // Wait for the sports to appear
-    const sportsText = await screen.findByText(/Men's Basketball • Women's Basketball • Football/i);
-    expect(sportsText).toBeInTheDocument();
+    expect(await screen.findByText("Men's Basketball")).toBeInTheDocument();
+    expect(screen.getByText("Women's Basketball")).toBeInTheDocument();
+    expect(screen.getByText("Football")).toBeInTheDocument();
   });
 });
 
@@ -165,7 +166,7 @@ describe('Home Pagination Feature', () => {
       location: "Test Location",
       available_sports: ["Sport A", "Sport B"],
       review_count: Math.floor(Math.random() * 600),
-      average_rating: (Math.random() * 5 + 5).toFixed(1),
+      average_rating: Number((Math.random() * 5 + 5).toFixed(1)),
     }));
 
     // Mock global.fetch to return the fake schools.
@@ -187,7 +188,7 @@ describe('Home Pagination Feature', () => {
 
       // Wait for initial load
       await waitFor(() => {
-        expect(screen.getAllByRole('heading', { level: 6 }).length).toBe(10);
+        expect(screen.getAllByRole('heading', { level: 6 }).length).toBe(12);
       });
 
       // Get all school names from page 1
@@ -201,7 +202,7 @@ describe('Home Pagination Feature', () => {
 
       // Wait for page 2 to load
       await waitFor(() => {
-        expect(screen.getAllByRole('heading', { level: 6 }).length).toBe(5);
+        expect(screen.getAllByRole('heading', { level: 6 }).length).toBe(3);
       });
 
       // Get all school names from page 2
@@ -214,7 +215,7 @@ describe('Home Pagination Feature', () => {
       });
 
       // Verify counts are correct
-      expect(firstPageSchools.length).toBe(10);
-      expect(secondPageSchools.length).toBe(5);
+      expect(firstPageSchools.length).toBe(12);
+      expect(secondPageSchools.length).toBe(3);
     });
 });

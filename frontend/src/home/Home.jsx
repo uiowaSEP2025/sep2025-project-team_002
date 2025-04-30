@@ -343,6 +343,7 @@ function Home() {
                 <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
                 <Tooltip title="Filter schools">
                   <IconButton
+                    aria-label="Filters"
                     color="primary"
                     onClick={openFilterDialog}
                     sx={{ mx: 1 }}
@@ -499,7 +500,7 @@ function Home() {
                           >
                             <StarIcon sx={{ color: theme.palette.warning.main, fontSize: '0.9rem', mr: 0.5 }} />
                             <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
-                              {school.average_rating && typeof school.average_rating === 'number' ? school.average_rating.toFixed(1) : 'N/A'}
+                              {school.average_rating ? school.average_rating.toFixed(1) : 'N/A'}
                             </Typography>
                           </Box>
                         </Box>

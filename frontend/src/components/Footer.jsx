@@ -108,11 +108,6 @@ function Footer() {
       >
         <Container maxWidth="lg">
           <Grid container alignItems="center" justifyContent="space-between">
-            <Grid item xs={12} sm={4} sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-              <Typography variant="body2" sx={{ display: 'flex', alignItems: 'center', justifyContent: { xs: 'center', sm: 'flex-start' } }}>
-                Made with <FavoriteIcon sx={{ mx: 0.5, fontSize: '0.9rem', color: theme.palette.secondary.main }} /> by Team 002
-              </Typography>
-            </Grid>
 
             <Grid item xs={12} sm={4} sx={{ textAlign: 'center', my: { xs: 1, sm: 0 } }}>
               <Typography variant="body2">

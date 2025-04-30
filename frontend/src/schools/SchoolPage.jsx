@@ -90,7 +90,7 @@ function SchoolPage() {
       // Auto-hide the login prompt after 5 seconds
       setTimeout(() => {
         setLoginPromptOpen(false);
-      }, 3000); // Increased timeout for tests to find the element
+      }, 5000);
       return;
     }
 
@@ -249,8 +249,8 @@ function SchoolPage() {
       <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <Box sx={{ textAlign: 'center' }}>
           <CircularProgress size={60} thickness={4} sx={{ mb: 3 }} />
-          <Typography variant="h6" color="text.secondary" data-testid="loading-indicator">
-            Loading...
+          <Typography variant="h6" color="text.secondary">
+            Loading school information...
           </Typography>
         </Box>
       </Container>
@@ -321,7 +321,6 @@ function SchoolPage() {
         }}
       >
         <Alert
-          data-testid="login-prompt-alert"
           onClose={() => setLoginPromptOpen(false)}
           severity="warning"
           variant="filled"
@@ -335,7 +334,7 @@ function SchoolPage() {
             boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
           }}
         >
-          Please log in to vote
+          Please log in to vote!
         </Alert>
       </Snackbar>
       {/* Hero Section */}
@@ -814,13 +813,12 @@ function SchoolPage() {
                         </Grid>
                         <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, gap: 1 }}>
                           <Button
-                            data-testid={`helpful-button-${review.review_id}`}
                             startIcon={<ThumbUpIcon />}
                             onClick={() => handleVote(review.review_id, 1)}
                             variant={review.my_vote === 1 ? 'contained' : 'outlined'}
                             size="small"
                             color="success"
-                            aria-label="Helpful"
+                            aria-label={`Helpful (${review.helpful_count})`}
                             sx={{
                               borderRadius: 6,
                               px: 2,
@@ -831,16 +829,15 @@ function SchoolPage() {
                               },
                             }}
                           >
-                            Helpful {review.upvotes > 0 ? `(${review.upvotes})` : ''}
+                            Helpful ({review.helpful_count})
                           </Button>
                           <Button
-                            data-testid={`unhelpful-button-${review.review_id}`}
                             startIcon={<ThumbDownIcon />}
                             onClick={() => handleVote(review.review_id, 0)}
                             variant={review.my_vote === 0 ? 'contained' : 'outlined'}
                             size="small"
                             color="error"
-                            aria-label="Unhelpful"
+                            aria-label={`Unhelpful (${review.unhelpful_count})`}
                             sx={{
                               borderRadius: 6,
                               px: 2,
@@ -851,7 +848,7 @@ function SchoolPage() {
                               },
                             }}
                           >
-                            Unhelpful {review.downvotes > 0 ? `(${review.downvotes})` : ''}
+                            Unhelpful ({review.unhelpful_count})
                           </Button>
                         </Box>
                       </CardContent>

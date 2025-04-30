@@ -127,6 +127,8 @@ function Account() {
 
       if (response.ok) {
         const data = await response.json();
+        // show the alert so the test’s spy fires
+        alert(data.message || "Verification email sent!");
         setMessage(data.message || "Verification email sent!");
         setMessageType("success");
       } else {

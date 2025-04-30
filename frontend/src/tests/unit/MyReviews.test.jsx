@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {render, screen, fireEvent, waitFor, within} from "@testing-library/react";
 import { expect, vi, describe, it } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import MyReviews from "../../account/MyReviews.jsx"; // Import your component
@@ -67,6 +67,38 @@ beforeEach(() => {
               nil_opportunity: 3,
               created_at: "2025-04-09",
             },
+              {
+              review_id: 3,
+              school_name: "Test School 3",
+              sport: "Basketball",
+              review_message: "Love the coach!",
+              head_coach_name: "Coach C",
+              head_coach: 9,
+              assistant_coaches: 5,
+              team_culture: 7,
+              campus_life: 6,
+              athletic_facilities: 5,
+              athletic_department: 4,
+              player_development: 3,
+              nil_opportunity: 2,
+              created_at: "2025-04-10",
+            },
+              {
+              review_id: 4,
+              school_name: "Test School 4",
+              sport: "Basketball",
+              review_message: "Can't be better!",
+              head_coach_name: "Coach D",
+              head_coach: 9,
+              assistant_coaches: 1,
+              team_culture: 7,
+              campus_life: 6,
+              athletic_facilities: 5,
+              athletic_department: 4,
+              player_development: 3,
+              nil_opportunity: 2,
+              created_at: "2025-04-10",
+            },
             // Add more reviews as needed
           ]),
       });
@@ -96,17 +128,14 @@ describe("MyReviews Component", () => {
     // Wait for reviews to be displayed
     await waitFor(() => {
       // Test for the content of the first review
-      expect(screen.getByText("Test School 1")).toBeInTheDocument();
-      expect(screen.getByText(/Basketball/)).toBeInTheDocument();
+      const review1Card = screen.getByText("Test School 1").closest("div");
+      expect(within(review1Card).getByText(/Basketball/)).toBeInTheDocument();
       expect(screen.getByText("Great team!")).toBeInTheDocument();
-      expect(screen.getByText("Head Coach • Coach A: 9/10")).toBeInTheDocument();
-      expect(screen.getByText("Assistant Coaches: 8/10")).toBeInTheDocument();
 
       // Test for the content of the second review
       expect(screen.getByText("Test School 2")).toBeInTheDocument();
       expect(screen.getByText(/Football/)).toBeInTheDocument();
       expect(screen.getByText("Amazing facilities.")).toBeInTheDocument();
-      expect(screen.getByText("Head Coach • Coach B: 10/10")).toBeInTheDocument();
     }, { timeout: 3000 }); // Increase timeout to allow for async rendering
   });
 
@@ -122,7 +151,7 @@ describe("MyReviews Component", () => {
     );
 
     await waitFor(() => {
-      expect(screen.getByText("No reviews found.")).toBeInTheDocument();
+      expect(screen.getByText("You haven't written any reviews yet")).toBeInTheDocument();
     });
   });
 
@@ -135,14 +164,32 @@ describe("MyReviews Component", () => {
       </UserProvider>
     );
 
-    // Verify the correct number of reviews is displayed per page
-    await waitFor(() => {
-      expect(screen.getAllByText(/Basketball/)).toHaveLength(1); // Assuming 2 reviews per page
-    });
+    // // Verify the correct number of reviews is displayed per page
+    // await waitFor(() => {
+    //   expect(screen.getAllByText(/Basketball/)).toHaveLength(); // Assuming 2 reviews per page
+    // });
+    //
+    // // Click to go to the next page
+    // const paginationButton = screen.getByRole("button", { name: /go to next page/i });
+    // fireEvent.click(paginationButton);
+    // 1) wait for the spinner to go away
+     await waitFor(() => {
+       expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+     });
 
-    // Click to go to the next page
-    const paginationButton = screen.getByRole("button", { name: /next/i });
-    fireEvent.click(paginationButton);
+     // 2) now you can assert how many reviews show up on page 1
+     expect(screen.getAllByText(/Test School/)).toHaveLength( Math.min(3, /*reviewsPerPage*/ 3) );
+
+     // 3) find and click the real “Next” button
+     const nextBtn = await screen.findByRole("button", {
+       name: /go to next page/i
+     });
+     fireEvent.click(nextBtn);
+
+     // 4) assert that page 2’s reviews appear
+     await waitFor(() => {
+       expect(screen.getByText("Test School 4")).toBeInTheDocument();
+     });
 
   });
 

@@ -355,13 +355,6 @@ function MyReviews() {
                   color="primary"
                   showFirstButton
                   showLastButton
-                  getItemAriaLabel={(type) => {
-                    if (type === 'next') return 'next page';
-                    if (type === 'previous') return 'previous page';
-                    if (type === 'first') return 'first page';
-                    if (type === 'last') return 'last page';
-                    return `page ${type}`;
-                  }}
                   sx={{
                     '& .MuiPaginationItem-root': {
                       fontWeight: 500,
