@@ -14,6 +14,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "Women's Basketball": "wbb",
             "Women's Basketball": "wbb",  # Handle both apostrophe types
             "Football": "fb",
+            "Volleyball": "vb",
         }
         logger.info(
             f"PreferencesSerializer.validate_sport: Converting '{value}' to code"

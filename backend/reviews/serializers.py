@@ -34,6 +34,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "Women's Basketball": "wbb",
             "Women’s Basketball": "wbb",  # Handle both apostrophe types
             "Football": "fb",
+            "Volleyball": "vb",
         }
         logger.info(f"ReviewsSerializer.validate_sport: Converting '{value}' to code")
         code = sport_mapping.get(value, value)
