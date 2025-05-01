@@ -10,6 +10,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Champaign, Illinois"
       }
@@ -25,6 +26,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Bloomington, Indiana"
       }
@@ -40,6 +42,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Iowa City, Iowa"
       }
@@ -55,6 +58,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "College Park, Maryland"
       }
@@ -70,6 +74,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Ann Arbor, Michigan"
       }
@@ -85,6 +90,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "East Lansing, Michigan"
       }
@@ -100,6 +106,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Minneapolis, Minnesota"
       }
@@ -115,6 +122,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Lincoln, Nebraska"
       }
@@ -130,6 +138,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Evanston, Illinois"
       }
@@ -145,6 +154,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Columbus, Ohio"
       }
@@ -160,6 +170,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "State College, Pennsylvania"
       }
@@ -175,6 +186,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "West Lafayette, Indiana"
       }
@@ -190,6 +202,7 @@
         "vb": true,
         "ba": true,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "New Brunswick, New Jersey"
       }
@@ -205,6 +218,7 @@
         "vb": true,
         "ba": false,
         "wsoc": true,
+        "wr": true,
         "conference": "Big Ten",
         "location": "Madison, Wisconsin"
       }

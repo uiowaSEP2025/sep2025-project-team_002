@@ -416,6 +416,7 @@ def filter_schools(request):
         "Volleyball": "vb",
         "Baseball": "ba",
         "Women's Soccer": "wsoc",
+        "Wrestling": "wr",
     }
 
     # Normalize sport for review filtering
@@ -458,6 +459,8 @@ def filter_schools(request):
             schools_query = schools_query.filter(ba=True)
         elif sport == "Women's Soccer":
             schools_query = schools_query.filter(wsoc=True)
+        elif sport == "Wrestling":
+            schools_query = schools_query.filter(wr=True)
 
     serializer = SchoolSerializer(
         schools_query, many=True, context={"request": request}
@@ -504,6 +507,8 @@ def get_recommended_schools(request):
                 sports.append("ba")
             if school.wsoc:
                 sports.append("wsoc")
+            if school.wr:
+                sports.append("wr")
             logger.info(f"School {school.school_name} - Sports: {', '.join(sports)}")
 
         # Get user's preferences
@@ -535,6 +540,7 @@ def get_recommended_schools(request):
             "Volleyball": "vb",
             "Baseball": "ba",
             "Women's Soccer": "wsoc",
+            "Wrestling": "wr",
         }
         code_to_display = {
             "mbb": "Men's Basketball",
@@ -543,11 +549,12 @@ def get_recommended_schools(request):
             "vb": "Volleyball",
             "ba": "Baseball",
             "wsoc": "Women's Soccer",
+            "wr": "Wrestling",
         }
 
         # Handle both cases - if it's a display name, convert to code, if it's a code, keep as is
         sport_code = display_to_code.get(sport, sport)
-        if sport_code not in ["mbb", "wbb", "fb", "vb", "ba", "wsoc"]:
+        if sport_code not in ["mbb", "wbb", "fb", "vb", "ba", "wsoc", "wr"]:
             # If it's not a valid code after conversion, try reverse lookup
             for code, display in code_to_display.items():
                 if sport == display:
@@ -625,6 +632,9 @@ def get_recommended_schools(request):
             elif sport_code == "wsoc" and school.wsoc:
                 has_sport = True
                 logger.info(f"School {school.school_name} offers Women's Soccer")
+            elif sport_code == "wr" and school.wr:
+                has_sport = True
+                logger.info(f"School {school.school_name} offers Wrestling")
 
             if not has_sport:
                 logger.info(

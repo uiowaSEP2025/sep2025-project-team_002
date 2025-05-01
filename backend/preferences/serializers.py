@@ -15,6 +15,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "Volleyball": "vb",
             "Baseball": "ba",
             "Women's Soccer": "wsoc",
+            "Wrestling": "wr",
         }
         logger.info(
             f"PreferencesSerializer.validate_sport: Converting '{value}' to code"
@@ -33,6 +34,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "vb" :"Volleyball",
             "ba": "Baseball",
             "wsoc": "Women's Soccer",
+            "wr": "Wrestling",
         }
         original_sport = data["sport"]
         data["sport"] = display_mapping.get(data["sport"], data["sport"])
