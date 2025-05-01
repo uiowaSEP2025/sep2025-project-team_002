@@ -413,6 +413,9 @@ def filter_schools(request):
         "Men's Basketball": "mbb",
         "Women's Basketball": "wbb",
         "Football": "fb",
+        "Volleyball": "vb",
+        "Baseball": "ba",
+        "Women's Soccer": "wsoc",
     }
 
     # Normalize sport for review filtering
@@ -449,6 +452,12 @@ def filter_schools(request):
             schools_query = schools_query.filter(wbb=True)
         elif sport == "Football":
             schools_query = schools_query.filter(fb=True)
+        elif sport == "Volleyball":
+            schools_query = schools_query.filter(vb=True)
+        elif sport == "Baseball":
+            schools_query = schools_query.filter(ba=True)
+        elif sport == "Women's Soccer":
+            schools_query = schools_query.filter(wsoc=True)
 
     serializer = SchoolSerializer(
         schools_query, many=True, context={"request": request}
@@ -489,6 +498,12 @@ def get_recommended_schools(request):
                 sports.append("wbb")
             if school.fb:
                 sports.append("fb")
+            if school.vb:
+                sports.append("vb")
+            if school.ba:
+                sports.append("ba")
+            if school.wsoc:
+                sports.append("wsoc")
             logger.info(f"School {school.school_name} - Sports: {', '.join(sports)}")
 
         # Get user's preferences
@@ -517,16 +532,22 @@ def get_recommended_schools(request):
             "Men's Basketball": "mbb",
             "Women's Basketball": "wbb",
             "Football": "fb",
+            "Volleyball": "vb",
+            "Baseball": "ba",
+            "Women's Soccer": "wsoc",
         }
         code_to_display = {
             "mbb": "Men's Basketball",
             "wbb": "Women's Basketball",
             "fb": "Football",
+            "vb": "Volleyball",
+            "ba": "Baseball",
+            "wsoc": "Women's Soccer",
         }
 
         # Handle both cases - if it's a display name, convert to code, if it's a code, keep as is
         sport_code = display_to_code.get(sport, sport)
-        if sport_code not in ["mbb", "wbb", "fb"]:
+        if sport_code not in ["mbb", "wbb", "fb", "vb", "ba", "wsoc"]:
             # If it's not a valid code after conversion, try reverse lookup
             for code, display in code_to_display.items():
                 if sport == display:
@@ -595,6 +616,15 @@ def get_recommended_schools(request):
             elif sport_code == "fb" and school.fb:
                 has_sport = True
                 logger.info(f"School {school.school_name} offers Football")
+            elif sport_code == "vb" and school.vb:
+                has_sport = True
+                logger.info(f"School {school.school_name} offers Volleyball")
+            elif sport_code == "ba" and school.ba:
+                has_sport = True
+                logger.info(f"School {school.school_name} offers Baseball")
+            elif sport_code == "wsoc" and school.wsoc:
+                has_sport = True
+                logger.info(f"School {school.school_name} offers Women's Soccer")
 
             if not has_sport:
                 logger.info(

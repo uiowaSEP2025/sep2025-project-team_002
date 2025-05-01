@@ -10,10 +10,11 @@ class PreferencesSerializer(serializers.ModelSerializer):
         # Convert display names to database codes
         sport_mapping = {
             "Men's Basketball": "mbb",
-            "Men's Basketball": "mbb",  # Handle both apostrophe types
             "Women's Basketball": "wbb",
-            "Women's Basketball": "wbb",  # Handle both apostrophe types
             "Football": "fb",
+            "Volleyball": "vb",
+            "Baseball": "ba",
+            "Women's Soccer": "wsoc",
         }
         logger.info(
             f"PreferencesSerializer.validate_sport: Converting '{value}' to code"
@@ -29,6 +30,9 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "mbb": "Men's Basketball",
             "wbb": "Women's Basketball",
             "fb": "Football",
+            "vb" :"Volleyball",
+            "ba": "Baseball",
+            "wsoc": "Women's Soccer",
         }
         original_sport = data["sport"]
         data["sport"] = display_mapping.get(data["sport"], data["sport"])

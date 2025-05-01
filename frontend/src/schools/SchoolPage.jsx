@@ -68,7 +68,31 @@ function SchoolPage() {
   }, []);
 
   // Filter reviews by selected sport
-  const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
+const sportDisplayToCode = {
+  "Men's Basketball": "mbb",
+  "Women's Basketball": "wbb",
+  "Football": "fb",
+  "Volleyball": "vb",
+  "Baseball": "ba",
+  "Women's Soccer": "wsoc",
+};
+
+const filteredReviews = school?.reviews.filter(review => {
+  // Normalize both values for comparison
+  const reviewSport = review.sport.toLowerCase();
+  const selectedCode = sportDisplayToCode[selectedSport]?.toLowerCase();
+
+  return (
+    reviewSport === selectedCode || // matches code (vb)
+    reviewSport === selectedSport.toLowerCase() || // matches full name
+    sportDisplayToCode[review.sport] === selectedSport // matches if review has code
+  );
+}) || [];
+
+// In your filtering logic, add:
+console.log("All reviews:", school?.reviews);
+console.log("Selected sport code:", sportDisplayToCode[selectedSport]);
+console.log("Filtered reviews:", filteredReviews);
 
   // Calculate the index of the last review on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
@@ -178,6 +202,9 @@ function SchoolPage() {
         if (data.mbb) setSelectedSport("Men's Basketball");
         else if (data.wbb) setSelectedSport("Women's Basketball");
         else if (data.fb) setSelectedSport("Football");
+        else if (data.vb) setSelectedSport("Volleyball");
+        else if (data.ba) setSelectedSport("Baseball");
+        else if (data.wsoc) setSelectedSport("Women's Soccer");
       } catch (error) {
         console.error('Error fetching school:', error);
         setError('Failed to load school data. Please try again later.');
@@ -230,6 +257,9 @@ function SchoolPage() {
     if (school.mbb) availableSports.push("Men's Basketball");
     if (school.wbb) availableSports.push("Women's Basketball");
     if (school.fb) availableSports.push("Football");
+    if (school.vb) availableSports.push("Volleyball");
+    if (school.ba) availableSports.push("Baseball");
+    if (school.wsoc) availableSports.push("Women's Soccer");
   }
 
   const handleWriteReview = (sport) => {
