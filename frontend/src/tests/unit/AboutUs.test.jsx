@@ -18,7 +18,7 @@ describe('AboutUs Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole('heading', { level: 2, name: 'Athletic Insider' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Athletic Insider' })).toBeInTheDocument();
   });
 
   it('renders the description correctly', () => {
@@ -28,7 +28,7 @@ describe('AboutUs Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/Who we are:/)).toBeInTheDocument();
+    expect(screen.getByText(/Who we are\b/i)).toBeInTheDocument();
     expect(screen.getByText(/Your go-to platform for the latest in sports transfer insights./)).toBeInTheDocument();
   });
 
@@ -60,6 +60,6 @@ describe('AboutUs Component', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole('button', { name: /← Back/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Back$/i })).toBeInTheDocument();
   });
 });

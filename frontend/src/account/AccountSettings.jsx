@@ -23,9 +23,13 @@ import {
   Radio,
   useMediaQuery,
   Tooltip,
-  InputAdornment
+  InputAdornment,
+  Paper,
+  Alert,
+  useTheme,
+  alpha,
+  Avatar
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion";
 import RateReviewIcon from '@mui/icons-material/RateReview';
 
 
@@ -54,6 +58,7 @@ import PasswordForm from "./PasswordForm.jsx";
 
 function AccountSettings() {
   const navigate = useNavigate();
+  const theme = useTheme();
   const { user, updateProfilePic, profilePic, loading, fetchUser } = useUser();
 
   // Main user form data (editable)
@@ -66,6 +71,13 @@ function AccountSettings() {
 
   // For success/error messages
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("error");
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => {
+    // Trigger fade-in animation after component mounts
+    setTimeout(() => setFadeIn(true), 100);
+  }, []);
 
   // For logout functionality
   const { logout } = useUser();
@@ -132,6 +144,7 @@ function AccountSettings() {
 
       if (response.ok) {
         setMessage("Account info updated successfully");
+        setMessageType("success");
         fetchUser();
       } else if (response.status === 401) {
         // Token expired or invalid
@@ -153,18 +166,22 @@ function AccountSettings() {
         }
 
         setMessage("Update failed: " + errorText);
+        setMessageType("error");
       }
     } catch (error) {
       console.error("AccountSettings error:", error);
 
       if (error.message.includes("Failed to fetch")) {
         setMessage("Unable to reach server. Check your connection.");
+        setMessageType("error");
       }
       else if (error.message.includes("body stream already read")){
           setMessage("Update failed: Email already in use");
+          setMessageType("error");
         }
       else {
         setMessage("Network error: " + error.message);
+        setMessageType("error");
       }
     }
   };
@@ -203,7 +220,8 @@ function AccountSettings() {
         const data = await response.json();
         // Successfully changed password
         handleClosePasswordDialog();
-        setMessage(data.message);
+        setMessage(data.message || "Password changed successfully");
+        setMessageType("success");
       } else if (response.status === 401) {
         // Token expired or invalid
         logout();
@@ -217,8 +235,10 @@ function AccountSettings() {
 
       if (error.message.includes("Failed to fetch")) {
         setMessage("Unable to reach server. Check your connection.");
+        setMessageType("error");
       } else {
         setMessage("Network error: " + error.message);
+        setMessageType("error");
       }
     }
   };
@@ -276,31 +296,65 @@ function AccountSettings() {
   return (
     <SidebarWrapper menuItems={menuItems} title="My Account">
       {/* MAIN CONTENT: Account Settings Form */}
-      <Box>
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          style={{ maxWidth: "600px", margin: "0 auto", textAlign: "left" }}
-        >
-          <Typography id="account-settings-title" variant="h4" gutterBottom sx={{ fontWeight: 700, fontSize: "2rem" }}>
+      <Box
+        sx={{
+          opacity: fadeIn ? 1 : 0,
+          transform: fadeIn ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.5s ease, transform 0.5s ease'
+        }}
+      >
+        <Box sx={{ maxWidth: "700px", margin: "0 auto", textAlign: "left" }}>
+          <Typography
+            id="account-settings-title"
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: "1.75rem", md: "2rem" },
+              mb: 3,
+              background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
             Account Settings
           </Typography>
 
           {message && (
-            <Typography
-              variant="body1"
-              id="settings-error"
-              color="error"
-              sx={{ mb: 2, fontSize: "1.2rem" }}
+            <Alert
+              severity={messageType}
+              sx={{ mb: 3, borderRadius: 2 }}
+              variant="filled"
+              onClose={() => setMessage('')}
             >
               {message}
-            </Typography>
+            </Alert>
           )}
-          <div style={{ textAlign: "center" }}>
-            <h2 id="profile-pic-label">Choose Your Profile Picture</h2>
+          <Paper
+            elevation={2}
+            sx={{
+              p: 4,
+              mb: 4,
+              borderRadius: 3,
+              backgroundColor: alpha(theme.palette.background.paper, 0.8),
+              textAlign: "center"
+            }}
+          >
+            <Typography
+              variant="h5"
+              id="profile-pic-label"
+              sx={{
+                mb: 3,
+                fontWeight: 600,
+                color: theme.palette.primary.main
+              }}
+            >
+              Choose Your Profile Picture
+            </Typography>
+
             {profilePic && profilePic.trim() ? (
-              <img
+              <Box
+                component="img"
                 src={profilePic}
                 id="selected-profile-pic"
                 alt="Selected Profile"
@@ -308,83 +362,136 @@ function AccountSettings() {
                   e.target.onerror = null; // Prevent infinite loop
                   e.target.src = "/assets/profile-pictures/pic1.png";// Fallback image
                 }}
-                style={{
-                  width: "150px",
-                  height: "150px",
+                sx={{
+                  width: 175,
+                  height: 175,
                   borderRadius: "50%",
-                  border: "3px solid #007bff",
+                  border: `4px solid ${alpha(theme.palette.primary.main, 0.3)}`,
                   objectFit: "cover",
-                  marginBottom: "10px"
+                  mb: 3,
+                  mx: "auto",
+                  display: "block",
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
                 }}
               />
             ) : (
-              <AccountCircleIcon
+              <Avatar
                 sx={{
-                  fontSize: "150px",
-                  color: "gray",
-                  borderRadius: "50%",
-                  backgroundColor: "#f0f0f0",
-                  padding: "10px"
+                  width: 175,
+                  height: 175,
+                  mx: "auto",
+                  mb: 3,
+                  fontSize: "4rem",
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                  color: theme.palette.primary.main,
+                  boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                  border: `4px solid ${alpha(theme.palette.primary.main, 0.2)}`,
                 }}
-              />
+              >
+                {user?.first_name ? user.first_name.charAt(0).toUpperCase() : "U"}
+              </Avatar>
             )}
-            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+
+            <Box sx={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: 1 }}>
               {profilePictures.map((pic, index) => (
-                <IconButton key={index} onClick={() => updateProfilePic(pic)}>
-                  <img
+                <Box
+                  key={index}
+                  onClick={() => updateProfilePic(pic)}
+                  sx={{
+                    width: 60,
+                    height: 60,
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    cursor: "pointer",
+                    border: profilePic === `/assets/profile-pictures/${pic}` ?
+                      `3px solid ${theme.palette.primary.main}` :
+                      `3px solid transparent`,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      transform: 'scale(1.1)',
+                      boxShadow: '0 4px 10px rgba(0,0,0,0.15)',
+                    },
+                  }}
+                >
+                  <Box
+                    component="img"
                     src={`/assets/profile-pictures/${pic}`}
                     alt={`Profile ${index + 1}`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      borderRadius: "50%",
+                    sx={{
+                      width: "100%",
+                      height: "100%",
                       objectFit: "cover",
-                      cursor: "pointer",
-                      border: profilePic === `/assets/profile-pictures/${pic}` ? "2px solid #007bff" : "none"
                     }}
                   />
-                </IconButton>
+                </Box>
               ))}
-            </div>
-          </div>
-          <Box component="form" onSubmit={handleSaveChanges} sx={{ mt: 2 }}>
-            <TextField
-              fullWidth
-              id="settings-first-name"
-              margin="normal"
-              label="First Name"
-              name="first_name"
-              value={formData.first_name}
-              onChange={handleChange}
-              InputProps={{ sx: { borderRadius: "40px" } }}
-              required
-            />
-            <TextField
-              fullWidth
-              id="settings-last-name"
-              margin="normal"
-              label="Last Name"
-              name="last_name"
-              value={formData.last_name}
-              onChange={handleChange}
-              InputProps={{ sx: { borderRadius: "40px" } }}
-              required
-            />
-            {/* Real-time email validation */}
-            <TextField
-              fullWidth
-              id="settings-email"
-              margin="normal"
-              label="Email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              InputProps={{ sx: { borderRadius: "40px" } }}
-              required
-              type="email"
-              error={emailIsInvalid}
-              helperText={emailIsInvalid ? "Invalid email address" : ""}
-            />
+            </Box>
+          </Paper>
+          <Paper
+            elevation={2}
+            sx={{
+              p: 4,
+              mb: 4,
+              borderRadius: 3,
+              backgroundColor: alpha(theme.palette.background.paper, 0.8),
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{
+                mb: 3,
+                fontWeight: 600,
+                color: theme.palette.primary.main
+              }}
+            >
+              Personal Information
+            </Typography>
+
+            <Box component="form" onSubmit={handleSaveChanges}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    id="settings-first-name"
+                    margin="normal"
+                    label="First Name"
+                    name="first_name"
+                    value={formData.first_name}
+                    onChange={handleChange}
+                    sx={{ mb: 2 }}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    id="settings-last-name"
+                    margin="normal"
+                    label="Last Name"
+                    name="last_name"
+                    value={formData.last_name}
+                    onChange={handleChange}
+                    sx={{ mb: 2 }}
+                    required
+                  />
+                </Grid>
+              </Grid>
+
+              {/* Real-time email validation */}
+              <TextField
+                fullWidth
+                id="settings-email"
+                margin="normal"
+                label="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                sx={{ mb: 2 }}
+                required
+                type="email"
+                error={emailIsInvalid}
+                helperText={emailIsInvalid ? "Invalid email address" : ""}
+              />
 
             {/* Transfer Type (radio) */}
             {/*<FormControl component="fieldset" sx={{ mt: 2 }}>*/}
@@ -408,35 +515,55 @@ function AccountSettings() {
             {/*  </RadioGroup>*/}
             {/*</FormControl>*/}
 
-            {/* SAVE CHANGES BUTTON */}
-            <Button
-              type="submit"
-              id="save-changes-button"
-              variant="contained"
-              fullWidth
-              sx={{ mt: 3, borderRadius: "40px" }}
-              component={motion.button}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Save Changes
-            </Button>
-          </Box>
+              {/* SAVE CHANGES BUTTON */}
+              <Button
+                type="submit"
+                id="save-changes-button"
+                variant="contained"
+                fullWidth
+                sx={{
+                  mt: 3,
+                  py: 1.5,
+                  fontWeight: 600,
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+                  },
+                  '&:active': {
+                    transform: 'translateY(1px)'
+                  }
+                }}
+              >
+                Save Changes
+              </Button>
+            </Box>
+          </Paper>
 
           {/* CHANGE PASSWORD BUTTON */}
           <Button
             variant="outlined"
             id="change-password-button"
             fullWidth
-            sx={{ mt: 2, borderRadius: "40px" }}
-            component={motion.button}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            sx={{
+              mt: 2,
+              mb: 4,
+              py: 1.5,
+              fontWeight: 600,
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+              },
+              '&:active': {
+                transform: 'translateY(1px)'
+              }
+            }}
             onClick={handleOpenPasswordDialog}
           >
             Change Password
           </Button>
-        </motion.div>
+        </Box>
       </Box>
 
       {/* DIALOG FOR CHANGING PASSWORD */}
@@ -455,9 +582,10 @@ function AccountSettings() {
         }}
         PaperProps={{
           sx: {
-            borderRadius: "16px",
-            p: 2,
-            backgroundColor: "#fefefe"
+            borderRadius: 3,
+            p: 3,
+            backgroundColor: theme.palette.background.paper,
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
           }
         }}
       >
@@ -465,28 +593,44 @@ function AccountSettings() {
           sx={{
             textAlign: "center",
             fontWeight: 600,
-            fontSize: "1.5rem"
+            fontSize: "1.5rem",
+            color: theme.palette.primary.main,
+            pb: 1
           }}
         >
           Change Password
         </DialogTitle>
 
-        <Divider variant="middle" />
+        <Divider sx={{ mb: 2 }} />
 
         <DialogContent>
           {/* Error message if any */}
           {passwordError && (
-            <Typography id="change-password-error" color="error" sx={{ mb: 2, textAlign: "center" }}>
+            <Alert
+              severity="error"
+              sx={{ mb: 3, borderRadius: 2 }}
+              variant="outlined"
+            >
               {passwordError}
-            </Typography>
+            </Alert>
           )}
           <PasswordForm onSubmit={handleChangePassword} includeCurrentPassword={true} />
         </DialogContent>
-        <DialogActions sx={{ justifyContent: "center", mb: 1 }}>
+        <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 3 }}>
           <Button
             variant="outlined"
             id="cancel-change-password-button"
-            sx={{ borderRadius: "40px", width: "140px" }}
+            sx={{
+              px: 3,
+              py: 1,
+              fontWeight: 500,
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                backgroundColor: alpha(theme.palette.error.light, 0.1),
+                borderColor: theme.palette.error.light,
+                color: theme.palette.error.main
+              }
+            }}
             onClick={handleClosePasswordDialog}
           >
             Cancel
