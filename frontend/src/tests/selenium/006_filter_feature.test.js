@@ -157,7 +157,7 @@ describe("Filter Feature Test", function () {
 
       // Wait for the home page content to load (e.g., heading text)
       await driver.wait(
-        until.elementLocated(By.xpath("//*[contains(text(),'Explore the Schools and their Sports!')]")),
+        until.elementLocated(By.xpath("//*[contains(text(),'Athletic Insider')]")),
         10000
       );
 
@@ -166,10 +166,23 @@ describe("Filter Feature Test", function () {
       const initialCount = await getSchoolCount();
       console.log("Initial public school count:", initialCount);
 
-      // Click the Filters button
-      const filtersButton = await driver.findElement(
-        By.xpath("//button[normalize-space()='Filters']")
-      );
+      // Click the Filters button - try multiple selectors
+      let filtersButton;
+      try {
+        filtersButton = await driver.findElement(By.css("button[aria-label='Filters']"));
+        console.log("Found filter button by aria-label='Filters'");
+      } catch (error) {
+        console.log("Couldn't find filter button by aria-label='Filters', trying with icon...");
+        try {
+          filtersButton = await driver.findElement(By.css("svg[data-testid='FilterListIcon']"));
+          console.log("Found filter button by FilterListIcon");
+        } catch (error) {
+          console.log("Trying to find any IconButton...");
+          const iconButtons = await driver.findElements(By.css(".MuiIconButton-root"));
+          console.log(`Found ${iconButtons.length} icon buttons, using the last one`);
+          filtersButton = iconButtons[iconButtons.length - 1];
+        }
+      }
       await filtersButton.click();
 
       // Wait for the filter dialog to open

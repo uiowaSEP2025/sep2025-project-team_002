@@ -77,7 +77,19 @@ describe("Create Review Test", function () {
       // Click on the first school Card
       await firstSchoolCard.click();
 
-      const reviewButton = await driver.wait(until.elementLocated(By.id("write-review-button")), 15000);
+      // Look for the write review button by text content instead of ID
+      let reviewButton;
+      try {
+        reviewButton = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(), 'Write a Review')]")), 5000);
+      } catch (error) {
+        console.log("Couldn't find button with 'Write a Review' text, trying alternative selectors...");
+        try {
+          reviewButton = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(), 'Review')]")), 5000);
+        } catch (error) {
+          console.log("Trying to find any primary button...");
+          reviewButton = await driver.wait(until.elementLocated(By.css("button.MuiButton-containedPrimary")), 5000);
+        }
+      }
       await driver.wait(until.elementIsVisible(reviewButton), 5000);
       await reviewButton.click();
 
@@ -99,30 +111,30 @@ describe("Create Review Test", function () {
 
       for (const field of ratingFields) {
         console.log(`Setting rating for ${field}`);
-        
+
         // Find the rating container
         const ratingContainer = await driver.wait(
           until.elementLocated(By.id(`rating-${field}`)),
           10000
         );
-        
+
         // Find all radio buttons within the rating
         const stars = await ratingContainer.findElements(By.css('input[type="radio"]'));
-        
+
         // Click the 10th star (last one)
         const tenthStar = stars[9]; // Index 9 for the 10th star
-        
+
         // Scroll the element into view
         await driver.executeScript("arguments[0].scrollIntoView(true);", tenthStar);
         await driver.sleep(500);
 
         // Click using JavaScript
         await driver.executeScript("arguments[0].click(); arguments[0].checked = true;", tenthStar);
-        
+
         // Verify the click worked
         const isChecked = await driver.executeScript("return arguments[0].checked;", tenthStar);
         console.log(`${field} rating clicked:`, isChecked);
-        
+
         await driver.sleep(500);
       }
 

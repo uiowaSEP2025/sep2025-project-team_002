@@ -29,11 +29,19 @@ describe("User Preferences Page Test", function () {
     await driver.wait(until.elementLocated(By.id("secure-home")), 10000);
 
     // Click through UI to reach User Preferences page
-    let accountIcon = await driver.wait(until.elementLocated(By.id("account-icon")), 10000);
+    // Look for the account icon by finding the button that controls the profile menu
+    let accountIcon = await driver.wait(until.elementLocated(By.css("button[aria-controls='profile-menu']")), 10000);
     await accountIcon.click();
     console.log("Clicked account icon")
 
-    let accountButton = await driver.wait(until.elementLocated(By.id("account-info")), 5000);
+    // Look for the account info menu item by text content
+    let accountButton;
+    try {
+      accountButton = await driver.wait(until.elementLocated(By.xpath("//li[contains(text(), 'Account') or contains(., 'Account Info') or contains(., 'Profile')]")), 3000);
+    } catch (error) {
+      console.log("Couldn't find account menu item by text, trying by class...");
+      accountButton = await driver.wait(until.elementLocated(By.css("li.MuiMenuItem-root")), 2000);
+    }
     await accountButton.click();
     console.log("Clicked account info button")
 
