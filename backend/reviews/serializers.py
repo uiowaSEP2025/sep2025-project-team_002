@@ -36,6 +36,8 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "Football": "fb",
             "Volleyball": "vb",
             "Baseball": "ba",
+            "Women's Soccer": "wsoc",
+            "Women’s Soccer": "wsoc",
         }
         logger.info(f"ReviewsSerializer.validate_sport: Converting '{value}' to code")
         code = sport_mapping.get(value, value)
@@ -51,6 +53,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "fb": "Football",
             "vb": "Volleyball",
             "ba": "Baseball",
+            "wsoc": "Women's Soccer",
         }
         original_sport = data["sport"]
         data["sport"] = display_mapping.get(data["sport"], data["sport"])

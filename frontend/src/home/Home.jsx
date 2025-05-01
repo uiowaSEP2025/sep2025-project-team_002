@@ -397,6 +397,7 @@ function Home() {
               <MenuItem value="Football">Football</MenuItem>
               <MenuItem value="Volleyball">Volleyball</MenuItem>
               <MenuItem value="Baseball">Baseball</MenuItem>
+              <MenuItem value="Women's Soccer">Women's Soccer</MenuItem>
             </TextField>
 
             <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 600 }}>

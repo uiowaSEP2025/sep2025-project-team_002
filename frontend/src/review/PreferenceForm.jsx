@@ -218,7 +218,7 @@ const PreferenceForm = () => {
               error={!preference.sport && isSubmitted}
               helperText={!preference.sport && isSubmitted ? "This field is required" : ""}
             >
-              {["Football", "Men's Basketball", "Women's Basketball", "Volleyball", "Baseball"].map((sport, index) => (
+              {["Football", "Men's Basketball", "Women's Basketball", "Volleyball", "Baseball", "Women's Soccer"].map((sport, index) => (
                 <MenuItem key={index} value={sport}>
                   {sport}
                 </MenuItem>
