@@ -236,6 +236,74 @@
         "conference": "Big Ten",
         "location": "Madison, Wisconsin"
       }
+    },
+   {
+    "model": "schools.Schools",
+    "pk": 65,
+    "fields": {
+      "school_name": "University of Oregon",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": false,
+      "msoc": false,
+      "wsoc": true,
+      "wr": false,
+      "conference": "Big Ten",
+      "location": "Eugene, Oregon"
     }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 66,
+    "fields": {
+      "school_name": "University of California, Los Angeles",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "Big Ten",
+      "location": "Los Angeles, California"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 67,
+    "fields": {
+      "school_name": "University of Southern California",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": false,
+      "msoc": false,
+      "wsoc": true,
+      "wr": false,
+      "conference": "Big Ten",
+      "location": "Los Angeles, California"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 68,
+    "fields": {
+      "school_name": "University of Washington",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "Big Ten",
+      "location": "Seattle, Washington"
+    }
+  }
   ]
   

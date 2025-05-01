@@ -1,0 +1,308 @@
+[
+  {
+    "model": "schools.Schools",
+    "pk": 47,
+    "fields": {
+      "school_name": "Boston College",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Chestnut Hill, Massachusetts"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 48,
+    "fields": {
+      "school_name": "Clemson University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Clemson, South Carolina"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 49,
+    "fields": {
+      "school_name": "Duke University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": true,
+      "conference": "ACC",
+      "location": "Durham, North Carolina"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 50,
+    "fields": {
+      "school_name": "Florida State University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": false,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Tallahassee, Florida"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 51,
+    "fields": {
+      "school_name": "Georgia Institute of Technology",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": false,
+      "wsoc": false,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Atlanta, Georgia"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 52,
+    "fields": {
+      "school_name": "University of Louisville",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Louisville, Kentucky"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 53,
+    "fields": {
+      "school_name": "University of Miami",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": false,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Coral Gables, Florida"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 54,
+    "fields": {
+      "school_name": "University of North Carolina at Chapel Hill",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": true,
+      "conference": "ACC",
+      "location": "Chapel Hill, North Carolina"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 55,
+    "fields": {
+      "school_name": "North Carolina State University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": true,
+      "conference": "ACC",
+      "location": "Raleigh, North Carolina"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 56,
+    "fields": {
+      "school_name": "University of Notre Dame",
+      "mbb": true,
+      "wbb": true,
+      "fb": false,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Notre Dame, Indiana"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 57,
+    "fields": {
+      "school_name": "University of Pittsburgh",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": true,
+      "conference": "ACC",
+      "location": "Pittsburgh, Pennsylvania"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 58,
+    "fields": {
+      "school_name": "Syracuse University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": false,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Syracuse, New York"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 59,
+    "fields": {
+      "school_name": "University of Virginia",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": true,
+      "conference": "ACC",
+      "location": "Charlottesville, Virginia"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 60,
+    "fields": {
+      "school_name": "Virginia Polytechnic Institute and State University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": true,
+      "conference": "ACC",
+      "location": "Blacksburg, Virginia"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 61,
+    "fields": {
+      "school_name": "Wake Forest University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Winston-Salem, North Carolina"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 62,
+    "fields": {
+      "school_name": "University of California, Berkeley",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Berkeley, California"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 63,
+    "fields": {
+      "school_name": "Southern Methodist University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": false,
+      "msoc": true,
+      "wsoc": true,
+      "wr": false,
+      "conference": "ACC",
+      "location": "Dallas, Texas"
+    }
+  },
+  {
+    "model": "schools.Schools",
+    "pk": 64,
+    "fields": {
+      "school_name": "Stanford University",
+      "mbb": true,
+      "wbb": true,
+      "fb": true,
+      "vb": true,
+      "ba": true,
+      "msoc": true,
+      "wsoc": true,
+      "wr": true,
+      "conference": "ACC",
+      "location": "Stanford, California"
+    }
+  }
+]
