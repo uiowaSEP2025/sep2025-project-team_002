@@ -300,13 +300,8 @@ function SchoolPage() {
   }
 
   return (
-    <Container maxWidth="lg" sx={{
-      opacity: fadeIn ? 1 : 0,
-      transform: fadeIn ? 'translateY(0)' : 'translateY(20px)',
-      transition: 'opacity 0.5s ease, transform 0.5s ease'
-    }}>
-      {/* Login Prompt Dialog - Fixed position to be visible regardless of scroll */}
-      {/* Simple Snackbar for login prompt */}
+      <>
+      {/* Fixed Snackbar at top-center */}
       <Snackbar
         open={loginPromptOpen}
         autoHideDuration={5000}
@@ -314,29 +309,26 @@ function SchoolPage() {
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         sx={{
           position: 'fixed',
-          zIndex: 9999,
-          top: 20,
+          top: 16,
           left: '50%',
           transform: 'translateX(-50%)',
+          zIndex: theme.zIndex.snackbar,
         }}
       >
         <Alert
           onClose={() => setLoginPromptOpen(false)}
           severity="warning"
           variant="filled"
-          elevation={6}
-          sx={{
-            width: '100%',
-            minWidth: '250px',
-            borderRadius: 2,
-            fontSize: '1rem',
-            fontWeight: 500,
-            boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-          }}
+          sx={{ width: '100%', maxWidth: 360 }}
         >
           Please log in to vote!
         </Alert>
       </Snackbar>
+    <Container maxWidth="lg" sx={{
+      opacity: fadeIn ? 1 : 0,
+      transform: fadeIn ? 'translateY(0)' : 'translateY(20px)',
+      transition: 'opacity 0.5s ease, transform 0.5s ease'
+    }}>
       {/* Hero Section */}
       <Box
         sx={{
@@ -891,6 +883,7 @@ function SchoolPage() {
         )}
       </Box>
     </Container>
+      </>
   );
 }
 
