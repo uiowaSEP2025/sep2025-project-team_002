@@ -38,7 +38,7 @@ describe("User Preferences Page Test", function () {
     let accountButton;
     try {
       accountButton = await driver.wait(until.elementLocated(By.xpath("//li[contains(text(), 'Account') or contains(., 'Account Info') or contains(., 'Profile')]")), 3000);
-    } catch (error) {
+    } catch {
       console.log("Couldn't find account menu item by text, trying by class...");
       accountButton = await driver.wait(until.elementLocated(By.css("li.MuiMenuItem-root")), 2000);
     }

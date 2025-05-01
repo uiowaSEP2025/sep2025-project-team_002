@@ -81,11 +81,11 @@ describe("Create Review Test", function () {
       let reviewButton;
       try {
         reviewButton = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(), 'Write a Review')]")), 5000);
-      } catch (error) {
+      } catch{
         console.log("Couldn't find button with 'Write a Review' text, trying alternative selectors...");
         try {
           reviewButton = await driver.wait(until.elementLocated(By.xpath("//button[contains(text(), 'Review')]")), 5000);
-        } catch (error) {
+        } catch {
           console.log("Trying to find any primary button...");
           reviewButton = await driver.wait(until.elementLocated(By.css("button.MuiButton-containedPrimary")), 5000);
         }

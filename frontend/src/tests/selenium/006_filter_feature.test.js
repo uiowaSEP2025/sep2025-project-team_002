@@ -171,12 +171,12 @@ describe("Filter Feature Test", function () {
       try {
         filtersButton = await driver.findElement(By.css("button[aria-label='Filters']"));
         console.log("Found filter button by aria-label='Filters'");
-      } catch (error) {
+      } catch {
         console.log("Couldn't find filter button by aria-label='Filters', trying with icon...");
         try {
           filtersButton = await driver.findElement(By.css("svg[data-testid='FilterListIcon']"));
           console.log("Found filter button by FilterListIcon");
-        } catch (error) {
+        } catch {
           console.log("Trying to find any IconButton...");
           const iconButtons = await driver.findElements(By.css(".MuiIconButton-root"));
           console.log(`Found ${iconButtons.length} icon buttons, using the last one`);
