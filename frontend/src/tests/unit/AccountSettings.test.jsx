@@ -224,8 +224,8 @@ describe("AccountSettings Page", () => {
     expect(await screen.findByText(/Choose Your Profile Picture/i)).toBeInTheDocument();
 
     // Assuming the button for the second profile picture has alt text "Profile 2".
-    const profile2Button = screen.getByRole("button", { name: /profile 2/i });
-    await userEvent.click(profile2Button);
+    const profile2Img = screen.getByAltText(/profile 2/i);
+    await userEvent.click(profile2Img);
 
     // The updateProfilePic function is expected to be called with "pic2.png".
     expect(mockUpdateProfilePic).toHaveBeenCalledWith("pic2.png");

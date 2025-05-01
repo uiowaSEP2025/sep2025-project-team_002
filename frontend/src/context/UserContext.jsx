@@ -55,6 +55,8 @@ export const UserProvider = ({ children }) => {
     localStorage.removeItem("token");
     setUser(null);
     setIsLoggedIn(false);
+    // Force a page reload to ensure all components update correctly
+    window.location.href = '/';
   };
 
   // Function to update user profile picture in state and backend

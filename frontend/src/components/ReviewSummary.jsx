@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Box } from '@mui/material';
+import { Typography, Box, Skeleton, useTheme, alpha, Chip, Divider } from '@mui/material';
+import SportsTennisIcon from '@mui/icons-material/SportsTennis';
 import API_BASE_URL from '../utils/config';
 
 const ReviewSummary = ({ schoolId, sport }) => {
+  const theme = useTheme();
   const [summary, setSummary] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -66,13 +68,13 @@ const ReviewSummary = ({ schoolId, sport }) => {
             };
 
         const response = await fetch(endpoint, { headers });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (response.ok) {
           setSummary(data.summary);
         } else {
@@ -103,9 +105,9 @@ const ReviewSummary = ({ schoolId, sport }) => {
       </Typography>
       {summary.split('\n').map((paragraph, index) => (
         paragraph ? (
-          <Typography 
-            key={index} 
-            sx={{ 
+          <Typography
+            key={index}
+            sx={{
               mb: 0.5, // Reduced margin bottom
               ...(paragraph.includes('**') && { mt: 1.5 }) // Add margin top only for new coach sections
             }}

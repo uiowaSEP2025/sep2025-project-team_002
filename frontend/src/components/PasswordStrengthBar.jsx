@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
+import LockIcon from '@mui/icons-material/Lock';
 
 function getPasswordStrength(password) {
   const length = password.length;
@@ -61,36 +62,44 @@ function getPasswordStrength(password) {
 
 const PasswordStrengthBar = ({ password }) => {
   const { label, color, percentage } = getPasswordStrength(password);
+  const theme = useTheme();
 
   return (
-    <Box sx={{ display: "flex", alignItems: "center", mt: 1 }}>
+    <Box sx={{ mt: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
+        <LockIcon sx={{ fontSize: 16, mr: 0.5, color: theme.palette.text.secondary }} />
+        <Typography variant="caption" sx={{ color: theme.palette.text.secondary, fontWeight: 500 }}>
+          Password Strength:
+        </Typography>
+        <Typography variant="caption" sx={{ ml: 1, fontWeight: 600, color }}>
+          {label}
+        </Typography>
+      </Box>
+
       {/* Outer bar */}
       <Box
         sx={{
-          flex: 1,
-          backgroundColor: "#e0e0e0",
-          height: 8,
-          borderRadius: "4px",
-          mr: 2
+          width: '100%',
+          backgroundColor: theme.palette.grey[200],
+          height: 6,
+          borderRadius: "10px",
+          overflow: 'hidden',
+          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.1)'
         }}
       >
         {/* Filled portion */}
         <Box
-            data-testid="password-strength-fill"
+          data-testid="password-strength-fill"
           sx={{
             width: `${percentage}%`,
             backgroundColor: color,
             height: "100%",
-            borderRadius: "4px",
-            transition: "width 0.3s"
+            borderRadius: "10px",
+            transition: "width 0.3s ease",
+            boxShadow: percentage > 50 ? '0 0 5px rgba(0,0,0,0.2)' : 'none'
           }}
         />
       </Box>
-
-      {/* Strength label */}
-      <Typography variant="body2" sx={{ color }}>
-        {label}
-      </Typography>
     </Box>
   );
 };
