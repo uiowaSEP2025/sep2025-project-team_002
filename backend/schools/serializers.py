@@ -24,6 +24,7 @@ class SchoolSerializer(serializers.ModelSerializer):
             "fb",
             "vb",
             "ba",
+            "msoc",
             "wsoc",
             "wr",
             "conference",
@@ -46,6 +47,8 @@ class SchoolSerializer(serializers.ModelSerializer):
             sports.append("Volleyball")
         if obj.ba:
             sports.append("Baseball")
+        if obj.msoc:
+            sports.append("Men's Soccer")
         if obj.wsoc:
             sports.append("Women's Soccer")
         if obj.wr:

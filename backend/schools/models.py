@@ -9,6 +9,7 @@ class Schools(models.Model):
     fb = models.BooleanField()
     vb = models.BooleanField(default=True)
     ba = models.BooleanField(default=True)
+    msoc = models.BooleanField(default=False)
     wsoc = models.BooleanField(default=True)
     wr = models.BooleanField(default=False)
     conference = models.CharField(max_length=255)

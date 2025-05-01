@@ -397,6 +397,7 @@ function Home() {
               <MenuItem value="Football">Football</MenuItem>
               <MenuItem value="Volleyball">Volleyball</MenuItem>
               <MenuItem value="Baseball">Baseball</MenuItem>
+               <MenuItem value="Men's Soccer">Men's Soccer</MenuItem>
               <MenuItem value="Women's Soccer">Women's Soccer</MenuItem>
               <MenuItem value="Wrestling">Wrestling</MenuItem>
             </TextField>

@@ -53,6 +53,7 @@ const sportDisplayToCode = {
   "Football": "fb",
   "Volleyball": "vb",
   "Baseball": "ba",
+  "Men's Soccer": "msoc",
   "Women's Soccer": "wsoc",
   "Wrestling": "wr",
 };
@@ -178,6 +179,7 @@ console.log("Filtered reviews:", filteredReviews);
         else if (data.fb) setSelectedSport("Football");
         else if (data.vb) setSelectedSport("Volleyball");
         else if (data.ba) setSelectedSport("Baseball");
+         else if (data.msoc) setSelectedSport("Men's Soccer");
         else if (data.wsoc) setSelectedSport("Women's Soccer");
         else if (data.wr) setSelectedSport("Wrestling");
       } catch (error) {
@@ -231,6 +233,7 @@ console.log("Filtered reviews:", filteredReviews);
   if (school.fb) availableSports.push("Football");
   if (school.vb) availableSports.push("Volleyball");
   if (school.ba) availableSports.push("Baseball");
+  if (school.msoc) availableSports.push("Men's Soccer");
   if (school.wsoc) availableSports.push("Women's Soccer");
   if (school.wr) availableSports.push("Wrestling");
 

@@ -36,6 +36,8 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "Football": "fb",
             "Volleyball": "vb",
             "Baseball": "ba",
+            "Men's Soccer": "msoc",
+            "Men’s Soccer": "msoc",
             "Women's Soccer": "wsoc",
             "Women’s Soccer": "wsoc",
             "Wrestling": "wr",
@@ -54,6 +56,7 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "fb": "Football",
             "vb": "Volleyball",
             "ba": "Baseball",
+            "msoc": "Men's Soccer",
             "wsoc": "Women's Soccer",
             "wr": "Wrestling",
         }

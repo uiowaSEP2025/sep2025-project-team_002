@@ -135,6 +135,7 @@ const ReviewForm = () => {
           if (school.fb) sports.push("Football");
           if (school.vb) sports.push("Volleyball");
           if (school.ba) sports.push("Baseball");
+           if (school.msoc) sports.push("Men's Soccer");
           if (school.wsoc) sports.push("Women's Soccer");
           if (school.wr) sports.push("Wrestling");
           setAvailableSports(sports);
@@ -168,6 +169,7 @@ const handleChange = (e) => {
       if (selectedSchool.fb) sports.push("Football");
       if (selectedSchool.vb) sports.push("Volleyball");
       if (selectedSchool.ba) sports.push("Baseball");
+      if (selectedSchool.msoc) sports.push("Men's Soccer");
       if (selectedSchool.wsoc) sports.push("Women's Soccer");
       if (selectedSchool.wr) sports.push("Wrestling");
       setAvailableSports(sports);
@@ -332,6 +334,7 @@ const handleChange = (e) => {
                   if (newValue.fb) sports.push("Football");
                   if (newValue.vb) sports.push("Volleyball");
                   if (newValue.ba) sports.push("Baseball");
+                  if (newValue.msoc) sports.push("Men's Soccer");
                   if (newValue.wsoc) sports.push("Women's Soccer");
                   if (newValue.wr) sports.push("Wrestling");
                   setAvailableSports(sports);

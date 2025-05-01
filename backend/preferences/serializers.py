@@ -14,6 +14,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "Football": "fb",
             "Volleyball": "vb",
             "Baseball": "ba",
+            "Men's Soccer": "msoc",
             "Women's Soccer": "wsoc",
             "Wrestling": "wr",
         }
@@ -33,6 +34,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "fb": "Football",
             "vb" :"Volleyball",
             "ba": "Baseball",
+            "msoc": "Men's Soccer",
             "wsoc": "Women's Soccer",
             "wr": "Wrestling",
         }
