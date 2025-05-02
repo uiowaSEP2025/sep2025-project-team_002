@@ -159,13 +159,13 @@ const SidebarWrapper = ({ title = "My Account", menuItems = [], children }) => {
         </Grid>
       )}
 
-      {/* MOBILE: Hamburger icon in top-left corner */}
+      {/* MOBILE: Hamburger icon in top-right corner */}
       {isMobile && (
         <Box
           sx={{
             position: "fixed",
             top: 16,
-            left: 16,
+            right: 16,
             zIndex: 3000
           }}
         >
