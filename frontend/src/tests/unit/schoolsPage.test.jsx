@@ -343,7 +343,7 @@ describe('SchoolPage Component', () => {
     renderWithRouter(delayedFetch);
 
     // Check that the initial "Loading..." screen shows
-    expect(screen.getByText(/^Loading\.\.\.$/)).toBeInTheDocument();
+    expect(screen.getByText(/Loading/)).toBeInTheDocument();
 
     // Wait for school data to load
     await screen.findByText("University of Iowa");

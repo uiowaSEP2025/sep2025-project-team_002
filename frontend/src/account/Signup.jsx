@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Grid,
   Typography,
@@ -11,9 +11,15 @@ import {
   Radio,
   Tooltip,
   IconButton,
-  InputAdornment
+  InputAdornment,
+  Paper,
+  Alert,
+  Collapse,
+  Divider,
+  useTheme,
+  alpha,
+  Link as MuiLink
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion";
 import ArrowRightIcon from "@mui/icons-material/ArrowDropUp";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -21,17 +27,18 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InfoIcon from "@mui/icons-material/Info";
-import { useNavigate } from "react-router-dom";
-import API_BASE_URL from '../utils/config.js';  // Adjust the path based on your file structure
+import { Link, useNavigate } from "react-router-dom";
+import API_BASE_URL from '../utils/config.js';
 
 // Use the PasswordStrengthBar you created
 import PasswordStrengthBar from "../components/PasswordStrengthBar.jsx";
 
 function Signup() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   // Local state for the signup form
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
     email: "",
@@ -41,14 +48,23 @@ function Signup() {
   });
 
   // Toggles for show/hide password
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // State for feedback messages (error/success)
-  const [message, setMessage] = React.useState("");
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("error");
 
   // State for toggling the features list on the left side
-  const [showFeatures, setShowFeatures] = React.useState(false);
+  const [showFeatures, setShowFeatures] = useState(false);
+
+  // State for animation
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => {
+    // Trigger fade-in animation after component mounts
+    setTimeout(() => setFadeIn(true), 100);
+  }, []);
 
   // Toggle the display of the feature list
   const handleToggleFeatures = () => {
@@ -92,16 +108,18 @@ function Signup() {
     // Check if any required field is missing
     if (!formData.first_name || !formData.last_name || !formData.email || !formData.password || !formData.verifyPassword || !formData.transferType) {
         setMessage("Please fill in all required fields.");
+        setMessageType("error");
         return;
     }
 
     if (!passwordsMatch) {
       setMessage("Passwords do not match!");
+      setMessageType("error");
       return;
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/signup/`, 
+      const response = await fetch(`${API_BASE_URL}/users/signup/`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -116,10 +134,12 @@ function Signup() {
 
       if (response.ok) {
         setMessage("Signup successful! Redirecting to login...");
-        setTimeout(() => navigate("/login"), 1500);
+        setMessageType("success");
+        setTimeout(() => navigate("/login", { state: { fromSignup: true } }), 1500);
       } else {
         const errorData = await response.json();
         setMessage("Signup failed: " + (errorData.detail || errorData.error || "Unknown error"));
+        setMessageType("error");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -129,13 +149,14 @@ function Signup() {
       } else {
         setMessage("Network error: " + error.message);
       }
+      setMessageType("error");
     }
   };
 
 
 
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box sx={{ position: "relative", minHeight: '100vh' }}>
       {/* Back Arrow to home */}
       <Box
         sx={{
@@ -147,22 +168,28 @@ function Signup() {
       >
         <Button
           variant="text"
-          onClick={() => navigate("/")}
+          component={Link}
+          to="/"
           startIcon={<ArrowBackIcon />}
-          sx={{ color: "white" }}
+          sx={{
+            color: "white",
+            '&:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.1)'
+            }
+          }}
         >
-        Back to Home
-      </Button>
+          Back to Home
+        </Button>
       </Box>
 
-      <Grid container sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+      <Grid container sx={{ minHeight: "100vh" }}>
         {/* LEFT SIDE: Modern App Description & Feature Dropdown */}
         <Grid
           item
           xs={12}
           md={6}
           sx={{
-            backgroundColor: "#1a1a1a",
+            background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.secondary.dark} 100%)`,
             color: "white",
             display: "flex",
             flexDirection: "column",
@@ -170,62 +197,112 @@ function Signup() {
             pt: 10,
             px: 4,
             textAlign: "center",
-            position: "relative"
+            position: "relative",
+            overflow: 'hidden'
           }}
         >
+          {/* Decorative circles */}
+          <Box sx={{
+            position: 'absolute',
+            width: '300px',
+            height: '300px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
+            top: '-100px',
+            left: '-100px',
+          }} />
+          <Box sx={{
+            position: 'absolute',
+            width: '200px',
+            height: '200px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            bottom: '50px',
+            right: '-50px',
+          }} />
+
+          <Box sx={{
+            position: 'relative',
+            zIndex: 2,
+            opacity: fadeIn ? 1 : 0,
+            transform: fadeIn ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.6s ease-out, transform 0.6s ease-out'
+          }}>
           <Typography variant="h3" gutterBottom sx={{ fontWeight: 700 }}>
             Athletic Insider
           </Typography>
-          <Typography variant="h6" gutterBottom sx={{ fontWeight: 400 }}>
+          <Typography variant="h6" gutterBottom sx={{ fontWeight: 400, opacity: 0.9 }}>
             Sign up to explore your future school!
           </Typography>
-          <Typography
-            variant="subtitle1"
+
+          <Box
             onClick={handleToggleFeatures}
             sx={{
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
               mt: 4,
-              fontWeight: 500
+              py: 1,
+              px: 2,
+              borderRadius: 2,
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                transform: 'translateY(-2px)'
+              }
             }}
           >
-            Take a peek at our top features
-            {showFeatures ? (
-              <ArrowRightIcon sx={{ ml: 1 }} />
-            ) : (
-              <ArrowDropDownIcon sx={{ ml: 1 }} />
-            )}
-          </Typography>
-          <AnimatePresence>
-            {showFeatures && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4 }}
-                style={{ textAlign: "left" }}
-              >
-                <Box sx={{ p: 2 }}>
-                  {[
-                    "Share your collegiate athletic experiences anonymously.",
-                    "Help transfer athletes find schools that match their desires.",
-                    "Rate facilities, team culture, coaching, dining, travel, and more.",
-                    "Gain insights into athletic department culture and additional resources."
-                  ].map((feature, index) => (
-                    <Typography
-                      key={index}
-                      variant="body1"
-                      sx={{ display: "flex", alignItems: "center", color: "#ccc", mt: 1 }}
-                    >
-                      <CheckCircleIcon sx={{ color: "lightgreen", mr: 1 }} /> {feature}
-                    </Typography>
-                  ))}
-                </Box>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            <Typography
+              variant="subtitle1"
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 500
+              }}
+            >
+              Take a peek at our top features
+              {showFeatures ? (
+                <ArrowRightIcon sx={{ ml: 1 }} />
+              ) : (
+                <ArrowDropDownIcon sx={{ ml: 1 }} />
+              )}
+            </Typography>
+          </Box>
+
+          <Collapse in={showFeatures} timeout={400}>
+            <Paper
+              elevation={0}
+              sx={{
+                mt: 2,
+                p: 2,
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                borderRadius: 2,
+                textAlign: 'left'
+              }}
+            >
+              {[
+                "Share your collegiate athletic experiences anonymously.",
+                "Help transfer athletes find schools that match their desires.",
+                "Rate facilities, team culture, coaching, dining, travel, and more.",
+                "Gain insights into athletic department culture and additional resources."
+              ].map((feature, index) => (
+                <Typography
+                  key={index}
+                  variant="body2"
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    mt: 1.5
+                  }}
+                >
+                  <CheckCircleIcon sx={{ color: theme.palette.success.light, mr: 1, fontSize: '1rem' }} />
+                  {feature}
+                </Typography>
+              ))}
+            </Paper>
+          </Collapse>
+          </Box>
         </Grid>
 
         {/* RIGHT SIDE: Signup Form */}
@@ -237,49 +314,73 @@ function Signup() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            p: 4
+            p: 4,
+            backgroundColor: theme.palette.background.default
           }}
         >
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            style={{ width: "100%", maxWidth: 400 }}
+          <Box
+            sx={{
+              width: '100%',
+              maxWidth: 450,
+              opacity: fadeIn ? 1 : 0,
+              transform: fadeIn ? 'translateX(0)' : 'translateX(50px)',
+              transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+              transitionDelay: '0.2s'
+            }}
           >
-            <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 600 }}>
-              Sign Up
-            </Typography>
-
-            {/* Error/Success Message */}
-            {message && (
-              <Typography variant="body1" color="error" align="center" sx={{ mb: 2 }}>
-                {message}
+            <Paper
+              elevation={3}
+              sx={{
+                p: 4,
+                borderRadius: 3,
+                backgroundColor: theme.palette.background.paper,
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+              }}
+            >
+              <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 600, mb: 3 }}>
+                Sign Up
               </Typography>
-            )}
+
+              {/* Error/Success Message */}
+              {message && (
+                <Alert
+                  severity={messageType}
+                  sx={{ mb: 3, borderRadius: 2 }}
+                  variant="filled"
+                >
+                  {message}
+                </Alert>
+              )}
 
             <form onSubmit={handleSubmit}>
-              <TextField
-                fullWidth
-                margin="normal"
-                label="First Name"
-                name="first_name"
-                value={formData.first_name}
-                id="signup-first-name"
-                onChange={handleChange}
-                required
-                InputProps={{ sx: { borderRadius: "40px" } }}
-              />
-              <TextField
-                fullWidth
-                margin="normal"
-                label="Last Name"
-                name="last_name"
-                value={formData.last_name}
-                id="signup-last-name"
-                onChange={handleChange}
-                required
-                InputProps={{ sx: { borderRadius: "40px" } }}
-              />
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    label="First Name"
+                    name="first_name"
+                    value={formData.first_name}
+                    id="signup-first-name"
+                    onChange={handleChange}
+                    required
+                    sx={{ mb: 2 }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Last Name"
+                    name="last_name"
+                    value={formData.last_name}
+                    id="signup-last-name"
+                    onChange={handleChange}
+                    required
+                    sx={{ mb: 2 }}
+                  />
+                </Grid>
+              </Grid>
               <TextField
                 fullWidth
                 margin="normal"
@@ -290,7 +391,7 @@ function Signup() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                InputProps={{ sx: { borderRadius: "40px" } }}
+                sx={{ mb: 2 }}
                 error={
                   // Show error if user has typed something & it doesn't match basic email pattern
                   formData.email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)
@@ -313,8 +414,8 @@ function Signup() {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                sx={{ mb: 2 }}
                 InputProps={{
-                  sx: { borderRadius: "40px" },
                   endAdornment: (
                     <InputAdornment position="end">
                       {/* Show/Hide password icon */}
@@ -346,6 +447,7 @@ function Signup() {
                 value={formData.verifyPassword}
                 onChange={handleChange}
                 required
+                sx={{ mb: 2 }}
                 error={
                   /* Turn the field red if user has typed something AND it doesn't match */
                   formData.verifyPassword.length > 0 &&
@@ -354,11 +456,11 @@ function Signup() {
                 helperText={
                   formData.verifyPassword.length > 0 ? (
                     passwordsMatch ? (
-                      <Typography component="span" sx={{ color: "green" }}>
+                      <Typography component="span" sx={{ color: theme.palette.success.main, fontWeight: 500 }}>
                         Passwords match
                       </Typography>
                     ) : (
-                      <Typography component="span" sx={{ color: "red" }}>
+                      <Typography component="span" sx={{ color: theme.palette.error.main, fontWeight: 500 }}>
                         Passwords do not match
                       </Typography>
                     )
@@ -367,7 +469,6 @@ function Signup() {
                   )
                 }
                 InputProps={{
-                  sx: { borderRadius: "40px" },
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton edge="end" onClick={toggleShowConfirmPassword}>
@@ -379,47 +480,92 @@ function Signup() {
               />
 
               {/* TRANSFER TYPE RADIO */}
-              <FormControl component="fieldset" margin="normal">
-                <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                  Choose your athletic status:
-                </Typography>
-                <RadioGroup
-                  row
-                  name="transferType"
-                  value={formData.transferType}
-                  onChange={handleChange}
-                >
-                  <FormControlLabel value="high_school" control={<Radio id="signup-high_school" />} label="Prospective High School Athlete" />
-                  <FormControlLabel value="transfer" control={<Radio id="signup-transfer" />} label="Transferring Athlete" />
-                  <FormControlLabel value="graduate" control={<Radio id="signup-graduate" />} label="Graduated Athlete" />
-                </RadioGroup>
-              </FormControl>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  mt: 2,
+                  mb: 3,
+                  borderRadius: 2,
+                  backgroundColor: alpha(theme.palette.primary.light, 0.05),
+                  border: `1px solid ${alpha(theme.palette.primary.light, 0.1)}`
+                }}
+              >
+                <FormControl component="fieldset" fullWidth>
+                  <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600, color: theme.palette.text.primary }}>
+                    Choose your athletic status:
+                  </Typography>
+                  <RadioGroup
+                    name="transferType"
+                    value={formData.transferType}
+                    onChange={handleChange}
+                  >
+                    <FormControlLabel
+                      value="high_school"
+                      control={<Radio id="signup-high_school" color="primary" />}
+                      label="Prospective High School Athlete"
+                      sx={{ mb: 1 }}
+                    />
+                    <FormControlLabel
+                      value="transfer"
+                      control={<Radio id="signup-transfer" color="primary" />}
+                      label="Transferring Athlete"
+                      sx={{ mb: 1 }}
+                    />
+                    <FormControlLabel
+                      value="graduate"
+                      control={<Radio id="signup-graduate" color="primary" />}
+                      label="Graduated Athlete"
+                    />
+                  </RadioGroup>
+                </FormControl>
+              </Paper>
+
               <Button
                 id="signup-button"
                 type="submit"
                 variant="contained"
                 fullWidth
-                sx={{ mt: 2, borderRadius: "40px" }}
-                component={motion.button}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                sx={{
+                  mt: 2,
+                  py: 1.5,
+                  fontWeight: 600,
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+                  },
+                  '&:active': {
+                    transform: 'translateY(1px)'
+                  }
+                }}
                 disabled={isSubmitDisabled}
               >
                 Sign Up
               </Button>
             </form>
 
+            </Paper>
+
             {/* ALREADY HAVE AN ACCOUNT? */}
-            <Box sx={{ mt: 2, textAlign: "center" }}>
-              <Typography
-                variant="body2"
-                sx={{ cursor: "pointer", textDecoration: "underline" }}
-                onClick={() => navigate("/login")}
-              >
-                Already got an account? Log in here
+            <Box sx={{ mt: 3, textAlign: "center" }}>
+              <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
+                Already got an account?{' '}
+                <Link
+                  to="/login"
+                  state={{ fromSignup: true }}
+                  style={{
+                    color: theme.palette.primary.main,
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    '&:hover': { textDecoration: 'underline' }
+                  }}
+                >
+                  Log in here
+                </Link>
               </Typography>
             </Box>
-          </motion.div>
+          </Box>
         </Grid>
       </Grid>
     </Box>
