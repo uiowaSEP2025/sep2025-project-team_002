@@ -86,6 +86,7 @@ function Home() {
   const [filteredSchools, setFilteredSchools] = useState([]);
   const [filterApplied, setFilterApplied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [schoolsLoading, setSchoolsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -142,6 +143,7 @@ function Home() {
 
   const fetchSchools = async () => {
     try {
+      setSchoolsLoading(true);
       const response = await fetch(`${API_BASE_URL}/api/public/schools/`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -151,6 +153,8 @@ function Home() {
     } catch (error) {
       console.error("Error fetching schools:", error);
       setSchools([]);
+    } finally {
+      setSchoolsLoading(false);
     }
   };
 
@@ -205,6 +209,7 @@ function Home() {
 
     try {
       setLoading(true);
+      setSchoolsLoading(true);
       console.log("Applying filters with params:", queryParams.toString());
       const response = await fetch(
         `${API_BASE_URL}/api/filter/?${queryParams.toString()}`
@@ -223,10 +228,14 @@ function Home() {
       console.error("Error applying filters:", error);
     } finally {
       setLoading(false);
+      setSchoolsLoading(false);
     }
   };
 
   const clearFilters = () => {
+    // Set loading state when clearing filters
+    setSchoolsLoading(true);
+
     const emptyFilters = {
       head_coach: "",
       assistant_coaches: "",
@@ -244,6 +253,11 @@ function Home() {
     setFilterApplied(false);
     setFilteredSchools([]);
     // closeFilterDialog();
+
+    // Set loading to false after a short delay to allow the UI to update
+    setTimeout(() => {
+      setSchoolsLoading(false);
+    }, 300);
   };
 
   // Determine which schools to display: filtered if applied, else all
@@ -436,7 +450,33 @@ function Home() {
           }}
         >
           <Grid container spacing={3}>
-            {currentSchools.length > 0 ? (
+            {schoolsLoading ? (
+              // Loading skeleton
+              Array.from(new Array(6)).map((_, index) => (
+                <Grid item xs={12} sm={6} md={4} key={`skeleton-${index}`}>
+                  <Box
+                    sx={{
+                      opacity: 1,
+                      animation: 'pulse 1.5s ease-in-out infinite',
+                      '@keyframes pulse': {
+                        '0%': { opacity: 0.6 },
+                        '50%': { opacity: 0.8 },
+                        '100%': { opacity: 0.6 },
+                      },
+                    }}
+                  >
+                    <Paper
+                      elevation={1}
+                      sx={{
+                        height: 300,
+                        borderRadius: 3,
+                        bgcolor: alpha(theme.palette.background.paper, 0.7),
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              ))
+            ) : currentSchools.length > 0 ? (
               currentSchools.map((school) => (
                 <Grid item xs={12} sm={6} md={4} key={school.id}>
                   <Box
@@ -595,7 +635,7 @@ function Home() {
                   </Box>
                 </Grid>
               ))
-            ) : (
+            ) : !schoolsLoading ? (
               <Grid item xs={12}>
                 <Box
                   sx={{
@@ -632,7 +672,7 @@ function Home() {
                   </Paper>
                 </Box>
               </Grid>
-            )}
+            ) : null}
           </Grid>
         </Box>
 
