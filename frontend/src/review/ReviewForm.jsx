@@ -1,14 +1,18 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation, Link } from "react-router-dom";
 import {
   Box, Grid,
   Typography, TextField, Button, MenuItem, Rating, Tooltip, IconButton,
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, useMediaQuery,
-  Autocomplete
+  Autocomplete, Container, Paper, Alert, useTheme, alpha, Divider
 } from "@mui/material";
-import { motion } from "framer-motion";
 import API_BASE_URL from "../utils/config";
 import InfoIcon from "@mui/icons-material/Info";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SchoolIcon from "@mui/icons-material/School";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import PersonIcon from "@mui/icons-material/Person";
+import StarIcon from "@mui/icons-material/Star";
 
 
 const fetchUserReviews = async () => {
@@ -76,6 +80,7 @@ const submitReview = async (review) => {
 const ReviewForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const theme = useTheme();
   const { schoolId, schoolName, selectedSport } = location.state || {};
   const [searchParams] = useSearchParams();
   const [schools, setSchools] = useState([]);
@@ -86,10 +91,20 @@ const ReviewForm = () => {
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [error, setError] = useState(null); // Add error state
   const [searchQuery, setSearchQuery] = useState("");
+  const [fadeIn, setFadeIn] = useState(false);
+
+  useEffect(() => {
+    // Trigger fade-in animation after component mounts
+    setTimeout(() => setFadeIn(true), 100);
+  }, []);
+
+  // Get school and sport from URL parameters as fallback
+  const schoolIdFromURL = searchParams.get("school");
+  const sportFromURL = searchParams.get("sport");
 
   const [review, setReview] = useState({
-    school: schoolId || "",
-    sport: selectedSport || "",
+    school: schoolId || schoolIdFromURL || "",
+    sport: selectedSport || sportFromURL || "",
     head_coach_name: "",
     review_message: "",
     head_coach: 0,
@@ -124,9 +139,10 @@ const ReviewForm = () => {
       setSchools(fetchedSchools);
       setUserReviews(fetchedReviews);
 
-      // If we have a schoolId, find and set the selected school
-      if (schoolId) {
-        const school = fetchedSchools.find(s => s.id.toString() === schoolId.toString());
+      // If we have a schoolId (either from state or URL), find and set the selected school
+      const effectiveSchoolId = schoolId || schoolIdFromURL;
+      if (effectiveSchoolId) {
+        const school = fetchedSchools.find(s => s.id.toString() === effectiveSchoolId.toString());
         if (school) {
           setSelectedSchool(school);
           // Set available sports based on the pre-selected school
@@ -135,12 +151,15 @@ const ReviewForm = () => {
           if (school.wbb) sports.push("Women's Basketball");
           if (school.fb) sports.push("Football");
           setAvailableSports(sports);
+
+          // Update the review state with the school ID
+          setReview(prev => ({ ...prev, school: effectiveSchoolId }));
         }
       }
     };
     loadData();
 
-  }, [schoolId]);
+  }, [schoolId, schoolIdFromURL]);
 
   const handleChange = (e) => {
     setReview({ ...review, [e.target.name]: e.target.value });
@@ -153,7 +172,7 @@ const ReviewForm = () => {
   const handleSchoolChange = (e) => {
     const schoolId = e.target.value;
     setReview({ ...review, school: schoolId });
-    
+
     const selectedSchool = schools.find(s => s.id.toString() === schoolId.toString());
     if (selectedSchool) {
       setSelectedSchool(selectedSchool);
@@ -195,7 +214,7 @@ const ReviewForm = () => {
     e.preventDefault();
     setIsSubmitted(true);
     setError(null); // Clear any previous errors
-  
+
     // Check for duplicate review dynamically
     const duplicateReview = userReviews.some(
       (r) =>
@@ -203,12 +222,12 @@ const ReviewForm = () => {
         r.sport === review.sport &&
         normalizeString(r.head_coach_name) === normalizeString(review.head_coach_name)
     );
-  
+
     if (duplicateReview) {
       setError("You have already submitted a review for this coach at this school.");
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(`${API_BASE_URL}/api/reviews/review-form/`, {
@@ -216,9 +235,9 @@ const ReviewForm = () => {
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(review),
       });
-  
+
       const data = await response.json();
-      
+
       if (!response.ok) {
         // Display the error message directly from the backend
         setError(data.error || "Failed to submit review. Please try again.");
@@ -232,80 +251,93 @@ const ReviewForm = () => {
   };
 
   return (
-    <>
-      <div style={{
-        maxWidth: '800px',
-        margin: 'auto',
-        padding: '20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'relative',
-        width: "100%",
-        boxSizing: "border-box"
-      }}>
-      <button
-        id="back-button"
-        onClick={() => navigate(-1)}
-        style={{
-          padding: '12px 25px',
-          backgroundColor: '#007bff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-          position: 'absolute',
-          left: 0
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box
+        sx={{
+          opacity: fadeIn ? 1 : 0,
+          transform: fadeIn ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.5s ease, transform 0.5s ease'
         }}
       >
-        ← Back
-      </button>
-      <h2 id="form-title" style={{
-        flex: 1,
-        textAlign: 'center',
-        margin: 0
-      }}>
-        Athletic Insider
-      </h2>
-    </div>
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", p: { xs: 2, md: 4 }, overflowX: "hidden"}}>
-      <Grid container justifyContent="center">
-        <Grid item xs={12} md={6}>
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            style={{ textAlign: "center" }}
+        {/* Header with back button */}
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, position: 'relative' }}>
+          <Button
+            id="back-button"
+            variant="outlined"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => navigate(-1)}
+            sx={{
+              position: { xs: 'relative', md: 'absolute' },
+              left: 0,
+              borderRadius: 2,
+              transition: 'transform 0.2s ease',
+              '&:hover': { transform: 'translateY(-2px)' }
+            }}
           >
-            <Typography id="page-title" variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
-              Submit Your Review
-            </Typography>
-            <Typography variant="h6" sx={{ fontWeight: 400, mb: 4 }}>
-              Share your experience with the school's athletic program.
-            </Typography>
-          </motion.div>
-          <Box id="review-form" component="form" onSubmit={handleSubmit} sx={{ backgroundColor: "#fff", p: { xs: 2, md: 4 }, borderRadius: 2, boxShadow: 3 }}>
-            {error && (
-              <Box
+            Back
+          </Button>
+
+          <Typography
+            id="form-title"
+            variant="h4"
+            component="h1"
+            align="center"
+            sx={{
+              flexGrow: 1,
+              fontWeight: 700,
+              background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            Athletic Insider
+          </Typography>
+        </Box>
+
+        <Grid container justifyContent="center" spacing={3}>
+          <Grid item xs={12} md={8}>
+            <Box sx={{ textAlign: "center", mb: 4 }}>
+              <Typography
+                id="page-title"
+                variant="h4"
                 sx={{
+                  fontWeight: 800,
                   mb: 2,
-                  p: 2,
-                  backgroundColor: '#ffebee',
-                  borderRadius: 1,
-                  textAlign: 'center',
-                  border: '1px solid #ffcdd2'
+                  color: theme.palette.text.primary
                 }}
               >
-                <Typography
-                  color="error"
-                  sx={{
-                    fontWeight: 500,
-                    fontSize: '1.1rem'
-                  }}
-                >
-                  {error}
-                </Typography>
-              </Box>
+                Submit Your Review
+              </Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: 400,
+                  color: theme.palette.text.secondary
+                }}
+              >
+                Share your experience with the school's athletic program.
+              </Typography>
+            </Box>
+          <Paper
+              id="review-form"
+              component="form"
+              onSubmit={handleSubmit}
+              elevation={2}
+              sx={{
+                p: { xs: 3, md: 4 },
+                borderRadius: 3,
+                backgroundColor: alpha(theme.palette.background.paper, 0.8),
+              }}
+            >
+            {error && (
+              <Alert
+                severity="error"
+                sx={{ mb: 3, borderRadius: 2 }}
+                variant="filled"
+                onClose={() => setError(null)}
+              >
+                {error}
+              </Alert>
             )}
 
             <Autocomplete
@@ -395,8 +427,23 @@ const ReviewForm = () => {
                   { label: "Player Development* ", name: "player_development", info: "Assess how well the coaches helps athletes improve their skills." },
                   { label: "NIL Opportunity* ", name: "nil_opportunity", info: "Rate your school's NIL potential and the opportunities for athletes to profit." }
               ].map((field, index) => (
-                <Box id={`rating-container-${field.name}`} key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  <Typography id={`rating-label-${field.name}`} sx={{ width: "50%" }}>
+                <Box id={`rating-container-${field.name}`} key={index} sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  alignItems: { xs: "flex-start", sm: "center" },
+                  mb: 3,
+                  pb: { xs: 1, sm: 0 },
+                  borderBottom: { xs: `1px solid ${alpha(theme.palette.divider, 0.1)}`, sm: "none" }
+                }}>
+                  <Typography
+                    id={`rating-label-${field.name}`}
+                    sx={{
+                      width: { xs: "100%", sm: "50%" },
+                      mb: { xs: 1, sm: 0 },
+                      display: "flex",
+                      alignItems: "center"
+                    }}
+                  >
                     {field.label}:
                     <Tooltip title={field.info} arrow>
                       <IconButton id={`info-button-${field.name}`} size="small" sx={{ ml: 1 }}>
@@ -404,20 +451,29 @@ const ReviewForm = () => {
                       </IconButton>
                     </Tooltip>
                   </Typography>
-                  <Rating
-                    id={`rating-${field.name}`}
-                    data-testid={`rating-${field.name.toLowerCase().replace(' ', '-')}`}
-                    name={field.name}
-                    value={review[field.name]}
-                    max={10}
-                    onChange={(event, newValue) => handleRatingChange(field.name, newValue)}
-                    sx={{ color: !review[field.name] && isSubmitted ? "red" : "" }}
-                  />
-                  {isSubmitted && !review[field.name] && (
-                    <Typography sx={{ color: "red", ml: 2, fontSize: "0.9rem" }}>
-                      Required
-                    </Typography>
-                  )}
+                  <Box sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: { xs: "100%", sm: "auto" }
+                  }}>
+                    <Rating
+                      id={`rating-${field.name}`}
+                      data-testid={`rating-${field.name.toLowerCase().replace(' ', '-')}`}
+                      name={field.name}
+                      value={review[field.name]}
+                      max={10}
+                      onChange={(event, newValue) => handleRatingChange(field.name, newValue)}
+                      sx={{
+                        color: !review[field.name] && isSubmitted ? "red" : "",
+                        ml: { xs: 0, sm: 0 }
+                      }}
+                    />
+                    {isSubmitted && !review[field.name] && (
+                      <Typography sx={{ color: "red", ml: 2, fontSize: "0.9rem" }}>
+                        Required
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
               ))}
 
@@ -448,30 +504,111 @@ const ReviewForm = () => {
                   r.sport === review.sport &&
                   normalizeString(r.head_coach_name) === normalizeString(review.head_coach_name)
               )}
+              sx={{
+                py: 1.5,
+                fontWeight: 600,
+                borderRadius: 2,
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+                },
+                '&:active': {
+                  transform: 'translateY(1px)'
+                }
+              }}
             >
               Submit Review
             </Button>
 
             {isDuplicateReview && (
-              <Typography id="duplicate-error" color="error" sx={{ mt: 2, textAlign: "center" }}>
+              <Alert
+                id="duplicate-error"
+                severity="error"
+                sx={{ mt: 3, borderRadius: 2 }}
+                variant="outlined"
+              >
                 You have already submitted a review for this school, sport, and head coach.
-              </Typography>
+              </Alert>
             )}
 
-            <Dialog id="confirm-dialog" open={openConfirm} onClose={() => setOpenConfirm(false)}>
-              <DialogTitle>Confirm Submission</DialogTitle>
-              <DialogContent><DialogContentText>Are you sure you want to submit your review?
-              <br />You cannot change your review once it is submitted.</DialogContentText></DialogContent>
-              <DialogActions>
-                <Button id="cancel-button" onClick={() => setOpenConfirm(false)} color="secondary">Cancel</Button>
-                <Button id="confirm-button" onClick={handleSubmit} color="primary" variant="contained">Confirm</Button>
+            <Dialog
+              id="confirm-dialog"
+              open={openConfirm}
+              onClose={() => setOpenConfirm(false)}
+              PaperProps={{
+                elevation: 3,
+                sx: {
+                  borderRadius: 3,
+                  p: 2,
+                  backgroundColor: theme.palette.background.paper,
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+                }
+              }}
+            >
+              <DialogTitle
+                sx={{
+                  textAlign: 'center',
+                  fontWeight: 600,
+                  color: theme.palette.primary.main,
+                  pb: 1
+                }}
+              >
+                Confirm Submission
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText sx={{ textAlign: 'center', mb: 2 }}>
+                  Are you sure you want to submit your review?
+                  <br />You cannot change your review once it is submitted.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 3 }}>
+                <Button
+                  id="cancel-button"
+                  onClick={() => setOpenConfirm(false)}
+                  color="secondary"
+                  sx={{
+                    px: 3,
+                    py: 1,
+                    fontWeight: 500,
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                      backgroundColor: alpha(theme.palette.error.light, 0.1),
+                      borderColor: theme.palette.error.light,
+                      color: theme.palette.error.main
+                    }
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  id="confirm-button"
+                  onClick={handleSubmit}
+                  color="primary"
+                  variant="contained"
+                  sx={{
+                    px: 3,
+                    py: 1,
+                    fontWeight: 600,
+                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+                    },
+                    '&:active': {
+                      transform: 'translateY(1px)'
+                    }
+                  }}
+                >
+                  Confirm
+                </Button>
               </DialogActions>
             </Dialog>
-          </Box>
+          </Paper>
         </Grid>
       </Grid>
-    </Box>
-    </>
+      </Box>
+    </Container>
   );
 };
 

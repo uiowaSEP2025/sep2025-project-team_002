@@ -80,6 +80,16 @@ def get_review_summary(request, school_id):
         # Get school or return 404
         school = get_object_or_404(Schools, id=school_id)
 
+        # Convert sport code to full name if needed
+        code_to_display = {
+            "mbb": "Men's Basketball",
+            "wbb": "Women's Basketball",
+            "fb": "Football",
+        }
+
+        # Use the full sport name for display
+        display_sport = code_to_display.get(sport, sport)
+
         # Get all reviews for this school and sport
         reviews = Reviews.objects.filter(school=school, sport=sport).order_by(
             "-created_at"
@@ -88,7 +98,7 @@ def get_review_summary(request, school_id):
         if not reviews.exists():
             return Response(
                 {
-                    "summary": f"No reviews available for {sport} at {school.school_name} yet."
+                    "summary": f"No reviews available for {display_sport} at {school.school_name} yet."
                 },
                 status=status.HTTP_200_OK,
             )
@@ -168,7 +178,7 @@ def get_review_summary(request, school_id):
                 messages=[
                     {
                         "role": "system",
-                        "content": f"You are a helpful assistant that summarizes general aspects of {sport} programs (excluding coach-specific information). Focus on athletic facilities, NIL opportunities, campus life, athletic department support, and team culture. Provide a concise 2-3 sentence summary that captures the overall sentiment about these aspects from the reviews.",
+                        "content": f"You are a helpful assistant that summarizes general aspects of {display_sport} programs (excluding coach-specific information). Focus on athletic facilities, NIL opportunities, campus life, athletic department support, and team culture. Provide a concise 2-3 sentence summary that captures the overall sentiment about these aspects from the reviews.",
                     },
                     {"role": "user", "content": all_reviews_text},
                 ],
@@ -218,7 +228,7 @@ def get_review_summary(request, school_id):
                     messages=[
                         {
                             "role": "system",
-                            "content": f"You are a helpful assistant that summarizes {sport} program reviews for {coach_reviews[latest_coach_normalized]['original_name']}. Provide a concise summary in exactly 2 sentences, focusing on coaching style, player development, and overall coaching performance. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{coach_reviews[latest_coach_normalized]['original_name']}'). Focus only on coach-specific aspects.",
+                            "content": f"You are a helpful assistant that summarizes {display_sport} program reviews for {coach_reviews[latest_coach_normalized]['original_name']}. Provide a concise summary in exactly 2 sentences, focusing on coaching style, player development, and overall coaching performance. Always talk about it from a reviews perspective, like 'reviewers state...' or 'according to reviews...', and always refer to the coach by their actual name ('{coach_reviews[latest_coach_normalized]['original_name']}'). Focus only on coach-specific aspects.",
                         },
                         {"role": "user", "content": reviews_text},
                     ],

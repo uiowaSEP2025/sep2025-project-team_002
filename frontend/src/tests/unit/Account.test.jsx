@@ -379,7 +379,7 @@ describe("Account Page Testing", () => {
     );
 
     // For non-.edu emails, a personal email warning should be shown and the verify button should not be visible
-    expect(await screen.findByText(/Personal Email without Verification/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Personal Email/i)).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /verify email/i })).not.toBeInTheDocument();
   });
 
@@ -447,15 +447,9 @@ describe("Account Page Testing", () => {
       );
 
       await screen.findByText(/School Email Not Verified/i);
-      const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
       const verifyBtn = screen.getByRole("button", { name: /verify email/i });
       fireEvent.click(verifyBtn);
-
-      // Verify that the alert is called with the error message from the server
-      await waitFor(() =>
-        expect(alertSpy).toHaveBeenCalledWith("Something went wrong on the server.")
-      );
-      alertSpy.mockRestore();
+      expect(await screen.findByText("Something went wrong on the server.")).toBeInTheDocument();
     });
 
     it("alerts generic error message on network error during verification", async () => {
@@ -479,15 +473,9 @@ describe("Account Page Testing", () => {
       );
 
       await screen.findByText(/School Email Not Verified/i);
-      const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
       const verifyBtn = screen.getByRole("button", { name: /verify email/i });
       fireEvent.click(verifyBtn);
-
-      // Verify that a generic error message is alerted in case of a network failure
-      await waitFor(() =>
-        expect(alertSpy).toHaveBeenCalledWith("Something went wrong. Please try again later.")
-      );
-      alertSpy.mockRestore();
+      expect(await screen.findByText("Something went wrong. Please try again later.")).toBeInTheDocument();
     });
   });
 });

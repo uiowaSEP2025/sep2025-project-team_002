@@ -61,15 +61,17 @@ describe("Footer Component", () => {
     await userEvent.click(screen.getByText(/report issue/i));
     expect(await screen.findByText(/report an issue/i)).toBeInTheDocument();
 
-    const closeBtn = screen.getByRole("button", { name: /×/i });
-    await userEvent.click(closeBtn);
+    // const closeBtn = screen.getByRole("button", { name: /×/i });
+    // await userEvent.click(closeBtn);
+    const cancelBtn = screen.getByRole("button", { name: /cancel/i });
+    await userEvent.click(cancelBtn);
 
     await waitFor(() => {
       expect(screen.queryByText(/report an issue/i)).not.toBeInTheDocument();
     });
   });
 
-    it("closes notification when OK is clicked", async () => {
+    it("closes notification when the snackbar close icon is clicked", async () => {
         vi.stubGlobal("fetch", vi.fn(() =>
           Promise.resolve({ ok: true, json: () => Promise.resolve({}) })
         ));
@@ -86,9 +88,11 @@ describe("Footer Component", () => {
 
         expect(await screen.findByText(/thank you for your feedback/i)).toBeInTheDocument();
 
-        const okButton = screen.getByRole("button", { name: /ok/i });
-        await userEvent.click(okButton);
-
+        // const okButton = screen.getByRole("button", { name: /ok/i });
+        // await userEvent.click(okButton);
+        // MUI Alert renders a close icon button with aria-label="close"
+        const closeSnackbarButton = screen.getByLabelText(/close/i);
+        await userEvent.click(closeSnackbarButton);
         await waitFor(() => {
           expect(screen.queryByText(/thank you for your feedback/i)).not.toBeInTheDocument();
         });

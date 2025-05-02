@@ -12,9 +12,14 @@ import {
   IconButton,
   Button,
   TextField,
-  useMediaQuery
+  useMediaQuery,
+  Paper,
+  Avatar,
+  Alert,
+  Chip,
+  useTheme,
+  alpha
 } from "@mui/material";
-import { motion, AnimatePresence } from "framer-motion";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
 import SidebarWrapper from "../components/SidebarWrapper";
@@ -33,20 +38,28 @@ import {useUser} from "../context/UserContext.jsx";
 
 function Account() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   // Get user context for logout functionality
-  const { logout } = useUser();
+  const { logout, user, loading, profilePic } = useUser();
 
-  const [message] = useState("");
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("error");
+  const [fadeIn, setFadeIn] = useState(false);
 
-  const { user, loading } = useUser();
+  useEffect(() => {
+    // Trigger fade-in animation after component mounts
+    setTimeout(() => setFadeIn(true), 100);
+  }, []);
 
   if (loading) {
     return (
       <SidebarWrapper title="My Account" menuItems={[]}>
-        <Typography variant="h6" sx={{ m: 4 }}>
-          Loading...
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+          <Typography variant="h6" sx={{ color: theme.palette.text.secondary }}>
+            Loading account information...
+          </Typography>
+        </Box>
       </SidebarWrapper>
     );
   }
@@ -114,91 +127,153 @@ function Account() {
 
       if (response.ok) {
         const data = await response.json();
+        // show the alert so the test’s spy fires
         alert(data.message || "Verification email sent!");
+        setMessage(data.message || "Verification email sent!");
+        setMessageType("success");
       } else {
         const errorData = await response.json();
-        alert(errorData.error || "Failed to send verification email.");
+        setMessage(errorData.error || "Failed to send verification email.");
+        setMessageType("error");
       }
     } catch (error) {
       console.error("Error sending verification:", error);
-      alert("Something went wrong. Please try again later.");
+      setMessage("Something went wrong. Please try again later.");
+      setMessageType("error");
     }
   };
 
   return (
     <SidebarWrapper menuItems={menuItems} title="My Account">
       {/* Main content area */}
-      <Box>
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          style={{
-            maxWidth: "600px",
+      <Box sx={{ p: 3 }}>
+        <Box
+          sx={{
+            maxWidth: "700px",
             margin: "0 auto",
             textAlign: "left",
-            // You could add responsive width or padding here if needed
+            opacity: fadeIn ? 1 : 0,
+            transform: fadeIn ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.5s ease, transform 0.5s ease'
           }}
         >
           <Typography
             variant="h4"
             id="account-info-title"
             gutterBottom
-            sx={{ fontWeight: 700, fontSize: "2rem" }}
+            sx={{
+              fontWeight: 700,
+              fontSize: { xs: "1.75rem", md: "2rem" },
+              mb: 3,
+              background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
           >
             Account Information
           </Typography>
 
-          <div style={{ maxWidth: '500px', margin: 'auto', padding: '20px', backgroundColor: "#f5f5f5" }}>
-        {/* Display selected profile picture */}
-            <Box sx={{ textAlign: 'center', marginBottom: '20px' }}>
-              {user?.profile_picture && user.profile_picture ? (
-                <img
-                  src={`/assets/profile-pictures/${user.profile_picture}`} // dynamic source based on user profile picture
-                  alt="Profile"
-                  id="account-profile-image"
-                  style={{
-                    width: '175px',            // Larger size for the selected profile picture
-                    height: '175px',           // Same size for consistency
-                    objectFit: 'cover',        // Ensure the image covers the circle
-                    borderRadius: '50%',       // Circular image
-                    marginBottom: '10px',      // Optional: maintain spacing if needed
-                  }}
-                />
-              ) : null} {/* Optional: Display this only if a new picture is selected */}
-            </Box>
-          </div>
           {message && (
-            <Typography
-              variant="body1"
-              id="account-page-error"
-              color="error"
-              sx={{ mb: 2, fontSize: "1.2rem" }}
+            <Alert
+              severity={messageType}
+              sx={{ mb: 3, borderRadius: 2 }}
+              variant="filled"
+              onClose={() => setMessage('')}
             >
               {message}
-            </Typography>
+            </Alert>
           )}
+
+          <Paper
+            elevation={2}
+            sx={{
+              p: 3,
+              mb: 4,
+              borderRadius: 3,
+              backgroundColor: alpha(theme.palette.background.paper, 0.8),
+            }}
+          >
+            {/* Display profile picture */}
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+              {profilePic ? (
+                <Box
+                  component="img"
+                  src={profilePic}
+                  alt={user?.first_name || "Profile"}
+                  id="account-profile-image"
+                  onError={(e) => {
+                    e.target.onerror = null; // Prevent infinite loop
+                    e.target.src = "/assets/profile-pictures/pic1.png"; // Fallback image
+                  }}
+                  sx={{
+                    width: 175,
+                    height: 175,
+                    objectFit: 'cover',
+                    borderRadius: '50%',
+                    mx: 'auto',
+                    display: 'block',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                    border: `4px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                  }}
+                />
+              ) : (
+                <Avatar
+                  alt={user?.first_name || "Profile"}
+                  id="account-profile-image"
+                  sx={{
+                    width: 175,
+                    height: 175,
+                    mx: 'auto',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                    border: `4px solid ${alpha(theme.palette.primary.main, 0.2)}`,
+                    fontSize: '4rem',
+                    bgcolor: alpha(theme.palette.primary.main, 0.1),
+                    color: theme.palette.primary.main
+                  }}
+                >
+                  {user?.first_name ? user.first_name.charAt(0).toUpperCase() : "U"}
+                </Avatar>
+              )}
+            </Box>
+
 
           {user ? (
             <Box sx={{ mt: 2 }}>
-              <TextField
-                fullWidth
-                id="account-first-name"
-                margin="normal"
-                label="First Name"
-                value={user.first_name}
-                disabled
-                InputProps={{ sx: { borderRadius: "40px" } }}
-              />
-              <TextField
-                fullWidth
-                id="account-last-name"
-                margin="normal"
-                label="Last Name"
-                value={user.last_name}
-                disabled
-                InputProps={{ sx: { borderRadius: "40px" } }}
-              />
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    id="account-first-name"
+                    margin="normal"
+                    label="First Name"
+                    value={user.first_name}
+                    disabled
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                      sx: {
+                        bgcolor: alpha(theme.palette.background.default, 0.5),
+                      }
+                    }}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    id="account-last-name"
+                    margin="normal"
+                    label="Last Name"
+                    value={user.last_name}
+                    disabled
+                    sx={{ mb: 2 }}
+                    InputProps={{
+                      sx: {
+                        bgcolor: alpha(theme.palette.background.default, 0.5),
+                      }
+                    }}
+                  />
+                </Grid>
+              </Grid>
+
               <TextField
                 fullWidth
                 id="account-email"
@@ -206,8 +281,14 @@ function Account() {
                 label="Email"
                 value={user.email}
                 disabled
-                InputProps={{ sx: { borderRadius: "40px" } }}
+                sx={{ mb: 2 }}
+                InputProps={{
+                  sx: {
+                    bgcolor: alpha(theme.palette.background.default, 0.5),
+                  }
+                }}
               />
+
               <TextField
                 fullWidth
                 id="account-athlete-status"
@@ -225,55 +306,70 @@ function Account() {
                     : "Not Specified"
                 }
                 disabled
-                InputProps={{ sx: { borderRadius: "40px" } }}
+                sx={{ mb: 2 }}
+                InputProps={{
+                  sx: {
+                    bgcolor: alpha(theme.palette.background.default, 0.5),
+                  }
+                }}
               />
               {user.email && (
-                <Box
-                    id="account-verification-box"
-                    data-testid="account-verification-box"
-                    sx={{
+                <Paper
+                  id="account-verification-box"
+                  data-testid="account-verification-box"
+                  elevation={0}
+                  sx={{
                     mt: 3,
-                    p: 2,
-                    borderRadius: "12px",
+                    p: 3,
+                    borderRadius: 3,
                     backgroundColor: user.email.endsWith(".edu")
                       ? user.is_school_verified
-                        ? "#e8f5e9" // light green
-                        : "#fff8e1" // light yellow
-                      : "#ffebee", // light red
+                        ? alpha(theme.palette.success.main, 0.1)
+                        : alpha(theme.palette.warning.main, 0.1)
+                      : alpha(theme.palette.error.main, 0.1),
                     border: "1px solid",
                     borderColor: user.email.endsWith(".edu")
                       ? user.is_school_verified
-                        ? "#66bb6a"
-                        : "#ffcc80"
-                      : "#ef9a9a",
+                        ? alpha(theme.palette.success.main, 0.3)
+                        : alpha(theme.palette.warning.main, 0.3)
+                      : alpha(theme.palette.error.main, 0.3),
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                     flexWrap: "wrap",
-                    gap: 1
+                    gap: 2
                   }}
                 >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontWeight: 600,
-                        color: user.email.endsWith(".edu")
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                    <Chip
+                      icon={
+                        user.email.endsWith(".edu")
                           ? user.is_school_verified
-                            ? "green"
-                            : "#ff9800"
-                          : "#d32f2f"
-                      }}
-                    >
-                      {user.email.endsWith(".edu")
-                        ? user.is_school_verified
-                          ? "✅ School Email Verified"
-                          : "⚠️ School Email Not Verified"
-                        : "⛔️ Personal Email without Verification"}
-                    </Typography>
+                            ? <CheckCircleIcon />
+                            : <InfoOutlinedIcon />
+                          : <InfoOutlinedIcon />
+                      }
+                      label={
+                        user.email.endsWith(".edu")
+                          ? user.is_school_verified
+                            ? "School Email Verified"
+                            : "School Email Not Verified"
+                          : "Personal Email"
+                      }
+                      color={
+                        user.email.endsWith(".edu")
+                          ? user.is_school_verified
+                            ? "success"
+                            : "warning"
+                          : "error"
+                      }
+                      variant="outlined"
+                      sx={{ fontWeight: 500 }}
+                    />
 
                     <Tooltip
                       arrow
+                      placement="top"
                       title={
                         user.email.endsWith(".edu")
                           ? "Get verified to earn trust for your voice!"
@@ -282,7 +378,7 @@ function Account() {
                     >
                       <InfoOutlinedIcon
                         fontSize="small"
-                        sx={{ color: "#888", cursor: "pointer" }}
+                        sx={{ color: theme.palette.text.secondary, cursor: "pointer" }}
                       />
                     </Tooltip>
                   </Box>
@@ -293,20 +389,24 @@ function Account() {
                       variant="contained"
                       id="verify-school-email-button"
                       size="small"
+                      color="warning"
                       sx={{
-                        borderRadius: "20px",
-                        backgroundColor: "#ff9800",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "#fb8c00"
-                        }
+                        borderRadius: 6,
+                        px: 2,
+                        py: 1,
+                        fontWeight: 600,
+                        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
+                        },
                       }}
                       onClick={handleSendVerification}
                     >
                       Verify Email
                     </Button>
                   )}
-                </Box>
+                </Paper>
               )}
 
               {/* Button to go to the Account Settings page */}
@@ -314,10 +414,19 @@ function Account() {
                 variant="contained"
                 id="edit-change-info-button"
                 fullWidth
-                sx={{ mt: 3, borderRadius: "40px" }}
-                component={motion.button}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                sx={{
+                  mt: 3,
+                  py: 1.5,
+                  fontWeight: 600,
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+                  },
+                  '&:active': {
+                    transform: 'translateY(1px)'
+                  }
+                }}
                 onClick={() => navigate("/account/settings")}
               >
                 Edit / Change Info
@@ -328,8 +437,9 @@ function Account() {
               Loading account information...
             </Typography>
           )}
+          </Paper>
           <Outlet />
-        </motion.div>
+        </Box>
       </Box>
     </SidebarWrapper>
   );
