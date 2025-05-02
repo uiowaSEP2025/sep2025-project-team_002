@@ -43,7 +43,14 @@ function App() {
 
   return (
       <UserProvider>
-        <Box className="App" sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+        <Box className="App" sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+          width: '100%',
+          maxWidth: '100vw'
+        }}>
           <Router>
             <AppContent />
           </Router>
@@ -77,7 +84,13 @@ function AppContent() {
       <AnimatedBackground variant={getBackgroundVariant()} />
       {showNavbar && <Navbar />}
 
-      <Box component="main" sx={{ flexGrow: 1, pt: showNavbar ? 2 : 0 }}>
+      <Box component="main" sx={{
+          flexGrow: 1,
+          pt: showNavbar ? 2 : 0,
+          overflow: 'hidden',
+          width: '100%',
+          maxWidth: '100vw'
+        }}>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />

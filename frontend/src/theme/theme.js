@@ -231,6 +231,60 @@ const theme = createTheme({
         },
       },
     },
+    MuiContainer: {
+      styleOverrides: {
+        root: {
+          overflow: 'hidden',
+          maxWidth: '100%',
+        },
+      },
+    },
+    MuiBox: {
+      styleOverrides: {
+        root: {
+          maxWidth: '100%',
+        },
+      },
+    },
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          maxWidth: '100%',
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 16,
+          boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.08)',
+          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+          overflow: 'hidden',
+          maxWidth: '100%',
+          '&:hover': {
+            transform: 'translateY(-5px)',
+            boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.12)',
+          },
+        },
+      },
+    },
+    MuiTable: {
+      styleOverrides: {
+        root: {
+          tableLayout: 'fixed',
+          width: '100%',
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        },
+      },
+    },
   },
 });
 
