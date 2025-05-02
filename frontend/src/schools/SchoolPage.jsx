@@ -602,20 +602,48 @@ function SchoolPage() {
                       : 0;
 
                     return (
-                      <Grid item xs={6} sm={3} key={field}>
-                        <Typography id={`average-${field}-label`} variant="subtitle2">
-                          {label}
-                        </Typography>
-                        <Rating
-                          id={`average-${field}-rating`}
-                          value={average}
-                          readOnly
-                          precision={0.1}
-                          max={10}
-                        />
-                        <Typography id={`average-${field}-score`} variant="caption">
-                          {average.toFixed(1)}/10
-                        </Typography>
+                      <Grid item xs={12} sm={6} md={3} key={field}>
+                        <Box sx={{
+                          mb: 1.5,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          height: '100%'
+                        }}>
+                          <Typography
+                            id={`average-${field}-label`}
+                            variant="subtitle2"
+                            sx={{ mb: 0.5 }}
+                          >
+                            {label}
+                          </Typography>
+                          <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flexWrap: 'wrap',
+                            gap: 0.5
+                          }}>
+                            <Rating
+                              id={`average-${field}-rating`}
+                              value={average}
+                              readOnly
+                              precision={0.1}
+                              max={10}
+                              size="small"
+                            />
+                            <Typography
+                              id={`average-${field}-score`}
+                              variant="caption"
+                              sx={{
+                                ml: 0.5,
+                                fontWeight: 600,
+                                color: theme.palette.text.secondary,
+                                whiteSpace: 'nowrap'
+                              }}
+                            >
+                              {average.toFixed(1)}/10
+                            </Typography>
+                          </Box>
+                        </Box>
                       </Grid>
                     );
                   })}
@@ -783,23 +811,48 @@ function SchoolPage() {
                             ['player_development', 'Player Development'],
                             ['nil_opportunity', 'NIL Opportunity']
                           ].map(([field, label]) => (
-                            <Grid item xs={6} sm={3} key={field}>
-                              <Typography id={`${field}-label-${review.review_id}`} variant="subtitle2">
-                                {label}
-                              </Typography>
-                              <Rating
-                                id={`${field}-rating-${review.review_id}`}
-                                value={review[field]}
-                                readOnly
-                                max={10}
-                              />
-                              <Typography
-                                id={`${field}-score-${review.review_id}`}
-                                data-testid={`${field}-score-${review.review_id}`}
-                                variant="caption"
-                              >
-                                {review[field]}/10
-                              </Typography>
+                            <Grid item xs={12} sm={6} md={3} key={field}>
+                              <Box sx={{
+                                mb: 1.5,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                height: '100%'
+                              }}>
+                                <Typography
+                                  id={`${field}-label-${review.review_id}`}
+                                  variant="subtitle2"
+                                  sx={{ mb: 0.5 }}
+                                >
+                                  {label}
+                                </Typography>
+                                <Box sx={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  flexWrap: 'wrap',
+                                  gap: 0.5
+                                }}>
+                                  <Rating
+                                    id={`${field}-rating-${review.review_id}`}
+                                    value={review[field]}
+                                    readOnly
+                                    max={10}
+                                    size="small"
+                                  />
+                                  <Typography
+                                    id={`${field}-score-${review.review_id}`}
+                                    data-testid={`${field}-score-${review.review_id}`}
+                                    variant="caption"
+                                    sx={{
+                                      ml: 0.5,
+                                      fontWeight: 600,
+                                      color: theme.palette.text.secondary,
+                                      whiteSpace: 'nowrap'
+                                    }}
+                                  >
+                                    {review[field]}/10
+                                  </Typography>
+                                </Box>
+                              </Box>
                             </Grid>
                           ))}
                         </Grid>
