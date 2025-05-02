@@ -427,8 +427,23 @@ const ReviewForm = () => {
                   { label: "Player Development* ", name: "player_development", info: "Assess how well the coaches helps athletes improve their skills." },
                   { label: "NIL Opportunity* ", name: "nil_opportunity", info: "Rate your school's NIL potential and the opportunities for athletes to profit." }
               ].map((field, index) => (
-                <Box id={`rating-container-${field.name}`} key={index} sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                  <Typography id={`rating-label-${field.name}`} sx={{ width: "50%" }}>
+                <Box id={`rating-container-${field.name}`} key={index} sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+                  alignItems: { xs: "flex-start", sm: "center" },
+                  mb: 3,
+                  pb: { xs: 1, sm: 0 },
+                  borderBottom: { xs: `1px solid ${alpha(theme.palette.divider, 0.1)}`, sm: "none" }
+                }}>
+                  <Typography
+                    id={`rating-label-${field.name}`}
+                    sx={{
+                      width: { xs: "100%", sm: "50%" },
+                      mb: { xs: 1, sm: 0 },
+                      display: "flex",
+                      alignItems: "center"
+                    }}
+                  >
                     {field.label}:
                     <Tooltip title={field.info} arrow>
                       <IconButton id={`info-button-${field.name}`} size="small" sx={{ ml: 1 }}>
@@ -436,20 +451,29 @@ const ReviewForm = () => {
                       </IconButton>
                     </Tooltip>
                   </Typography>
-                  <Rating
-                    id={`rating-${field.name}`}
-                    data-testid={`rating-${field.name.toLowerCase().replace(' ', '-')}`}
-                    name={field.name}
-                    value={review[field.name]}
-                    max={10}
-                    onChange={(event, newValue) => handleRatingChange(field.name, newValue)}
-                    sx={{ color: !review[field.name] && isSubmitted ? "red" : "" }}
-                  />
-                  {isSubmitted && !review[field.name] && (
-                    <Typography sx={{ color: "red", ml: 2, fontSize: "0.9rem" }}>
-                      Required
-                    </Typography>
-                  )}
+                  <Box sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: { xs: "100%", sm: "auto" }
+                  }}>
+                    <Rating
+                      id={`rating-${field.name}`}
+                      data-testid={`rating-${field.name.toLowerCase().replace(' ', '-')}`}
+                      name={field.name}
+                      value={review[field.name]}
+                      max={10}
+                      onChange={(event, newValue) => handleRatingChange(field.name, newValue)}
+                      sx={{
+                        color: !review[field.name] && isSubmitted ? "red" : "",
+                        ml: { xs: 0, sm: 0 }
+                      }}
+                    />
+                    {isSubmitted && !review[field.name] && (
+                      <Typography sx={{ color: "red", ml: 2, fontSize: "0.9rem" }}>
+                        Required
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
               ))}
 
