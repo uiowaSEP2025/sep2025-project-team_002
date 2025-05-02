@@ -22,6 +22,9 @@ import {
   CircularProgress,
   useTheme,
   alpha,
+    useMediaQuery,
+    Select,
+    MenuItem,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -43,6 +46,7 @@ function SchoolPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [school, setSchool] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -335,6 +339,8 @@ console.log("Filtered reviews:", filteredReviews);
     );
   }
 
+
+
   return (
       <>
       {/* Fixed Snackbar at top-center */}
@@ -493,40 +499,63 @@ console.log("Filtered reviews:", filteredReviews);
             border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
           }}
         >
-          <Tabs
-            value={selectedSport}
-            onChange={(e, newValue) => setSelectedSport(newValue)}
-            aria-label="sports tabs"
-            variant="fullWidth"
-            sx={{
-              '& .MuiTabs-indicator': {
-                height: 3,
-                borderRadius: '3px 3px 0 0',
-              },
-              '& .MuiTab-root': {
-                fontWeight: 600,
-                py: 2,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  bgcolor: alpha(theme.palette.primary.main, 0.05),
-                },
-                '&.Mui-selected': {
-                  color: theme.palette.primary.main,
-                },
-              },
-            }}
-          >
-            {availableSports.map((sport) => (
-              <Tab
-                id={`sport-tab-${sport.replace(/\s+/g, '-').toLowerCase()}`}
-                key={sport}
-                label={sport}
-                value={sport}
-                icon={<SportsSoccerIcon sx={{ mr: 1 }} />}
-                iconPosition="start"
-              />
-            ))}
-          </Tabs>
+            {isSmallScreen ? (
+  <Box sx={{ px: 2, py: 2 }}>
+    <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
+      Select a Sport
+    </Typography>
+    <Select
+      value={selectedSport}
+      onChange={(e) => setSelectedSport(e.target.value)}
+      fullWidth
+    >
+      {availableSports.map((sport) => (
+        <MenuItem key={sport} value={sport}>
+          {sport}
+        </MenuItem>
+      ))}
+    </Select>
+  </Box>
+) : (
+  <Tabs
+  value={selectedSport}
+  onChange={(e, newValue) => setSelectedSport(newValue)}
+  aria-label="sports tabs"
+  variant="scrollable"
+  scrollButtons="auto"
+  sx={{
+    '& .MuiTabs-indicator': {
+      height: 3,
+      borderRadius: '3px 3px 0 0',
+    },
+    '& .MuiTab-root': {
+      fontWeight: 600,
+      py: 2,
+      transition: 'all 0.2s ease',
+      '&:hover': {
+        bgcolor: alpha(theme.palette.primary.main, 0.05),
+      },
+      '&.Mui-selected': {
+        color: theme.palette.primary.main,
+      },
+    },
+  }}
+>
+  {availableSports.map((sport) => (
+    <Tab
+      key={sport}
+      value={sport}
+      label={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <SportsSoccerIcon sx={{ fontSize: 18 }} />
+          {sport}
+        </Box>
+      }
+    />
+  ))}
+</Tabs>
+)}
+
         </Paper>
 
         {/* Sport-specific Content */}
