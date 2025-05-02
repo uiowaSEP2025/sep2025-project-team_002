@@ -5,8 +5,14 @@ import Account from "../../account/Account.jsx";
 import { UserProvider, UserContext } from "../../context/UserContext.jsx";
 
 // MockUserProvider wraps the children with a simulated UserContext
-const MockUserProvider = ({ user, children }) => {
-  const value = { user, loading: false };
+const MockUserProvider = ({
+  user = null,
+  loading = false,
+  profilePic = null,
+  logout = vi.fn(),
+  children
+}) => {
+  const value = { user, loading, profilePic, logout };
   return (
     <UserContext.Provider value={value}>
       {children}
@@ -477,5 +483,271 @@ describe("Account Page Testing", () => {
       fireEvent.click(verifyBtn);
       expect(await screen.findByText("Something went wrong. Please try again later.")).toBeInTheDocument();
     });
+
+    it("shows loading UI when context.loading is true", () => {
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider loading={true}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(
+        screen.getByText(/Loading account information\.\.\./i)
+      ).toBeInTheDocument();
+    });
+
+    it("renders profilePic <img> when provided and uses fallback on error", () => {
+      const userData = { first_name: "Alice", email: "alice@example.com" };
+      const fakePic = "http://example.com/pic.png";
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={userData} profilePic={fakePic}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      const img = screen.getByRole("img", { name: /alice/i });
+      expect(img).toHaveAttribute("src", fakePic);
+
+      fireEvent.error(img);
+      expect(img).toHaveAttribute("src", "/assets/profile-pictures/pic1.png");
+    });
+
+    it("shows 'Completed Preference Form' for non-graduate users", () => {
+      const userData = { first_name: "Bob", transfer_type: "transfer" };
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={userData}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText(/Completed Preference Form/i)).toBeInTheDocument();
+    });
+
+    it("hides 'Completed Preference Form' for graduate users", () => {
+      const userData = { first_name: "Carol", transfer_type: "graduate" };
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={userData}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(screen.queryByText(/Completed Preference Form/i)).toBeNull();
+    });
+
+    it("shows 'My Reviews' for non-high_school users", () => {
+      const userData = { first_name: "Dan", transfer_type: "transfer" };
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={userData}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(screen.getByText(/My Reviews/i)).toBeInTheDocument();
+    });
+
+    it("hides 'My Reviews' for high_school users", () => {
+      const userData = { first_name: "Eve", transfer_type: "high_school" };
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={userData}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      expect(screen.queryByText(/My Reviews/i)).toBeNull();
+    });
+
+    it("navigates to settings when 'Edit / Change Info' is clicked", async () => {
+      const userData = { first_name: "Frank" };
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={userData}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+            <Route path="/account/settings" element={<div>Settings Page</div>} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      const editBtn = await screen.findByRole("button", { name: /Edit \/ Change Info/i });
+      fireEvent.click(editBtn);
+      expect(await screen.findByText(/Settings Page/i)).toBeInTheDocument();
+    });
+
+    it("calls logout and navigates to login when 'Logout' is clicked", async () => {
+      const logoutSpy = vi.fn();
+      const userData = { first_name: "Grace" };
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={userData} logout={logoutSpy}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+            <Route path="/login" element={<div>Login Page</div>} />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      const logoutBtn = await screen.findByText(/Logout/i);
+      fireEvent.click(logoutBtn);
+
+      expect(logoutSpy).toHaveBeenCalled();
+      expect(await screen.findByText(/Login Page/i)).toBeInTheDocument();
+    });
+
+    it("uses the default success text when API returns no message", async () => {
+      // mock fetch to return ok but empty body
+      global.fetch = mockFetchResponse(true, {});
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={{ email: "a@b.edu", is_school_verified: false }}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      const btn = await screen.findByRole("button", { name: /Verify Email/i });
+      fireEvent.click(btn);
+
+      // should fall back to the default message
+      expect(
+        await screen.findByText("Verification email sent!")
+      ).toBeInTheDocument();
+    });
+
+    it("allows the user to close the Alert via its close icon", async () => {
+      // mock fetch to succeed with a message
+      global.fetch = mockFetchResponse(true, { message: "Yay!" });
+
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                <MockUserProvider user={{ email: "a@b.edu", is_school_verified: false }}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      // trigger the Alert
+      fireEvent.click(await screen.findByRole("button", { name: /Verify Email/i }));
+      await screen.findByText("Yay!");
+
+      // find and click the close icon
+      const closeBtn = screen.getByRole("button", { name: /close/i });
+      fireEvent.click(closeBtn);
+
+      await waitFor(() => {
+        expect(screen.queryByText("Yay!")).toBeNull();
+      });
+    });
+
+    it("renders the fallback loading text when user is null", () => {
+      render(
+        <MemoryRouter initialEntries={["/account"]}>
+          <Routes>
+            <Route
+              path="/account"
+              element={
+                // loading = false, but user is null
+                <MockUserProvider user={null} loading={false}>
+                  <Account />
+                </MockUserProvider>
+              }
+            />
+          </Routes>
+        </MemoryRouter>
+      );
+
+      // the secondary "Loading account information..." inside the Paper
+      expect(
+        screen.getByText(/Loading account information\.\.\./i)
+      ).toBeInTheDocument();
+    });
+
   });
 });
