@@ -33,6 +33,11 @@ import HomeIcon from "@mui/icons-material/Home";
 import SchoolIcon from "@mui/icons-material/School";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import SportsFootballIcon from '@mui/icons-material/SportsFootball';
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -81,6 +86,17 @@ const sportDisplayToCode = {
   "Men's Soccer": "msoc",
   "Women's Soccer": "wsoc",
   "Wrestling": "wr",
+};
+
+const sportIcons = {
+  "Men's Basketball": <SportsBasketballIcon sx={{ fontSize: 18 }} />,
+  "Women's Basketball": <SportsBasketballIcon sx={{ fontSize: 18 }} />,
+  "Football": <SportsFootballIcon sx={{ fontSize: 18 }} />,
+  "Volleyball": <SportsVolleyballIcon sx={{ fontSize: 18 }} />,
+  "Baseball": <SportsBaseballIcon sx={{ fontSize: 18 }} />,
+  "Men's Soccer": <SportsSoccerIcon sx={{ fontSize: 18 }} />,
+  "Women's Soccer": <SportsSoccerIcon sx={{ fontSize: 18 }} />,
+  "Wrestling": <SportsMmaIcon sx={{ fontSize: 18 }} />,
 };
 
 const filteredReviews = school?.reviews.filter(review => {
@@ -547,7 +563,7 @@ console.log("Filtered reviews:", filteredReviews);
       value={sport}
       label={
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <SportsSoccerIcon sx={{ fontSize: 18 }} />
+          {sportIcons[sport] || <SportsSoccerIcon sx={{ fontSize: 18 }} />}
           {sport}
         </Box>
       }
