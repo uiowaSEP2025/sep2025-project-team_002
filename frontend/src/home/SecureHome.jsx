@@ -95,6 +95,18 @@ function SecureHome() {
     nil_opportunity: "",
     sport: "",
   });
+  // Temporary filters state to store changes while dialog is open
+  const [tempFilters, setTempFilters] = useState({
+    head_coach: "",
+    assistant_coaches: "",
+    team_culture: "",
+    campus_life: "",
+    athletic_facilities: "",
+    athletic_department: "",
+    player_development: "",
+    nil_opportunity: "",
+    sport: "",
+  });
   const [filteredSchools, setFilteredSchools] = useState([]);
   const [filterApplied, setFilterApplied] = useState(false);
 
@@ -310,17 +322,33 @@ function SecureHome() {
 
   // Filter dialog handlers
   const openFilterDialog = () => {
+    // Initialize temp filters with current filter values when opening dialog
+    setTempFilters({...filters});
     setFilterDialogOpen(true);
   };
+
   const closeFilterDialog = () => {
+    // Just close the dialog without applying changes
     setFilterDialogOpen(false);
+    // Reset temp filters to match the current applied filters
+    setTempFilters({...filters});
   };
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters({ ...filters, [name]: value });
+    // Update only the temporary filters while dialog is open
+    setTempFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
+
+  const cancelFilters = () => {
+    // Discard changes by resetting temp filters to match current filters
+    setTempFilters({...filters});
+    closeFilterDialog();
+  };
+
   const applyFilters = async () => {
+    // Apply temp filters to the actual filters
+    setFilters({...tempFilters});
     closeFilterDialog();
 
     const token = localStorage.getItem("token");
@@ -329,20 +357,18 @@ function SecureHome() {
       return;
     }
 
-    setFilterDialogOpen(false);
-
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
-      if (filters.sport) queryParams.append("sport", filters.sport);
-      if (filters.head_coach) queryParams.append("head_coach", filters.head_coach);
-      if (filters.assistant_coaches) queryParams.append("assistant_coaches", filters.assistant_coaches);
-      if (filters.team_culture) queryParams.append("team_culture", filters.team_culture);
-      if (filters.campus_life) queryParams.append("campus_life", filters.campus_life);
-      if (filters.athletic_facilities) queryParams.append("athletic_facilities", filters.athletic_facilities);
-      if (filters.athletic_department) queryParams.append("athletic_department", filters.athletic_department);
-      if (filters.player_development) queryParams.append("player_development", filters.player_development);
-      if (filters.nil_opportunity) queryParams.append("nil_opportunity", filters.nil_opportunity);
+      if (tempFilters.sport) queryParams.append("sport", tempFilters.sport);
+      if (tempFilters.head_coach) queryParams.append("head_coach", tempFilters.head_coach);
+      if (tempFilters.assistant_coaches) queryParams.append("assistant_coaches", tempFilters.assistant_coaches);
+      if (tempFilters.team_culture) queryParams.append("team_culture", tempFilters.team_culture);
+      if (tempFilters.campus_life) queryParams.append("campus_life", tempFilters.campus_life);
+      if (tempFilters.athletic_facilities) queryParams.append("athletic_facilities", tempFilters.athletic_facilities);
+      if (tempFilters.athletic_department) queryParams.append("athletic_department", tempFilters.athletic_department);
+      if (tempFilters.player_development) queryParams.append("player_development", tempFilters.player_development);
+      if (tempFilters.nil_opportunity) queryParams.append("nil_opportunity", tempFilters.nil_opportunity);
 
       const token = localStorage.getItem("token");
       console.log("Filter params:", queryParams.toString());
@@ -374,10 +400,10 @@ function SecureHome() {
     } finally {
       setLoading(false);
     }
-    // closeFilterDialog();
   };
+
   const clearFilters = () => {
-    setFilters({
+    const emptyFilters = {
       head_coach: "",
       assistant_coaches: "",
       team_culture: "",
@@ -387,7 +413,10 @@ function SecureHome() {
       player_development: "",
       nil_opportunity: "",
       sport: "",
-    });
+    };
+    // Clear both actual and temporary filters
+    setFilters(emptyFilters);
+    setTempFilters(emptyFilters);
     setFilterApplied(false);  // This is key - it resets to show all schools
     setFilteredSchools([]);
     // closeFilterDialog();
@@ -1453,7 +1482,7 @@ function SecureHome() {
       {/* Filter Dialog */}
       <Dialog
         open={filterDialogOpen}
-        onClose={closeFilterDialog}
+        onClose={cancelFilters} // Use cancelFilters to handle clicking outside the dialog
         fullWidth
         maxWidth="sm"
         disableRestoreFocus
@@ -1473,7 +1502,7 @@ function SecureHome() {
               id="sport-select"
               label="Choose Sport"
               name="sport"
-              value={filters.sport}
+              value={tempFilters.sport}
               onChange={handleFilterChange}
               variant="outlined"
               margin="normal"
@@ -1503,7 +1532,7 @@ function SecureHome() {
                     id="head_coach-select"
                     data-testid="head_coach-select"
                     name="head_coach"
-                    value={filters.head_coach}
+                    value={tempFilters.head_coach}
                     onChange={handleFilterChange}
                     label="Head Coach Rating"
                   >
@@ -1521,7 +1550,7 @@ function SecureHome() {
                   <InputLabel>Assistant Coaches</InputLabel>
                   <Select
                     name="assistant_coaches"
-                    value={filters.assistant_coaches}
+                    value={tempFilters.assistant_coaches}
                     onChange={handleFilterChange}
                     label="Assistant Coaches"
                   >
@@ -1539,7 +1568,7 @@ function SecureHome() {
                   <InputLabel>Team Culture</InputLabel>
                   <Select
                     name="team_culture"
-                    value={filters.team_culture}
+                    value={tempFilters.team_culture}
                     onChange={handleFilterChange}
                     label="Team Culture"
                   >
@@ -1557,7 +1586,7 @@ function SecureHome() {
                   <InputLabel>Campus Life</InputLabel>
                   <Select
                     name="campus_life"
-                    value={filters.campus_life}
+                    value={tempFilters.campus_life}
                     onChange={handleFilterChange}
                     label="Campus Life"
                   >
@@ -1575,7 +1604,7 @@ function SecureHome() {
                   <InputLabel>Athletic Facilities</InputLabel>
                   <Select
                     name="athletic_facilities"
-                    value={filters.athletic_facilities}
+                    value={tempFilters.athletic_facilities}
                     onChange={handleFilterChange}
                     label="Athletic Facilities"
                   >
@@ -1593,7 +1622,7 @@ function SecureHome() {
                   <InputLabel>Athletic Department</InputLabel>
                   <Select
                     name="athletic_department"
-                    value={filters.athletic_department}
+                    value={tempFilters.athletic_department}
                     onChange={handleFilterChange}
                     label="Athletic Department"
                   >
@@ -1611,7 +1640,7 @@ function SecureHome() {
                   <InputLabel>Player Development</InputLabel>
                   <Select
                     name="player_development"
-                    value={filters.player_development}
+                    value={tempFilters.player_development}
                     onChange={handleFilterChange}
                     label="Player Development"
                   >
@@ -1629,7 +1658,7 @@ function SecureHome() {
                   <InputLabel>NIL Opportunity</InputLabel>
                   <Select
                     name="nil_opportunity"
-                    value={filters.nil_opportunity}
+                    value={tempFilters.nil_opportunity}
                     onChange={handleFilterChange}
                     label="NIL Opportunity"
                   >
@@ -1660,7 +1689,7 @@ function SecureHome() {
             Clear All
           </Button>
           <Button
-            onClick={closeFilterDialog}
+            onClick={cancelFilters}
             color="primary"
             sx={{
               borderRadius: "20px",

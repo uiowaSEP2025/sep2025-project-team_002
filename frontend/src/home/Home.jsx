@@ -71,6 +71,18 @@ function Home() {
     nil_opportunity: "",
     sport: "",
   });
+  // Temporary filters state to store changes while dialog is open
+  const [tempFilters, setTempFilters] = useState({
+    head_coach: "",
+    assistant_coaches: "",
+    team_culture: "",
+    campus_life: "",
+    athletic_facilities: "",
+    athletic_department: "",
+    player_development: "",
+    nil_opportunity: "",
+    sport: "",
+  });
   const [filteredSchools, setFilteredSchools] = useState([]);
   const [filterApplied, setFilterApplied] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -144,20 +156,37 @@ function Home() {
 
   // Filter dialog handlers
   const openFilterDialog = () => {
+    // Initialize temp filters with current filter values when opening dialog
+    setTempFilters({...filters});
     setFilterDialogOpen(true);
   };
+
   const closeFilterDialog = () => {
+    // Just close the dialog without applying changes
     setFilterDialogOpen(false);
+    // Reset temp filters to match the current applied filters
+    setTempFilters({...filters});
   };
+
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+    // Update only the temporary filters while dialog is open
+    setTempFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
   };
+
+  const cancelFilters = () => {
+    // Discard changes by resetting temp filters to match current filters
+    setTempFilters({...filters});
+    closeFilterDialog();
+  };
+
   const applyFilters = async () => {
+    // Apply temp filters to the actual filters
+    setFilters({...tempFilters});
     closeFilterDialog();
 
     const queryParams = new URLSearchParams();
-    if (filters.sport) queryParams.append("sport", filters.sport);
+    if (tempFilters.sport) queryParams.append("sport", tempFilters.sport);
     // Append rating filters if provided
     [
       "head_coach",
@@ -169,8 +198,8 @@ function Home() {
       "player_development",
       "nil_opportunity",
     ].forEach((field) => {
-      if (filters[field]) {
-        queryParams.append(field, filters[field]);
+      if (tempFilters[field]) {
+        queryParams.append(field, tempFilters[field]);
       }
     });
 
@@ -196,8 +225,9 @@ function Home() {
       setLoading(false);
     }
   };
+
   const clearFilters = () => {
-    setFilters({
+    const emptyFilters = {
       head_coach: "",
       assistant_coaches: "",
       team_culture: "",
@@ -207,7 +237,10 @@ function Home() {
       player_development: "",
       nil_opportunity: "",
       sport: "",
-    });
+    };
+    // Clear both actual and temporary filters
+    setFilters(emptyFilters);
+    setTempFilters(emptyFilters);
     setFilterApplied(false);
     setFilteredSchools([]);
     // closeFilterDialog();
@@ -686,7 +719,7 @@ function Home() {
       {/* Filter Dialog */}
       <Dialog
         open={filterDialogOpen}
-        onClose={closeFilterDialog}
+        onClose={cancelFilters} // Use cancelFilters to handle clicking outside the dialog
         fullWidth
         maxWidth="sm"
         PaperProps={{
@@ -704,7 +737,7 @@ function Home() {
               id="sport-select"
               label="Choose Sport"
               name="sport"
-              value={filters.sport}
+              value={tempFilters.sport}
               onChange={handleFilterChange}
               variant="outlined"
               margin="normal"
@@ -728,7 +761,7 @@ function Home() {
                     id="head_coach-select"
                     data-testid="head_coach-select"
                     name="head_coach"
-                    value={filters.head_coach}
+                    value={tempFilters.head_coach}
                     onChange={handleFilterChange}
                     label="Head Coach Rating"
                   >
@@ -746,7 +779,7 @@ function Home() {
                   <InputLabel>Assistant Coaches</InputLabel>
                   <Select
                     name="assistant_coaches"
-                    value={filters.assistant_coaches}
+                    value={tempFilters.assistant_coaches}
                     onChange={handleFilterChange}
                     label="Assistant Coaches"
                   >
@@ -764,7 +797,7 @@ function Home() {
                   <InputLabel>Team Culture</InputLabel>
                   <Select
                     name="team_culture"
-                    value={filters.team_culture}
+                    value={tempFilters.team_culture}
                     onChange={handleFilterChange}
                     label="Team Culture"
                   >
@@ -782,7 +815,7 @@ function Home() {
                   <InputLabel>Campus Life</InputLabel>
                   <Select
                     name="campus_life"
-                    value={filters.campus_life}
+                    value={tempFilters.campus_life}
                     onChange={handleFilterChange}
                     label="Campus Life"
                   >
@@ -800,7 +833,7 @@ function Home() {
                   <InputLabel>Athletic Facilities</InputLabel>
                   <Select
                     name="athletic_facilities"
-                    value={filters.athletic_facilities}
+                    value={tempFilters.athletic_facilities}
                     onChange={handleFilterChange}
                     label="Athletic Facilities"
                   >
@@ -818,7 +851,7 @@ function Home() {
                   <InputLabel>Athletic Department</InputLabel>
                   <Select
                     name="athletic_department"
-                    value={filters.athletic_department}
+                    value={tempFilters.athletic_department}
                     onChange={handleFilterChange}
                     label="Athletic Department"
                   >
@@ -836,7 +869,7 @@ function Home() {
                   <InputLabel>Player Development</InputLabel>
                   <Select
                     name="player_development"
-                    value={filters.player_development}
+                    value={tempFilters.player_development}
                     onChange={handleFilterChange}
                     label="Player Development"
                   >
@@ -854,7 +887,7 @@ function Home() {
                   <InputLabel>NIL Opportunity</InputLabel>
                   <Select
                     name="nil_opportunity"
-                    value={filters.nil_opportunity}
+                    value={tempFilters.nil_opportunity}
                     onChange={handleFilterChange}
                     label="NIL Opportunity"
                   >
@@ -883,6 +916,18 @@ function Home() {
             }}
           >
             Clear Filters
+          </Button>
+          <Button
+            onClick={cancelFilters}
+            color="inherit"
+            sx={{
+              borderRadius: 30,
+              py: 1,
+              px: 3,
+              fontWeight: 600
+            }}
+          >
+            Cancel
           </Button>
           <Button
             id="apply-filters-button"
