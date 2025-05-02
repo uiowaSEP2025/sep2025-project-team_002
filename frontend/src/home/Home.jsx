@@ -83,6 +83,12 @@ function Home() {
     nil_opportunity: "",
     sport: "",
   });
+  // State to track if a dropdown is currently closing
+  const [dropdownClosing, setDropdownClosing] = useState(false);
+  // State to track the last selected filter to prevent rapid changes
+  const [lastSelectedFilter, setLastSelectedFilter] = useState(null);
+  // State to track if clicks should be blocked
+  const [blockClicks, setBlockClicks] = useState(false);
   const [filteredSchools, setFilteredSchools] = useState([]);
   const [filterApplied, setFilterApplied] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -173,9 +179,32 @@ function Home() {
   };
 
   const handleFilterChange = (e) => {
+    // Prevent changes if clicks are blocked or a dropdown is closing
+    if (blockClicks || dropdownClosing) return;
+
     const { name, value } = e.target;
+
+    // If this is the same filter that was just changed, ignore rapid changes
+    if (lastSelectedFilter && lastSelectedFilter.name === name &&
+        Date.now() - lastSelectedFilter.timestamp < 500) {
+      return;
+    }
+
+    // Block all clicks for a short period
+    setBlockClicks(true);
+    // Set the dropdown closing state to true
+    setDropdownClosing(true);
+    // Track the last selected filter with a timestamp
+    setLastSelectedFilter({ name, timestamp: Date.now() });
+
     // Update only the temporary filters while dialog is open
     setTempFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+
+    // Reset the states after a delay
+    setTimeout(() => {
+      setDropdownClosing(false);
+      setBlockClicks(false);
+    }, 500); // 500ms delay should be enough to prevent accidental clicks
   };
 
   const cancelFilters = () => {
@@ -770,6 +799,21 @@ function Home() {
         }}>
         <DialogTitle>Apply Filters</DialogTitle>
         <DialogContent>
+          {/* Click blocker overlay */}
+          {blockClicks && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9999,
+                backgroundColor: 'transparent',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
               select
@@ -782,10 +826,42 @@ function Home() {
               variant="outlined"
               margin="normal"
             >
-              <MenuItem value="">All Sports</MenuItem>
-              <MenuItem value="Men's Basketball">Men's Basketball</MenuItem>
-              <MenuItem value="Women's Basketball">Women's Basketball</MenuItem>
-              <MenuItem value="Football">Football</MenuItem>
+              <MenuItem
+                value=""
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >All Sports</MenuItem>
+              <MenuItem
+                value="Men's Basketball"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Men's Basketball</MenuItem>
+              <MenuItem
+                value="Women's Basketball"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Women's Basketball</MenuItem>
+              <MenuItem
+                value="Football"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Football</MenuItem>
             </TextField>
 
             <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 600 }}>
@@ -807,7 +883,17 @@ function Home() {
                   >
                     <MenuItem value="">Any</MenuItem>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
-                      <MenuItem key={rating} value={rating}>
+                      <MenuItem
+                        key={rating}
+                        value={rating}
+                        // Add a small delay when clicking to prevent rapid clicks
+                        onClick={(e) => {
+                          if (dropdownClosing) {
+                            e.stopPropagation();
+                            return;
+                          }
+                        }}
+                      >
                         {rating}+
                       </MenuItem>
                     ))}

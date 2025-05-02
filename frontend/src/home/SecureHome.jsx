@@ -107,6 +107,12 @@ function SecureHome() {
     nil_opportunity: "",
     sport: "",
   });
+  // State to track if a dropdown is currently closing
+  const [dropdownClosing, setDropdownClosing] = useState(false);
+  // State to track the last selected filter to prevent rapid changes
+  const [lastSelectedFilter, setLastSelectedFilter] = useState(null);
+  // State to track if clicks should be blocked
+  const [blockClicks, setBlockClicks] = useState(false);
   const [filteredSchools, setFilteredSchools] = useState([]);
   const [filterApplied, setFilterApplied] = useState(false);
 
@@ -335,9 +341,32 @@ function SecureHome() {
   };
 
   const handleFilterChange = (e) => {
+    // Prevent changes if clicks are blocked or a dropdown is closing
+    if (blockClicks || dropdownClosing) return;
+
     const { name, value } = e.target;
+
+    // If this is the same filter that was just changed, ignore rapid changes
+    if (lastSelectedFilter && lastSelectedFilter.name === name &&
+        Date.now() - lastSelectedFilter.timestamp < 500) {
+      return;
+    }
+
+    // Block all clicks for a short period
+    setBlockClicks(true);
+    // Set the dropdown closing state to true
+    setDropdownClosing(true);
+    // Track the last selected filter with a timestamp
+    setLastSelectedFilter({ name, timestamp: Date.now() });
+
     // Update only the temporary filters while dialog is open
     setTempFilters((prevFilters) => ({ ...prevFilters, [name]: value }));
+
+    // Reset the states after a delay
+    setTimeout(() => {
+      setDropdownClosing(false);
+      setBlockClicks(false);
+    }, 500); // 500ms delay should be enough to prevent accidental clicks
   };
 
   const cancelFilters = () => {
@@ -1293,20 +1322,56 @@ function SecureHome() {
                       elevation={2}
                     >
                       <CardContent sx={{ pl: 3 }}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap", justifyContent: "space-between" }}>
-                          <Box>
+                        {/* Responsive layout with better organization for small screens */}
+                        <Box sx={{
+                          display: "flex",
+                          flexDirection: { xs: "column", sm: "row" },
+                          gap: 2,
+                          width: "100%"
+                        }}>
+                          {/* School info section */}
+                          <Box sx={{
+                            flex: 1,
+                            minWidth: 0, // Prevents content from overflowing
+                            mb: { xs: 1, sm: 0 }
+                          }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                              <SchoolIcon sx={{ color: theme.palette.primary.main, mr: 1, fontSize: '1.2rem' }} />
-                              <Typography variant="h6" sx={{ my: 0, fontWeight: 700 }} data-testid={`school-list-name-${school.id}`}>
+                              <SchoolIcon sx={{
+                                color: theme.palette.primary.main,
+                                mr: 1,
+                                fontSize: '1.2rem',
+                                flexShrink: 0 // Prevents icon from shrinking
+                              }} />
+                              <Typography
+                                variant="h6"
+                                sx={{
+                                  my: 0,
+                                  fontWeight: 700,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: { xs: "normal", sm: "nowrap" }
+                                }}
+                                data-testid={`school-list-name-${school.id}`}
+                              >
                                 {school.school_name}
                               </Typography>
                             </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <SportsSoccerIcon sx={{ color: theme.palette.text.secondary, mr: 1, fontSize: '0.9rem' }} />
+                            <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
+                              <SportsSoccerIcon sx={{
+                                color: theme.palette.text.secondary,
+                                mr: 1,
+                                fontSize: '0.9rem',
+                                mt: 0.3, // Align with text when text wraps
+                                flexShrink: 0 // Prevents icon from shrinking
+                              }} />
                               <Typography
                                 variant="body2"
                                 data-testid={`school-list-sports-${school.id}`}
-                                sx={{ color: theme.palette.text.secondary }}
+                                sx={{
+                                  color: theme.palette.text.secondary,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis"
+                                }}
                               >
                                 {school.available_sports && school.available_sports.length > 0
                                   ? school.available_sports.join(" • ")
@@ -1314,7 +1379,16 @@ function SecureHome() {
                               </Typography>
                             </Box>
                           </Box>
-                          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}>
+
+                          {/* Reviews and ratings section */}
+                          <Box sx={{
+                            display: "flex",
+                            flexDirection: { xs: "row", sm: "column" },
+                            alignItems: { xs: "center", sm: "flex-end" },
+                            justifyContent: { xs: "space-between", sm: "center" },
+                            gap: 2,
+                            flexShrink: 0 // Prevents this box from shrinking
+                          }}>
                             <Box sx={{
                               backgroundColor: alpha(theme.palette.primary.main, 0.1),
                               px: 1.5,
@@ -1322,20 +1396,27 @@ function SecureHome() {
                               borderRadius: 2,
                               display: "flex",
                               alignItems: "center",
-                              gap: 0.5
+                              justifyContent: "center",
+                              minWidth: { xs: "90px", sm: "auto" }
                             }}>
                               <Typography
                                 variant="body2"
                                 sx={{
                                   fontWeight: 600,
-                                  color: theme.palette.primary.main
+                                  color: theme.palette.primary.main,
+                                  textAlign: "center"
                                 }}
                               >
                                 {school.review_count > 500 ? "500+" : school.review_count || 0} {school.review_count === 1 ? "review" : "reviews"}
                               </Typography>
                             </Box>
                             {school.review_count > 0 && (
-                              <Box sx={{ mt: 0.5 }}>
+                              <Box sx={{
+                                display: "flex",
+                                justifyContent: { xs: "flex-end", sm: "center" },
+                                width: { xs: "auto", sm: "100%" },
+                                mt: { xs: 0, sm: 0.5 }
+                              }}>
                                 <StarRating rating={school.average_rating} showValue={true} />
                               </Box>
                             )}
@@ -1495,6 +1576,21 @@ function SecureHome() {
       >
         <DialogTitle>Apply Filters</DialogTitle>
         <DialogContent>
+          {/* Click blocker overlay */}
+          {blockClicks && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                zIndex: 9999,
+                backgroundColor: 'transparent',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            />
+          )}
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
               select
@@ -1507,10 +1603,42 @@ function SecureHome() {
               variant="outlined"
               margin="normal"
             >
-              <MenuItem value="">All Sports</MenuItem>
-              <MenuItem value="Men's Basketball">Men's Basketball</MenuItem>
-              <MenuItem value="Women's Basketball">Women's Basketball</MenuItem>
-              <MenuItem value="Football">Football</MenuItem>
+              <MenuItem
+                value=""
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >All Sports</MenuItem>
+              <MenuItem
+                value="Men's Basketball"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Men's Basketball</MenuItem>
+              <MenuItem
+                value="Women's Basketball"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Women's Basketball</MenuItem>
+              <MenuItem
+                value="Football"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Football</MenuItem>
               {/*<MenuItem value="baseball">Baseball</MenuItem>*/}
               {/*<MenuItem value="soccer">Soccer</MenuItem>*/}
               {/*<MenuItem value="volleyball">Volleyball</MenuItem>*/}
@@ -1608,9 +1736,26 @@ function SecureHome() {
                     onChange={handleFilterChange}
                     label="Athletic Facilities"
                   >
-                    <MenuItem value="">Any</MenuItem>
+                    <MenuItem
+                      value=""
+                      onClick={(e) => {
+                        if (dropdownClosing) {
+                          e.stopPropagation();
+                          return;
+                        }
+                      }}
+                    >Any</MenuItem>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((rating) => (
-                      <MenuItem key={rating} value={rating}>
+                      <MenuItem
+                        key={rating}
+                        value={rating}
+                        onClick={(e) => {
+                          if (dropdownClosing) {
+                            e.stopPropagation();
+                            return;
+                          }
+                        }}
+                      >
                         {rating}+
                       </MenuItem>
                     ))}
