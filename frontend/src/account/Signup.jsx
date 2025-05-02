@@ -135,7 +135,7 @@ function Signup() {
       if (response.ok) {
         setMessage("Signup successful! Redirecting to login...");
         setMessageType("success");
-        setTimeout(() => navigate("/login"), 1500);
+        setTimeout(() => navigate("/login", { state: { fromSignup: true } }), 1500);
       } else {
         const errorData = await response.json();
         setMessage("Signup failed: " + (errorData.detail || errorData.error || "Unknown error"));
@@ -553,6 +553,7 @@ function Signup() {
                 Already got an account?{' '}
                 <Link
                   to="/login"
+                  state={{ fromSignup: true }}
                   style={{
                     color: theme.palette.primary.main,
                     textDecoration: 'none',

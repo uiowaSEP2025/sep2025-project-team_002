@@ -16,13 +16,14 @@ import ArrowRightIcon from '@mui/icons-material/ArrowDropUp';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import API_BASE_URL from "../utils/config.js";
 import { useUser } from '../context/UserContext';
 
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const theme = useTheme();
   const { fetchUser } = useUser() || {};
 
@@ -43,9 +44,21 @@ function Login() {
   const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
-    // Trigger fade-in animation after component mounts
-    setFadeIn(true);
-  }, []);
+    // Check if we're coming from another page (like signup or home)
+    const isNavigatingFromAnotherPage = location.state &&
+      (location.state.fromSignup || location.state.fromHome || location.state.fromNavbar);
+
+    if (isNavigatingFromAnotherPage) {
+      // If navigating from another page, use a small delay to ensure smooth animation
+      const timer = setTimeout(() => {
+        setFadeIn(true);
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      // If directly loading the login page, no delay needed
+      setFadeIn(true);
+    }
+  }, [location.state]);
 
   // Toggle the display of feature list
   const handleToggleFeatures = () => {
@@ -106,7 +119,14 @@ function Login() {
   };
 
   return (
-    <Box sx={{ position: 'relative', minHeight: '100vh' }}>
+    <Box
+      sx={{
+        position: 'relative',
+        minHeight: '100vh',
+        opacity: fadeIn ? 1 : 0,
+        transition: 'opacity 0.3s ease-in-out'
+      }}
+    >
       {/* Backward Arrow Button at Top Left */}
       <Box
         sx={{

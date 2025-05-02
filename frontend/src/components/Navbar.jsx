@@ -162,6 +162,7 @@ const Navbar = () => {
               button
               component={RouterLink}
               to="/login"
+              state={{ fromNavbar: true }}
               sx={{
                 borderRadius: 2,
                 mb: 1,
@@ -332,6 +333,7 @@ const Navbar = () => {
                       <Typography
                         component={RouterLink}
                         to="/login"
+                        state={{ fromNavbar: true }}
                         variant="body1"
                         sx={{
                           ml: 2,

@@ -665,7 +665,7 @@ function SecureHome() {
               </Button>
               <Button
                 variant="outlined"
-                onClick={() => navigate('/login')}
+                onClick={() => navigate('/login', { state: { fromHome: true } })}
                 startIcon={<LoginIcon />}
                 sx={{
                   borderRadius: 2,
