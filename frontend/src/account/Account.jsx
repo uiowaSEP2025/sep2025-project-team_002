@@ -377,6 +377,7 @@ function Account() {
                       }
                     >
                       <InfoOutlinedIcon
+                        data-testid="tooltip-icon"
                         fontSize="small"
                         sx={{ color: theme.palette.text.secondary, cursor: "pointer" }}
                       />
