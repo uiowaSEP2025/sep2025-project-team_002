@@ -33,6 +33,9 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, isLoggedIn, logout, profilePic } = useUser();
+  const disablePaths = ["/account", "/user-preferences", "/preference-form"];
+    const disableDrawer = disablePaths.some((path) => location.pathname.startsWith(path));
+
 
   // Handle scroll effect
   useEffect(() => {
@@ -56,12 +59,14 @@ const Navbar = () => {
 
   // Handle drawer toggle
   const toggleDrawer = (open) => (event) => {
+
     if (
       event.type === 'keydown' &&
       (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return;
     }
+    if (disableDrawer) return;
     setDrawerOpen(open);
   };
 
@@ -139,7 +144,15 @@ const Navbar = () => {
               },
             }}
           >
-            <ListItemText primary={item.text} />
+           <ListItemText
+              primary={item.text}
+              primaryTypographyProps={{
+                sx: {
+                  color: '#fff', // or another color like '#fff'
+                  fontWeight: 500,
+                },
+              }}
+            />
           </ListItem>
         ))}
         {isLoggedIn ? (
@@ -233,7 +246,7 @@ const Navbar = () => {
             </Typography>
 
             {/* Mobile menu icon */}
-            {isMobile && (
+            {isMobile && !disableDrawer && (
               <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
                 {isLoggedIn && (
                   <Tooltip title="Account">

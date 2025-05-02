@@ -22,6 +22,9 @@ import {
   CircularProgress,
   useTheme,
   alpha,
+    useMediaQuery,
+    Select,
+    MenuItem,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -30,6 +33,11 @@ import HomeIcon from "@mui/icons-material/Home";
 import SchoolIcon from "@mui/icons-material/School";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import SportsFootballIcon from '@mui/icons-material/SportsFootball';
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 import CloseIcon from "@mui/icons-material/Close";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -43,6 +51,7 @@ function SchoolPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [school, setSchool] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -68,7 +77,44 @@ function SchoolPage() {
   }, []);
 
   // Filter reviews by selected sport
-  const filteredReviews = school ? school.reviews.filter(review => review.sport === selectedSport) : [];
+const sportDisplayToCode = {
+  "Men's Basketball": "mbb",
+  "Women's Basketball": "wbb",
+  "Football": "fb",
+  "Volleyball": "vb",
+  "Baseball": "ba",
+  "Men's Soccer": "msoc",
+  "Women's Soccer": "wsoc",
+  "Wrestling": "wr",
+};
+
+const sportIcons = {
+  "Men's Basketball": <SportsBasketballIcon sx={{ fontSize: 18 }} />,
+  "Women's Basketball": <SportsBasketballIcon sx={{ fontSize: 18 }} />,
+  "Football": <SportsFootballIcon sx={{ fontSize: 18 }} />,
+  "Volleyball": <SportsVolleyballIcon sx={{ fontSize: 18 }} />,
+  "Baseball": <SportsBaseballIcon sx={{ fontSize: 18 }} />,
+  "Men's Soccer": <SportsSoccerIcon sx={{ fontSize: 18 }} />,
+  "Women's Soccer": <SportsSoccerIcon sx={{ fontSize: 18 }} />,
+  "Wrestling": <SportsMmaIcon sx={{ fontSize: 18 }} />,
+};
+
+const filteredReviews = school?.reviews.filter(review => {
+  // Normalize both values for comparison
+  const reviewSport = review.sport.toLowerCase();
+  const selectedCode = sportDisplayToCode[selectedSport]?.toLowerCase();
+
+  return (
+    reviewSport === selectedCode || // matches code (vb)
+    reviewSport === selectedSport.toLowerCase() || // matches full name
+    sportDisplayToCode[review.sport] === selectedSport // matches if review has code
+  );
+}) || [];
+
+// In your filtering logic, add:
+console.log("All reviews:", school?.reviews);
+console.log("Selected sport code:", sportDisplayToCode[selectedSport]);
+console.log("Filtered reviews:", filteredReviews);
 
   // Calculate the index of the last review on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
@@ -178,6 +224,11 @@ function SchoolPage() {
         if (data.mbb) setSelectedSport("Men's Basketball");
         else if (data.wbb) setSelectedSport("Women's Basketball");
         else if (data.fb) setSelectedSport("Football");
+        else if (data.vb) setSelectedSport("Volleyball");
+        else if (data.ba) setSelectedSport("Baseball");
+         else if (data.msoc) setSelectedSport("Men's Soccer");
+        else if (data.wsoc) setSelectedSport("Women's Soccer");
+        else if (data.wr) setSelectedSport("Wrestling");
       } catch (error) {
         console.error('Error fetching school:', error);
         setError('Failed to load school data. Please try again later.');
@@ -230,6 +281,11 @@ function SchoolPage() {
     if (school.mbb) availableSports.push("Men's Basketball");
     if (school.wbb) availableSports.push("Women's Basketball");
     if (school.fb) availableSports.push("Football");
+    if (school.vb) availableSports.push("Volleyball");
+    if (school.ba) availableSports.push("Baseball");
+    if (school.msoc) availableSports.push("Men's Soccer");
+    if (school.wsoc) availableSports.push("Women's Soccer");
+    if (school.wr) availableSports.push("Wrestling");
   }
 
   const handleWriteReview = (sport) => {
@@ -298,6 +354,8 @@ function SchoolPage() {
       </Container>
     );
   }
+
+
 
   return (
       <>
@@ -457,40 +515,63 @@ function SchoolPage() {
             border: `1px solid ${alpha(theme.palette.divider, 0.1)}`
           }}
         >
-          <Tabs
-            value={selectedSport}
-            onChange={(e, newValue) => setSelectedSport(newValue)}
-            aria-label="sports tabs"
-            variant="fullWidth"
-            sx={{
-              '& .MuiTabs-indicator': {
-                height: 3,
-                borderRadius: '3px 3px 0 0',
-              },
-              '& .MuiTab-root': {
-                fontWeight: 600,
-                py: 2,
-                transition: 'all 0.2s ease',
-                '&:hover': {
-                  bgcolor: alpha(theme.palette.primary.main, 0.05),
-                },
-                '&.Mui-selected': {
-                  color: theme.palette.primary.main,
-                },
-              },
-            }}
-          >
-            {availableSports.map((sport) => (
-              <Tab
-                id={`sport-tab-${sport.replace(/\s+/g, '-').toLowerCase()}`}
-                key={sport}
-                label={sport}
-                value={sport}
-                icon={<SportsSoccerIcon sx={{ mr: 1 }} />}
-                iconPosition="start"
-              />
-            ))}
-          </Tabs>
+            {isSmallScreen ? (
+  <Box sx={{ px: 2, py: 2 }}>
+    <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
+      Select a Sport
+    </Typography>
+    <Select
+      value={selectedSport}
+      onChange={(e) => setSelectedSport(e.target.value)}
+      fullWidth
+    >
+      {availableSports.map((sport) => (
+        <MenuItem key={sport} value={sport}>
+          {sport}
+        </MenuItem>
+      ))}
+    </Select>
+  </Box>
+) : (
+  <Tabs
+  value={selectedSport}
+  onChange={(e, newValue) => setSelectedSport(newValue)}
+  aria-label="sports tabs"
+  variant="scrollable"
+  scrollButtons="auto"
+  sx={{
+    '& .MuiTabs-indicator': {
+      height: 3,
+      borderRadius: '3px 3px 0 0',
+    },
+    '& .MuiTab-root': {
+      fontWeight: 600,
+      py: 2,
+      transition: 'all 0.2s ease',
+      '&:hover': {
+        bgcolor: alpha(theme.palette.primary.main, 0.05),
+      },
+      '&.Mui-selected': {
+        color: theme.palette.primary.main,
+      },
+    },
+  }}
+>
+  {availableSports.map((sport) => (
+    <Tab
+      key={sport}
+      value={sport}
+      label={
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {sportIcons[sport] || <SportsSoccerIcon sx={{ fontSize: 18 }} />}
+          {sport}
+        </Box>
+      }
+    />
+  ))}
+</Tabs>
+)}
+
         </Paper>
 
         {/* Sport-specific Content */}

@@ -1639,12 +1639,51 @@ function SecureHome() {
                   }
                 }}
               >Football</MenuItem>
-              {/*<MenuItem value="baseball">Baseball</MenuItem>*/}
-              {/*<MenuItem value="soccer">Soccer</MenuItem>*/}
-              {/*<MenuItem value="volleyball">Volleyball</MenuItem>*/}
-              {/*<MenuItem value="tennis">Tennis</MenuItem>*/}
-              {/*<MenuItem value="swimming">Swimming</MenuItem>*/}
-              {/*<MenuItem value="track">Track & Field</MenuItem>*/}
+                <MenuItem
+                value="Volleyball"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Volleyball</MenuItem>
+                <MenuItem
+                value="Baseball"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Baseball</MenuItem>
+                <MenuItem
+                value="Men's Soccer"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Men's Soccer</MenuItem>
+                <MenuItem
+                value="Women's Soccer"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Women's Soccer</MenuItem>
+                <MenuItem
+                value="Wrestling"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Wrestling</MenuItem>
             </TextField>
 
             <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 600 }}>

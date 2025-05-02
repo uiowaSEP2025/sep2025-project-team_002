@@ -14,7 +14,6 @@ import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import PersonIcon from "@mui/icons-material/Person";
 import StarIcon from "@mui/icons-material/Star";
 
-
 const fetchUserReviews = async () => {
   try {
     const token = localStorage.getItem("token");
@@ -150,6 +149,11 @@ const ReviewForm = () => {
           if (school.mbb) sports.push("Men's Basketball");
           if (school.wbb) sports.push("Women's Basketball");
           if (school.fb) sports.push("Football");
+          if (school.vb) sports.push("Volleyball");
+          if (school.ba) sports.push("Baseball");
+           if (school.msoc) sports.push("Men's Soccer");
+          if (school.wsoc) sports.push("Women's Soccer");
+          if (school.wr) sports.push("Wrestling");
           setAvailableSports(sports);
 
           // Update the review state with the school ID
@@ -161,9 +165,10 @@ const ReviewForm = () => {
 
   }, [schoolId, schoolIdFromURL]);
 
-  const handleChange = (e) => {
-    setReview({ ...review, [e.target.name]: e.target.value });
-  };
+const handleChange = (e) => {
+     setReview({ ...review, [e.target.name]: e.target.value });
+   };
+
 
   const handleRatingChange = (name, newValue) => {
     setReview({ ...review, [name]: newValue });
@@ -181,6 +186,11 @@ const ReviewForm = () => {
       if (selectedSchool.mbb) sports.push("Men's Basketball");
       if (selectedSchool.wbb) sports.push("Women's Basketball");
       if (selectedSchool.fb) sports.push("Football");
+      if (selectedSchool.vb) sports.push("Volleyball");
+      if (selectedSchool.ba) sports.push("Baseball");
+      if (selectedSchool.msoc) sports.push("Men's Soccer");
+      if (selectedSchool.wsoc) sports.push("Women's Soccer");
+      if (selectedSchool.wr) sports.push("Wrestling");
       setAvailableSports(sports);
     }
   };
@@ -354,6 +364,11 @@ const ReviewForm = () => {
                   if (newValue.mbb) sports.push("Men's Basketball");
                   if (newValue.wbb) sports.push("Women's Basketball");
                   if (newValue.fb) sports.push("Football");
+                  if (newValue.vb) sports.push("Volleyball");
+                  if (newValue.ba) sports.push("Baseball");
+                  if (newValue.msoc) sports.push("Men's Soccer");
+                  if (newValue.wsoc) sports.push("Women's Soccer");
+                  if (newValue.wr) sports.push("Wrestling");
                   setAvailableSports(sports);
                 } else {
                   setSelectedSchool(null);

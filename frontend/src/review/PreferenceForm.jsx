@@ -10,7 +10,7 @@ import Slider from '@mui/material/Slider';
 import API_BASE_URL from "../utils/config";
 import InfoIcon from "@mui/icons-material/Info";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SportsTennisIcon from "@mui/icons-material/SportsTennis";
+import SportsBasketballIcon from "@mui/icons-material/SportsBasketball";
 import TuneIcon from "@mui/icons-material/Tune";
 import Bugsnag from '@bugsnag/js';
 
@@ -251,7 +251,7 @@ const PreferenceForm = () => {
               }}>
            <Box sx={{ mb: 4 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <SportsTennisIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
+                <SportsBasketballIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>Select Your Sport</Typography>
               </Box>
               <TextField
@@ -273,7 +273,7 @@ const PreferenceForm = () => {
                 error={!preference.sport && isSubmitted}
                 helperText={!preference.sport && isSubmitted ? "This field is required" : ""}
               >
-              {["Football", "Men's Basketball", "Women's Basketball"].map((sport, index) => (
+              {["Football", "Men's Basketball", "Women's Basketball", "Volleyball", "Baseball", "Men's Soccer", "Women's Soccer", "Wrestling"].map((sport, index) => (
                 <MenuItem key={index} value={sport}>
                   {sport}
                 </MenuItem>
