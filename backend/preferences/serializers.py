@@ -32,7 +32,7 @@ class PreferencesSerializer(serializers.ModelSerializer):
             "mbb": "Men's Basketball",
             "wbb": "Women's Basketball",
             "fb": "Football",
-            "vb" :"Volleyball",
+            "vb": "Volleyball",
             "ba": "Baseball",
             "msoc": "Men's Soccer",
             "wsoc": "Women's Soccer",

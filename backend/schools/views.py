@@ -571,7 +571,7 @@ def get_recommended_schools(request):
 
         # Handle both cases - if it's a display name, convert to code, if it's a code, keep as is
         sport_code = display_to_code.get(sport, sport)
-        if sport_code not in ["mbb", "wbb", "fb", "vb", "ba","msoc", "wsoc", "wr"]:
+        if sport_code not in ["mbb", "wbb", "fb", "vb", "ba", "msoc", "wsoc", "wr"]:
             # If it's not a valid code after conversion, try reverse lookup
             for code, display in code_to_display.items():
                 if sport == display:
