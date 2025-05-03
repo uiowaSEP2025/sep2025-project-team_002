@@ -71,6 +71,9 @@ describe("UserPreferences Component", () => {
 
     // Check that the sport is displayed
     expect(screen.getByText("Basketball")).toBeInTheDocument();
+    expect(screen.getByText("9/10")).toBeInTheDocument(); // Head Coach
+    expect(screen.getByText("3/10")).toBeInTheDocument(); // Player Development
+
 
     // Just check that the component renders without errors
     // The specific rating elements are difficult to test due to the component structure
@@ -108,4 +111,30 @@ describe("UserPreferences Component", () => {
       expect(navigateMock).toHaveBeenCalledWith("/login");
     });
   });
+
+  it("shows an error message when the fetch fails", async () => {
+  localStorage.setItem("token", "fake_token");
+
+  global.fetch = vi.fn(() => Promise.reject(new Error("Network error")));
+
+  renderWithUserProvider(<UserPreferences />);
+
+  await waitFor(() => {
+    expect(screen.getByText("Network error")).toBeInTheDocument();
+  });
+});
+
+  it("navigates to preference form when Modify Preferences is clicked", async () => {
+  localStorage.setItem("token", "fake_token");
+
+  renderWithUserProvider(<UserPreferences />);
+
+  await waitFor(() => {
+    expect(screen.getByText("Modify Preferences")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByText("Modify Preferences"));
+  expect(navigateMock).toHaveBeenCalledWith("/preference-form", { state: { isEditing: true } });
+});
+
 });
