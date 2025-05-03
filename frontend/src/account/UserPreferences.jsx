@@ -24,7 +24,12 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import SettingsIcon from "@mui/icons-material/Settings";
 import LogoutIcon from "@mui/icons-material/Logout";
 import RateReviewIcon from "@mui/icons-material/RateReview";
-import SportsTennisIcon from "@mui/icons-material/SportsTennis";
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import SportsFootballIcon from '@mui/icons-material/SportsFootball';
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 import StarIcon from "@mui/icons-material/Star";
 import API_BASE_URL from "../utils/config.js";
 import { useUser } from "../context/UserContext.jsx";
@@ -40,6 +45,17 @@ function UserPreferences() {
 
   // Get user context for logout functionality
   const {logout, user} = useUser();
+
+  const sportIcons = {
+  "Men's Basketball": <SportsBasketballIcon />,
+  "Women's Basketball": <SportsBasketballIcon />,
+  "Football": <SportsFootballIcon />,
+  "Volleyball": <SportsVolleyballIcon />,
+  "Baseball": <SportsBaseballIcon />,
+  "Men's Soccer": <SportsSoccerIcon />,
+  "Women's Soccer": <SportsSoccerIcon />,
+  "Wrestling": <SportsMmaIcon />,
+};
 
   useEffect(() => {
     // Trigger fade-in animation after component mounts
@@ -247,7 +263,7 @@ function UserPreferences() {
             </Typography>
 
             <Chip
-              icon={<SportsTennisIcon />}
+              icon={sportIcons[preferences.sport] || <SportsBasketballIcon />}
               label={preferences.sport}
               color="primary"
               variant="outlined"

@@ -862,6 +862,51 @@ function Home() {
                   }
                 }}
               >Football</MenuItem>
+                <MenuItem
+                value="Volleyball"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Volleyball</MenuItem>
+                <MenuItem
+                value="Baseball"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Baseball</MenuItem>
+                <MenuItem
+                value="Men's Soccer"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Men's Soccer</MenuItem>
+                <MenuItem
+                value="Women's Soccer"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Women's Soccer</MenuItem>
+                <MenuItem
+                value="Wrestling"
+                onClick={(e) => {
+                  if (dropdownClosing) {
+                    e.stopPropagation();
+                    return;
+                  }
+                }}
+              >Wrestling</MenuItem>
             </TextField>
 
             <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 600 }}>

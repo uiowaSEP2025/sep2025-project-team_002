@@ -25,7 +25,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import SchoolIcon from "@mui/icons-material/School";
-import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import SportsFootballIcon from '@mui/icons-material/SportsFootball';
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import SportsSoccerIcon from '@mui/icons-material/SportsSoccer';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 import StarRating from "../components/StarRating";
 import API_BASE_URL from "../utils/config";
 import {useUser} from "../context/UserContext.jsx";
@@ -40,6 +45,17 @@ function MyReviews() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [fadeIn, setFadeIn] = useState(false);
+
+  const sportIcons = {
+  "Men's Basketball": <SportsBasketballIcon />,
+  "Women's Basketball": <SportsBasketballIcon />,
+  "Football": <SportsFootballIcon />,
+  "Volleyball": <SportsVolleyballIcon />,
+  "Baseball": <SportsBaseballIcon />,
+  "Men's Soccer": <SportsSoccerIcon />,
+  "Women's Soccer": <SportsSoccerIcon />,
+  "Wrestling": <SportsMmaIcon />,
+};
 
   useEffect(() => {
     // Trigger fade-in animation after component mounts
@@ -252,7 +268,7 @@ function MyReviews() {
                       </Typography>
                       <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
                         <Chip
-                          icon={<SportsSoccerIcon sx={{ fontSize: '0.8rem' }} />}
+                          icon={sportIcons[review.sport] || <SportsBasketballIcon />}
                           label={review.sport || "N/A"}
                           size="small"
                           sx={{

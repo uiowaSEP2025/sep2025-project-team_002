@@ -7,6 +7,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Tuscaloosa, Alabama"
       }
@@ -19,6 +24,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Fayetteville, Arkansas"
       }
@@ -31,6 +41,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Auburn, Alabama"
       }
@@ -43,6 +58,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Gainesville, Florida"
       }
@@ -55,6 +75,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Athens, Georgia"
       }
@@ -67,6 +92,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": true,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Lexington, Kentucky"
       }
@@ -79,6 +109,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Baton Rouge, Louisiana"
       }
@@ -91,6 +126,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "University, Mississippi"
       }
@@ -103,6 +143,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Mississippi State, Mississippi"
       }
@@ -115,6 +160,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": true,
         "conference": "SEC",
         "location": "Columbia, Missouri"
       }
@@ -127,6 +177,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": true,
         "conference": "SEC",
         "location": "Norman, Oklahoma"
       }
@@ -139,6 +194,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": true,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Columbia, South Carolina"
       }
@@ -151,6 +211,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Knoxville, Tennessee"
       }
@@ -163,6 +228,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Austin, Texas"
       }
@@ -175,6 +245,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "College Station, Texas"
       }
@@ -187,6 +262,11 @@
         "mbb": true,
         "wbb": true,
         "fb": true,
+        "vb": true,
+        "ba": true,
+        "msoc": false,
+        "wsoc": true,
+        "wr": false,
         "conference": "SEC",
         "location": "Nashville, Tennessee"
       }

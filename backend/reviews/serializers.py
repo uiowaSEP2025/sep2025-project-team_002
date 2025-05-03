@@ -34,6 +34,13 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "Women's Basketball": "wbb",
             "Women’s Basketball": "wbb",  # Handle both apostrophe types
             "Football": "fb",
+            "Volleyball": "vb",
+            "Baseball": "ba",
+            "Men's Soccer": "msoc",
+            "Men’s Soccer": "msoc",
+            "Women's Soccer": "wsoc",
+            "Women’s Soccer": "wsoc",
+            "Wrestling": "wr",
         }
         logger.info(f"ReviewsSerializer.validate_sport: Converting '{value}' to code")
         code = sport_mapping.get(value, value)
@@ -47,6 +54,11 @@ class ReviewsSerializer(serializers.ModelSerializer):
             "mbb": "Men's Basketball",
             "wbb": "Women's Basketball",
             "fb": "Football",
+            "vb": "Volleyball",
+            "ba": "Baseball",
+            "msoc": "Men's Soccer",
+            "wsoc": "Women's Soccer",
+            "wr": "Wrestling",
         }
         original_sport = data["sport"]
         data["sport"] = display_mapping.get(data["sport"], data["sport"])
