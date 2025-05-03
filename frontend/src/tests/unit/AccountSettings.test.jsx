@@ -1084,4 +1084,161 @@ describe("AccountSettings Page", () => {
     expect(screen.queryByText("Server-side error")).toBeNull();
   });
 
+  it("does not overwrite edited form fields when user context changes", async () => {
+    const initialUser = {
+      first_name: "John",
+      last_name: "Doe",
+      email: "john@example.com",
+      transfer_type: "transfer",
+    };
+    const updatedUser = {
+      first_name: "Alice",
+      last_name: "Smith",
+      email: "alice@smith.com",
+      transfer_type: "transfer",
+    };
+
+    // Step 1: initial context
+    useUser.mockReturnValue({
+      profilePic: "/pic1.png",
+      updateProfilePic: vi.fn(),
+      user: initialUser,
+      fetchUser: vi.fn(),
+      loading: false,
+      logout: vi.fn(),
+    });
+
+    const { rerender } = render(
+      <MemoryRouter initialEntries={["/account/settings"]}>
+        <UserProvider>
+          <Routes>
+            <Route path="/account/settings" element={<AccountSettings />} />
+          </Routes>
+        </UserProvider>
+      </MemoryRouter>
+    );
+
+    // Form was seeded from initialUser
+    const firstNameInput = await screen.findByLabelText(/First Name/i);
+    expect(firstNameInput).toHaveValue("John");
+
+    // Step 2: user edits the field
+    await userEvent.clear(firstNameInput);
+    await userEvent.type(firstNameInput, "EditedName");
+    expect(firstNameInput).toHaveValue("EditedName");
+
+    // Step 3: context changes to updatedUser in-place, re-render
+    useUser.mockReturnValue({
+      profilePic: "/pic1.png",
+      updateProfilePic: vi.fn(),
+      user: updatedUser,
+      fetchUser: vi.fn(),
+      loading: false,
+      logout: vi.fn(),
+    });
+
+    rerender(
+      <MemoryRouter initialEntries={["/account/settings"]}>
+        <UserProvider>
+          <Routes>
+            <Route path="/account/settings" element={<AccountSettings />} />
+          </Routes>
+        </UserProvider>
+      </MemoryRouter>
+    );
+
+    // The guard should prevent overwriting—value remains what the user typed.
+    expect(screen.getByLabelText(/First Name/i)).toHaveValue("EditedName");
+  });
+
+  it("falls back to empty strings when user.first_name/last_name/email are undefined", async () => {
+    useUser.mockReturnValue({
+      profilePic: "/pic1.png",
+      updateProfilePic: vi.fn(),
+      user: {
+        // no first_name, last_name, or email here
+        transfer_type: "transfer_in"
+      },
+      fetchUser: vi.fn(),
+      loading: false,
+      logout: vi.fn(),
+    });
+
+    renderWithRoutes();
+
+    // Inputs should all be empty strings, courtesy of `user.xxx || ""`
+    expect(await screen.findByLabelText(/First Name/i)).toHaveValue("");
+    expect(screen.getByLabelText(/Last Name/i)).toHaveValue("");
+    expect(screen.getByLabelText(/Email/i)).toHaveValue("");
+  });
+
+  it('shows default success message when password change response has no message field', async () => {
+    // Arrange: dialog open
+    renderWithRoutes();
+    await userEvent.click(screen.getByRole('button', { name: /change password/i }));
+
+    // Mock a successful response with an empty object
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve({}),  // <-- no .message property
+    });
+
+    // Act: submit the password form
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    // Wait for the dialog to close (onExited focus callback)
+    await waitForElementToBeRemoved(() => screen.queryByRole('dialog'));
+
+    // Assert: the main Alert shows the default text
+    const alert = await screen.findByRole('alert');
+    expect(alert).toHaveTextContent('Password changed successfully');
+    expect(alert).toHaveClass('MuiAlert-filledSuccess');
+  });
+
+  it('sets default passwordError when response has no detail or error fields', async () => {
+    // Render and open the change-password dialog
+    renderWithRoutes();
+    await userEvent.click(screen.getByRole('button', { name: /change password/i }));
+
+    // Mock a failed POST with an empty object (no detail or error)
+    vi.spyOn(global, 'fetch').mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      json: () => Promise.resolve({}),
+    });
+
+    // Submit the form
+    await userEvent.click(screen.getByRole('button', { name: /submit/i }));
+
+    // Inside the dialog, the Alert should show the fallback text
+    const dialog = screen.getByRole('dialog');
+    const errorAlert = await within(dialog).findByText("Could not change password");
+    expect(errorAlert).toBeInTheDocument();
+  });
+
+  it('renders default "U" when user.first_name is empty', async () => {
+    // Mock useUser so profilePic is falsy and first_name is empty
+    useUser.mockReturnValue({
+      profilePic: "",
+      updateProfilePic: vi.fn(),
+      user: {
+        first_name: "",    // <-- empty name
+        last_name: "",
+        email: "",
+        transfer_type: ""
+      },
+      fetchUser: vi.fn(),
+      loading: false,
+      logout: vi.fn(),
+    });
+
+    renderWithRoutes();
+
+    // Should not find an <img> so we fall back to Avatar
+    expect(screen.queryByAltText("Selected Profile")).toBeNull();
+
+    // And Avatar should display "U"
+    expect(screen.getByText("U")).toBeInTheDocument();
+  });
+
 });
