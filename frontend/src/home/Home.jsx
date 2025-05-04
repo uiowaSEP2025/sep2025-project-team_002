@@ -37,6 +37,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import StarIcon from "@mui/icons-material/Star";
 import ClearIcon from "@mui/icons-material/Clear";
+import InfoIcon from "@mui/icons-material/Clear";
 import API_BASE_URL from "../utils/config";
 import StarRating from "../components/StarRating";
 
@@ -57,6 +58,9 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState(searchFromURL);
   const [prevSearchQuery, setPrevSearchQuery] = useState(searchFromURL);
   const [currentPage, setCurrentPage] = useState(pageFromURL);
+
+  // i icon
+  const [popupOpen, setPopupOpen] = useState(false);
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -161,6 +165,13 @@ function Home() {
       setSchools([]);
     } finally {
       setSchoolsLoading(false);
+    }
+  };
+
+  // Handling outside click of i icon
+  const handleClickOutside = (event) => {
+    if (event.target.id !== 'popup' && popupOpen) {
+      setPopupOpen(false);
     }
   };
 
@@ -333,7 +344,22 @@ function Home() {
             background: 'linear-gradient(135deg, rgba(58, 134, 255, 0.9) 0%, rgba(131, 56, 236, 0.8) 100%)',
             zIndex: 1,
           }}
-        />
+        >
+            {/* Info Icon (i) inside the background gradient overlay */}
+  <IconButton
+    sx={{
+      position: 'absolute',
+      top: '20px',  // Adjust this value to position it vertically
+      left: '20px', // Adjust this value to position it horizontally
+      zIndex: 2,
+    }}
+    onClick={() => setPopupOpen(true)} // Open the popup
+  >
+    <InfoIcon fontSize="large" />
+  </IconButton>
+
+
+</Box>
 
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 2 }}>
           <Box
@@ -345,6 +371,7 @@ function Home() {
               },
             }}
           >
+
             <Typography
               variant="h2"
               component="h1"
@@ -357,6 +384,34 @@ function Home() {
             >
               Athletic Insider
             </Typography>
+
+            {/* Information Popup (this will also be inside the gradient box now) */}
+  {popupOpen && (
+    <Box
+      sx={{
+        position: 'fixed',
+        top: '20%', // You can adjust this as needed
+        left: '50%',
+        transform: 'translateX(-50%)',
+        backgroundColor: 'white',
+        padding: 3,
+        boxShadow: 3,
+        zIndex: 3,
+        maxWidth: 400,
+        width: '90%',
+      }}
+    >
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        About the Website
+      </Typography>
+      <Typography sx={{ mb: 2 }}>
+        This website helps college athletes make informed decisions on the schools they can go to.
+      </Typography>
+      <Button onClick={() => setPopupOpen(false)} variant="contained">
+        Close
+      </Button>
+    </Box>
+  )}
 
             <Typography
               variant="h5"
