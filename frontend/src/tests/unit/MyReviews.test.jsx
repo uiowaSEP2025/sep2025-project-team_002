@@ -164,14 +164,6 @@ describe("MyReviews Component", () => {
       </UserProvider>
     );
 
-    // // Verify the correct number of reviews is displayed per page
-    // await waitFor(() => {
-    //   expect(screen.getAllByText(/Basketball/)).toHaveLength(); // Assuming 2 reviews per page
-    // });
-    //
-    // // Click to go to the next page
-    // const paginationButton = screen.getByRole("button", { name: /go to next page/i });
-    // fireEvent.click(paginationButton);
     // 1) wait for the spinner to go away
      await waitFor(() => {
        expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
@@ -220,5 +212,64 @@ describe("MyReviews Component", () => {
       expect(screen.getByText("Failed to load data")).toBeInTheDocument();  // Adjust based on the error UI
     });
   });
+
+  it("navigates to next page on pagination click", async () => {
+  render(
+    <UserProvider>
+      <BrowserRouter>
+        <MyReviews />
+      </BrowserRouter>
+    </UserProvider>
+  );
+
+  await waitFor(() => {
+    expect(screen.getByText("Test School 1")).toBeInTheDocument();
+  });
+
+  const nextBtn = await screen.findByRole("button", { name: /go to page 2/i });
+  fireEvent.click(nextBtn);
+
+  await waitFor(() => {
+    expect(screen.getByText("Test School 4")).toBeInTheDocument(); // From your dataset
+  });
+});
+
+  it("calls fetchUserReviews and updates reviews", async () => {
+  const fetchSpy = vi.spyOn(global, "fetch");
+
+  render(
+    <UserProvider>
+      <BrowserRouter>
+        <MyReviews />
+      </BrowserRouter>
+    </UserProvider>
+  );
+
+  await waitFor(() => {
+    expect(fetchSpy).toHaveBeenCalledWith(
+      expect.stringContaining("/api/reviews/user-reviews/"),
+      expect.anything()
+    );
+  });
+
+  fetchSpy.mockRestore();
+});
+
+  it("clears token and navigates on logout", async () => {
+  render(
+    <UserProvider>
+      <BrowserRouter>
+        <MyReviews />
+      </BrowserRouter>
+    </UserProvider>
+  );
+
+  const logoutBtn = screen.getByText("Logout");
+  fireEvent.click(logoutBtn);
+
+  expect(localStorage.getItem("token")).toBeNull();
+  expect(navigateMock).toHaveBeenCalledWith("/login");
+});
+
 
 });

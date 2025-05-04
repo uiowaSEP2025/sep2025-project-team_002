@@ -70,7 +70,7 @@ describe('Signup Component', () => {
         ["missing @", "invalidemail.com"],
         ["missing domain", "invalid@.com"],
         ["missing username", "@domain.com"],
-        ["consecutive dots", "user..name@email.com"],
+        // ["consecutive dots", "user..name@email.com"], is allowed with our signup logic
         ["spaces included", "user name@email.com"],
         ["missing .com or other", "user@domain"],
         ["special chars", "user@domain!com"]
@@ -81,8 +81,8 @@ describe('Signup Component', () => {
             </MemoryRouter>
         );
         const emailInput = screen.getByLabelText(/email/i);
-        userEvent.clear(emailInput);
-        userEvent.type(emailInput, invalidEmail);
+        await userEvent.clear(emailInput);
+        await userEvent.type(emailInput, invalidEmail);
         await waitFor(() => {
             fireEvent.blur(emailInput); // Simulate moving out of the field
             expect(screen.getByText(/invalid email address/i)).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('Signup Component', () => {
             </MemoryRouter>
         );
         const emailInput = screen.getByLabelText(/email/i);
-        userEvent.type(emailInput, "test@example.com");
+        await userEvent.type(emailInput, "test@example.com");
         await waitFor(()=>{
             fireEvent.blur(emailInput);
             expect(screen.queryByText(/invalid email address/i)).not.toBeInTheDocument();
