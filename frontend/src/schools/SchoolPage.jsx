@@ -22,9 +22,11 @@ import {
   CircularProgress,
   useTheme,
   alpha,
-    useMediaQuery,
-    Select,
-    MenuItem,
+  lighten,
+  darken,
+  useMediaQuery,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -43,6 +45,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import API_BASE_URL from "../utils/config";
 import ReviewSummary from '../components/ReviewSummary';
+import { getTeamPrimaryColor } from "../utils/teamColorLookup";
 
 // Constants
 const AVATAR_BASE_URL = "../../public/assets/profile-pictures/";
@@ -77,44 +80,44 @@ function SchoolPage() {
   }, []);
 
   // Filter reviews by selected sport
-const sportDisplayToCode = {
-  "Men's Basketball": "mbb",
-  "Women's Basketball": "wbb",
-  "Football": "fb",
-  "Volleyball": "vb",
-  "Baseball": "ba",
-  "Men's Soccer": "msoc",
-  "Women's Soccer": "wsoc",
-  "Wrestling": "wr",
-};
+  const sportDisplayToCode = {
+    "Men's Basketball": "mbb",
+    "Women's Basketball": "wbb",
+    "Football": "fb",
+    "Volleyball": "vb",
+    "Baseball": "ba",
+    "Men's Soccer": "msoc",
+    "Women's Soccer": "wsoc",
+    "Wrestling": "wr",
+  };
 
-const sportIcons = {
-  "Men's Basketball": <SportsBasketballIcon sx={{ fontSize: 18 }} />,
-  "Women's Basketball": <SportsBasketballIcon sx={{ fontSize: 18 }} />,
-  "Football": <SportsFootballIcon sx={{ fontSize: 18 }} />,
-  "Volleyball": <SportsVolleyballIcon sx={{ fontSize: 18 }} />,
-  "Baseball": <SportsBaseballIcon sx={{ fontSize: 18 }} />,
-  "Men's Soccer": <SportsSoccerIcon sx={{ fontSize: 18 }} />,
-  "Women's Soccer": <SportsSoccerIcon sx={{ fontSize: 18 }} />,
-  "Wrestling": <SportsMmaIcon sx={{ fontSize: 18 }} />,
-};
+  const sportIcons = {
+    "Men's Basketball": <SportsBasketballIcon sx={{ fontSize: 18 }} />,
+    "Women's Basketball": <SportsBasketballIcon sx={{ fontSize: 18 }} />,
+    "Football": <SportsFootballIcon sx={{ fontSize: 18 }} />,
+    "Volleyball": <SportsVolleyballIcon sx={{ fontSize: 18 }} />,
+    "Baseball": <SportsBaseballIcon sx={{ fontSize: 18 }} />,
+    "Men's Soccer": <SportsSoccerIcon sx={{ fontSize: 18 }} />,
+    "Women's Soccer": <SportsSoccerIcon sx={{ fontSize: 18 }} />,
+    "Wrestling": <SportsMmaIcon sx={{ fontSize: 18 }} />,
+  };
 
-const filteredReviews = school?.reviews.filter(review => {
-  // Normalize both values for comparison
-  const reviewSport = review.sport.toLowerCase();
-  const selectedCode = sportDisplayToCode[selectedSport]?.toLowerCase();
+  const filteredReviews = school?.reviews.filter(review => {
+    // Normalize both values for comparison
+    const reviewSport = review.sport.toLowerCase();
+    const selectedCode = sportDisplayToCode[selectedSport]?.toLowerCase();
 
-  return (
-    reviewSport === selectedCode || // matches code (vb)
-    reviewSport === selectedSport.toLowerCase() || // matches full name
-    sportDisplayToCode[review.sport] === selectedSport // matches if review has code
-  );
-}) || [];
+    return (
+      reviewSport === selectedCode || // matches code (vb)
+      reviewSport === selectedSport.toLowerCase() || // matches full name
+      sportDisplayToCode[review.sport] === selectedSport // matches if review has code
+    );
+  }) || [];
 
-// In your filtering logic, add:
-console.log("All reviews:", school?.reviews);
-console.log("Selected sport code:", sportDisplayToCode[selectedSport]);
-console.log("Filtered reviews:", filteredReviews);
+  // In your filtering logic, add:
+  // console.log("All reviews:", school?.reviews);
+  // console.log("Selected sport code:", sportDisplayToCode[selectedSport]);
+  // console.log("Filtered reviews:", filteredReviews);
 
   // Calculate the index of the last review on the current page
   const indexOfLastReview = currentPage * reviewsPerPage;
@@ -273,8 +276,6 @@ console.log("Filtered reviews:", filteredReviews);
     fetchUserInfo();
   }, []);
 
-
-
   // Prepare available sports list if school data is loaded
   const availableSports = [];
   if (school) {
@@ -355,7 +356,13 @@ console.log("Filtered reviews:", filteredReviews);
     );
   }
 
-
+  // after loading && school is set:
+  const primaryColor = getTeamPrimaryColor(
+    school.school_name,
+    theme.palette.primary.main
+  );
+  const lighter = lighten(primaryColor, 0.1); // +10% light
+  const darker  = darken(primaryColor,  0.1); // −10% dark
 
   return (
       <>
@@ -405,7 +412,11 @@ console.log("Filtered reviews:", filteredReviews);
             left: 0,
             right: 0,
             bottom: 0,
-            background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.secondary.main} 100%)`,
+            background: `linear-gradient(
+              0deg,
+              ${lighter} 0%,
+              ${darker} 100%
+            )`,
             zIndex: 1,
           }}
         />
