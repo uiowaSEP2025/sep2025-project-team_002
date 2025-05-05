@@ -31,6 +31,7 @@ import {
   Divider,
   Container,
   alpha,
+  lighten,
   Tooltip
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -45,6 +46,7 @@ import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TuneIcon from "@mui/icons-material/Tune";
 import SearchIcon from "@mui/icons-material/Search";
+import { getTeamPrimaryColor } from "../utils/teamColorLookup";
 import API_BASE_URL from "../utils/config";
 import StarRating from "../components/StarRating";
 
@@ -751,813 +753,814 @@ function SecureHome() {
 
 
       <Container maxWidth="lg" sx={{ pt: 6, pb: 6 }}>
+        <Box sx={{ textAlign: "center", mb: 5 }}>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 800,
+              mb: 2,
+              background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              textShadow: '0 4px 8px rgba(0,0,0,0.1)',
+              letterSpacing: '-0.5px'
+            }}
+          >
+            Schools and Sports
+          </Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 400,
+              color: theme.palette.text.secondary,
+              maxWidth: 700,
+              mx: 'auto'
+            }}
+          >
+            Discover schools and sports programs that match your preferences
+          </Typography>
+        </Box>
 
-
-
-
-            <Box sx={{ textAlign: "center", mb: 5 }}>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontWeight: 800,
-                  mb: 2,
-                  background: `linear-gradient(90deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  textShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                  letterSpacing: '-0.5px'
+        {/* Search and Filters Section */}
+        <Paper
+          elevation={2}
+          sx={{
+            p: 3,
+            mb: 4,
+            borderRadius: 3,
+            backgroundColor: alpha(theme.palette.background.paper, 0.8),
+          }}
+        >
+          <Box sx={{ display: "flex", flexDirection: { xs: 'column', md: 'row' }, gap: 2, alignItems: 'center' }}>
+            <Box sx={{ position: 'relative', flexGrow: 1 }}>
+              <TextField
+                id="school-search"
+                label="Search Schools"
+                variant="outlined"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <SearchIcon sx={{ color: theme.palette.text.secondary, mr: 1 }} />
+                  ),
                 }}
-              >
-                Schools and Sports
-              </Typography>
-              <Typography
-                variant="h6"
                 sx={{
-                  fontWeight: 400,
-                  color: theme.palette.text.secondary,
-                  maxWidth: 700,
-                  mx: 'auto'
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.primary.main,
+                    },
+                  },
                 }}
-              >
-                Discover schools and sports programs that match your preferences
-              </Typography>
+              />
             </Box>
 
-            {/* Search and Filters Section */}
-            <Paper
-              elevation={2}
+            <Button
+              id="filter-button"
+              data-testid="filter-button"
+              variant="contained"
+              color="primary"
+              onClick={openFilterDialog}
+              startIcon={<FilterListIcon />}
               sx={{
-                p: 3,
-                mb: 4,
-                borderRadius: 3,
-                backgroundColor: alpha(theme.palette.background.paper, 0.8),
+                borderRadius: 2,
+                py: 1.5,
+                px: 3,
+                fontWeight: 600,
+                minWidth: { xs: '100%', md: 'auto' },
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                '&:hover': {
+                  transform: 'translateY(-2px)',
+                  boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+                },
+                '&:active': {
+                  transform: 'translateY(1px)'
+                }
               }}
             >
-              <Box sx={{ display: "flex", flexDirection: { xs: 'column', md: 'row' }, gap: 2, alignItems: 'center' }}>
-                <Box sx={{ position: 'relative', flexGrow: 1 }}>
-                  <TextField
-                    id="school-search"
-                    label="Search Schools"
-                    variant="outlined"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    fullWidth
-                    InputProps={{
-                      startAdornment: (
-                        <SearchIcon sx={{ color: theme.palette.text.secondary, mr: 1 }} />
-                      ),
-                    }}
+              Filter
+            </Button>
+          </Box>
+        </Paper>
+
+        {filterApplied && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={clearFilters}
+              startIcon={<RestartAltIcon />}
+              sx={{
+                borderRadius: 2,
+                py: 1,
+                px: 3,
+                fontWeight: 500,
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: alpha(theme.palette.secondary.main, 0.05),
+                  transform: 'translateY(-2px)',
+                }
+              }}
+            >
+              Clear Filters
+            </Button>
+          </Box>
+        )}
+
+        {/* Recommendations Section - Only shown for non-graduate users */}
+        {user.transfer_type !== "graduate" && (
+          <Box sx={{ mb: 4 }}>
+            {hasPreferences ? (
+              recommendedSchools && recommendedSchools.length > 0 ? (
+                <>
+                  <Box
                     sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                          borderColor: theme.palette.primary.main,
-                        },
-                      },
+                      mb: 4,
+                      p: 3,
+                      borderRadius: 3,
+                      background: `linear-gradient(135deg, ${alpha(theme.palette.secondary.main, 0.15)} 0%, ${alpha(theme.palette.primary.main, 0.15)} 100%)`,
+                      textAlign: 'center',
+                      position: 'relative',
+                      overflow: 'hidden'
                     }}
-                  />
-                </Box>
-
-                <Button
-                  id="filter-button"
-                  data-testid="filter-button"
-                  variant="contained"
-                  color="primary"
-                  onClick={openFilterDialog}
-                  startIcon={<FilterListIcon />}
-                  sx={{
-                    borderRadius: 2,
-                    py: 1.5,
-                    px: 3,
-                    fontWeight: 600,
-                    minWidth: { xs: '100%', md: 'auto' },
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
-                    },
-                    '&:active': {
-                      transform: 'translateY(1px)'
-                    }
-                  }}
-                >
-                  Filter
-                </Button>
-              </Box>
-            </Paper>
-
-            {filterApplied && (
-              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={clearFilters}
-                  startIcon={<RestartAltIcon />}
-                  sx={{
-                    borderRadius: 2,
-                    py: 1,
-                    px: 3,
-                    fontWeight: 500,
-                    transition: 'all 0.2s ease',
-                    '&:hover': {
-                      backgroundColor: alpha(theme.palette.secondary.main, 0.05),
-                      transform: 'translateY(-2px)',
-                    }
-                  }}
-                >
-                  Clear Filters
-                </Button>
-              </Box>
-            )}
-
-            {/* Recommendations Section - Only shown for non-graduate users */}
-            {user.transfer_type !== "graduate" && (
-              <Box sx={{ mb: 4 }}>
-                {hasPreferences ? (
-                  recommendedSchools && recommendedSchools.length > 0 ? (
-                    <>
-                      <Box
+                  >
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: -20,
+                        right: -20,
+                        width: 120,
+                        height: 120,
+                        borderRadius: '50%',
+                        background: alpha(theme.palette.primary.main, 0.1),
+                        zIndex: 0
+                      }}
+                    />
+                    <Box sx={{ position: 'relative', zIndex: 1 }}>
+                      <Typography
+                        variant="h5"
                         sx={{
-                          mb: 4,
-                          p: 3,
-                          borderRadius: 3,
-                          background: `linear-gradient(135deg, ${alpha(theme.palette.secondary.main, 0.15)} 0%, ${alpha(theme.palette.primary.main, 0.15)} 100%)`,
-                          textAlign: 'center',
-                          position: 'relative',
-                          overflow: 'hidden'
+                          fontWeight: 700,
+                          mb: 2,
+                          color: theme.palette.primary.main,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          '&::before': {
+                            content: '"🎯"',
+                            marginRight: '8px',
+                            fontSize: '1.5rem'
+                          }
                         }}
                       >
-                        <Box
-                          sx={{
+                        Recommended Schools Based on Your Preferences
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: theme.palette.text.secondary,
+                          maxWidth: 800,
+                          mx: 'auto'
+                        }}
+                      >
+                        These schools match your preferences and have received positive reviews from other athletes.
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Stack spacing={2} sx={{ px: 2 }}>
+                    {recommendedSchools.map((rec, index) => (
+                      <Card
+                        key={index}
+                        sx={{
+                          width: "100%",
+                          cursor: "pointer",
+                          transition: "all 0.3s ease",
+                          position: 'relative',
+                          borderRadius: 3,
+                          overflow: 'hidden',
+                          mb: 2,
+                          background: `linear-gradient(to right, ${alpha(theme.palette.secondary.main, 0.05)}, ${alpha(theme.palette.background.paper, 1)} 20%)`,
+                          border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
+                          '&:hover': {
+                            transform: 'translateY(-4px)',
+                            boxShadow: `0 8px 25px ${alpha(theme.palette.secondary.main, 0.15)}`,
+                          },
+                          '&::before': {
+                            content: '"🏆"', // Trophy emoji
                             position: 'absolute',
-                            top: -20,
-                            right: -20,
-                            width: 120,
-                            height: 120,
-                            borderRadius: '50%',
-                            background: alpha(theme.palette.primary.main, 0.1),
-                            zIndex: 0
-                          }}
-                        />
-                        <Box sx={{ position: 'relative', zIndex: 1 }}>
-                          <Typography
-                            variant="h5"
+                            right: 15,
+                            top: 15,
+                            fontSize: '1.2rem',
+                            opacity: 0.7,
+                            zIndex: 1
+                          }
+                        }}
+                        onClick={() => handleSchoolClick(rec.school.id)}
+                        elevation={2}
+                      >
+                        <CardContent sx={{ pl: 3 }}>
+                          <Box
                             sx={{
-                              fontWeight: 700,
-                              mb: 2,
-                              color: theme.palette.primary.main,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              '&::before': {
-                                content: '"🎯"',
-                                marginRight: '8px',
-                                fontSize: '1.5rem'
-                              }
+                              display: "flex",
+                              alignItems: "flex-start",
+                              gap: 2,
+                              flexWrap: "wrap",
+                              justifyContent: "space-between"
                             }}
                           >
-                            Recommended Schools Based on Your Preferences
-                          </Typography>
-                          <Typography
-                            variant="body1"
-                            sx={{
-                              color: theme.palette.text.secondary,
-                              maxWidth: 800,
-                              mx: 'auto'
-                            }}
-                          >
-                            These schools match your preferences and have received positive reviews from other athletes.
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Stack spacing={2} sx={{ px: 2 }}>
-                        {recommendedSchools.map((rec, index) => (
-                          <Card
-                            key={index}
-                            sx={{
-                              width: "100%",
-                              cursor: "pointer",
-                              transition: "all 0.3s ease",
-                              position: 'relative',
-                              borderRadius: 3,
-                              overflow: 'hidden',
-                              mb: 2,
-                              background: `linear-gradient(to right, ${alpha(theme.palette.secondary.main, 0.05)}, ${alpha(theme.palette.background.paper, 1)} 20%)`,
-                              border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
-                              '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: `0 8px 25px ${alpha(theme.palette.secondary.main, 0.15)}`,
-                              },
-                              '&::before': {
-                                content: '"🏆"', // Trophy emoji
-                                position: 'absolute',
-                                right: 15,
-                                top: 15,
-                                fontSize: '1.2rem',
-                                opacity: 0.7,
-                                zIndex: 1
-                              }
-                            }}
-                            onClick={() => handleSchoolClick(rec.school.id)}
-                            elevation={2}
-                          >
-                            <CardContent sx={{ pl: 3 }}>
+                            <Box>
+                              <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                                <SchoolIcon sx={{ color: theme.palette.secondary.main, mr: 1, fontSize: '1.2rem' }} />
+                                <Typography
+                                  variant="h6"
+                                  sx={{ my: 0, fontWeight: 700, color: theme.palette.secondary.main }}
+                                  data-testid={`recommended-school-name-${rec.school?.id || "unknown"}`}
+                                >
+                                  {rec.school?.school_name || "Unknown School"}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                              >
+                                <LocationOnIcon sx={{ color: theme.palette.text.secondary, mr: 1, fontSize: '0.9rem' }} />
+                                <Typography
+                                  variant="body2"
+                                  sx={{ color: theme.palette.text.secondary }}
+                                  data-testid={`recommended-school-location-${rec.school?.id || "unknown"}`}
+                                >
+                                  {rec.school?.location || "Unknown Location"}
+                                </Typography>
+                                {rec.sport && (
+                                  <Chip
+                                    size="small"
+                                    label={rec.sport}
+                                    sx={{
+                                      ml: 1,
+                                      backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+                                      color: theme.palette.secondary.main,
+                                      fontWeight: 500,
+                                      fontSize: "0.75rem"
+                                    }}
+                                    data-testid={`recommended-sport-name-${rec.school?.id || "unknown"}`}
+                                  />
+                                )}
+                              </Box>
+                            </Box>
+                            <Box sx={{ display: "flex", gap: 1 }}>
                               <Box
                                 sx={{
                                   display: "flex",
-                                  alignItems: "flex-start",
-                                  gap: 2,
-                                  flexWrap: "wrap",
-                                  justifyContent: "space-between"
+                                  alignItems: "center",
+                                  p: 1.5,
+                                  backgroundColor: alpha(theme.palette.secondary.main, 0.1),
+                                  borderRadius: 2
                                 }}
                               >
-                                <Box>
-                                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                                    <SchoolIcon sx={{ color: theme.palette.secondary.main, mr: 1, fontSize: '1.2rem' }} />
-                                    <Typography
-                                      variant="h6"
-                                      sx={{ my: 0, fontWeight: 700, color: theme.palette.secondary.main }}
-                                      data-testid={`recommended-school-name-${rec.school?.id || "unknown"}`}
-                                    >
-                                      {rec.school?.school_name || "Unknown School"}
-                                    </Typography>
-                                  </Box>
-                                  <Box
-                                    sx={{ display: "flex", alignItems: "center", mb: 1 }}
-                                  >
-                                    <LocationOnIcon sx={{ color: theme.palette.text.secondary, mr: 1, fontSize: '0.9rem' }} />
-                                    <Typography
-                                      variant="body2"
-                                      sx={{ color: theme.palette.text.secondary }}
-                                      data-testid={`recommended-school-location-${rec.school?.id || "unknown"}`}
-                                    >
-                                      {rec.school?.location || "Unknown Location"}
-                                    </Typography>
-                                    {rec.sport && (
-                                      <Chip
-                                        size="small"
-                                        label={rec.sport}
-                                        sx={{
-                                          ml: 1,
-                                          backgroundColor: alpha(theme.palette.secondary.main, 0.1),
-                                          color: theme.palette.secondary.main,
-                                          fontWeight: 500,
-                                          fontSize: "0.75rem"
-                                        }}
-                                        data-testid={`recommended-sport-name-${rec.school?.id || "unknown"}`}
-                                      />
-                                    )}
-                                  </Box>
-                                </Box>
-                                <Box sx={{ display: "flex", gap: 1 }}>
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      p: 1.5,
-                                      backgroundColor: alpha(theme.palette.secondary.main, 0.1),
-                                      borderRadius: 2
-                                    }}
-                                  >
-                                    <Typography
-                                      variant="body2"
-                                      sx={{ fontWeight: 600, color: theme.palette.secondary.main }}
-                                    >
-                                      Match Score: {rec.similarity_score}/10
-                                    </Typography>
-                                  </Box>
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      flexDirection: "column",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        alignItems: "center",
-                                        p: 1,
-                                        backgroundColor: "#f0f7ff",
-                                        borderRadius: 1
-                                      }}
-                                    >
-                                      <Typography
-                                        variant="body2"
-                                        sx={{ fontWeight: 500, color: "#1976d2" }}
-                                      >
-                                        {rec.school.review_count > 500 ? "500+" : rec.school.review_count || 0} {rec.school.review_count === 1 ? "review" : "reviews"}
-                                      </Typography>
-                                    </Box>
-                                    {rec.school.review_count > 0 && (
-                                      <Box sx={{ mt: 0.5 }}>
-                                        <StarRating rating={rec.school.average_rating} showValue={true} />
-                                      </Box>
-                                    )}
-                                  </Box>
-                                </Box>
+                                <Typography
+                                  variant="body2"
+                                  sx={{ fontWeight: 600, color: theme.palette.secondary.main }}
+                                >
+                                  Match Score: {rec.similarity_score}/10
+                                </Typography>
                               </Box>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </Stack>
-                    </>
-                  ) : (
-                    <Paper
-                      elevation={2}
-                      sx={{
-                        textAlign: "center",
-                        p: 4,
-                        borderRadius: 3,
-                        backgroundColor: alpha(theme.palette.background.paper, 0.8),
-                      }}
-                    >
-                      <Box sx={{ py: 3 }}>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            mb: 2,
-                            fontWeight: 600,
-                            color: theme.palette.primary.main
-                          }}
-                        >
-                          No Recommendations Available
-                        </Typography>
-                        <Typography
-                          variant="body1"
-                          sx={{
-                            mb: 2,
-                            color: theme.palette.text.secondary,
-                            maxWidth: 500,
-                            mx: 'auto'
-                          }}
-                        >
-                          We don't have any reviews yet for your preferred sport.
-                          Check back later as our community grows!
-                        </Typography>
-                      </Box>
-                    </Paper>
-                  )
-                ) : (
-                  <Paper
-                    elevation={2}
-                    sx={{
-                      textAlign: "center",
-                      p: 4,
-                      borderRadius: 3,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.8),
-                    }}
-                  >
-                    <Box sx={{ py: 3 }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          mb: 2,
-                          fontWeight: 600,
-                          color: theme.palette.primary.main
-                        }}
-                      >
-                        Fill Out Your Preferences
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          mb: 3,
-                          color: theme.palette.text.secondary,
-                          maxWidth: 500,
-                          mx: 'auto'
-                        }}
-                      >
-                        Please fill out your preferences to see personalized school recommendations based on what matters most to you.
-                      </Typography>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleGoToPreferenceForm}
-                        sx={{
-                          py: 1.5,
-                          px: 3,
-                          fontWeight: 600,
-                          borderRadius: 2,
-                          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
-                          },
-                          '&:active': {
-                            transform: 'translateY(1px)'
-                          }
-                        }}
-                    >
-                      Set your preferences
-                    </Button>
-                  </Box>
-                  </Paper>
-                )}
-                {hasPreferences && (
-                    <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleModifyPreferenceForm}
-                        sx={{
-                          borderRadius: "20px",
-                          py: 0.8,
-                          px: 2.5,
-                          textTransform: "none",
-                          fontWeight: 500
-                        }}
-                      >
-                        Modify Preferences
-                      </Button>
-                    </Box>
-                  )}
-              </Box>
-            )}
-            {/*        /!*{filters.sport && (*!/*/}
-            {/*        /!*  <Button*!/*/}
-            {/*        /!*    variant="outlined"*!/*/}
-            {/*        /!*    color="primary"*!/*/}
-            {/*        /!*    onClick={handleGoToReviewForm}*!/*/}
-            {/*        /!*    sx={{*!/*/}
-            {/*        /!*      mt: 1,*!/*/}
-            {/*        /!*      borderRadius: "20px",*!/*/}
-            {/*        /!*      py: 0.8,*!/*/}
-            {/*        /!*      px: 2.5,*!/*/}
-            {/*        /!*      textTransform: "none",*!/*/}
-            {/*        /!*      fontWeight: 500*!/*/}
-            {/*        /!*    }}*!/*/}
-            {/*        /!*  >*!/*/}
-            {/*        /!*    Submit a Review*!/*/}
-            {/*        /!*  </Button>*!/*/}
-            {/*        /!*)}*!/*/}
-            {/*      </Box>*/}
-            {/*    )*/}
-            {/*  ) : (*/}
-            {/*    <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>*/}
-            {/*      <Typography variant="h6" sx={{ mb: 1 }}>*/}
-            {/*        {filters.sport ? "No Recommendations Available" : "Fill Out Your Preferences"}*/}
-            {/*      </Typography>*/}
-            {/*      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>*/}
-            {/*        {filters.sport*/}
-            {/*          ? `We don't have any reviews yet for your preferred sport (${filters.sport}). Check back later as our community grows!`*/}
-            {/*          : "Please fill out your preferences to see personalized school recommendations based on what matters most to you."}*/}
-            {/*      </Typography>*/}
-
-            {/*      {user.transfer_type !== "graduate" && !hasPreferences && (*/}
-            {/*        <Button*/}
-            {/*          variant="contained"*/}
-            {/*          color="primary"*/}
-            {/*          onClick={handleGoToPreferenceForm}*/}
-            {/*          sx={{*/}
-            {/*            mt: 1,*/}
-            {/*            mr: 2,*/}
-            {/*            borderRadius: "20px",*/}
-            {/*            py: 0.8,*/}
-            {/*            px: 2.5,*/}
-            {/*            textTransform: "none",*/}
-            {/*            fontWeight: 500,*/}
-            {/*            boxShadow: 1*/}
-            {/*          }}*/}
-            {/*        >*/}
-            {/*          {filters.sport ? "Update Preferences" : "Set Your Preferences"}*/}
-            {/*        </Button>*/}
-            {/*      )}*/}
-            {/*      /!*{filters.sport && (*!/*/}
-            {/*      /!*  <Button*!/*/}
-            {/*      /!*    variant="outlined"*!/*/}
-            {/*      /!*    color="primary"*!/*/}
-            {/*      /!*    onClick={handleGoToReviewForm}*!/*/}
-            {/*      /!*    sx={{*!/*/}
-            {/*      /!*      mt: 1,*!/*/}
-            {/*      /!*      borderRadius: "20px",*!/*/}
-            {/*      /!*      py: 0.8,*!/*/}
-            {/*      /!*      px: 2.5,*!/*/}
-            {/*      /!*      textTransform: "none",*!/*/}
-            {/*      /!*      fontWeight: 500*!/*/}
-            {/*      /!*    }}*!/*/}
-            {/*      /!*  >*!/*/}
-            {/*      /!*    Submit a Review*!/*/}
-            {/*      /!*  </Button>*!/*/}
-            {/*      /!*)}*!/*/}
-            {/*    </Box>*/}
-            {/*  )*/}
-            {/*) : null}*/}
-
-            {/* Show review form button for transfer students */}
-            {user.transfer_type !== "high_school" && (
-              <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-                <Button
-                  id="submit-review-button"
-                  variant="contained"
-                  color="secondary"
-                  onClick={handleGoToReviewForm}
-                  sx={{
-                    mr: 2,
-                    borderRadius: "20px",
-                    py: 0.8,
-                    px: 2.5,
-                    textTransform: "none",
-                    fontWeight: 500,
-                    boxShadow: 1
-                  }}
-                >
-                  Submit a Review
-                </Button>
-                {/*{!hasPreferences && (*/}
-                {/*  <Button*/}
-                {/*    id="preference-form-button"*/}
-                {/*    variant="outlined"*/}
-                {/*    color="primary"*/}
-                {/*    onClick={handleGoToPreferenceForm}*/}
-                {/*    sx={{*/}
-                {/*      borderRadius: "20px",*/}
-                {/*      py: 0.8,*/}
-                {/*      px: 2.5,*/}
-                {/*      textTransform: "none",*/}
-                {/*      fontWeight: 500*/}
-                {/*    }}*/}
-                {/*  >*/}
-                {/*    Fill Preference Form*/}
-                {/*  </Button>*/}
-                {/*)}*/}
-              </Box>
-            )}
-
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
-                <CircularProgress size={60} />
-              </Box>
-            ) : (
-              <Stack spacing={2} sx={{ px: 2 }}>
-                {currentSchools.length > 0 ? (
-                  currentSchools.map((school) => (
-                    <Card
-                      key={school.id}
-                      id={`school-${school.id}`}
-                      sx={{
-                        width: "100%",
-                        cursor: "pointer",
-                        mb: 3,
-                        borderRadius: 3,
-                        overflow: 'hidden',
-                        transition: 'all 0.3s ease',
-                        position: 'relative',
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
-                        },
-                        '&::before': {
-                          content: '""',
-                          position: 'absolute',
-                          left: 0,
-                          top: 0,
-                          bottom: 0,
-                          width: '4px',
-                          backgroundColor: theme.palette.primary.main,
-                          borderTopLeftRadius: 3,
-                          borderBottomLeftRadius: 3,
-                        }
-                      }}
-                      onClick={() => handleSchoolClick(school.id)}
-                      elevation={2}
-                    >
-                      <CardContent sx={{ pl: 3 }}>
-                        {/* Responsive layout with better organization for small screens */}
-                        <Box sx={{
-                          display: "flex",
-                          flexDirection: { xs: "column", sm: "row" },
-                          gap: 2,
-                          width: "100%"
-                        }}>
-                          {/* School info section */}
-                          <Box sx={{
-                            flex: 1,
-                            minWidth: 0, // Prevents content from overflowing
-                            mb: { xs: 1, sm: 0 }
-                          }}>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
-                              <SchoolIcon sx={{
-                                color: theme.palette.primary.main,
-                                mr: 1,
-                                fontSize: '1.2rem',
-                                flexShrink: 0 // Prevents icon from shrinking
-                              }} />
-                              <Typography
-                                variant="h6"
+                              <Box
                                 sx={{
-                                  my: 0,
-                                  fontWeight: 700,
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: { xs: "normal", sm: "nowrap" }
-                                }}
-                                data-testid={`school-list-name-${school.id}`}
-                              >
-                                {school.school_name}
-                              </Typography>
-                            </Box>
-                            <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                              <SportsSoccerIcon sx={{
-                                color: theme.palette.text.secondary,
-                                mr: 1,
-                                fontSize: '0.9rem',
-                                mt: 0.3, // Align with text when text wraps
-                                flexShrink: 0 // Prevents icon from shrinking
-                              }} />
-                              <Typography
-                                variant="body2"
-                                data-testid={`school-list-sports-${school.id}`}
-                                sx={{
-                                  color: theme.palette.text.secondary,
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis"
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "center",
                                 }}
                               >
-                                {school.available_sports && school.available_sports.length > 0
-                                  ? school.available_sports.join(" • ")
-                                  : "No sports listed"}
-                              </Typography>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    p: 1,
+                                    backgroundColor: "#f0f7ff",
+                                    borderRadius: 1
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    sx={{ fontWeight: 500, color: "#1976d2" }}
+                                  >
+                                    {rec.school.review_count > 500 ? "500+" : rec.school.review_count || 0} {rec.school.review_count === 1 ? "review" : "reviews"}
+                                  </Typography>
+                                </Box>
+                                {rec.school.review_count > 0 && (
+                                  <Box sx={{ mt: 0.5 }}>
+                                    <StarRating rating={rec.school.average_rating} showValue={true} />
+                                  </Box>
+                                )}
+                              </Box>
                             </Box>
                           </Box>
-
-                          {/* Reviews and ratings section */}
-                          <Box sx={{
-                            display: "flex",
-                            flexDirection: { xs: "row", sm: "column" },
-                            alignItems: { xs: "center", sm: "flex-end" },
-                            justifyContent: { xs: "space-between", sm: "center" },
-                            gap: 2,
-                            flexShrink: 0 // Prevents this box from shrinking
-                          }}>
-                            <Box sx={{
-                              backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                              px: 1.5,
-                              py: 0.5,
-                              borderRadius: 2,
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              minWidth: { xs: "90px", sm: "auto" }
-                            }}>
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  fontWeight: 600,
-                                  color: theme.palette.primary.main,
-                                  textAlign: "center"
-                                }}
-                              >
-                                {school.review_count > 500 ? "500+" : school.review_count || 0} {school.review_count === 1 ? "review" : "reviews"}
-                              </Typography>
-                            </Box>
-                            {school.review_count > 0 && (
-                              <Box sx={{
-                                display: "flex",
-                                justifyContent: { xs: "flex-end", sm: "center" },
-                                width: { xs: "auto", sm: "100%" },
-                                mt: { xs: 0, sm: 0.5 }
-                              }}>
-                                <StarRating rating={school.average_rating} showValue={true} />
-                              </Box>
-                            )}
-                          </Box>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  ))
-                ) : (
-                  <Paper
-                    elevation={2}
-                    sx={{
-                      textAlign: "center",
-                      p: 4,
-                      mt: 3,
-                      borderRadius: 3,
-                      backgroundColor: alpha(theme.palette.background.paper, 0.8),
-                    }}
-                  >
-                    <Box sx={{ py: 3 }}>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          mb: 2,
-                          fontWeight: 600,
-                          color: theme.palette.primary.main
-                        }}
-                      >
-                        No Results Found
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          mb: 2,
-                          color: theme.palette.text.secondary,
-                          maxWidth: 500,
-                          mx: 'auto'
-                        }}
-                      >
-                        Try adjusting your search criteria or filters to find more schools.
-                      </Typography>
-                    </Box>
-                  </Paper>
-                )}
-              </Stack>
-            )}
-            {filteredBySearch.length > schoolsPerPage && (
-              <Box sx={{ position: "relative", mt: 5, mb: 5 }}>
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
-                  <Pagination
-                    count={Math.ceil(filteredBySearch.length / schoolsPerPage)}
-                    page={currentPage}
-                    onChange={handlePageChange}
-                    color="primary"
-                    siblingCount={1}
-                    boundaryCount={1}
-                    showFirstButton
-                    showLastButton
-                    sx={{
-                      mt: 2,
-                      "& .MuiPaginationItem-root": {
-                        fontSize: "1rem",
-                        fontWeight: 500,
-                        borderRadius: 2,
-                        transition: 'all 0.2s ease',
-                      },
-                      "& .Mui-selected": {
-                        backgroundColor: `${theme.palette.primary.main} !important`,
-                        color: '#fff',
-                        fontWeight: 600,
-                      },
-                      "& .MuiPaginationItem-root:hover": {
-                        backgroundColor: alpha(theme.palette.primary.main, 0.1),
-                        transform: 'translateY(-2px)',
-                      },
-                    }}
-                  />
-                </Box>
-              {!isSmallScreen && (
-                <Box
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </Stack>
+                </>
+              ) : (
+                <Paper
+                  elevation={2}
                   sx={{
-                    position: "absolute",
-                    top: "50%",
-                    transform: "translateY(-50%)",
-                    left: "50%",
-                    ml: "180px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 2,
-                    p: 2,
+                    textAlign: "center",
+                    p: 4,
                     borderRadius: 3,
                     backgroundColor: alpha(theme.palette.background.paper, 0.8),
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
                   }}
                 >
+                  <Box sx={{ py: 3 }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 2,
+                        fontWeight: 600,
+                        color: theme.palette.primary.main
+                      }}
+                    >
+                      No Recommendations Available
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        mb: 2,
+                        color: theme.palette.text.secondary,
+                        maxWidth: 500,
+                        mx: 'auto'
+                      }}
+                    >
+                      We don't have any reviews yet for your preferred sport.
+                      Check back later as our community grows!
+                    </Typography>
+                  </Box>
+                </Paper>
+              )
+            ) : (
+              <Paper
+                elevation={2}
+                sx={{
+                  textAlign: "center",
+                  p: 4,
+                  borderRadius: 3,
+                  backgroundColor: alpha(theme.palette.background.paper, 0.8),
+                }}
+              >
+                <Box sx={{ py: 3 }}>
                   <Typography
-                    variant="body2"
+                    variant="h6"
                     sx={{
+                      mb: 2,
                       fontWeight: 600,
-                      color: theme.palette.text.primary
+                      color: theme.palette.primary.main
                     }}
                   >
-                    Jump to:
+                    Fill Out Your Preferences
                   </Typography>
-                  <TextField
-                    size="small"
-                    type="number"
-                    variant="outlined"
-                    value={currentPage}
+                  <Typography
+                    variant="body1"
                     sx={{
-                      '& .MuiOutlinedInput-root': {
-                        borderRadius: 2,
-                        '&:hover .MuiOutlinedInput-notchedOutline': {
-                          borderColor: theme.palette.primary.main,
-                        },
-                      },
+                      mb: 3,
+                      color: theme.palette.text.secondary,
+                      maxWidth: 500,
+                      mx: 'auto'
                     }}
-                    onChange={(e) => {
-                      const value = parseInt(e.target.value);
-                      const maxPage = Math.ceil(filteredBySearch.length / schoolsPerPage);
-                      if (!isNaN(value) && value >= 1 && value <= maxPage) {
-                        setCurrentPage(value);
-                        const params = new URLSearchParams(location.search);
-                        params.set("page", value.toString());
-                        if (searchQuery.trim() !== "") {
-                          params.set("search", searchQuery);
-                        } else {
-                          params.delete("search");
-                        }
-                        navigate({ search: params.toString() }, { replace: false });
+                  >
+                    Please fill out your preferences to see personalized school recommendations based on what matters most to you.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleGoToPreferenceForm}
+                    sx={{
+                      py: 1.5,
+                      px: 3,
+                      fontWeight: 600,
+                      borderRadius: 2,
+                      transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+                      },
+                      '&:active': {
+                        transform: 'translateY(1px)'
                       }
                     }}
-                    inputProps={{
-                      min: 1,
-                      max: Math.ceil(filteredBySearch.length / schoolsPerPage),
-                      style: { width: 60, textAlign: "center" }
-                    }}
-                  />
-                </Box> )}
+                >
+                  Set your preferences
+                </Button>
               </Box>
+              </Paper>
             )}
+            {hasPreferences && (
+                <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleModifyPreferenceForm}
+                    sx={{
+                      borderRadius: "20px",
+                      py: 0.8,
+                      px: 2.5,
+                      textTransform: "none",
+                      fontWeight: 500
+                    }}
+                  >
+                    Modify Preferences
+                  </Button>
+                </Box>
+              )}
+          </Box>
+        )}
+        {/*        /!*{filters.sport && (*!/*/}
+        {/*        /!*  <Button*!/*/}
+        {/*        /!*    variant="outlined"*!/*/}
+        {/*        /!*    color="primary"*!/*/}
+        {/*        /!*    onClick={handleGoToReviewForm}*!/*/}
+        {/*        /!*    sx={{*!/*/}
+        {/*        /!*      mt: 1,*!/*/}
+        {/*        /!*      borderRadius: "20px",*!/*/}
+        {/*        /!*      py: 0.8,*!/*/}
+        {/*        /!*      px: 2.5,*!/*/}
+        {/*        /!*      textTransform: "none",*!/*/}
+        {/*        /!*      fontWeight: 500*!/*/}
+        {/*        /!*    }}*!/*/}
+        {/*        /!*  >*!/*/}
+        {/*        /!*    Submit a Review*!/*/}
+        {/*        /!*  </Button>*!/*/}
+        {/*        /!*)}*!/*/}
+        {/*      </Box>*/}
+        {/*    )*/}
+        {/*  ) : (*/}
+        {/*    <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>*/}
+        {/*      <Typography variant="h6" sx={{ mb: 1 }}>*/}
+        {/*        {filters.sport ? "No Recommendations Available" : "Fill Out Your Preferences"}*/}
+        {/*      </Typography>*/}
+        {/*      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>*/}
+        {/*        {filters.sport*/}
+        {/*          ? `We don't have any reviews yet for your preferred sport (${filters.sport}). Check back later as our community grows!`*/}
+        {/*          : "Please fill out your preferences to see personalized school recommendations based on what matters most to you."}*/}
+        {/*      </Typography>*/}
+
+        {/*      {user.transfer_type !== "graduate" && !hasPreferences && (*/}
+        {/*        <Button*/}
+        {/*          variant="contained"*/}
+        {/*          color="primary"*/}
+        {/*          onClick={handleGoToPreferenceForm}*/}
+        {/*          sx={{*/}
+        {/*            mt: 1,*/}
+        {/*            mr: 2,*/}
+        {/*            borderRadius: "20px",*/}
+        {/*            py: 0.8,*/}
+        {/*            px: 2.5,*/}
+        {/*            textTransform: "none",*/}
+        {/*            fontWeight: 500,*/}
+        {/*            boxShadow: 1*/}
+        {/*          }}*/}
+        {/*        >*/}
+        {/*          {filters.sport ? "Update Preferences" : "Set Your Preferences"}*/}
+        {/*        </Button>*/}
+        {/*      )}*/}
+        {/*      /!*{filters.sport && (*!/*/}
+        {/*      /!*  <Button*!/*/}
+        {/*      /!*    variant="outlined"*!/*/}
+        {/*      /!*    color="primary"*!/*/}
+        {/*      /!*    onClick={handleGoToReviewForm}*!/*/}
+        {/*      /!*    sx={{*!/*/}
+        {/*      /!*      mt: 1,*!/*/}
+        {/*      /!*      borderRadius: "20px",*!/*/}
+        {/*      /!*      py: 0.8,*!/*/}
+        {/*      /!*      px: 2.5,*!/*/}
+        {/*      /!*      textTransform: "none",*!/*/}
+        {/*      /!*      fontWeight: 500*!/*/}
+        {/*      /!*    }}*!/*/}
+        {/*      /!*  >*!/*/}
+        {/*      /!*    Submit a Review*!/*/}
+        {/*      /!*  </Button>*!/*/}
+        {/*      /!*)}*!/*/}
+        {/*    </Box>*/}
+        {/*  )*/}
+        {/*) : null}*/}
+
+        {/* Show review form button for transfer students */}
+        {user.transfer_type !== "high_school" && (
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+            <Button
+              id="submit-review-button"
+              variant="contained"
+              color="secondary"
+              onClick={handleGoToReviewForm}
+              sx={{
+                mr: 2,
+                borderRadius: "20px",
+                py: 0.8,
+                px: 2.5,
+                textTransform: "none",
+                fontWeight: 500,
+                boxShadow: 1
+              }}
+            >
+              Submit a Review
+            </Button>
+            {/*{!hasPreferences && (*/}
+            {/*  <Button*/}
+            {/*    id="preference-form-button"*/}
+            {/*    variant="outlined"*/}
+            {/*    color="primary"*/}
+            {/*    onClick={handleGoToPreferenceForm}*/}
+            {/*    sx={{*/}
+            {/*      borderRadius: "20px",*/}
+            {/*      py: 0.8,*/}
+            {/*      px: 2.5,*/}
+            {/*      textTransform: "none",*/}
+            {/*      fontWeight: 500*/}
+            {/*    }}*/}
+            {/*  >*/}
+            {/*    Fill Preference Form*/}
+            {/*  </Button>*/}
+            {/*)}*/}
+          </Box>
+        )}
+
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
+            <CircularProgress size={60} />
+          </Box>
+        ) : (
+          <Stack spacing={2} sx={{ px: 2 }}>
+            {currentSchools.length > 0 ? (
+              currentSchools.map((school) => {
+                const primary = getTeamPrimaryColor(school.school_name, theme.palette.primary.main);
+                return (
+                  <Card
+                    key={school.id}
+                    id={`school-${school.id}`}
+                    sx={{
+                      width: "100%",
+                      cursor: "pointer",
+                      mb: 3,
+                      borderRadius: 3,
+                      overflow: 'hidden',
+                      transition: 'all 0.3s ease',
+                      position: 'relative',
+                      "&::before": {
+                        content: '""',
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: "4px",
+                        backgroundColor: primary,
+                        borderTopLeftRadius: 3,
+                        borderBottomLeftRadius: 3,
+                      },
+                      background: `linear-gradient(90deg,
+                        ${alpha(primary, 0.20)} 0%, ${alpha(primary, 0.05)} 40%)`,
+                      "&:hover": {
+                        transform: "translateY(-4px)",
+                        boxShadow: `0 8px 25px ${alpha(primary, 0.25)}`
+                      }
+                    }}
+                    onClick={() => handleSchoolClick(school.id)}
+                    elevation={2}
+                  >
+                    <CardContent sx={{pl: 3}}>
+                      {/* Responsive layout with better organization for small screens */}
+                      <Box sx={{
+                        display: "flex",
+                        flexDirection: {xs: "column", sm: "row"},
+                        gap: 2,
+                        width: "100%"
+                      }}>
+                        {/* School info section */}
+                        <Box sx={{
+                          flex: 1,
+                          minWidth: 0, // Prevents content from overflowing
+                          mb: {xs: 1, sm: 0}
+                        }}>
+                          <Box sx={{display: 'flex', alignItems: 'center', mb: 0.5}}>
+                            <SchoolIcon sx={{
+                              color: theme.palette.primary.main,
+                              mr: 1,
+                              fontSize: '1.2rem',
+                              flexShrink: 0 // Prevents icon from shrinking
+                            }}/>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                my: 0,
+                                fontWeight: 700,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                whiteSpace: {xs: "normal", sm: "nowrap"}
+                              }}
+                              data-testid={`school-list-name-${school.id}`}
+                            >
+                              {school.school_name}
+                            </Typography>
+                          </Box>
+                          <Box sx={{display: 'flex', alignItems: 'flex-start'}}>
+                            <SportsSoccerIcon sx={{
+                              color: theme.palette.text.secondary,
+                              mr: 1,
+                              fontSize: '0.9rem',
+                              mt: 0.3, // Align with text when text wraps
+                              flexShrink: 0 // Prevents icon from shrinking
+                            }}/>
+                            <Typography
+                              variant="body2"
+                              data-testid={`school-list-sports-${school.id}`}
+                              sx={{
+                                color: theme.palette.text.secondary,
+                                overflow: "hidden",
+                                textOverflow: "ellipsis"
+                              }}
+                            >
+                              {school.available_sports && school.available_sports.length > 0
+                                ? school.available_sports.join(" • ")
+                                : "No sports listed"}
+                            </Typography>
+                          </Box>
+                        </Box>
+
+                        {/* Reviews and ratings section */}
+                        <Box sx={{
+                          display: "flex",
+                          flexDirection: {xs: "row", sm: "column"},
+                          alignItems: {xs: "center", sm: "flex-end"},
+                          justifyContent: {xs: "space-between", sm: "center"},
+                          gap: 2,
+                          flexShrink: 0 // Prevents this box from shrinking
+                        }}>
+                          <Box sx={{
+                            backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            minWidth: {xs: "90px", sm: "auto"}
+                          }}>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontWeight: 600,
+                                color: theme.palette.primary.main,
+                                textAlign: "center"
+                              }}
+                            >
+                              {school.review_count > 500 ? "500+" : school.review_count || 0} {school.review_count === 1 ? "review" : "reviews"}
+                            </Typography>
+                          </Box>
+                          {school.review_count > 0 && (
+                            <Box sx={{
+                              display: "flex",
+                              justifyContent: {xs: "flex-end", sm: "center"},
+                              width: {xs: "auto", sm: "100%"},
+                              mt: {xs: 0, sm: 0.5}
+                            }}>
+                              <StarRating rating={school.average_rating} showValue={true}/>
+                            </Box>
+                          )}
+                        </Box>
+                      </Box>
+                    </CardContent>
+                  </Card>
+                );
+              })
+            ) : (
+              <Paper
+                elevation={2}
+                sx={{
+                  textAlign: "center",
+                  p: 4,
+                  mt: 3,
+                  borderRadius: 3,
+                  backgroundColor: alpha(theme.palette.background.paper, 0.8),
+                }}
+              >
+                <Box sx={{ py: 3 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      mb: 2,
+                      fontWeight: 600,
+                      color: theme.palette.primary.main
+                    }}
+                  >
+                    No Results Found
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mb: 2,
+                      color: theme.palette.text.secondary,
+                      maxWidth: 500,
+                      mx: 'auto'
+                    }}
+                  >
+                    Try adjusting your search criteria or filters to find more schools.
+                  </Typography>
+                </Box>
+              </Paper>
+            )}
+          </Stack>
+        )}
+        {filteredBySearch.length > schoolsPerPage && (
+          <Box sx={{ position: "relative", mt: 5, mb: 5 }}>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Pagination
+                count={Math.ceil(filteredBySearch.length / schoolsPerPage)}
+                page={currentPage}
+                onChange={handlePageChange}
+                color="primary"
+                siblingCount={1}
+                boundaryCount={1}
+                showFirstButton
+                showLastButton
+                sx={{
+                  mt: 2,
+                  "& .MuiPaginationItem-root": {
+                    fontSize: "1rem",
+                    fontWeight: 500,
+                    borderRadius: 2,
+                    transition: 'all 0.2s ease',
+                  },
+                  "& .Mui-selected": {
+                    backgroundColor: `${theme.palette.primary.main} !important`,
+                    color: '#fff',
+                    fontWeight: 600,
+                  },
+                  "& .MuiPaginationItem-root:hover": {
+                    backgroundColor: alpha(theme.palette.primary.main, 0.1),
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+              />
+            </Box>
+          {!isSmallScreen && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                transform: "translateY(-50%)",
+                left: "50%",
+                ml: "180px",
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                p: 2,
+                borderRadius: 3,
+                backgroundColor: alpha(theme.palette.background.paper, 0.8),
+                boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
+              }}
+            >
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 600,
+                  color: theme.palette.text.primary
+                }}
+              >
+                Jump to:
+              </Typography>
+              <TextField
+                size="small"
+                type="number"
+                variant="outlined"
+                value={currentPage}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2,
+                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                      borderColor: theme.palette.primary.main,
+                    },
+                  },
+                }}
+                onChange={(e) => {
+                  const value = parseInt(e.target.value);
+                  const maxPage = Math.ceil(filteredBySearch.length / schoolsPerPage);
+                  if (!isNaN(value) && value >= 1 && value <= maxPage) {
+                    setCurrentPage(value);
+                    const params = new URLSearchParams(location.search);
+                    params.set("page", value.toString());
+                    if (searchQuery.trim() !== "") {
+                      params.set("search", searchQuery);
+                    } else {
+                      params.delete("search");
+                    }
+                    navigate({ search: params.toString() }, { replace: false });
+                  }
+                }}
+                inputProps={{
+                  min: 1,
+                  max: Math.ceil(filteredBySearch.length / schoolsPerPage),
+                  style: { width: 60, textAlign: "center" }
+                }}
+              />
+            </Box> )}
+          </Box>
+        )}
       </Container>
 
       {/* Filter Dialog */}
