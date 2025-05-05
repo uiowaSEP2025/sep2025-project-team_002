@@ -5,7 +5,7 @@ const lookupMap = new Map();
 for (const [raw, color] of Object.entries(teamColors)) {
   const full = raw.trim().toLowerCase();
   lookupMap.set(full, color);
-  // 短名也映射到同样的颜色
+  // also map the “short” name (drop the last word) to the same color
   const short = full.replace(/\s+\w+$/, "");
   lookupMap.set(short, color);
 }
@@ -16,34 +16,48 @@ export function normalizeName(raw) {
   return raw
     .trim()
     .toLowerCase()
-    // 去掉开头的 “University of / College of”
+    // strip leading “University of / College of”
     .replace(/^(university|college)( of)?\s+/i, "")
-    // 只去掉末尾的 “University” 或 “College”
+    // strip trailing “University” or “College”
     .replace(/\s+(university|college)$/i, "")
     .trim();
+}
+
+// helper to clean up the raw color string
+function cleanColor(rawColor) {
+  return rawColor.trim().replace(/;$/, "");
 }
 
 export function getTeamPrimaryColor(raw, fallback) {
   const norm = normalizeName(raw);
 
-  // 完全匹配
-  if (lookupMap.has(norm)) {
-    return lookupMap.get(norm);
+  // look up exact match
+  let c = lookupMap.get(norm);
+  if (c != null) {
+    c = cleanColor(c);
+    // if JSON says “NA” or empty, fall back
+    if (c.toUpperCase() === "NA" || c === "") {
+      return fallback;
+    }
+    return c;
   }
 
-  // 先匹配 “norm + 空格” 开头的 key（保证 iowa state > iowa）
+  // match keys starting with “norm + space” (so “iowa state cyclones” beats “iowa”)
   for (const key of sortedKeys) {
     if (key.startsWith(norm + " ")) {
-      return lookupMap.get(key);
+      const found = cleanColor(lookupMap.get(key));
+      return found.toUpperCase() === "NA" ? fallback : found;
     }
   }
 
-  // 再尝试包含匹配
+  // finally, try any substring match
   for (const key of sortedKeys) {
     if (norm.includes(key)) {
-      return lookupMap.get(key);
+      const found = cleanColor(lookupMap.get(key));
+      return found.toUpperCase() === "NA" ? fallback : found;
     }
   }
 
+  // no match at all → fallback
   return fallback;
 }
