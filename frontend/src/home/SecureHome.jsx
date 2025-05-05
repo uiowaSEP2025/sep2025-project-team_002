@@ -32,6 +32,7 @@ import {
   Container,
   alpha,
   lighten,
+  darken,
   Tooltip
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
@@ -1290,6 +1291,7 @@ function SecureHome() {
             {currentSchools.length > 0 ? (
               currentSchools.map((school) => {
                 const primary = getTeamPrimaryColor(school.school_name, theme.palette.primary.main);
+                const darker  = darken(primary,  0.2); // −20% dark
                 return (
                   <Card
                     key={school.id}
@@ -1313,8 +1315,8 @@ function SecureHome() {
                         borderTopLeftRadius: 3,
                         borderBottomLeftRadius: 3,
                       },
-                      background: `linear-gradient(90deg,
-                        ${alpha(primary, 0.20)} 0%, ${alpha(primary, 0.05)} 40%)`,
+                      background: `linear-gradient(135deg,
+                        ${alpha(primary, 0.30)} 0%, ${alpha(primary, 0.08)} 40%)`,
                       "&:hover": {
                         transform: "translateY(-4px)",
                         boxShadow: `0 8px 25px ${alpha(primary, 0.25)}`
@@ -1349,6 +1351,7 @@ function SecureHome() {
                               sx={{
                                 my: 0,
                                 fontWeight: 700,
+                                color: darker,
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                                 whiteSpace: {xs: "normal", sm: "nowrap"}
