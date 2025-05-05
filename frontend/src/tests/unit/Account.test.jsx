@@ -428,9 +428,9 @@ describe("Account Page Testing", () => {
       fireEvent.click(verifyBtn);
 
       // Verify that the alert is called with the success message
-      await waitFor(() =>
-        expect(alertSpy).toHaveBeenCalledWith("Verification email sent!")
-      );
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toHaveTextContent("Verification email sent!");
+      });
       alertSpy.mockRestore();
     });
 
