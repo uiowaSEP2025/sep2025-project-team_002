@@ -35,6 +35,11 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import SchoolIcon from "@mui/icons-material/School";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import SportsFootballIcon from '@mui/icons-material/SportsFootball';
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 import StarIcon from "@mui/icons-material/Star";
 import ClearIcon from "@mui/icons-material/Clear";
 import { getTeamPrimaryColor } from "../utils/teamColorLookup";
@@ -44,6 +49,17 @@ import StarRating from "../components/StarRating";
 function Home() {
   const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
+
+  const sportIcons = {
+  "Men's Basketball": <SportsBasketballIcon fontSize="small" />,
+  "Women's Basketball": <SportsBasketballIcon fontSize="small" />,
+  "Football": <SportsFootballIcon fontSize="small" />,
+  "Volleyball": <SportsVolleyballIcon fontSize="small" />,
+  "Baseball": <SportsBaseballIcon fontSize="small" />,
+  "Men's Soccer": <SportsSoccerIcon fontSize="small" />,
+  "Women's Soccer": <SportsSoccerIcon fontSize="small" />,
+  "Wrestling": <SportsMmaIcon fontSize="small" />,
+};
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -628,7 +644,7 @@ function Home() {
                                 key={index}
                                 label={sport}
                                 size="small"
-                                icon={<SportsSoccerIcon fontSize="small"/>}
+                                icon={sportIcons[sport] || <SportsSoccerIcon fontSize="small" />}
                                 sx={{
                                   borderRadius: '16px',
                                   bgcolor: alpha(theme.palette.primary.light, 0.1),
