@@ -37,7 +37,8 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import StarIcon from "@mui/icons-material/Star";
 import ClearIcon from "@mui/icons-material/Clear";
-import InfoIcon from "@mui/icons-material/Clear";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Fade from "@mui/material/Fade";
 import API_BASE_URL from "../utils/config";
 import StarRating from "../components/StarRating";
 
@@ -352,10 +353,15 @@ function Home() {
       top: '20px',  // Adjust this value to position it vertically
       left: '20px', // Adjust this value to position it horizontally
       zIndex: 2,
+    background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
+    color: '#fff',
+    '&:hover': {
+      background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
+    },
     }}
     onClick={() => setPopupOpen(true)} // Open the popup
   >
-    <InfoIcon fontSize="large" />
+    <InfoOutlinedIcon fontSize="large" />
   </IconButton>
 
 
@@ -385,33 +391,38 @@ function Home() {
               Athletic Insider
             </Typography>
 
-            {/* Information Popup (this will also be inside the gradient box now) */}
-  {popupOpen && (
-    <Box
-      sx={{
-        position: 'fixed',
-        top: '20%', // You can adjust this as needed
-        left: '50%',
-        transform: 'translateX(-50%)',
-        backgroundColor: 'white',
-        padding: 3,
-        boxShadow: 3,
-        zIndex: 3,
-        maxWidth: 400,
-        width: '90%',
-      }}
-    >
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        About the Website
-      </Typography>
-      <Typography sx={{ mb: 2 }}>
-        This website helps college athletes make informed decisions on the schools they can go to.
-      </Typography>
-      <Button onClick={() => setPopupOpen(false)} variant="contained">
-        Close
-      </Button>
-    </Box>
-  )}
+   {/* Wrap in Fade // Popup */}
+      <Fade in={popupOpen} timeout={400} mountOnEnter unmountOnExit>
+        <Box
+          sx={{
+            position: 'fixed',
+            top: '20%',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'linear-gradient(90deg, #3a86ff, #8338ec)',  // your gradient
+            padding: 3,
+            boxShadow: 3,
+            zIndex: 3,
+            maxWidth: 400,
+            width: '90%',
+            borderRadius: 2,
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 2, color: '#fff' }}>
+            About the Website
+          </Typography>
+          <Typography sx={{ mb: 2, color: 'rgba(255,255,255,0.9)' }}>
+            This website helps college athletes make informed decisions on the schools they can go to.
+          </Typography>
+          <Button
+            onClick={() => setPopupOpen(false)}
+            variant="contained"
+            sx={{ background: '#fff', color: '#333' }}
+          >
+            Close
+          </Button>
+        </Box>
+      </Fade>
 
             <Typography
               variant="h5"
