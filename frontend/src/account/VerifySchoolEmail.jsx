@@ -36,7 +36,7 @@ function VerifySchoolEmail() {
   }, []);
 
   return (
-    <div style={{ padding: "3rem", textAlign: "  center" }}>
+    <div style={{ padding: "3rem", textAlign: "center" }}>
       <h2>{message}</h2>
       <p>You will be redirected shortly...</p>
     </div>
