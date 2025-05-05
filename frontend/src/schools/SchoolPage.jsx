@@ -1004,6 +1004,7 @@ function SchoolPage() {
                 {filteredReviews.length > reviewsPerPage && (
                   <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                     <Pagination
+                      data-testid="review-pagination"
                       count={Math.ceil(filteredReviews.length / reviewsPerPage)}
                       page={currentPage}
                       onChange={handleChangePage}

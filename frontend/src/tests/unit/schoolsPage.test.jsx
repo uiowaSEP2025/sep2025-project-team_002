@@ -369,7 +369,7 @@ describe('SchoolPage Component', () => {
     expect(reviewCards.length).toBe(5);  // This should be 5 reviews per page
 
     // Test pagination by clicking next
-    const pagination = screen.getByRole('navigation', { name: /pagination/ });
+    const pagination = screen.getByTestId("review-pagination");
     const nextButton = within(pagination).getByRole('button', { name: /next page/i });
     userEvent.click(nextButton);
 
@@ -389,7 +389,7 @@ describe('SchoolPage Component', () => {
       expect(screen.getByRole('list')).toBeInTheDocument();
     });
 
-    const pagination = screen.getByRole('list'); // This will target the pagination list
+    const pagination = screen.getByTestId("review-pagination"); // This will target the pagination list
 
     // Check if "Next" button is available for pagination
     expect(within(pagination).getByRole('button', { name: /next page/i })).toBeInTheDocument();
@@ -404,7 +404,7 @@ describe('SchoolPage Component', () => {
     });
 
     // Simulate switching to page 2 (assuming 5 reviews per page and 6 total reviews)
-    const pagination = screen.getByRole('list'); // Query pagination by role="list"
+    const pagination = screen.getByTestId("review-pagination"); // Query pagination by role="list"
 
     const nextButton = within(pagination).getByRole('button', { name: /next page/i });
 
