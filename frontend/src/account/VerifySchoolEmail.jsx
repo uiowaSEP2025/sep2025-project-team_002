@@ -16,7 +16,7 @@ function VerifySchoolEmail() {
       return;
     }
 
-    fetch(`${API_BASE_URL}/verify-school-email/`, {
+    fetch(`${API_BASE_URL}/users/verify-school-email/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ uid, token }),
@@ -36,7 +36,7 @@ function VerifySchoolEmail() {
   }, []);
 
   return (
-    <div style={{ padding: "3rem", textAlign: "center" }}>
+    <div style={{ padding: "3rem", textAlign: "  center" }}>
       <h2>{message}</h2>
       <p>You will be redirected shortly...</p>
     </div>
