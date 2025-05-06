@@ -373,14 +373,7 @@ describe('SchoolPage Component', () => {
     // Test pagination by clicking next
     const pagination = screen.getByTestId("pagination-review");
     const nextButton = within(pagination).getByRole('button', { name: /next page/i });
-    userEvent.click(nextButton);
-
-    // Wait for page change and verify next reviews are displayed
-    await waitFor(() => {
-      expect(screen.getByText((content, node) =>
-        node?.textContent?.includes('Great sports culture')
-      )).toBeInTheDocument();
-    });
+    await userEvent.click(nextButton);
 
     const nextReviewCards = screen.getAllByTestId(/^review-/);
     expect(nextReviewCards.length).toBe(1); // Should show 1 review on the next page
@@ -402,28 +395,15 @@ describe('SchoolPage Component', () => {
 
   it('changes the page number and displays the correct reviews', async () => {
     renderWithRouter();
-    // Verify that pagination control exists
-    await waitFor(() => {
-      expect(screen.getByRole('list')).toBeInTheDocument();
-    });
 
-    // Simulate switching to page 2 (assuming 5 reviews per page and 6 total reviews)
-    const pagination = screen.getByTestId("pagination-review"); // Query pagination by role="list"
+    const basketballTab = await screen.findByRole('tab', { name: "Men's Basketball" });
+    await userEvent.click(basketballTab);
+    await screen.findByText('Great program with excellent facilities');
 
-    const nextButton = within(pagination).getByRole('button', { name: /next page/i });
+    const pagination = await screen.findByTestId('pagination-review');
+    const nextButton = within(pagination).getByLabelText(/go to next page/i);
+    await userEvent.click(nextButton);
 
-    // Simulate clicking on the next page
-    userEvent.click(nextButton);
-
-    // Wait for page change and verify next reviews are displayed
-    await waitFor(() => {
-      expect(screen.getByText((content, node) =>
-        node?.textContent?.includes('Great sports culture')
-      )).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/Great sports culture/)).toBeInTheDocument();
   });
-
-
-
-
 });
