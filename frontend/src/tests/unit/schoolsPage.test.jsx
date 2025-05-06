@@ -365,18 +365,15 @@ describe('SchoolPage Component', () => {
     });
 
     // Test if the correct number of reviews per page (5 reviews) are shown
-    const reviewCards = screen.getAllByTestId(/^review-/);  // Ensure this matches your `data-testid`
-    expect(reviewCards.length).toBe(5);  // This should be 5 reviews per page
+    await waitFor(() => {
+      const reviewCards = screen.getAllByTestId(/^review-/);
+      expect(reviewCards.length).toBe(5);
+    });
 
     // Test pagination by clicking next
-    const pagination = screen.getByRole('navigation', { name: /pagination/ });
+    const pagination = screen.getByTestId("pagination-review");
     const nextButton = within(pagination).getByRole('button', { name: /next page/i });
-    userEvent.click(nextButton);
-
-    // Wait for page change and verify next reviews are displayed
-    await waitFor(() => {
-      expect(screen.getByText('Great sports culture')).toBeInTheDocument();
-    });
+    await userEvent.click(nextButton);
 
     const nextReviewCards = screen.getAllByTestId(/^review-/);
     expect(nextReviewCards.length).toBe(1); // Should show 1 review on the next page
@@ -389,7 +386,7 @@ describe('SchoolPage Component', () => {
       expect(screen.getByRole('list')).toBeInTheDocument();
     });
 
-    const pagination = screen.getByRole('list'); // This will target the pagination list
+    const pagination = screen.getByTestId("pagination-review"); // This will target the pagination list
 
     // Check if "Next" button is available for pagination
     expect(within(pagination).getByRole('button', { name: /next page/i })).toBeInTheDocument();
@@ -398,26 +395,15 @@ describe('SchoolPage Component', () => {
 
   it('changes the page number and displays the correct reviews', async () => {
     renderWithRouter();
-    // Verify that pagination control exists
-    await waitFor(() => {
-      expect(screen.getByRole('list')).toBeInTheDocument();
-    });
 
-    // Simulate switching to page 2 (assuming 5 reviews per page and 6 total reviews)
-    const pagination = screen.getByRole('list'); // Query pagination by role="list"
+    const basketballTab = await screen.findByRole('tab', { name: "Men's Basketball" });
+    await userEvent.click(basketballTab);
+    await screen.findByText('Great program with excellent facilities');
 
-    const nextButton = within(pagination).getByRole('button', { name: /next page/i });
+    const pagination = await screen.findByTestId('pagination-review');
+    const nextButton = within(pagination).getByLabelText(/go to next page/i);
+    await userEvent.click(nextButton);
 
-    // Simulate clicking on the next page
-    userEvent.click(nextButton);
-
-    // Wait for page change and verify next reviews are displayed
-    await waitFor(() => {
-      expect(screen.getByText('Great sports culture')).toBeInTheDocument();
-    });
+    expect(await screen.findByText(/Great sports culture/)).toBeInTheDocument();
   });
-
-
-
-
 });

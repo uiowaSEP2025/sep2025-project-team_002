@@ -1315,8 +1315,9 @@ function SecureHome() {
                         borderTopLeftRadius: 3,
                         borderBottomLeftRadius: 3,
                       },
-                      background: `linear-gradient(135deg,
-                        ${alpha(primary, 0.30)} 0%, ${alpha(primary, 0.08)} 40%)`,
+                      background:  `
+                        linear-gradient(45deg, ${alpha(primary, 0.35)} 0%, ${alpha(primary, 0.08)} 50%),
+                        #FFFFFF`,
                       "&:hover": {
                         transform: "translateY(-4px)",
                         boxShadow: `0 8px 25px ${alpha(primary, 0.25)}`
