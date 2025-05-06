@@ -365,17 +365,21 @@ describe('SchoolPage Component', () => {
     });
 
     // Test if the correct number of reviews per page (5 reviews) are shown
-    const reviewCards = screen.getAllByTestId(/^review-/);  // Ensure this matches your `data-testid`
-    expect(reviewCards.length).toBe(5);  // This should be 5 reviews per page
+    await waitFor(() => {
+      const reviewCards = screen.getAllByTestId(/^review-/);
+      expect(reviewCards.length).toBe(5);
+    });
 
     // Test pagination by clicking next
-    const pagination = screen.getByTestId("review-pagination");
+    const pagination = screen.getByTestId("pagination-review");
     const nextButton = within(pagination).getByRole('button', { name: /next page/i });
     userEvent.click(nextButton);
 
     // Wait for page change and verify next reviews are displayed
     await waitFor(() => {
-      expect(screen.getByText('Great sports culture')).toBeInTheDocument();
+      expect(screen.getByText((content, node) =>
+        node?.textContent?.includes('Great sports culture')
+      )).toBeInTheDocument();
     });
 
     const nextReviewCards = screen.getAllByTestId(/^review-/);
@@ -389,7 +393,7 @@ describe('SchoolPage Component', () => {
       expect(screen.getByRole('list')).toBeInTheDocument();
     });
 
-    const pagination = screen.getByTestId("review-pagination"); // This will target the pagination list
+    const pagination = screen.getByTestId("pagination-review"); // This will target the pagination list
 
     // Check if "Next" button is available for pagination
     expect(within(pagination).getByRole('button', { name: /next page/i })).toBeInTheDocument();
@@ -404,7 +408,7 @@ describe('SchoolPage Component', () => {
     });
 
     // Simulate switching to page 2 (assuming 5 reviews per page and 6 total reviews)
-    const pagination = screen.getByTestId("review-pagination"); // Query pagination by role="list"
+    const pagination = screen.getByTestId("pagination-review"); // Query pagination by role="list"
 
     const nextButton = within(pagination).getByRole('button', { name: /next page/i });
 
@@ -413,7 +417,9 @@ describe('SchoolPage Component', () => {
 
     // Wait for page change and verify next reviews are displayed
     await waitFor(() => {
-      expect(screen.getByText('Great sports culture')).toBeInTheDocument();
+      expect(screen.getByText((content, node) =>
+        node?.textContent?.includes('Great sports culture')
+      )).toBeInTheDocument();
     });
   });
 

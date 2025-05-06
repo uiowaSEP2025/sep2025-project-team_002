@@ -150,43 +150,70 @@ function AboutUs() {
           </Box>
           
           <Grid container spacing={4} justifyContent="center">
-            {teamMembers.map((member, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card 
-                  elevation={3} 
-                  sx={{ 
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    borderRadius: 3,
-                    overflow: 'hidden',
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
-                    },
-                  }}
-                >
-                  <CardMedia
-                    component="img"
-                    image={member.image}
-                    alt={member.name}
-                    sx={{ 
-                      height: 220,
-                      objectFit: 'cover',
+            {teamMembers.map((member, index) => {
+              const bgColors = [
+                  '#e0f5e9', // Samantha
+                  '#e3f2fd', // Rodrigo
+                  '#fce4ec', // Jingming
+                  '#ffd0bd', // Yusuf
+                  '#fce6c2', // Anna
+              ];
+              return (
+                <Grid item xs={12} sm={6} md={4} key={index}>
+                  <Card
+                    elevation={3}
+                    sx={{
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      borderRadius: 3,
+                      overflow: 'hidden',
+                      backgroundColor: bgColors[index] || '#f9f9f9',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-8px)',
+                        boxShadow: '0 12px 20px rgba(0,0,0,0.1)',
+                      },
                     }}
-                  />
-                  <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
-                    <Typography variant="h6" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
-                      {member.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {member.role}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+                  >
+                    <Box
+                      sx={{
+                        width: 180,
+                        height: 180,
+                        borderRadius: '50%',
+                        backgroundColor: '#f5f5f5',
+                        mx: 'auto',
+                        my: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }}
+                    >
+                      <Box
+                        component="img"
+                        src={member.image}
+                        alt={member.name}
+                        sx={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                        }}
+                      />
+                    </Box>
+                    <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                      <Typography variant="h6" component="h3" gutterBottom sx={{ fontWeight: 600 }}>
+                        {member.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {member.role}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              );
+            })}
           </Grid>
         </Paper>
       </Box>
