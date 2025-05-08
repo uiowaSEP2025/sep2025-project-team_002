@@ -35,17 +35,34 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import SchoolIcon from "@mui/icons-material/School";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import SportsBasketballIcon from '@mui/icons-material/SportsBasketball';
+import SportsFootballIcon from '@mui/icons-material/SportsFootball';
+import SportsVolleyballIcon from '@mui/icons-material/SportsVolleyball';
+import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
+import SportsMmaIcon from '@mui/icons-material/SportsMma';
 import StarIcon from "@mui/icons-material/Star";
 import ClearIcon from "@mui/icons-material/Clear";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Fade from "@mui/material/Fade";
 import ClickAwayListener from '@mui/material/ClickAwayListener';
+import { getTeamPrimaryColor } from "../utils/teamColorLookup";
 import API_BASE_URL from "../utils/config";
 import StarRating from "../components/StarRating";
 
 function Home() {
   const navigate = useNavigate();
   const [schools, setSchools] = useState([]);
+
+  const sportIcons = {
+  "Men's Basketball": <SportsBasketballIcon fontSize="small" />,
+  "Women's Basketball": <SportsBasketballIcon fontSize="small" />,
+  "Football": <SportsFootballIcon fontSize="small" />,
+  "Volleyball": <SportsVolleyballIcon fontSize="small" />,
+  "Baseball": <SportsBaseballIcon fontSize="small" />,
+  "Men's Soccer": <SportsSoccerIcon fontSize="small" />,
+  "Women's Soccer": <SportsSoccerIcon fontSize="small" />,
+  "Wrestling": <SportsMmaIcon fontSize="small" />,
+};
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -578,164 +595,163 @@ function Home() {
                 </Grid>
               ))
             ) : currentSchools.length > 0 ? (
-              currentSchools.map((school) => (
-                <Grid item xs={12} sm={6} md={4} key={school.id}>
-                  <Box
-                    sx={{
-                      opacity: 1,
-                      animation: 'fadeInUp 0.5s ease-out',
-                      '@keyframes fadeInUp': {
-                        '0%': { opacity: 0, transform: 'translateY(20px)' },
-                        '100%': { opacity: 1, transform: 'translateY(0)' },
-                      },
-                      animationFillMode: 'both',
-                    }}
-                  >
-                    <Card
-                      id={`school-${school.id}`}
+              currentSchools.map((school) => {
+                const primaryColor = getTeamPrimaryColor(school.school_name, theme.palette.primary.main);
+                return (
+                  <Grid item xs={12} sm={6} md={4} key={school.id}>
+                    <Box
                       sx={{
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        borderRadius: 3,
-                        overflow: 'hidden',
-                        boxShadow: '0 8px 20px rgba(0,0,0,0.08)',
-                        '&:hover': {
-                          transform: 'translateY(-8px)',
-                          boxShadow: '0 12px 30px rgba(0,0,0,0.15)'
+                        opacity: 1,
+                        animation: 'fadeInUp 0.5s ease-out',
+                        '@keyframes fadeInUp': {
+                          '0%': {opacity: 0, transform: 'translateY(20px)'},
+                          '100%': {opacity: 1, transform: 'translateY(0)'},
                         },
+                        animationFillMode: 'both',
                       }}
-                      onClick={() => handleSchoolClick(school.id)}
                     >
-                      <Box
+                      <Card
+                        id={`school-${school.id}`}
                         sx={{
-                          height: 120,
-                          bgcolor: theme.palette.primary.main,
-                          position: 'relative',
-                          overflow: 'hidden'
+                          height: '100%',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          borderRadius: 3,
+                          overflow: 'hidden',
+                          boxShadow: '0 8px 20px rgba(0,0,0,0.08)',
+                          '&:hover': {
+                            transform: 'translateY(-8px)',
+                            boxShadow: '0 12px 30px rgba(0,0,0,0.15)'
+                          },
                         }}
+                        onClick={() => handleSchoolClick(school.id)}
                       >
                         <Box
                           sx={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            background: `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.9)} 0%, ${alpha(theme.palette.secondary.main, 0.8)} 100%)`,
-                            zIndex: 1,
-                          }}
-                        />
-                        <Box
-                          sx={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            zIndex: 2,
+                            height: 120,
+                            background: `linear-gradient(135deg, ${primaryColor} 0%, ${alpha(primaryColor, 0.6)} 100%)`,
+                            position: 'relative',
+                            overflow: 'hidden'
                           }}
                         >
-                          <Avatar
-                            sx={{
-                              width: 60,
-                              height: 60,
-                              bgcolor: 'white',
-                              color: theme.palette.primary.main,
-                              fontWeight: 'bold',
-                              fontSize: '1.5rem'
-                            }}
-                          >
-                            {school.school_name.charAt(0)}
-                          </Avatar>
-                        </Box>
-                      </Box>
-
-                      <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                          <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                            {school.school_name}
-                          </Typography>
-
                           <Box
                             sx={{
+                              position: 'absolute',
+                              inset: 0,
+                              zIndex: 1,
+                            }}
+                          />
+                          <Box
+                            sx={{
+                              position: 'absolute',
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
                               display: 'flex',
                               alignItems: 'center',
-                              bgcolor: alpha(theme.palette.primary.main, 0.1),
-                              px: 1,
-                              py: 0.5,
-                              borderRadius: 10,
+                              justifyContent: 'center',
+                              zIndex: 2,
                             }}
                           >
-                            <StarIcon sx={{ color: theme.palette.warning.main, fontSize: '0.9rem', mr: 0.5 }} />
-                            <Typography variant="body2" sx={{ fontWeight: 600, color: theme.palette.primary.main }}>
-                              {school.average_rating ? school.average_rating.toFixed(1) : 'N/A'}
-                            </Typography>
+                            <Avatar
+                              sx={{
+                                width: 60,
+                                height: 60,
+                                bgcolor: 'white',
+                                color: theme.palette.primary.main,
+                                fontWeight: 'bold',
+                                fontSize: '1.5rem'
+                              }}
+                            >
+                              {school.school_name.charAt(0)}
+                            </Avatar>
                           </Box>
                         </Box>
 
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                          <LocationOnIcon sx={{ color: theme.palette.text.secondary, fontSize: '0.9rem', mr: 0.5 }} />
-                          <Typography variant="body2" color="text.secondary">
-                            {school.location}
-                          </Typography>
-                        </Box>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}>
-                          <SchoolIcon sx={{ color: theme.palette.text.secondary, fontSize: '0.9rem', mr: 0.5 }} />
-                          <Typography variant="body2" color="text.secondary">
-                            {school.conference}
-                          </Typography>
-                        </Box>
-
-                        <Divider sx={{ my: 1.5 }} />
-
-                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.8, mt: 2 }}>
-                          {school.available_sports?.map((sport, index) => (
-                            <Chip
-                              key={index}
-                              label={sport}
-                              size="small"
-                              icon={<SportsSoccerIcon fontSize="small" />}
-                              sx={{
-                                borderRadius: '16px',
-                                bgcolor: alpha(theme.palette.primary.light, 0.1),
-                                color: theme.palette.primary.dark,
-                                fontWeight: 500,
-                                fontSize: '0.7rem'
-                              }}
-                            />
-                          ))}
-                          {(!school.available_sports || school.available_sports.length === 0) && (
-                            <Typography variant="body2" color="text.secondary">
-                              No sports listed
+                        <CardContent sx={{flexGrow: 1, p: 3}}>
+                          <Box sx={{display: 'flex', justifyContent: 'space-between', mb: 2}}>
+                            <Typography variant="h6" sx={{fontWeight: 700}}>
+                              {school.school_name}
                             </Typography>
-                          )}
-                        </Box>
-                      </CardContent>
 
-                      <Box
-                        sx={{
-                          p: 2,
-                          pt: 0,
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                          alignItems: 'center'
-                        }}
-                      >
-                        <Typography variant="caption" color="text.secondary">
-                          {school.review_count || 0} {school.review_count === 1 ? "Review" : "Reviews"}
-                        </Typography>
-                      </Box>
-                    </Card>
-                  </Box>
-                </Grid>
-              ))
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                                px: 1,
+                                py: 0.5,
+                                borderRadius: 10,
+                              }}
+                            >
+                              <StarIcon sx={{color: theme.palette.warning.main, fontSize: '0.9rem', mr: 0.5}}/>
+                              <Typography variant="body2" sx={{fontWeight: 600, color: theme.palette.primary.main}}>
+                                {school.average_rating ? school.average_rating.toFixed(1) : 'N/A'}
+                              </Typography>
+                            </Box>
+                          </Box>
+
+                          <Box sx={{display: 'flex', alignItems: 'center', mb: 1.5}}>
+                            <LocationOnIcon sx={{color: theme.palette.text.secondary, fontSize: '0.9rem', mr: 0.5}}/>
+                            <Typography variant="body2" color="text.secondary">
+                              {school.location}
+                            </Typography>
+                          </Box>
+
+                          <Box sx={{display: 'flex', alignItems: 'center', mb: 1.5}}>
+                            <SchoolIcon sx={{color: theme.palette.text.secondary, fontSize: '0.9rem', mr: 0.5}}/>
+                            <Typography variant="body2" color="text.secondary">
+                              {school.conference}
+                            </Typography>
+                          </Box>
+
+                          <Divider sx={{my: 1.5}}/>
+
+                          <Box sx={{display: 'flex', flexWrap: 'wrap', gap: 0.8, mt: 2}}>
+                            {school.available_sports?.map((sport, index) => (
+                              <Chip
+                                key={index}
+                                label={sport}
+                                size="small"
+                                icon={sportIcons[sport] || <SportsSoccerIcon fontSize="small" />}
+                                sx={{
+                                  borderRadius: '16px',
+                                  bgcolor: alpha(theme.palette.primary.light, 0.1),
+                                  color: theme.palette.primary.dark,
+                                  fontWeight: 500,
+                                  fontSize: '0.7rem'
+                                }}
+                              />
+                            ))}
+                            {(!school.available_sports || school.available_sports.length === 0) && (
+                              <Typography variant="body2" color="text.secondary">
+                                No sports listed
+                              </Typography>
+                            )}
+                          </Box>
+                        </CardContent>
+
+                        <Box
+                          sx={{
+                            p: 2,
+                            pt: 0,
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            alignItems: 'center'
+                          }}
+                        >
+                          <Typography variant="caption" color="text.secondary">
+                            {school.review_count || 0} {school.review_count === 1 ? "Review" : "Reviews"}
+                          </Typography>
+                        </Box>
+                      </Card>
+                    </Box>
+                  </Grid>
+                );
+              })
             ) : !schoolsLoading ? (
               <Grid item xs={12}>
                 <Box

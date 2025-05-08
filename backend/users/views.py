@@ -214,6 +214,7 @@ def send_school_verification(request):
         ),
         from_email="noreply@yourapp.com",
         recipient_list=[email],
+        fail_silently=False,
     )
 
     return Response({"message": "Verification email sent!"})

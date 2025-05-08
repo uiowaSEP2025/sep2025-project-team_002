@@ -30,3 +30,6 @@ frontend/.gitignore
 yarn.lock
 package.json
 
+# === Function Files ===
+color_teams.csv
+csv2json.py
