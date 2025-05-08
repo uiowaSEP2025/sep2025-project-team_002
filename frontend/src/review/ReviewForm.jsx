@@ -65,8 +65,23 @@ const submitReview = async (review) => {
     const data = await response.json(); // Get error response from API
 
     if (!response.ok) {
-      console.error("API Error Response:", data); // Log exact validation errors
-      throw new Error("Failed to submit review");
+      // Try to extract a meaningful error message from the backend response
+      let errorMsg = "Failed to submit review. Please try again.";
+      if (data) {
+        if (typeof data === "string") {
+          errorMsg = data;
+        } else if (data.detail) {
+          errorMsg = data.detail;
+        } else if (Array.isArray(data)) {
+          errorMsg = data.join(" ");
+        } else if (typeof data === "object") {
+          // Join all error messages from the object
+          errorMsg = Object.values(data).flat().join(" ");
+        }
+      }
+      setOpenConfirm(false);
+      setError(errorMsg);
+      return null;
     }
 
     return data;
@@ -249,8 +264,22 @@ const handleChange = (e) => {
       const data = await response.json();
 
       if (!response.ok) {
-        // Display the error message directly from the backend
-        setError(data.error || "Failed to submit review. Please try again.");
+        // Try to extract a meaningful error message from the backend response
+        let errorMsg = "Failed to submit review. Please try again.";
+        if (data) {
+          if (typeof data === "string") {
+            errorMsg = data;
+          } else if (data.detail) {
+            errorMsg = data.detail;
+          } else if (Array.isArray(data)) {
+            errorMsg = data.join(" ");
+          } else if (typeof data === "object") {
+            // Join all error messages from the object
+            errorMsg = Object.values(data).flat().join(" ");
+          }
+        }
+        setOpenConfirm(false);
+        setError(errorMsg);
         return;
       }
       navigate("/secure-home");

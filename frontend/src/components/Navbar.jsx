@@ -105,7 +105,7 @@ const Navbar = () => {
         width: 250,
         height: '100%',
         backgroundColor: theme.palette.background.dark,
-        color: '#fff',
+        color: '#4a4a4a',
         p: 2,
       }}
       role="presentation"
@@ -148,7 +148,7 @@ const Navbar = () => {
               primary={item.text}
               primaryTypographyProps={{
                 sx: {
-                  color: '#fff', // or another color like '#fff'
+                  color: '#4a4a4a',
                   fontWeight: 500,
                 },
               }}
@@ -217,7 +217,7 @@ const Navbar = () => {
             ? theme.palette.background.paper
             : 'transparent',
           boxShadow: scrolled ? 1 : 'none',
-          color: scrolled ? theme.palette.text.primary : '#fff',
+          color: scrolled ? theme.palette.text.primary : '#4a4a4a',
           transition: 'all 0.3s ease',
           backdropFilter: scrolled ? 'blur(10px)' : 'none',
         }}
