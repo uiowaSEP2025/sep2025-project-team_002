@@ -39,6 +39,7 @@ import StarIcon from "@mui/icons-material/Star";
 import ClearIcon from "@mui/icons-material/Clear";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Fade from "@mui/material/Fade";
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import API_BASE_URL from "../utils/config";
 import StarRating from "../components/StarRating";
 
@@ -391,38 +392,43 @@ function Home() {
               Athletic Insider
             </Typography>
 
-   {/* Wrap in Fade // Popup */}
-      <Fade in={popupOpen} timeout={400} mountOnEnter unmountOnExit>
-        <Box
-          sx={{
-            position: 'fixed',
-            top: '20%',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: 'linear-gradient(90deg, #3a86ff, #8338ec)',  // your gradient
-            padding: 3,
-            boxShadow: 3,
-            zIndex: 3,
-            maxWidth: 400,
-            width: '90%',
-            borderRadius: 2,
-          }}
+{/* Wrap in ClickAwayListener so outside clicks close it */}
+{popupOpen && (
+  <ClickAwayListener onClickAway={() => setPopupOpen(false)}>
+    <Fade in={popupOpen} timeout={400} mountOnEnter unmountOnExit>
+      <Box
+        sx={{
+          position: 'fixed',
+          top: '20%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'linear-gradient(90deg, #3a86ff, #8338ec)',
+          padding: 3,
+          boxShadow: 3,
+          zIndex: 3,
+          maxWidth: 400,
+          width: '90%',
+          borderRadius: 2,
+        }}
+      >
+        <Typography variant="h6" sx={{ mb: 2, color: '#fff' }}>
+          About the Website
+        </Typography>
+        <Typography sx={{ mb: 2, color: 'rgba(255,255,255,0.9)' }}>
+          This website helps college athletes make informed decisions on the
+          schools they can go to.
+        </Typography>
+        <Button
+          onClick={() => setPopupOpen(false)}
+          variant="contained"
+          sx={{ background: '#fff', color: '#333' }}
         >
-          <Typography variant="h6" sx={{ mb: 2, color: '#fff' }}>
-            About the Website
-          </Typography>
-          <Typography sx={{ mb: 2, color: 'rgba(255,255,255,0.9)' }}>
-            This website helps college athletes make informed decisions on the schools they can go to.
-          </Typography>
-          <Button
-            onClick={() => setPopupOpen(false)}
-            variant="contained"
-            sx={{ background: '#fff', color: '#333' }}
-          >
-            Close
-          </Button>
-        </Box>
-      </Fade>
+          Close
+        </Button>
+      </Box>
+    </Fade>
+  </ClickAwayListener>
+)}
 
             <Typography
               variant="h5"
