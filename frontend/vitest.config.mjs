@@ -9,12 +9,13 @@ export default defineConfig({
     setupFiles: './src/vitest.setup.js',
     include: ['src/tests/unit/**/*.test.{js,jsx,ts,tsx}'],
     coverage: {
-      reporter: ['text'],
-    exclude: [ 'src/tests/helpers/**',
-                'src/main.jsx',
-                'src/tests/selenium/**',
-                'eslint.config.mjs',
-                'vite.config.mjs',
-                'vitest.config.mjs']
+      provider: 'v8',
+      reporter: [ 'text-summary', 'json-summary' ],
+      exclude: [ 'src/tests/helpers/**',
+                 'src/main.jsx',
+                 'src/tests/selenium/**',
+                 'eslint.config.mjs',
+                 'vite.config.mjs',
+                 'vitest.config.mjs']
   }},
 });
