@@ -80,7 +80,7 @@ function Home() {
 
   // i icon
   const [popupOpen, setPopupOpen] = useState(false);
-
+  const handleClose = () => setPopupOpen(false);
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -409,43 +409,47 @@ function Home() {
               Athletic Insider
             </Typography>
 
-{/* Wrap in ClickAwayListener so outside clicks close it */}
-{popupOpen && (
-  <ClickAwayListener onClickAway={() => setPopupOpen(false)}>
-    <Fade in={popupOpen} timeout={400} mountOnEnter unmountOnExit>
-      <Box
-        sx={{
-          position: 'fixed',
-          top: '20%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: 'linear-gradient(90deg, #3a86ff, #8338ec)',
-          padding: 3,
-          boxShadow: 3,
-          zIndex: 3,
-          maxWidth: 400,
-          width: '90%',
-          borderRadius: 2,
+      {/* MUI Dialog w/ Fade */}
+      <Dialog
+        open={popupOpen}
+        onClose={handleClose}
+        fullWidth
+        maxWidth="md"
+        closeAfterTransition
+        TransitionComponent={Fade}
+        transitionDuration={400}
+        PaperProps={{
+          sx: {
+            background: 'linear-gradient(90deg, #3a86ff, #8338ec)',
+            borderRadius: 2,
+            p: 3,
+            boxShadow: 3,
+
+            mx: 'auto',
+          },
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2, color: '#fff' }}>
+        <DialogTitle sx={{ color: '#fff' }}>
           About the Website
-        </Typography>
-        <Typography sx={{ mb: 2, color: 'rgba(255,255,255,0.9)' }}>
-          This website helps college athletes make informed decisions on the
-          schools they can go to.
-        </Typography>
-        <Button
-          onClick={() => setPopupOpen(false)}
-          variant="contained"
-          sx={{ background: '#fff', color: '#333' }}
-        >
-          Close
-        </Button>
-      </Box>
-    </Fade>
-  </ClickAwayListener>
-)}
+        </DialogTitle>
+
+        <DialogContent>
+          <Typography sx={{ color: 'rgba(255,255,255,0.9)' }}>
+            This website helps college athletes make informed decisions on
+            the schools they can go to.
+          </Typography>
+        </DialogContent>
+
+        <DialogActions>
+          <Button
+            onClick={handleClose}
+            variant="contained"
+            sx={{ background: '#fff', color: '#333' }}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
 
             <Typography
               variant="h5"
