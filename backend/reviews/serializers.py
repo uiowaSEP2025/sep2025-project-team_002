@@ -71,6 +71,24 @@ class ReviewsSerializer(serializers.ModelSerializer):
         """
         Validate the review data
         """
+        # Check if user already has a review for this coach at this school
+        user = self.context['request'].user
+        school = data.get('school')
+        head_coach_name = data.get('head_coach_name')
+        sport = data.get('sport')
+
+        existing_review = Reviews.objects.filter(
+            user=user,
+            school=school,
+            head_coach_name=head_coach_name,
+            sport=sport
+        ).exists()
+
+        if existing_review:
+            raise serializers.ValidationError(
+                f"You have already submitted a review for {head_coach_name} at {school.school_name}. Each user can only submit one review per coach at a given school."
+            )
+
         # Ensure coach_no_longer_at_university is a boolean
         if "coach_no_longer_at_university" in data:
             try:
