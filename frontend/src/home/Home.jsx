@@ -44,7 +44,6 @@ import StarIcon from "@mui/icons-material/Star";
 import ClearIcon from "@mui/icons-material/Clear";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Fade from "@mui/material/Fade";
-import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { getTeamPrimaryColor } from "../utils/teamColorLookup";
 import API_BASE_URL from "../utils/config";
 import StarRating from "../components/StarRating";
@@ -81,6 +80,8 @@ function Home() {
   // i icon
   const [popupOpen, setPopupOpen] = useState(false);
   const handleClose = () => setPopupOpen(false);
+  const [page, setPage] = useState(1);
+  const handleInfoChange = (_, value) => setPage(value);
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -165,6 +166,34 @@ function Home() {
   const handlePageChange = (event, newPage) => {
     updatePageInURL(newPage);
   };
+  // Defining three pages of info page
+  const pages = [
+    {
+        title: 'Overview:',
+        content:
+        'The Athletic Insider is a website that helps student athletes makes informed decisions.' +
+            'All schools have review summaries and coach information, use the search bar and filter function to find your school of choice.' +
+            'Please make an account to get access to a preference form and/or the ability to write reviews.' +
+            'Enjoy the site!'
+    },
+    {
+      title: 'High School Students:',
+      content:
+        'You have access to a preference form, by filling it out, you will be given recommendations based on schools that have already been reviewed, browse the reviews to your hearts content.' +
+          'Each school has an average score.' +
+          'Your recommended schools score is weighted based on how important you rank each category in the preference form.'
+    },
+    {
+      title: 'Transfer Students',
+      content:
+        'Transfer',
+    },
+    {
+      title: 'Usage Tips',
+      content:
+        'Tip: Bookmark your favorite schools. Use the share button on any profile to get direct URLs.',
+    },
+  ];
 
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
@@ -429,15 +458,30 @@ function Home() {
           },
         }}
       >
+        {/* Dynamic title & content based on `page` */}
         <DialogTitle sx={{ color: '#fff' }}>
-          About the Website
+          {pages[page - 1].title}
         </DialogTitle>
 
         <DialogContent>
           <Typography sx={{ color: 'rgba(255,255,255,0.9)' }}>
-            This website helps college athletes make informed decisions on
-            the schools they can go to.
+            {pages[page - 1].content}
           </Typography>
+
+          {/* Fixed 3-step pagination */}
+          <Pagination
+            count={pages.length}
+            page={page}
+            onChange={handleInfoChange}
+            color="primary"
+            sx={{
+              mt: 4,
+              bgcolor: 'rgba(255,255,255,0.2)',
+              borderRadius: 1,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          />
         </DialogContent>
 
         <DialogActions>
