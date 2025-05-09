@@ -425,25 +425,26 @@ const handleChange = (e) => {
               isOptionEqualToValue={(option, value) => option.id === value?.id}
             />
 
-            <TextField
-              id="sport-select"
-              select
-              fullWidth
-              label="Sport *"
-              name="sport"
-              value={availableSports.includes(review.sport) ? review.sport : ""}
-              onChange={handleChange}
-              sx={{ mb: 2 }}
+            <Autocomplete
+              id="sport-autocomplete"
+              options={availableSports}
+              value={availableSports.includes(review.sport) ? review.sport : null}
+              onChange={(event, newValue) => {
+                setReview((prev) => ({ ...prev, sport: newValue || "" }));
+              }}
               disabled={!availableSports.length}
-              error={!review.sport && isSubmitted}
-              helperText={!review.sport && isSubmitted ? "This field is required" : ""}
-            >
-              {availableSports.map((sport, index) => (
-                <MenuItem id={`sport-option-${sport.replace(/\s+/g, '-').toLowerCase()}`} key={index} value={sport}>
-                  {sport}
-                </MenuItem>
-              ))}
-            </TextField>
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Sport *"
+                  fullWidth
+                  error={!review.sport && isSubmitted}
+                  helperText={!review.sport && isSubmitted ? "This field is required" : ""}
+                  sx={{ mb: 2 }}
+                />
+              )}
+            />
+
 
             <TextField
               id="coach-name-input"
