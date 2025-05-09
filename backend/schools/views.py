@@ -65,6 +65,14 @@ def _standardize_coach_name(name):
     return standardized
 
 
+def _normalize_school_name(name):
+    if not name:
+        return [""]
+    # Replace en-dash and em-dash with hyphen for school names
+    name = name.lower().strip().replace("–", "-").replace("—", "-")
+    return [name]
+
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def get_review_summary(request, school_id):
@@ -258,13 +266,131 @@ def get_review_summary(request, school_id):
                         tenure_entries = history.split("\n")
                         if tenure_entries:
                             most_recent_tenure = tenure_entries[-1].lower()
-                            normalized_school_names = coach_service._normalize_name(
+                            # Add special case mapping for Nebraska
+                            special_case_school_names = {
+                                "university of central florida": [
+                                    "ucf",
+                                    "university of central florida",
+                                    "central florida",
+                                ],  # works
+                                "central florida": [
+                                    "ucf",
+                                    "university of central florida",
+                                    "central florida",
+                                ],  # works
+                                "university of colorado boulder": [
+                                    "colorado",
+                                    "university of colorado boulder",
+                                ],  # works
+                                "university of texas at austin": [
+                                    "texas",
+                                    "university of texas at austin",
+                                ],  # works
+                                # Illinois
+                                "university of illinois at urbana–champaign": [
+                                    "illinois",
+                                    "university of illinois at urbana–champaign",
+                                    "university of illinois at urbana-champaign",
+                                ],
+                                "university of illinois at urbana-champaign": [
+                                    "illinois",
+                                    "university of illinois at urbana–champaign",
+                                    "university of illinois at urbana-champaign",
+                                ],
+                                "illinois": [
+                                    "illinois",
+                                    "university of illinois at urbana–champaign",
+                                    "university of illinois at urbana-champaign",
+                                ],
+                                "illinois at urbana-champaign": [
+                                    "illinois",
+                                    "university of illinois at urbana–champaign",
+                                    "university of illinois at urbana-champaign",
+                                ],
+                                # Maryland
+                                "university of maryland, college park": [
+                                    "maryland",
+                                    "university of maryland, college park",
+                                ],
+                                "maryland": [
+                                    "maryland",
+                                    "university of maryland, college park",
+                                ],
+                                # Nebraska
+                                "university of nebraska–lincoln": [
+                                    "nebraska",
+                                    "university of nebraska–lincoln",
+                                    "university of nebraska-lincoln",
+                                ],
+                                "university of nebraska-lincoln": [
+                                    "nebraska",
+                                    "university of nebraska–lincoln",
+                                    "university of nebraska-lincoln",
+                                ],
+                                "nebraska": [
+                                    "nebraska",
+                                    "university of nebraska–lincoln",
+                                    "university of nebraska-lincoln",
+                                ],
+                                "nebraska-lincoln": [
+                                    "nebraska",
+                                    "university of nebraska–lincoln",
+                                    "university of nebraska-lincoln",
+                                ],
+                                # Wisconsin
+                                "university of wisconsin–madison": [
+                                    "wisconsin",
+                                    "university of wisconsin–madison",
+                                    "university of wisconsin-madison",
+                                ],
+                                "university of wisconsin-madison": [
+                                    "wisconsin",
+                                    "university of wisconsin–madison",
+                                    "university of wisconsin-madison",
+                                ],
+                                "wisconsin": [
+                                    "wisconsin",
+                                    "university of wisconsin–madison",
+                                    "university of wisconsin-madison",
+                                ],
+                                "wisconsin-madison": [
+                                    "wisconsin",
+                                    "university of wisconsin–madison",
+                                    "university of wisconsin-madison",
+                                ],
+                            }
+
+                            normalized_school_names = _normalize_school_name(
                                 school.school_name
                             )
-                            # Check if the tenure matches any of the normalized forms of the school name
+                            school_key = normalized_school_names[0]  # usually just one
+
+                            logger.info(
+                                f"DEBUG: Normalized school name: '{school_key}'"
+                            )
+                            logger.info(
+                                f"DEBUG: Special case mapping keys: {list(special_case_school_names.keys())}"
+                            )
+
+                            if school_key in special_case_school_names:
+                                logger.info(
+                                    f"DEBUG: Matched special case for '{school_key}' -> {special_case_school_names[school_key]}"
+                                )
+                                normalized_school_names = special_case_school_names[
+                                    school_key
+                                ]
+                            else:
+                                logger.info(
+                                    f"DEBUG: No special case match for '{school_key}'"
+                                )
+
+                            # Now do the check as before
                             is_at_school = any(
                                 most_recent_tenure.endswith(f"@{name}")
                                 for name in normalized_school_names
+                            )
+                            logger.info(
+                                f"DEBUG: most_recent_tenure: '{most_recent_tenure}', normalized_school_names: {normalized_school_names}, is_at_school: {is_at_school}"
                             )
                             if not is_at_school:
                                 coach_summary_parts.append("*No longer at this school*")
@@ -320,10 +446,99 @@ def get_review_summary(request, school_id):
                         ]:
                             if tenure_entries:
                                 most_recent_tenure = tenure_entries[-1].lower()
-                                normalized_school_names = coach_service._normalize_name(
+                                # Add special case mapping for Nebraska
+                                special_case_school_names = {
+                                    "university of central florida": [
+                                        "ucf",
+                                        "university of central florida",
+                                        "central florida",
+                                    ],  # works
+                                    "central florida": [
+                                        "ucf",
+                                        "university of central florida",
+                                        "central florida",
+                                    ],  # works
+                                    "university of colorado boulder": [
+                                        "colorado",
+                                        "university of colorado boulder",
+                                    ],  # works
+                                    "university of texas at austin": [
+                                        "texas",
+                                        "university of texas at austin",
+                                    ],  # works
+                                    # Illinois
+                                    "university of illinois at urbana–champaign": [
+                                        "illinois",
+                                        "university of illinois at urbana–champaign",
+                                        "university of illinois at urbana-champaign",
+                                    ],
+                                    "university of illinois at urbana-champaign": [
+                                        "illinois",
+                                        "university of illinois at urbana–champaign",
+                                        "university of illinois at urbana-champaign",
+                                    ],
+                                    "illinois": [
+                                        "illinois",
+                                        "university of illinois at urbana–champaign",
+                                        "university of illinois at urbana-champaign",
+                                    ],
+                                    # Maryland
+                                    "university of maryland, college park": [
+                                        "maryland",
+                                        "university of maryland, college park",
+                                    ],
+                                    "maryland": [
+                                        "maryland",
+                                        "university of maryland, college park",
+                                    ],
+                                    # Nebraska
+                                    "university of nebraska–lincoln": [
+                                        "nebraska",
+                                        "university of nebraska–lincoln",
+                                        "university of nebraska-lincoln",
+                                    ],
+                                    "university of nebraska-lincoln": [
+                                        "nebraska",
+                                        "university of nebraska–lincoln",
+                                        "university of nebraska-lincoln",
+                                    ],
+                                    "nebraska": [
+                                        "nebraska",
+                                        "university of nebraska–lincoln",
+                                        "university of nebraska-lincoln",
+                                    ],
+                                    # Wisconsin
+                                    "university of wisconsin–madison": [
+                                        "wisconsin",
+                                        "university of wisconsin–madison",
+                                        "university of wisconsin-madison",
+                                    ],
+                                    "university of wisconsin-madison": [
+                                        "wisconsin",
+                                        "university of wisconsin–madison",
+                                        "university of wisconsin-madison",
+                                    ],
+                                    "wisconsin": [
+                                        "wisconsin",
+                                        "university of wisconsin–madison",
+                                        "university of wisconsin-madison",
+                                    ],
+                                    # ...add more as needed
+                                }
+
+                                normalized_school_names = _normalize_school_name(
                                     school.school_name
                                 )
-                                # Check if the tenure matches any of the normalized forms of the school name
+                                school_key = normalized_school_names[
+                                    0
+                                ]  # usually just one
+
+                                if school_key in special_case_school_names:
+                                    normalized_school_names = special_case_school_names[
+                                        school_key
+                                    ]
+
+                                # Now do the check as before
                                 is_at_school = any(
                                     most_recent_tenure.endswith(f"@{name}")
                                     for name in normalized_school_names
