@@ -70,7 +70,24 @@ def _normalize_school_name(name):
         return [""]
     # Replace en-dash and em-dash with hyphen for school names
     name = name.lower().strip().replace("–", "-").replace("—", "-")
-    return [name]
+
+    # Handle common university name patterns
+    normalized_names = [name]
+
+    # If it starts with "university of", add the version without it
+    if name.startswith("university of "):
+        normalized_names.append(name.replace("university of ", ""))
+
+    # If it ends with "university", add the version without it
+    if name.endswith(" university"):
+        normalized_names.append(name.replace(" university", ""))
+
+    # If it's just a single word, add "university" and "university of" versions
+    if " " not in name:
+        normalized_names.append(f"{name} university")
+        normalized_names.append(f"university of {name}")
+
+    return list(set(normalized_names))  # Remove any duplicates
 
 
 @api_view(["GET"])
@@ -358,6 +375,49 @@ def get_review_summary(request, school_id):
                                     "university of wisconsin–madison",
                                     "university of wisconsin-madison",
                                 ],
+                                # Baylor
+                                "baylor university": [
+                                    "baylor",
+                                    "baylor university",
+                                ],
+                                "baylor": [
+                                    "baylor",
+                                    "baylor university",
+                                ],
+                                # Auburn
+                                "auburn university": [
+                                    "auburn",
+                                    "auburn university",
+                                ],
+                                "auburn": [
+                                    "auburn",
+                                    "auburn university",
+                                ],
+                                # BYU
+                                "brigham young university": [
+                                    "byu",
+                                    "brigham young university",
+                                    "brigham young",
+                                ],
+                                "brigham young": [
+                                    "byu",
+                                    "brigham young university",
+                                    "brigham young",
+                                ],
+                                "byu": [
+                                    "byu",
+                                    "brigham young university",
+                                    "brigham young",
+                                ],
+                                # Purdue
+                                "purdue university": [
+                                    "purdue",
+                                    "purdue university",
+                                ],
+                                "purdue": [
+                                    "purdue",
+                                    "purdue university",
+                                ],
                             }
 
                             normalized_school_names = _normalize_school_name(
@@ -523,7 +583,49 @@ def get_review_summary(request, school_id):
                                         "university of wisconsin–madison",
                                         "university of wisconsin-madison",
                                     ],
-                                    # ...add more as needed
+                                    # Baylor
+                                    "baylor university": [
+                                        "baylor",
+                                        "baylor university",
+                                    ],
+                                    "baylor": [
+                                        "baylor",
+                                        "baylor university",
+                                    ],
+                                    # Auburn
+                                    "auburn university": [
+                                        "auburn",
+                                        "auburn university",
+                                    ],
+                                    "auburn": [
+                                        "auburn",
+                                        "auburn university",
+                                    ],
+                                    # BYU
+                                    "brigham young university": [
+                                        "byu",
+                                        "brigham young university",
+                                        "brigham young",
+                                    ],
+                                    "brigham young": [
+                                        "byu",
+                                        "brigham young university",
+                                        "brigham young",
+                                    ],
+                                    "byu": [
+                                        "byu",
+                                        "brigham young university",
+                                        "brigham young",
+                                    ],
+                                    # Purdue
+                                    "purdue university": [
+                                        "purdue",
+                                        "purdue university",
+                                    ],
+                                    "purdue": [
+                                        "purdue",
+                                        "purdue university",
+                                    ],
                                 }
 
                                 normalized_school_names = _normalize_school_name(
