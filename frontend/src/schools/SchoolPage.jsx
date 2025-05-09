@@ -25,6 +25,8 @@ import {
   lighten,
   darken,
   useMediaQuery,
+    Autocomplete,
+    TextField,
   Select,
   MenuItem,
 } from "@mui/material";
@@ -531,17 +533,22 @@ function SchoolPage() {
     <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
       Select a Sport
     </Typography>
-    <Select
-      value={selectedSport}
-      onChange={(e) => setSelectedSport(e.target.value)}
+    <Autocomplete
+  id="sport-autocomplete"
+  options={availableSports}
+  value={availableSports.includes(selectedSport) ? selectedSport : null}
+  onChange={(event, newValue) => setSelectedSport(newValue || "")}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Select a Sport"
+      variant="outlined"
       fullWidth
-    >
-      {availableSports.map((sport) => (
-        <MenuItem key={sport} value={sport}>
-          {sport}
-        </MenuItem>
-      ))}
-    </Select>
+    />
+  )}
+  isOptionEqualToValue={(option, value) => option === value}
+/>
+
   </Box>
 ) : (
   <Tabs
