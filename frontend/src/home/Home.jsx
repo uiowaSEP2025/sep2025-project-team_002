@@ -171,27 +171,34 @@ function Home() {
     {
         title: 'Overview:',
         content:
-        'The Athletic Insider is a website that helps student athletes makes informed decisions.' +
-            'All schools have review summaries and coach information, use the search bar and filter function to find your school of choice.' +
-            'Please make an account to get access to a preference form and/or the ability to write reviews.' +
-            'Enjoy the site!'
+        'The Athletic Insider is a website that helps student athletes make informed decisions.' +
+            ' All schools have review summaries and coach information, use the search bar and filter function to find your school of choice.' +
+            ' Please make an account to get access to a preference form and/or the ability to write reviews.' +
+            ' Enjoy the site!'
     },
     {
-      title: 'High School Students:',
+      title: 'Submitting a Review',
       content:
-        'You have access to a preference form, by filling it out, you will be given recommendations based on schools that have already been reviewed, browse the reviews to your hearts content.' +
-          'Each school has an average score.' +
-          'Your recommended schools score is weighted based on how important you rank each category in the preference form.'
+        'If you are a transfer or graduate student, you can submit a review of your school, sport, and coach. ' +
+          'Click the "submit a review" button, fill out the information, and rank each category from 1-10 stars, also leaving a comment. ' +
+          'Your review will be viewed by all, so make sure it is accurate! ' +
+          'You can verify your school account on the account settings page (upper right hand corner) so your reviews have more merit.'
     },
     {
-      title: 'Transfer Students',
+      title: 'Preference Form',
       content:
-        'Transfer',
+          'The preference form is offered to accounts of High School Prospect or Transferring Student. ' +
+          'The way this works is that you will set the level of importance each category holds to you and schools will be recommended to you based on your choices. ' +
+          'The match scores are weighted, meaning that this school matches your preferences out of 10. ' +
+          'Feel free to change your preferences, but do keep in mind it will change your recommended schools.'
     },
     {
-      title: 'Usage Tips',
+      title: 'Tips',
       content:
-        'Tip: Bookmark your favorite schools. Use the share button on any profile to get direct URLs.',
+        'Your account will be in the upper right hand corner icon, feel free to change information, verify your email, or review your own reviews. ' +
+          'Unless you have an account, you can only view reviews. ' +
+          'If there are issues, please do not hesitate to contact us with the "Report Issue" button on the bottom right hand corner of each page. ' +
+          'Thank You for choosing TheAthleticInsider and good luck!'
     },
   ];
 
