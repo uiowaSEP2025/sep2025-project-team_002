@@ -1,4 +1,4 @@
-/// <reference types="vitest/globals" />
+<reference types="vitest/globals" />
 import React from 'react';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, within, waitFor } from '@testing-library/react';
