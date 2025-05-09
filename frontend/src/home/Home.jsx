@@ -46,7 +46,6 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Fade from "@mui/material/Fade";
 import { getTeamPrimaryColor } from "../utils/teamColorLookup";
 import API_BASE_URL from "../utils/config";
-import StarRating from "../components/StarRating";
 
 function Home() {
   const navigate = useNavigate();
@@ -293,13 +292,11 @@ function Home() {
     try {
       setLoading(true);
       setSchoolsLoading(true);
-      console.log("Applying filters with params:", queryParams.toString());
       const response = await fetch(
         `${API_BASE_URL}/api/filter/?${queryParams.toString()}`
       );
       if (response.ok) {
         const data = await response.json();
-        console.log("Filter response:", data);
         setFilteredSchools(data);
         setFilterApplied(true);
         setCurrentPage(1);
@@ -388,26 +385,24 @@ function Home() {
             zIndex: 1,
           }}
         >
-            {/* Info Icon (i) inside the background gradient overlay */}
-  <IconButton
-    sx={{
-      position: 'absolute',
-      top: '20px',  // Adjust this value to position it vertically
-      left: '20px', // Adjust this value to position it horizontally
-      zIndex: 2,
-    background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
-    color: '#fff',
-    '&:hover': {
-      background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
-    },
-    }}
-    onClick={() => setPopupOpen(true)} // Open the popup
-  >
-    <InfoOutlinedIcon fontSize="large" />
-  </IconButton>
-
-
-</Box>
+          {/* Info Icon (i) inside the background gradient overlay */}
+          <IconButton
+          sx={{
+            position: 'absolute',
+            top: '20px',  // Adjust this value to position it vertically
+            left: '20px', // Adjust this value to position it horizontally
+            zIndex: 2,
+          background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
+          color: '#fff',
+          '&:hover': {
+            background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
+          },
+          }}
+          onClick={() => setPopupOpen(true)} // Open the popup
+        >
+          <InfoOutlinedIcon fontSize="large" />
+        </IconButton>
+      </Box>
 
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 2 }}>
           <Box
@@ -432,65 +427,59 @@ function Home() {
             >
               Athletic Insider
             </Typography>
-
-      {/* MUI Dialog w/ Fade */}
-      <Dialog
-        open={popupOpen}
-        onClose={handleClose}
-        fullWidth
-        maxWidth="md"
-        closeAfterTransition
-        TransitionComponent={Fade}
-        transitionDuration={400}
-        PaperProps={{
-          elevation: 8,
-          sx: {
-            background: 'linear-gradient(90deg, #3a86ff, #8338ec)',
-            borderRadius: 2,
-            p: 3,
-            boxShadow: 3,
-
-            mx: 'auto',
-          },
-        }}
-      >
-        {/* Dynamic title & content based on `page` */}
-        <DialogTitle sx={{ color: '#fff' }}>
-          {pages[page - 1].title}
-        </DialogTitle>
-
-        <DialogContent>
-          <Typography sx={{ color: 'rgba(255,255,255,0.9)' }}>
-            {pages[page - 1].content}
-          </Typography>
-
-          {/* Fixed 3-step pagination */}
-          <Pagination
-            count={pages.length}
-            page={page}
-            onChange={handleInfoChange}
-            color="primary"
-            sx={{
-              mt: 4,
-              bgcolor: 'rgba(255,255,255,0.2)',
-              borderRadius: 1,
-              display: 'flex',
-              justifyContent: 'center',
-            }}
-          />
-        </DialogContent>
-
-        <DialogActions>
-          <Button
-            onClick={handleClose}
-            variant="contained"
-            sx={{ background: '#fff', color: '#333' }}
-          >
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-
+            {/* MUI Dialog w/ Fade */}
+            <Dialog
+              open={popupOpen}
+              onClose={handleClose}
+              fullWidth
+              maxWidth="md"
+              closeAfterTransition
+              TransitionComponent={Fade}
+              transitionDuration={400}
+              PaperProps={{
+                elevation: 8,
+                sx: {
+                  background: 'linear-gradient(90deg, #3a86ff, #8338ec)',
+                  borderRadius: 2,
+                  p: 3,
+                  boxShadow: 3,
+                  mx: 'auto',
+                },
+              }}
+            >
+              {/* Dynamic title & content based on `page` */}
+              <DialogTitle sx={{ color: '#fff' }}>
+                {pages[page - 1].title}
+              </DialogTitle>
+              <DialogContent>
+                <Typography sx={{ color: 'rgba(255,255,255,0.9)' }}>
+                  {pages[page - 1].content}
+                </Typography>
+                {/* Fixed 3-step pagination */}
+                <Pagination
+                  count={pages.length}
+                  page={page}
+                  onChange={handleInfoChange}
+                  color="primary"
+                  sx={{
+                    mt: 4,
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    borderRadius: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={handleClose}
+                  variant="contained"
+                  sx={{ background: '#fff', color: '#333' }}
+                >
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
             <Typography
               variant="h5"
               sx={{
