@@ -4,7 +4,7 @@ import {
   Box, Grid,
   Typography, TextField, Button, MenuItem, Tooltip, IconButton,
   Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-  Container, Paper, Alert, useTheme, alpha, Divider
+  Container, Paper, Alert, useTheme, alpha, Divider, Autocomplete
 } from "@mui/material";
 import Slider from '@mui/material/Slider';
 import API_BASE_URL from "../utils/config";
@@ -254,31 +254,41 @@ const PreferenceForm = () => {
                 <SportsBasketballIcon sx={{ color: theme.palette.primary.main, mr: 1 }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>Select Your Sport</Typography>
               </Box>
-              <TextField
-                id="sport-select"
-                select
-                fullWidth
-                label="Sport *"
-                name="sport"
-                value={preference.sport}
-                onChange={handleChange}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 2,
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: theme.palette.primary.main,
-                    },
-                  },
-                }}
-                error={!preference.sport && isSubmitted}
-                helperText={!preference.sport && isSubmitted ? "This field is required" : ""}
-              >
-              {["Football", "Men's Basketball", "Women's Basketball", "Volleyball", "Baseball", "Men's Soccer", "Women's Soccer", "Wrestling"].map((sport, index) => (
-                <MenuItem key={index} value={sport}>
-                  {sport}
-                </MenuItem>
-              ))}
-              </TextField>
+              <Autocomplete
+  id="sport-autocomplete"
+  options={[
+    "Football",
+    "Men's Basketball",
+    "Women's Basketball",
+    "Volleyball",
+    "Baseball",
+    "Men's Soccer",
+    "Women's Soccer",
+    "Wrestling"
+  ]}
+  value={preference.sport}
+  onChange={(event, newValue) => {
+    setPreference(prev => ({ ...prev, sport: newValue || "" }));
+  }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Sport *"
+      fullWidth
+      error={!preference.sport && isSubmitted}
+      helperText={!preference.sport && isSubmitted ? "This field is required" : ""}
+      sx={{
+        '& .MuiOutlinedInput-root': {
+          borderRadius: 2,
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: theme.palette.primary.main,
+          },
+        },
+      }}
+    />
+  )}
+  isOptionEqualToValue={(option, value) => option === value}
+/>
             </Box>
 
             <Box sx={{ mb: 4 }}>
