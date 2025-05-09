@@ -34,7 +34,10 @@ const SidebarWrapper = ({ title = "My Account", menuItems = [], children }) => {
   // Render menu items
   const renderMenuList = () =>
     menuItems.map((item, index) => (
-      <ListItem key={index} disablePadding>
+      <ListItem key={index} disablePadding
+      sx={{
+        mt: isMobile && index === 0 ? 4 : 0  // Add margin-top to the first item on mobile
+      }}>
         <ListItemButton
           onClick={() => {
             item.action();

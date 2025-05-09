@@ -42,9 +42,10 @@ import SportsBaseballIcon from '@mui/icons-material/SportsBaseball';
 import SportsMmaIcon from '@mui/icons-material/SportsMma';
 import StarIcon from "@mui/icons-material/Star";
 import ClearIcon from "@mui/icons-material/Clear";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Fade from "@mui/material/Fade";
 import { getTeamPrimaryColor } from "../utils/teamColorLookup";
 import API_BASE_URL from "../utils/config";
-import StarRating from "../components/StarRating";
 
 function Home() {
   const navigate = useNavigate();
@@ -75,6 +76,11 @@ function Home() {
   const [prevSearchQuery, setPrevSearchQuery] = useState(searchFromURL);
   const [currentPage, setCurrentPage] = useState(pageFromURL);
 
+  // i icon
+  const [popupOpen, setPopupOpen] = useState(false);
+  const handleClose = () => setPopupOpen(false);
+  const [page, setPage] = useState(1);
+  const handleInfoChange = (_, value) => setPage(value);
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -159,6 +165,37 @@ function Home() {
   const handlePageChange = (event, newPage) => {
     updatePageInURL(newPage);
   };
+  // Defining three pages of info page
+  const pages = [
+    {
+        title: 'Overview:',
+        content:
+        'The Athletic Insider is a website that helps student athletes make informed decisions.' +
+            ' All schools have review summaries and coach information, use the search bar and filter function to find your school of choice.' +
+            ' Please make an account to get access to a preference form and/or the ability to write reviews.' +
+            ' Enjoy the site!',
+    },
+    {
+      title: 'Viewing Reviews:',
+      content:
+        'Each school has their average star rating right next to the name. It will say N/A if no reviews have been written for it yet. ' +
+          'You will not be able to upvote or downvote reviews without an account, but feel free to browse!',
+    },
+    {
+      title: 'Account Creation:',
+      content:
+          'The login and signup buttons are in the upper right hand corner. ' +
+          'You will have to make an account using a .edu email to be verified on any reviews you write, otherwise, a personal email works just fine!',
+    },
+    {
+      title: 'Tips:',
+      content:
+        'As of May 2025, this is a relatively new service, so please be patient while more student leave their reviews as time goes on. ' +
+          'Unless you have an account, you can only view reviews. ' +
+          'If there are issues, please do not hesitate to contact us with the "Report Issue" button on the bottom right hand corner of each page. ' +
+          'Thank You for choosing TheAthleticInsider and good luck!'
+    },
+  ];
 
   const handleSchoolClick = (schoolId) => {
     navigate(`/school/${schoolId}`);
@@ -180,7 +217,6 @@ function Home() {
       setSchoolsLoading(false);
     }
   };
-
   // Filter dialog handlers
   const openFilterDialog = () => {
     // Initialize temp filters with current filter values when opening dialog
@@ -256,13 +292,11 @@ function Home() {
     try {
       setLoading(true);
       setSchoolsLoading(true);
-      console.log("Applying filters with params:", queryParams.toString());
       const response = await fetch(
         `${API_BASE_URL}/api/filter/?${queryParams.toString()}`
       );
       if (response.ok) {
         const data = await response.json();
-        console.log("Filter response:", data);
         setFilteredSchools(data);
         setFilterApplied(true);
         setCurrentPage(1);
@@ -350,7 +384,25 @@ function Home() {
             background: 'linear-gradient(135deg, rgba(58, 134, 255, 0.9) 0%, rgba(131, 56, 236, 0.8) 100%)',
             zIndex: 1,
           }}
-        />
+        >
+          {/* Info Icon (i) inside the background gradient overlay */}
+          <IconButton
+          sx={{
+            position: 'absolute',
+            top: '20px',  // Adjust this value to position it vertically
+            left: '20px', // Adjust this value to position it horizontally
+            zIndex: 2,
+          background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
+          color: '#fff',
+          '&:hover': {
+            background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
+          },
+          }}
+          onClick={() => setPopupOpen(true)} // Open the popup
+        >
+          <InfoOutlinedIcon fontSize="large" />
+        </IconButton>
+      </Box>
 
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 2 }}>
           <Box
@@ -362,6 +414,7 @@ function Home() {
               },
             }}
           >
+
             <Typography
               variant="h2"
               component="h1"
@@ -374,7 +427,59 @@ function Home() {
             >
               Athletic Insider
             </Typography>
-
+            {/* MUI Dialog w/ Fade */}
+            <Dialog
+              open={popupOpen}
+              onClose={handleClose}
+              fullWidth
+              maxWidth="md"
+              closeAfterTransition
+              TransitionComponent={Fade}
+              transitionDuration={400}
+              PaperProps={{
+                elevation: 8,
+                sx: {
+                  background: 'linear-gradient(90deg, #3a86ff, #8338ec)',
+                  borderRadius: 2,
+                  p: 3,
+                  boxShadow: 3,
+                  mx: 'auto',
+                },
+              }}
+            >
+              {/* Dynamic title & content based on `page` */}
+              <DialogTitle sx={{ color: '#fff' }}>
+                {pages[page - 1].title}
+              </DialogTitle>
+              <DialogContent>
+                <Typography sx={{ color: 'rgba(255,255,255,0.9)' }}>
+                  {pages[page - 1].content}
+                </Typography>
+                {/* Fixed 3-step pagination */}
+                <Pagination
+                  count={pages.length}
+                  page={page}
+                  onChange={handleInfoChange}
+                  color="primary"
+                  sx={{
+                    mt: 4,
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    borderRadius: 1,
+                    display: 'flex',
+                    justifyContent: 'center',
+                  }}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={handleClose}
+                  variant="contained"
+                  sx={{ background: '#fff', color: '#333' }}
+                >
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
             <Typography
               variant="h5"
               sx={{
@@ -808,6 +913,7 @@ function Home() {
         fullWidth
         maxWidth="sm"
         PaperProps={{
+          elevation: 8,
           sx: {
             borderRadius: 3,
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
