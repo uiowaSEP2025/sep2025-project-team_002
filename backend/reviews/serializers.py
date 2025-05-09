@@ -71,9 +71,10 @@ class ReviewsSerializer(serializers.ModelSerializer):
         """
         Validate the review data
         """
+
         # Normalize coach name for duplicate check
         def normalize_name(name):
-            return ' '.join(name.strip().lower().split()) if name else ''
+            return " ".join(name.strip().lower().split()) if name else ""
 
         user = self.context["request"].user
         school = data.get("school")
@@ -83,13 +84,16 @@ class ReviewsSerializer(serializers.ModelSerializer):
         normalized_coach_name = normalize_name(head_coach_name)
 
         # Check for duplicate review for this user, school, sport, and normalized coach name
-        existing_review = Reviews.objects.filter(
-            user=user,
-            school=school,
-            sport=sport
-        ).extra(where=[
-            "LOWER(TRIM(REGEXP_REPLACE(head_coach_name, '\\s+', ' ', 'g'))) = %s"
-        ], params=[normalized_coach_name]).exists()
+        existing_review = (
+            Reviews.objects.filter(user=user, school=school, sport=sport)
+            .extra(
+                where=[
+                    "LOWER(TRIM(REGEXP_REPLACE(head_coach_name, '\\s+', ' ', 'g'))) = %s"
+                ],
+                params=[normalized_coach_name],
+            )
+            .exists()
+        )
 
         if existing_review:
             raise serializers.ValidationError(
