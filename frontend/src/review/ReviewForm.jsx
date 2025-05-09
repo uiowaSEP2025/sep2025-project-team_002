@@ -426,7 +426,7 @@ const handleChange = (e) => {
             />
 
             <Autocomplete
-              id="sport-autocomplete"
+              id="sport-select"
               options={availableSports}
               value={availableSports.includes(review.sport) ? review.sport : null}
               onChange={(event, newValue) => {

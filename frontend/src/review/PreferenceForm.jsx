@@ -255,7 +255,7 @@ const PreferenceForm = () => {
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>Select Your Sport</Typography>
               </Box>
               <Autocomplete
-  id="sport-autocomplete"
+  id="sport-select"
   options={[
     "Football",
     "Men's Basketball",
