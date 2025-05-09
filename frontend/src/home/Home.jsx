@@ -174,28 +174,24 @@ function Home() {
         'The Athletic Insider is a website that helps student athletes make informed decisions.' +
             ' All schools have review summaries and coach information, use the search bar and filter function to find your school of choice.' +
             ' Please make an account to get access to a preference form and/or the ability to write reviews.' +
-            ' Enjoy the site!'
+            ' Enjoy the site!',
     },
     {
-      title: 'Submitting a Review',
+      title: 'Viewing Reviews:',
       content:
-        'If you are a transfer or graduate student, you can submit a review of your school, sport, and coach. ' +
-          'Click the "submit a review" button, fill out the information, and rank each category from 1-10 stars, also leaving a comment. ' +
-          'Your review will be viewed by all, so make sure it is accurate! ' +
-          'You can verify your school account on the account settings page (upper right hand corner) so your reviews have more merit.'
+        'Each school has their average star rating right next to the name. It will say N/A if no reviews have been written for it yet. ' +
+          'You will not be able to upvote or downvote reviews without an account, but feel free to browse!',
     },
     {
-      title: 'Preference Form',
+      title: 'Account Creation:',
       content:
-          'The preference form is offered to accounts of High School Prospect or Transferring Student. ' +
-          'The way this works is that you will set the level of importance each category holds to you and schools will be recommended to you based on your choices. ' +
-          'The match scores are weighted, meaning that this school matches your preferences out of 10. ' +
-          'Feel free to change your preferences, but do keep in mind it will change your recommended schools.'
+          'The login and signup buttons are in the upper right hand corner. ' +
+          'You will have to make an account using a .edu email to be verified on any reviews you write, otherwise, a personal email works just fine!',
     },
     {
-      title: 'Tips',
+      title: 'Tips:',
       content:
-        'Your account will be in the upper right hand corner icon, feel free to change information, verify your email, or review your own reviews. ' +
+        'As of May 2025, this is a relatively new service, so please be patient while more student leave their reviews as time goes on. ' +
           'Unless you have an account, you can only view reviews. ' +
           'If there are issues, please do not hesitate to contact us with the "Report Issue" button on the bottom right hand corner of each page. ' +
           'Thank You for choosing TheAthleticInsider and good luck!'
@@ -222,14 +218,6 @@ function Home() {
       setSchoolsLoading(false);
     }
   };
-
-  // Handling outside click of i icon
-  const handleClickOutside = (event) => {
-    if (event.target.id !== 'popup' && popupOpen) {
-      setPopupOpen(false);
-    }
-  };
-
   // Filter dialog handlers
   const openFilterDialog = () => {
     // Initialize temp filters with current filter values when opening dialog
@@ -455,6 +443,7 @@ function Home() {
         TransitionComponent={Fade}
         transitionDuration={400}
         PaperProps={{
+          elevation: 8,
           sx: {
             background: 'linear-gradient(90deg, #3a86ff, #8338ec)',
             borderRadius: 2,
@@ -935,6 +924,7 @@ function Home() {
         fullWidth
         maxWidth="sm"
         PaperProps={{
+          elevation: 8,
           sx: {
             borderRadius: 3,
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
