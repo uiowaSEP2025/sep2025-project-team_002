@@ -283,7 +283,7 @@ def get_review_summary(request, school_id):
                         tenure_entries = history.split("\n")
                         if tenure_entries:
                             most_recent_tenure = tenure_entries[-1].lower()
-                            # Add special case mapping for Nebraska
+                            # Add special case mapping for Indiana
                             special_case_school_names = {
                                 "university of central florida": [
                                     "ucf",
@@ -418,6 +418,22 @@ def get_review_summary(request, school_id):
                                     "purdue",
                                     "purdue university",
                                 ],
+                                # Indiana
+                                "indiana university bloomington": [
+                                    "indiana",
+                                    "indiana university",
+                                    "indiana university bloomington",
+                                ],
+                                "indiana university": [
+                                    "indiana",
+                                    "indiana university",
+                                    "indiana university bloomington",
+                                ],
+                                "indiana": [
+                                    "indiana",
+                                    "indiana university",
+                                    "indiana university bloomington",
+                                ],
                             }
 
                             normalized_school_names = _normalize_school_name(
@@ -506,7 +522,7 @@ def get_review_summary(request, school_id):
                         ]:
                             if tenure_entries:
                                 most_recent_tenure = tenure_entries[-1].lower()
-                                # Add special case mapping for Nebraska
+                                # Add special case mapping for Indiana
                                 special_case_school_names = {
                                     "university of central florida": [
                                         "ucf",
@@ -625,6 +641,22 @@ def get_review_summary(request, school_id):
                                     "purdue": [
                                         "purdue",
                                         "purdue university",
+                                    ],
+                                    # Indiana
+                                    "indiana university bloomington": [
+                                        "indiana",
+                                        "indiana university",
+                                        "indiana university bloomington",
+                                    ],
+                                    "indiana university": [
+                                        "indiana",
+                                        "indiana university",
+                                        "indiana university bloomington",
+                                    ],
+                                    "indiana": [
+                                        "indiana",
+                                        "indiana university",
+                                        "indiana university bloomington",
                                     ],
                                 }
 
