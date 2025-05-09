@@ -48,7 +48,9 @@ class TestReviewsSerializer(APITestCase):
     def test_sport_validation(self):
         """Test that sport names are correctly converted to codes"""
         data = {**self.base_serializer_data, "sport": "Men's Basketball"}
-        serializer = ReviewsSerializer(data=data)
+        serializer = ReviewsSerializer(
+            data=data, context={"request": self.mock_request}
+        )
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.validated_data["sport"], "mbb")
 
@@ -73,19 +75,25 @@ class TestReviewsSerializer(APITestCase):
 
         # Test with boolean true
         test_data = {**base_data, "coach_no_longer_at_university": True}
-        serializer = ReviewsSerializer(data=test_data)
+        serializer = ReviewsSerializer(
+            data=test_data, context={"request": self.mock_request}
+        )
         self.assertTrue(serializer.is_valid(), serializer.errors)
         self.assertTrue(serializer.validated_data["coach_no_longer_at_university"])
 
         # Test with boolean false
         test_data = {**base_data, "coach_no_longer_at_university": False}
-        serializer = ReviewsSerializer(data=test_data)
+        serializer = ReviewsSerializer(
+            data=test_data, context={"request": self.mock_request}
+        )
         self.assertTrue(serializer.is_valid(), serializer.errors)
         self.assertFalse(serializer.validated_data["coach_no_longer_at_university"])
 
         # Test with field omitted (should default to False)
         test_data = {**base_data}
-        serializer = ReviewsSerializer(data=test_data)
+        serializer = ReviewsSerializer(
+            data=test_data, context={"request": self.mock_request}
+        )
         self.assertTrue(serializer.is_valid(), serializer.errors)
         self.assertFalse(serializer.validated_data["coach_no_longer_at_university"])
 

@@ -29,6 +29,7 @@ class Reviews(models.Model):
         verbose_name = "Review"
         verbose_name_plural = "Reviews"
         ordering = ["-created_at"]
+        unique_together = ["school", "user", "head_coach_name", "sport"]
 
     def __str__(self):
         return f"Review by {self.user} for {self.school} - {self.sport}"
