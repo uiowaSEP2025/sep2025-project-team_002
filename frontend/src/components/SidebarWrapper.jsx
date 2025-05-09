@@ -36,7 +36,7 @@ const SidebarWrapper = ({ title = "My Account", menuItems = [], children }) => {
     menuItems.map((item, index) => (
       <ListItem key={index} disablePadding
       sx={{
-        mt: isMobile && index === 0 ? 2 : 0  // Add margin-top to the first item on mobile
+        mt: isMobile && index === 0 ? 4 : 0  // Add margin-top to the first item on mobile
       }}>
         <ListItemButton
           onClick={() => {
