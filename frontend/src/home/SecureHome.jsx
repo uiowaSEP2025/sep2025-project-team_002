@@ -6,14 +6,12 @@ import {
   Grid,
   Typography,
   IconButton,
-  Menu,
   MenuItem,
   CircularProgress,
   Button,
   Card,
   CardContent,
   Stack,
-  Grid as MuiGrid,
   Pagination,
   TextField,
   Dialog,
@@ -27,25 +25,20 @@ import {
   useTheme,
   Paper,
   Chip,
-  Avatar,
-  Divider,
   Container,
   alpha,
-  lighten,
   darken,
-  Tooltip
 } from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import LoginIcon from "@mui/icons-material/Login";
-import ErrorIcon from "@mui/icons-material/Error";
 import WarningIcon from "@mui/icons-material/Warning";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import SchoolIcon from "@mui/icons-material/School";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import Fade from "@mui/material/Fade";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import TuneIcon from "@mui/icons-material/Tune";
 import SearchIcon from "@mui/icons-material/Search";
 import { getTeamPrimaryColor } from "../utils/teamColorLookup";
 import API_BASE_URL from "../utils/config";
@@ -84,6 +77,49 @@ function SecureHome() {
 
   // Add a new state to track if the user has submitted preferences
   const [hasPreferences, setHasPreferences] = useState(null);
+
+    // i icon
+  const [popupOpen, setPopupOpen] = useState(false);
+  const handleClose = () => setPopupOpen(false);
+
+  const [page, setPage] = useState(1);
+  const handleInfoChange = (_, value) => setPage(value);
+
+    // Defining three pages of info page
+  const pages = [
+    {
+        title: 'Overview:',
+        content:
+        'The Athletic Insider is a website that helps student athletes make informed decisions.' +
+            ' All schools have review summaries and coach information, use the search bar and filter function to find your school of choice.' +
+            ' A personal email works just fine, but an edu email gives the ability to write credible reviews.' +
+            ' Enjoy the site!'
+    },
+    {
+      title: 'Submitting a Review:',
+      content:
+        'If you are a transfer or graduate student, you can submit a review of your school, sport, and coach. ' +
+          'Click the "Submit a Review" button, fill out the information, and rank each category from 1-10 stars, and please leave a few comments. ' +
+          'Your reviews are anonymous and will be viewed by all, so make sure it is respectful and accurate! ' +
+          'You can verify your school account in the account settings page in the upper right hand corner.'
+    },
+    {
+      title: 'Preference Form:',
+      content:
+          'The preference form is offered to accounts of High School Prospect or Transferring Student. ' +
+          'The way this works is that you will set the level of importance each category holds to you and schools will be recommended to you based on your choices. ' +
+          'The match scores are weighted, meaning that a certain school will match your preferences, on a scale of 0-10 out of 10. ' +
+          'Feel free to change your preferences, but do keep in mind it will change your recommended schools.'
+    },
+    {
+      title: 'Tips:',
+      content:
+        'Your account will be in the upper right hand corner icon, feel free to change information, verify your email, or see your own reviews. ' +
+          'High School Prospects, can only view reviews and Graduates cannot fill out a preference form. ' +
+          'If there are issues, please do not hesitate to contact us by making use of the "Report Issue" button on the bottom right hand corner of each page. ' +
+          'Thank You for choosing TheAthleticInsider and good luck!'
+    },
+  ];
 
   // Filter state
   const [filterDialogOpen, setFilterDialogOpen] = useState(false);
@@ -403,7 +439,6 @@ function SecureHome() {
       if (tempFilters.nil_opportunity) queryParams.append("nil_opportunity", tempFilters.nil_opportunity);
 
       const token = localStorage.getItem("token");
-      console.log("Filter params:", queryParams.toString());
       const response = await fetch(`${API_BASE_URL}/api/filter/?${queryParams.toString()}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -413,7 +448,6 @@ function SecureHome() {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Filtered response:", data);
         setFilteredSchools(data);
         setFilterApplied(true);
         setLoading(false);
@@ -755,6 +789,23 @@ function SecureHome() {
 
       <Container maxWidth="lg" sx={{ pt: 6, pb: 6 }}>
         <Box sx={{ textAlign: "center", mb: 5 }}>
+          {/* Info Icon (i) inside the background gradient overlay */}
+          <IconButton
+            sx={{
+              position: 'absolute',
+              top: '20px',  // Adjust this value to position it vertically
+              left: '20px', // Adjust this value to position it horizontally
+              zIndex: 2,
+            background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
+            color: '#fff',
+            '&:hover': {
+              background: 'linear-gradient(135deg, rgba(131, 56, 236, 0.8) 0%, rgba(58, 134, 255, 0.9) 100%)',
+            },
+            }}
+            onClick={() => setPopupOpen(true)} // Open the popup
+          >
+            <InfoOutlinedIcon fontSize="large" />
+          </IconButton>
           <Typography
             variant="h3"
             sx={{
@@ -781,7 +832,59 @@ function SecureHome() {
             Discover schools and sports programs that match your preferences
           </Typography>
         </Box>
-
+        {/* MUI Dialog w/ Fade */}
+        <Dialog
+          open={popupOpen}
+          onClose={handleClose}
+          fullWidth
+          maxWidth="md"
+          closeAfterTransition
+          TransitionComponent={Fade}
+          transitionDuration={400}
+          PaperProps={{
+            elevation: 8,
+            sx: {
+              background: 'linear-gradient(90deg, #3a86ff, #8338ec)',
+              borderRadius: 2,
+              p: 3,
+              boxShadow: 3,
+              mx: 'auto',
+            },
+          }}
+        >
+          {/* Dynamic title & content based on `page` */}
+          <DialogTitle sx={{ color: '#fff' }}>
+            {pages[page - 1].title}
+          </DialogTitle>
+          <DialogContent>
+            <Typography sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              {pages[page - 1].content}
+            </Typography>
+            {/* Fixed 3-step pagination */}
+            <Pagination
+              count={pages.length}
+              page={page}
+              onChange={handleInfoChange}
+              color="primary"
+              sx={{
+                mt: 4,
+                bgcolor: 'rgba(255,255,255,0.2)',
+                borderRadius: 1,
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleClose}
+              variant="contained"
+              sx={{ background: '#fff', color: '#333' }}
+            >
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog>
         {/* Search and Filters Section */}
         <Paper
           elevation={2}
@@ -1172,76 +1275,6 @@ function SecureHome() {
               )}
           </Box>
         )}
-        {/*        /!*{filters.sport && (*!/*/}
-        {/*        /!*  <Button*!/*/}
-        {/*        /!*    variant="outlined"*!/*/}
-        {/*        /!*    color="primary"*!/*/}
-        {/*        /!*    onClick={handleGoToReviewForm}*!/*/}
-        {/*        /!*    sx={{*!/*/}
-        {/*        /!*      mt: 1,*!/*/}
-        {/*        /!*      borderRadius: "20px",*!/*/}
-        {/*        /!*      py: 0.8,*!/*/}
-        {/*        /!*      px: 2.5,*!/*/}
-        {/*        /!*      textTransform: "none",*!/*/}
-        {/*        /!*      fontWeight: 500*!/*/}
-        {/*        /!*    }}*!/*/}
-        {/*        /!*  >*!/*/}
-        {/*        /!*    Submit a Review*!/*/}
-        {/*        /!*  </Button>*!/*/}
-        {/*        /!*)}*!/*/}
-        {/*      </Box>*/}
-        {/*    )*/}
-        {/*  ) : (*/}
-        {/*    <Box sx={{ mb: 4, textAlign: 'center', p: 3, backgroundColor: '#f5f5f5', borderRadius: 2 }}>*/}
-        {/*      <Typography variant="h6" sx={{ mb: 1 }}>*/}
-        {/*        {filters.sport ? "No Recommendations Available" : "Fill Out Your Preferences"}*/}
-        {/*      </Typography>*/}
-        {/*      <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>*/}
-        {/*        {filters.sport*/}
-        {/*          ? `We don't have any reviews yet for your preferred sport (${filters.sport}). Check back later as our community grows!`*/}
-        {/*          : "Please fill out your preferences to see personalized school recommendations based on what matters most to you."}*/}
-        {/*      </Typography>*/}
-
-        {/*      {user.transfer_type !== "graduate" && !hasPreferences && (*/}
-        {/*        <Button*/}
-        {/*          variant="contained"*/}
-        {/*          color="primary"*/}
-        {/*          onClick={handleGoToPreferenceForm}*/}
-        {/*          sx={{*/}
-        {/*            mt: 1,*/}
-        {/*            mr: 2,*/}
-        {/*            borderRadius: "20px",*/}
-        {/*            py: 0.8,*/}
-        {/*            px: 2.5,*/}
-        {/*            textTransform: "none",*/}
-        {/*            fontWeight: 500,*/}
-        {/*            boxShadow: 1*/}
-        {/*          }}*/}
-        {/*        >*/}
-        {/*          {filters.sport ? "Update Preferences" : "Set Your Preferences"}*/}
-        {/*        </Button>*/}
-        {/*      )}*/}
-        {/*      /!*{filters.sport && (*!/*/}
-        {/*      /!*  <Button*!/*/}
-        {/*      /!*    variant="outlined"*!/*/}
-        {/*      /!*    color="primary"*!/*/}
-        {/*      /!*    onClick={handleGoToReviewForm}*!/*/}
-        {/*      /!*    sx={{*!/*/}
-        {/*      /!*      mt: 1,*!/*/}
-        {/*      /!*      borderRadius: "20px",*!/*/}
-        {/*      /!*      py: 0.8,*!/*/}
-        {/*      /!*      px: 2.5,*!/*/}
-        {/*      /!*      textTransform: "none",*!/*/}
-        {/*      /!*      fontWeight: 500*!/*/}
-        {/*      /!*    }}*!/*/}
-        {/*      /!*  >*!/*/}
-        {/*      /!*    Submit a Review*!/*/}
-        {/*      /!*  </Button>*!/*/}
-        {/*      /!*)}*!/*/}
-        {/*    </Box>*/}
-        {/*  )*/}
-        {/*) : null}*/}
-
         {/* Show review form button for transfer students */}
         {user.transfer_type !== "high_school" && (
           <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
@@ -1262,23 +1295,6 @@ function SecureHome() {
             >
               Submit a Review
             </Button>
-            {/*{!hasPreferences && (*/}
-            {/*  <Button*/}
-            {/*    id="preference-form-button"*/}
-            {/*    variant="outlined"*/}
-            {/*    color="primary"*/}
-            {/*    onClick={handleGoToPreferenceForm}*/}
-            {/*    sx={{*/}
-            {/*      borderRadius: "20px",*/}
-            {/*      py: 0.8,*/}
-            {/*      px: 2.5,*/}
-            {/*      textTransform: "none",*/}
-            {/*      fontWeight: 500*/}
-            {/*    }}*/}
-            {/*  >*/}
-            {/*    Fill Preference Form*/}
-            {/*  </Button>*/}
-            {/*)}*/}
           </Box>
         )}
 
@@ -1573,6 +1589,13 @@ function SecureHome() {
         onClose={cancelFilters} // Use cancelFilters to handle clicking outside the dialog
         fullWidth
         maxWidth="sm"
+        PaperProps={{
+         elevation: 8,
+         sx: {
+           borderRadius: 3,
+           p: 3,
+         },
+       }}
         disableRestoreFocus
         TransitionProps={{
           onExited: () => {
